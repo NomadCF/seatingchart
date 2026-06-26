@@ -1,14 +1,10 @@
 <!DOCTYPE html>
-<!--
-Seating Chart Bubble Builder
-Copyright (c) 2026 Chris L. Franklin
-
-Licensed under the MIT License.
-SPDX-License-Identifier: MIT
--->
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="license" content="MIT License" />
+  <meta name="spdx-license-identifier" content="MIT" />
+  <meta name="copyright" content="Copyright (c) 2026 Chris L. Franklin" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Seating Chart Bubble Builder</title>
   <style>
@@ -7396,7 +7392,7 @@ SPDX-License-Identifier: MIT
     const PAGE_LOCK_DATA_SESSION_KEY = 'seating-chart-bubble-builder-locked-data-v1';
     const VISIBILITY_CREDENTIAL_KEY = 'seating-chart-bubble-builder-visibility-v1';
     const HINT_DISMISS_STORAGE_KEY = 'seating-chart-bubble-builder-dismissed-hints-v1';
-    const APP_REVISION = '1.18.4';
+    const APP_REVISION = '1.18.5';
     const APP_LAST_UPDATED = 'June 26, 2026';
 
     const APP_LICENSE = {
@@ -7457,7 +7453,8 @@ SPDX-License-Identifier: MIT
     ];
 
     const CHANGE_LOG = [
-      { version: '1.18.4', date: 'June 26, 2026', changes: ['Changed the embedded app license from custom all-rights-reserved terms to the standard MIT License.', 'Added an SPDX license header to the HTML for GitHub and license-scanning tools.', 'Updated About, Settings, License, and complete save/export metadata to identify the app as MIT licensed.', 'Kept the license notice clear that app licensing does not claim ownership of user-entered classroom or student data.'] },
+      { version: '1.18.5', date: 'June 26, 2026', changes: ['Moved license/SPDX information into harmless head metadata so the document begins with a clean doctype and the app layout cannot be affected by the license block.', 'Kept MIT license display, About/Settings license details, and export metadata unchanged.'] },
+      { version: '1.18.4', date: 'June 26, 2026', changes: ['Changed the embedded app license from custom all-rights-reserved terms to the standard MIT License.', 'Moved SPDX details into HTML metadata for GitHub and license-scanning tools.', 'Updated About, Settings, License, and complete save/export metadata to identify the app as MIT licensed.', 'Kept the license notice clear that app licensing does not claim ownership of user-entered classroom or student data.'] },
       { version: '1.18.3', date: 'June 26, 2026', changes: ['Locked the Settings popup to one large stable size so it no longer resizes when switching subpages.', 'Changed Settings subpage content and navigation to scroll inside the fixed modal frame.', 'Adjusted mobile Settings sizing so the popup fills the safe viewport while keeping page navigation usable.'] },
       { version: '1.18.2', date: 'June 26, 2026', changes: ['Split the Settings popup into topic pages: Chart, Appearance, Saving, Security & Data, Room Objects, and About.', 'Added sticky Settings page navigation with active-page highlighting and compact mobile wrapping.', 'Updated the How-To tour Settings preparation so hidden Settings controls switch to the correct Settings page before being highlighted.'] },
       { version: '1.18.1', date: 'June 26, 2026', changes: ['Added embedded licensing metadata and an in-app License window.', 'Added license summary fields to About and Settings.', 'Added View License buttons beside the Change Log buttons.', 'Included app license metadata in complete save/export JSON files.', 'Clarified that license terms cover the application code and bundled documentation, not user-entered classroom data.'] },
