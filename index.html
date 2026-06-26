@@ -5861,6 +5861,96 @@
 
 
 
+    /* Revision 1.18.7: Eye Mode edit locks and note reveal controls */
+    body.visibility-mode.vis-disable-seat-editing .cell-actions,
+    body.visibility-mode.vis-disable-seat-editing [data-toggle-student-lock],
+    body.visibility-mode.vis-disable-seat-editing [data-clear-student-assignment] {
+      display: none !important;
+    }
+
+    body.visibility-mode.vis-disable-seat-editing .student-card[draggable="true"],
+    body.visibility-mode.vis-disable-seat-editing .bubble-card[draggable="true"],
+    body.visibility-mode.vis-disable-seat-editing .seat-person[draggable="true"] {
+      cursor: default !important;
+    }
+
+    body.visibility-mode.vis-disable-room-editing #layoutToolsPanel,
+    body.visibility-mode.vis-disable-room-editing #toggleLayoutToolsBtn,
+    body.visibility-mode.vis-disable-room-editing #designModeBtn,
+    body.visibility-mode.vis-disable-room-editing #selectCellsBtn,
+    body.visibility-mode.vis-disable-room-editing #clearCellSelectionBtn {
+      display: none !important;
+    }
+
+    body.visibility-mode.vis-disable-student-editing #addStudentBody,
+    body.visibility-mode.vis-disable-student-editing #toggleAddStudentBtn,
+    body.visibility-mode.vis-disable-student-editing #clearStudentsBtn,
+    body.visibility-mode.vis-disable-student-editing [data-edit-student-id],
+    body.visibility-mode.vis-disable-student-editing [data-delete-student] {
+      display: none !important;
+    }
+
+    body.visibility-mode.vis-disable-bubble-editing #addBubbleBtn,
+    body.visibility-mode.vis-disable-bubble-editing #clearBubblesBtn,
+    body.visibility-mode.vis-disable-bubble-editing #openBubbleManagerBtn,
+    body.visibility-mode.vis-disable-bubble-editing #addZoneBtn,
+    body.visibility-mode.vis-disable-bubble-editing #openZoneManagerBtn,
+    body.visibility-mode.vis-disable-bubble-editing [data-delete-bubble],
+    body.visibility-mode.vis-disable-bubble-editing [data-remove-bubble-member],
+    body.visibility-mode.vis-disable-bubble-editing [data-delete-zone],
+    body.visibility-mode.vis-disable-bubble-editing [data-toggle-student-bubble] {
+      display: none !important;
+    }
+
+    body.visibility-mode.vis-hide-bubble-details .bubble-color-bar,
+    body.visibility-mode.vis-hide-bubble-details .bubble-color-bar.reserved,
+    body.visibility-mode.vis-hide-bubble-details .anchor-dot,
+    body.visibility-mode.vis-hide-bubble-details .student-bubble-dots,
+    body.visibility-mode.vis-hide-bubble-details .bubble-swatch,
+    body.visibility-mode.vis-hide-bubble-details .cell.has-bubbles::after,
+    body.visibility-mode.vis-hide-bubble-details .cell-zone-tags,
+    body.visibility-mode.vis-hide-bubble-details .zone-tag,
+    body.visibility-mode.vis-hide-bubble-details .bubble-card .bubble-meta,
+    body.visibility-mode.vis-hide-bubble-details .bubble-card .pill-row,
+    body.visibility-mode.vis-hide-bubble-details .bubble-member-list,
+    body.visibility-mode.vis-hide-bubble-details #bubblesSideTabBtn,
+    body.visibility-mode.vis-hide-bubble-details #zonesSideTabBtn,
+    body.visibility-mode.vis-hide-bubble-details #bubblesSideTabPanel,
+    body.visibility-mode.vis-hide-bubble-details #zonesSideTabPanel {
+      display: none !important;
+    }
+
+    body.visibility-mode.vis-hide-bubble-details .cell.has-bubbles,
+    body.visibility-mode.vis-hide-bubble-details .cell.has-student-bubbles,
+    body.visibility-mode.vis-hide-bubble-details .cell.has-anchor-bubbles {
+      border-color: var(--border) !important;
+      box-shadow: none !important;
+      padding-top: 7px !important;
+    }
+
+    .note-editor-text.hidden-sensitive-note {
+      color: var(--muted);
+      font-weight: 800;
+      font-style: italic;
+    }
+
+    .note-reveal-button {
+      white-space: nowrap;
+      justify-self: start;
+    }
+
+    .note-editor-row.sensitive-note-hidden {
+      background: #fffbeb;
+      border-color: #fed7aa;
+    }
+
+    body[data-theme="highContrast"] .note-editor-row.sensitive-note-hidden,
+    body[data-theme="linux"] .note-editor-row.sensitive-note-hidden {
+      background: var(--panel-2) !important;
+      border-color: var(--border) !important;
+    }
+
+
     /* Revision 1.18.2: Settings subpages */
     .settings-modal {
       width: min(1040px, 96vw) !important;
@@ -6826,7 +6916,7 @@
                     </section>
             <section class="section settings-section">
                       <h3>Eye / Visibility Mode</h3>
-                      <div class="hint">The eye button hides selected controls/sections for a cleaner or student-facing view. If an encryption key is active and an Eye/Lock PIN exists, entering asks for that PIN so the key can be wrapped and removed from active memory. Exiting restores controls and, when applicable, restores the wrapped key.</div>
+                      <div class="hint">The eye button hides selected controls/sections for a cleaner or student-facing view. It can also block seating edits, student edits, room/cell edits, bubble/zone edits, and bubble detail markers while active. If an encryption key is active and an Eye/Lock PIN exists, entering asks for that PIN so the key can be wrapped and removed from active memory. Exiting restores controls and, when applicable, restores the wrapped key.</div>
                       <div class="settings-grid two-col">
                         <label class="checkline" for="visHideClassActions"><input id="visHideClassActions" type="checkbox" /> <span>Hide class New/Rename/Duplicate/Delete</span></label>
                         <label class="checkline" for="visHideWizard"><input id="visHideWizard" type="checkbox" /> <span>Hide Setup Wizard</span></label>
@@ -6839,6 +6929,11 @@
                         <label class="checkline" for="visHideChartActions"><input id="visHideChartActions" type="checkbox" /> <span>Hide generate/randomize/clear controls</span></label>
                         <label class="checkline" for="visHideRoomHeaderActions"><input id="visHideRoomHeaderActions" type="checkbox" /> <span>Hide Room Layout header buttons</span></label>
                         <label class="checkline" for="visForceNamesOnly"><input id="visForceNamesOnly" type="checkbox" /> <span>Force Names Only while eye mode is active</span></label>
+                        <label class="checkline" for="visHideBubbleDetails"><input id="visHideBubbleDetails" type="checkbox" /> <span>Hide bubble/zone details and markers</span></label>
+                        <label class="checkline" for="visDisableSeatEditing"><input id="visDisableSeatEditing" type="checkbox" /> <span>Disable seating assignment and seat action edits</span></label>
+                        <label class="checkline" for="visDisableRoomEditing"><input id="visDisableRoomEditing" type="checkbox" /> <span>Disable room/cell layout editing</span></label>
+                        <label class="checkline" for="visDisableStudentEditing"><input id="visDisableStudentEditing" type="checkbox" /> <span>Disable adding, editing, or deleting student info</span></label>
+                        <label class="checkline" for="visDisableBubbleEditing"><input id="visDisableBubbleEditing" type="checkbox" /> <span>Disable bubble and zone editing</span></label>
                       </div>
                       <div id="visibilityCredentialNote" class="hint"></div>
                     </section>
@@ -7412,7 +7507,7 @@
     const VISIBILITY_WRAPPED_KEY_SESSION_KEY = 'seating-chart-bubble-builder-visibility-wrapped-encryption-key-v1';
     const VISIBILITY_CREDENTIAL_KEY = 'seating-chart-bubble-builder-visibility-v1';
     const HINT_DISMISS_STORAGE_KEY = 'seating-chart-bubble-builder-dismissed-hints-v1';
-    const APP_REVISION = '1.18.6';
+    const APP_REVISION = '1.18.7';
     const APP_LAST_UPDATED = 'June 26, 2026';
 
     const APP_LICENSE = {
@@ -7461,7 +7556,7 @@
       { title: 'Auto placement', text: 'Generate or randomize seating while preserving locked students and scoring bubble rules and reserved seats.' },
       { title: 'Analysis and warnings', text: 'Analyze rule conflicts, warn only when a move creates a new bubble-rule collision, and display chart status.' },
       { title: 'Print views', text: 'Use a print-options popup for print as seen, clean names-only, or substitute mode, choose student details, include selected note categories, and optionally add bubble and zone configuration sections with granular detail checkboxes on the printout.' },
-      { title: 'Privacy, visibility, and lock tools', text: 'Run as a single local HTML file, encrypt full saves/exports when a session key is present, prompt for encrypted load keys, use Eye visibility mode to hide selected controls, protect Settings access with a selected credential, lock the page with encrypted stored data, use the How-To Tour to explain important setup/security choices, and open a searchable Help Guide for every major feature.' },
+      { title: 'Privacy, visibility, and lock tools', text: 'Run as a single local HTML file, encrypt full saves/exports when a session key is present, prompt for encrypted load keys, use Eye visibility mode to hide selected controls/details and optionally block student, bubble, room, and seating edits, protect Settings access with a selected credential, lock the page with encrypted stored data, require reveal clicks for non-public notes, use the How-To Tour to explain important setup/security choices, and open a searchable Help Guide for every major feature.' },
       { title: 'Snapshots, templates, and recovery', text: 'Use undo/redo, save named class snapshots, reuse room templates, download printable PDF/SVG copies, and clear local data from Settings.' },
       { title: 'Student data quality', text: 'Use CSV field mapping, duplicate detection, and categorized student notes for private, substitute, and public visibility.' },
       { title: 'Searchable help guide', text: 'Use the Help icon beside Settings to search every major feature, read examples, review security recommendations, and jump into the interactive How-To Tour.' },
@@ -7473,6 +7568,7 @@
     ];
 
     const CHANGE_LOG = [
+      { version: '1.18.7', date: 'June 26, 2026', changes: ['Expanded Eye Mode settings with options to hide bubble/zone details and block seating assignment edits, room/cell edits, student information edits, and bubble/zone edits while Eye Mode is active.', 'Added Eye Mode action guards so hidden/disabled editing controls cannot still be triggered through drag/drop, context menus, double-clicks, mobile carry, or shortcut-style UI paths.', 'Changed the notes editor so Private and Substitute notes display as hidden rows until the user clicks Reveal for that specific note. Public notes remain visible.'] },
       { version: '1.18.6', date: 'June 26, 2026', changes: ['Changed save/export behavior so any active session encryption key encrypts the full save payload, including local browser saves, linked saves, backup packages, snapshots, settings, classes, rosters, notes, bubbles, zones, and room data.', 'When the page is manually locked with the Lock PIN/password, the session encryption key is wrapped with that PIN/password, removed from active memory, and restored only after successful unlock.', 'When Eye Mode is entered with an Eye PIN or Lock PIN available, the session encryption key is wrapped with that PIN/password, removed from active memory while hidden controls are active, and restored on exit.', 'Added wrapped-key cleanup to local-data clearing and factory reset paths, and updated security/help text to explain full-save encryption and wrapped session-key behavior.'] },
       { version: '1.18.5', date: 'June 26, 2026', changes: ['Moved license/SPDX information into harmless head metadata so the document begins with a clean doctype and the app layout cannot be affected by the license block.', 'Kept MIT license display, About/Settings license details, and export metadata unchanged.'] },
       { version: '1.18.4', date: 'June 26, 2026', changes: ['Changed the embedded app license from custom all-rights-reserved terms to the standard MIT License.', 'Moved SPDX details into HTML metadata for GitHub and license-scanning tools.', 'Updated About, Settings, License, and complete save/export metadata to identify the app as MIT licensed.', 'Kept the license notice clear that app licensing does not claim ownership of user-entered classroom or student data.'] },
@@ -7649,7 +7745,12 @@
         hideStatusPanel: true,
         hideChartActions: true,
         hideRoomHeaderActions: false,
-        forceNamesOnly: true
+        forceNamesOnly: true,
+        hideBubbleDetails: true,
+        disableSeatEditing: true,
+        disableRoomEditing: true,
+        disableStudentEditing: true,
+        disableBubbleEditing: true
       }
     });
 
@@ -7682,7 +7783,12 @@
           hideStatusPanel: visibility.hideStatusPanel ?? DEFAULT_PAGE_SETTINGS.visibility.hideStatusPanel,
           hideChartActions: visibility.hideChartActions ?? DEFAULT_PAGE_SETTINGS.visibility.hideChartActions,
           hideRoomHeaderActions: visibility.hideRoomHeaderActions ?? DEFAULT_PAGE_SETTINGS.visibility.hideRoomHeaderActions,
-          forceNamesOnly: visibility.forceNamesOnly ?? DEFAULT_PAGE_SETTINGS.visibility.forceNamesOnly
+          forceNamesOnly: visibility.forceNamesOnly ?? DEFAULT_PAGE_SETTINGS.visibility.forceNamesOnly,
+          hideBubbleDetails: visibility.hideBubbleDetails ?? DEFAULT_PAGE_SETTINGS.visibility.hideBubbleDetails,
+          disableSeatEditing: visibility.disableSeatEditing ?? DEFAULT_PAGE_SETTINGS.visibility.disableSeatEditing,
+          disableRoomEditing: visibility.disableRoomEditing ?? DEFAULT_PAGE_SETTINGS.visibility.disableRoomEditing,
+          disableStudentEditing: visibility.disableStudentEditing ?? DEFAULT_PAGE_SETTINGS.visibility.disableStudentEditing,
+          disableBubbleEditing: visibility.disableBubbleEditing ?? DEFAULT_PAGE_SETTINGS.visibility.disableBubbleEditing
         }
       };
     }
@@ -8847,11 +8953,20 @@
       ['private', 'substitute', 'public'].forEach(category => {
         const meta = NOTE_CATEGORY_META[category];
         (draft[category] || []).forEach((note, index) => {
+          const noteKey = `${category}-${index}`;
+          const sensitive = category !== 'public';
+          const revealed = !sensitive || !!uiState.noteEditorRevealed?.[noteKey];
+          const noteTextHtml = revealed
+            ? escapeHtml(note)
+            : `Hidden ${escapeHtml(meta.label)} note. Click Reveal to view this note.`;
           rows.push(`
-            <div class="note-editor-row">
+            <div class="note-editor-row ${sensitive && !revealed ? 'sensitive-note-hidden' : ''}">
               <span class="note-category-pill ${meta.className}" title="${escapeHtml(meta.description)}">${escapeHtml(meta.label)}</span>
-              <div class="note-editor-text">${escapeHtml(note)}</div>
-              <button class="tiny danger icon-button" type="button" data-delete-note-category="${escapeHtml(category)}" data-delete-note-index="${index}" aria-label="Delete note" title="Remove this note from the current notes editor draft.">🗑</button>
+              <div class="note-editor-text ${sensitive && !revealed ? 'hidden-sensitive-note' : ''}">${noteTextHtml}</div>
+              <span class="card-actions">
+                ${sensitive && !revealed ? `<button class="tiny secondary note-reveal-button" type="button" data-reveal-note-key="${escapeHtml(noteKey)}" title="Reveal this ${escapeHtml(meta.label)} note only.">Reveal</button>` : ''}
+                <button class="tiny danger icon-button" type="button" data-delete-note-category="${escapeHtml(category)}" data-delete-note-index="${index}" aria-label="Delete note" title="Remove this note from the current notes editor draft.">🗑</button>
+              </span>
             </div>
           `);
         });
@@ -8860,6 +8975,7 @@
     }
 
     function openStudentNotesModal(context) {
+      uiState.noteEditorRevealed = {};
       uiState.noteEditorContext = context || { mode: 'add' };
       if (uiState.noteEditorContext.mode === 'edit') {
         uiState.noteEditorDraft = noteDraftFromFields('editStudentNotes');
@@ -8889,6 +9005,7 @@
       el('studentNotesModal')?.classList.remove('show');
       uiState.noteEditorContext = null;
       uiState.noteEditorDraft = null;
+      uiState.noteEditorRevealed = {};
     }
 
     function sensitiveNotesNeedEncryptionWarning(draft = null) {
@@ -8919,6 +9036,12 @@
       uiState.noteEditorDraft[category].push(text);
       if ((category === 'private' || category === 'substitute') && !currentSessionEncryptionKey()) warnSensitiveNotesNeedEncryption();
       el('noteEditorText').value = '';
+      renderNotesEditor();
+    }
+
+    function revealNoteLineInEditor(noteKey) {
+      uiState.noteEditorRevealed = uiState.noteEditorRevealed || {};
+      uiState.noteEditorRevealed[String(noteKey || '')] = true;
       renderNotesEditor();
     }
 
@@ -9184,6 +9307,7 @@
 
 
     function assignStudentToCell(studentId, cellKey, manual = true, warnOnRules = true) {
+      if (eyeModeBlocksSeatEditing()) return blockEyeModeAction('seat') && false;
       const target = state.cells[cellKey];
       const student = getStudent(studentId);
       if (!student || !target || target.type !== 'seat') return false;
@@ -9246,6 +9370,7 @@
     }
 
     function setCellsType(cellKeys, type) {
+      if (eyeModeBlocksRoomEditing()) return blockEyeModeAction('room');
       const keys = Array.from(new Set((cellKeys || []).filter(key => state.cells[key])));
       if (!keys.length) return;
       let changed = 0;
@@ -9397,6 +9522,7 @@
     }
 
     function toggleSeatLock(cellKey) {
+      if (eyeModeBlocksSeatEditing()) return blockEyeModeAction('seat');
       const cell = state.cells[cellKey];
       if (!cell || cell.type !== 'seat' || !cell.assignedStudentId) return;
       cell.manual = !cell.manual;
@@ -9404,6 +9530,7 @@
     }
 
     function toggleStudentLock(studentId) {
+      if (eyeModeBlocksSeatEditing()) return blockEyeModeAction('seat');
       const cell = assignedSeatForStudent(studentId);
       if (!cell) return;
       cell.manual = !cell.manual;
@@ -9411,6 +9538,7 @@
     }
 
     function clearAssignments(keepManual = false) {
+      if (eyeModeBlocksSeatEditing()) return blockEyeModeAction('seat');
       Object.values(state.cells).forEach(cell => {
         if (!keepManual || !cell.manual) {
           cell.assignedStudentId = null;
@@ -9420,6 +9548,7 @@
     }
 
     function clearAnchors() {
+      if (eyeModeBlocksBubbleEditing() || eyeModeBlocksSeatEditing()) return blockEyeModeAction('bubble');
       Object.values(state.cells).forEach(cell => cell.anchorBubbleIds = []);
       state.bubbles.forEach(b => b.anchorSeats = []);
     }
@@ -9755,6 +9884,7 @@
     }
 
     function addStudent(student) {
+      if (eyeModeBlocksStudentEditing()) return blockEyeModeAction('student');
       const normalized = normalizeStudent(student);
       if (!normalized.firstName && !normalized.lastName && !normalized.id) return;
       const existing = state.students.find(s => s.id === normalized.id);
@@ -9780,6 +9910,7 @@
     }
 
     function addStudentToBubble(bubbleId, studentId, shouldRender = true) {
+      if (eyeModeBlocksBubbleEditing()) return blockEyeModeAction('bubble') && false;
       const bubble = getBubble(bubbleId);
       const student = getStudent(studentId);
       if (!bubble || !student) return false;
@@ -9798,6 +9929,7 @@
     }
 
     function toggleStudentBubbleMembership(studentId, bubbleId) {
+      if (eyeModeBlocksBubbleEditing()) return blockEyeModeAction('bubble');
       const bubble = getBubble(bubbleId);
       const student = getStudent(studentId);
       if (!bubble || !student) return;
@@ -9811,6 +9943,7 @@
     }
 
     function removeStudentFromBubble(bubbleId, studentId) {
+      if (eyeModeBlocksBubbleEditing()) return blockEyeModeAction('bubble');
       const bubble = getBubble(bubbleId);
       if (!bubble) return;
       const targetId = String(studentId || '');
@@ -9829,6 +9962,7 @@
     }
 
     function deleteStudent(studentId) {
+      if (eyeModeBlocksStudentEditing()) return blockEyeModeAction('student');
       state.students = state.students.filter(s => s.id !== studentId);
       state.bubbles.forEach(b => b.studentIds = (b.studentIds || []).map(String).filter(id => id !== String(studentId)));
       removeStudentFromCells(studentId);
@@ -9836,6 +9970,7 @@
     }
 
     function addBubble({ name, type, priority, studentIds, color, zoneId }) {
+      if (eyeModeBlocksBubbleEditing()) return blockEyeModeAction('bubble');
       const cleanName = String(name || '').trim() || `Bubble ${state.bubbles.length + 1}`;
       state.bubbles.push({
         id: uid('bubble'),
@@ -9851,6 +9986,7 @@
     }
 
     function deleteBubble(bubbleId) {
+      if (eyeModeBlocksBubbleEditing()) return blockEyeModeAction('bubble');
       state.bubbles = state.bubbles.filter(b => b.id !== bubbleId);
       Object.values(state.cells).forEach(cell => {
         cell.anchorBubbleIds = (cell.anchorBubbleIds || []).filter(id => id !== bubbleId);
@@ -9859,6 +9995,7 @@
     }
 
     function addBubbleAnchorWithoutRender(bubbleId, cellKey) {
+      if (eyeModeBlocksBubbleEditing() || eyeModeBlocksSeatEditing()) return false;
       const bubble = getBubble(bubbleId);
       const cell = state.cells[cellKey];
       if (!bubble || !cell || cell.type !== 'seat') return false;
@@ -9871,6 +10008,7 @@
 
 
     function removeAnchorFromCell(bubbleId, cellKey) {
+      if (eyeModeBlocksBubbleEditing() || eyeModeBlocksSeatEditing()) return blockEyeModeAction('bubble');
       const bubble = getBubble(bubbleId);
       const cell = state.cells[cellKey];
       if (!cell) return;
@@ -9880,6 +10018,7 @@
     }
 
     function addStudentToZone(zoneId, studentId, shouldRender = true) {
+      if (eyeModeBlocksBubbleEditing()) return blockEyeModeAction('bubble') && false;
       const zone = zoneById(zoneId);
       const student = getStudent(studentId);
       if (!zone || !student) return false;
@@ -9892,6 +10031,7 @@
     }
 
     function removeStudentFromZone(zoneId, studentId, shouldRender = true) {
+      if (eyeModeBlocksBubbleEditing()) return blockEyeModeAction('bubble') && false;
       const zone = zoneById(zoneId);
       if (!zone) return false;
       zone.studentIds = (zone.studentIds || []).map(String).filter(id => id !== String(studentId));
@@ -9904,6 +10044,7 @@
     }
 
     function attachBubbleToZone(bubbleId, zoneId, shouldRender = true) {
+      if (eyeModeBlocksBubbleEditing()) return blockEyeModeAction('bubble') && false;
       const bubble = getBubble(bubbleId);
       const zone = zoneById(zoneId);
       if (!bubble || !zone) return false;
@@ -9917,6 +10058,7 @@
     }
 
     function detachBubbleFromZone(bubbleId, zoneId = null, shouldRender = true) {
+      if (eyeModeBlocksBubbleEditing()) return blockEyeModeAction('bubble') && false;
       const bubble = getBubble(bubbleId);
       const targetZoneId = String(zoneId || bubble?.zoneId || '');
       if (bubble && (!targetZoneId || String(bubble.zoneId || '') === targetZoneId)) bubble.zoneId = '';
@@ -9931,6 +10073,7 @@
     }
 
     function renameZone(zoneId) {
+      if (eyeModeBlocksBubbleEditing()) return blockEyeModeAction('bubble');
       const zone = zoneById(zoneId);
       if (!zone) return;
       openTextInputModal({
@@ -9947,6 +10090,7 @@
     }
 
     function deleteZone(zoneId) {
+      if (eyeModeBlocksBubbleEditing()) return blockEyeModeAction('bubble');
       const zone = zoneById(zoneId);
       if (!zone) return;
       showInAppConfirm(`Delete zone "${zone.name}" and remove it from all seats and bubbles?`, () => {
@@ -9974,7 +10118,7 @@
         const assigned = assignedSeatForStudent(student.id);
         const card = document.createElement('div');
         card.className = 'student-card';
-        card.draggable = true;
+        card.draggable = !eyeModeBlocksSeatEditing();
         card.dataset.dragType = 'student';
         card.dataset.studentId = student.id;
         card.innerHTML = `
@@ -10034,7 +10178,7 @@
         const anchors = bubble.anchorSeats || [];
         const card = document.createElement('div');
         card.className = 'bubble-card';
-        card.draggable = true;
+        card.draggable = !eyeModeBlocksBubbleEditing() && !eyeModeBlocksSeatEditing();
         card.dataset.dragType = 'bubble';
         card.dataset.bubbleId = bubble.id;
         const anchorText = anchors.length ? anchors.map(key => {
@@ -10450,11 +10594,13 @@
           div.addEventListener('contextmenu', event => {
             if (event.target.closest('[data-seat-student-id]')) return;
             event.preventDefault();
+            if (eyeModeBlocksRoomEditing()) { blockEyeModeAction('room'); return; }
             showCellContextMenu(cellKey, event.clientX, event.clientY);
           });
           div.addEventListener('dblclick', event => {
             if (event.target.closest('button')) return;
             event.preventDefault();
+            if (eyeModeBlocksSeatEditing() || eyeModeBlocksRoomEditing()) { blockEyeModeAction(eyeModeBlocksSeatEditing() ? 'seat' : 'room'); return; }
             openSeatEditModal(cellKey);
           });
           if (uiState.designMode) {
@@ -10472,7 +10618,7 @@
                 <span class="cell-status">${escapeHtml(cell.type)} ${cell.manual ? '<span class="pill locked" title="This student is locked here and randomize will not move them.">Locked</span>' : ''} ${anchorDots}</span>
               </div>
               ${cell.type === 'seat' ? `
-                <div class="seat-person" ${student ? `draggable="true" data-seat-student-id="${escapeHtml(student.id)}" data-source-cell="${cellKey}" title="Drag ${escapeHtml(studentDisplay(student))} to another seat. If the target is occupied, the two students swap."` : ''}>${seatStudentHtml(student)}</div>
+                <div class="seat-person" ${student ? `${eyeModeBlocksSeatEditing() ? '' : 'draggable="true"'} data-seat-student-id="${escapeHtml(student.id)}" data-source-cell="${cellKey}" title="${eyeModeBlocksSeatEditing() ? 'Eye Mode blocks seat moves until it is exited.' : `Drag ${escapeHtml(studentDisplay(student))} to another seat. If the target is occupied, the two students swap.`}"` : ''}>${seatStudentHtml(student)}</div>
                 <div class="cell-actions">
                   ${student ? `<button class="tiny ${cell.manual ? 'ghost' : 'secondary'}" data-toggle-seat-lock="${cellKey}" title="${cell.manual ? 'Unlock this student so Generate and Randomize may move them again.' : 'Lock this student to this seat so Generate and Randomize will not move them.'}">${cell.manual ? 'Unlock' : 'Lock'}</button>` : ''}
                   ${student ? `<button class="tiny secondary" data-clear-seat="${cellKey}" title="Remove this student from this seat and return them to the unassigned list.">Clear</button>` : ''}
@@ -10488,6 +10634,7 @@
           const seatPerson = div.querySelector('[data-seat-student-id]');
           if (seatPerson) {
             seatPerson.addEventListener('dragstart', event => {
+              if (eyeModeBlocksSeatEditing()) { event.preventDefault(); blockEyeModeAction('seat'); return; }
               event.stopPropagation();
               event.dataTransfer.setData('application/json', JSON.stringify({ type: 'student', id: seatPerson.dataset.seatStudentId, sourceCellKey: cellKey }));
               event.dataTransfer.effectAllowed = 'move';
@@ -10495,12 +10642,14 @@
             seatPerson.addEventListener('contextmenu', event => {
               event.preventDefault();
               event.stopPropagation();
+              if (eyeModeBlocksBubbleEditing()) { blockEyeModeAction('bubble'); return; }
               showStudentBubbleContextMenu(seatPerson.dataset.seatStudentId, event.clientX, event.clientY);
             });
           }
           div.addEventListener('mousedown', event => {
             if (event.button !== 0) return;
             if (event.target.closest('button') || event.target.closest('[data-seat-student-id]')) return;
+            if (eyeModeBlocksRoomEditing()) return;
             if (uiState.selectionMode || event.shiftKey) beginCellSelection(event, cellKey);
           });
           div.addEventListener('mouseenter', event => {
@@ -10513,6 +10662,7 @@
             if (uiState.mobileCarryItem && isMobileViewport()) {
               event.preventDefault();
               event.stopPropagation();
+              if (eyeModeBlocksSeatEditing()) { blockEyeModeAction('seat'); return; }
               applyMobileCarryToCell(cellKey);
               return;
             }
@@ -10522,19 +10672,22 @@
               return;
             }
             if (uiState.selectionMode) {
+              if (eyeModeBlocksRoomEditing()) { blockEyeModeAction('room'); return; }
               toggleCellSelection(cellKey);
               return;
             }
             if (event.shiftKey) {
+              if (eyeModeBlocksRoomEditing()) { blockEyeModeAction('room'); return; }
               if (uiState.selectionAnchorKey && state.cells[uiState.selectionAnchorKey]) addCellRangeToSelection(uiState.selectionAnchorKey, cellKey);
               else addCellToSelection(cellKey);
               uiState.selectionAnchorKey = cellKey;
               return;
             }
+            if (eyeModeBlocksRoomEditing()) { blockEyeModeAction('room'); return; }
             setCellType(cellKey, el('layoutTool').value);
           });
           div.addEventListener('dragover', event => {
-            if (cell.type === 'seat') {
+            if (cell.type === 'seat' && !eyeModeBlocksSeatEditing()) {
               event.preventDefault();
               div.classList.add('drop-target');
             }
@@ -10544,10 +10697,12 @@
             event.preventDefault();
             div.classList.remove('drop-target');
             if (cell.type !== 'seat') return;
+            if (eyeModeBlocksSeatEditing()) { blockEyeModeAction('seat'); return; }
             let data;
             try { data = JSON.parse(event.dataTransfer.getData('application/json')); } catch { return; }
             if (data.type === 'student') assignStudentToCell(data.id, cellKey, true, true);
             if (data.type === 'bubble') {
+              if (eyeModeBlocksBubbleEditing()) { blockEyeModeAction('bubble'); return; }
               const keys = isContextCellSelectionBatch(cellKey) ? selectedCellKeysArray() : [cellKey];
               keys.forEach(key => addBubbleAnchorWithoutRender(data.id, key));
               renderAll();
@@ -10968,6 +11123,7 @@
     }
 
     function generateChart() {
+      if (eyeModeBlocksSeatEditing()) return blockEyeModeAction('seat');
       ensureGrid();
       if (!state.students.length || !seatCells().length) {
         renderAll();
@@ -10979,6 +11135,7 @@
     }
 
     function randomizeAndSeatEveryone() {
+      if (eyeModeBlocksSeatEditing()) return blockEyeModeAction('seat');
       ensureGrid();
       const seats = seatCells();
       if (!state.students.length || !seats.length) {
@@ -11550,6 +11707,11 @@
       setChecked('visHideChartActions', cfg.visibility.hideChartActions);
       setChecked('visHideRoomHeaderActions', cfg.visibility.hideRoomHeaderActions);
       setChecked('visForceNamesOnly', cfg.visibility.forceNamesOnly);
+      setChecked('visHideBubbleDetails', cfg.visibility.hideBubbleDetails);
+      setChecked('visDisableSeatEditing', cfg.visibility.disableSeatEditing);
+      setChecked('visDisableRoomEditing', cfg.visibility.disableRoomEditing);
+      setChecked('visDisableStudentEditing', cfg.visibility.disableStudentEditing);
+      setChecked('visDisableBubbleEditing', cfg.visibility.disableBubbleEditing);
       updateVisibilityCredentialNote();
       updatePinStatus();
     }
@@ -11583,7 +11745,12 @@
           hideStatusPanel: checked('visHideStatusPanel'),
           hideChartActions: checked('visHideChartActions'),
           hideRoomHeaderActions: checked('visHideRoomHeaderActions'),
-          forceNamesOnly: checked('visForceNamesOnly')
+          forceNamesOnly: checked('visForceNamesOnly'),
+          hideBubbleDetails: checked('visHideBubbleDetails'),
+          disableSeatEditing: checked('visDisableSeatEditing'),
+          disableRoomEditing: checked('visDisableRoomEditing'),
+          disableStudentEditing: checked('visDisableStudentEditing'),
+          disableBubbleEditing: checked('visDisableBubbleEditing')
         }
       });
       applyPageSettings(uiState.pageSettings, { skipRender: false });
@@ -11641,6 +11808,7 @@
 
     function applyVisibilityClasses() {
       const cfg = pageSettings().visibility;
+      if (uiState.visibilityMode && cfg.hideBubbleDetails && ['bubbles','zones'].includes(uiState.activeSideTab)) setSideTab('students');
       document.body.classList.toggle('visibility-mode', !!uiState.visibilityMode);
       document.body.classList.toggle('vis-hide-class-actions', !!uiState.visibilityMode && !!cfg.hideClassActions);
       document.body.classList.toggle('vis-hide-wizard', !!uiState.visibilityMode && !!cfg.hideWizard);
@@ -11652,6 +11820,11 @@
       document.body.classList.toggle('vis-hide-status', !!uiState.visibilityMode && !!cfg.hideStatusPanel);
       document.body.classList.toggle('vis-hide-chart-actions', !!uiState.visibilityMode && !!cfg.hideChartActions);
       document.body.classList.toggle('vis-hide-room-header-actions', !!uiState.visibilityMode && !!cfg.hideRoomHeaderActions);
+      document.body.classList.toggle('vis-hide-bubble-details', !!uiState.visibilityMode && !!cfg.hideBubbleDetails);
+      document.body.classList.toggle('vis-disable-seat-editing', !!uiState.visibilityMode && !!cfg.disableSeatEditing);
+      document.body.classList.toggle('vis-disable-room-editing', !!uiState.visibilityMode && !!cfg.disableRoomEditing);
+      document.body.classList.toggle('vis-disable-student-editing', !!uiState.visibilityMode && !!cfg.disableStudentEditing);
+      document.body.classList.toggle('vis-disable-bubble-editing', !!uiState.visibilityMode && !!cfg.disableBubbleEditing);
       const button = el('visibilityModeBtn');
       if (button) {
         button.setAttribute('aria-pressed', uiState.visibilityMode ? 'true' : 'false');
@@ -11660,10 +11833,34 @@
       }
     }
 
+    function visibilitySettingEnabled(key) {
+      return !!uiState.visibilityMode && !!pageSettings().visibility?.[key];
+    }
+
+    function blockEyeModeAction(kind, message = '') {
+      const labels = {
+        seat: 'Eye Mode is blocking seating edits. Exit Eye Mode to change assignments, locks, or seat actions.',
+        room: 'Eye Mode is blocking room/cell editing. Exit Eye Mode to change the room layout.',
+        student: 'Eye Mode is blocking student info edits. Exit Eye Mode to add, edit, or delete student records.',
+        bubble: 'Eye Mode is blocking bubble/zone edits. Exit Eye Mode to change groups, zones, or memberships.'
+      };
+      setLiveStatusMessage(message || labels[kind] || 'Eye Mode is blocking that edit. Exit Eye Mode to make changes.');
+      hideCellContextMenu?.();
+      hideStudentBubbleContextMenu?.();
+      hideMobileActionDrawer?.();
+      return true;
+    }
+
+    function eyeModeBlocksSeatEditing() { return visibilitySettingEnabled('disableSeatEditing'); }
+    function eyeModeBlocksRoomEditing() { return visibilitySettingEnabled('disableRoomEditing'); }
+    function eyeModeBlocksStudentEditing() { return visibilitySettingEnabled('disableStudentEditing'); }
+    function eyeModeBlocksBubbleEditing() { return visibilitySettingEnabled('disableBubbleEditing'); }
+
     function enterVisibilityMode() {
       uiState.visibilityPreviousNamesOnly = uiState.namesOnlyLayout;
       uiState.visibilityMode = true;
       if (pageSettings().visibility.forceNamesOnly) uiState.namesOnlyLayout = true;
+      if (pageSettings().visibility.hideBubbleDetails && ['bubbles','zones'].includes(uiState.activeSideTab)) setSideTab('students');
       refreshNamesOnlyToggle();
       applyVisibilityClasses();
       renderGrid();
@@ -11968,7 +12165,7 @@
     function settingsPageForControlSelector(selector = '') {
       const target = String(selector || '');
       if (/chartTitleInput|chartDateInput|chartPeriodInput|chartRoomInput|chartTeacherInput|saveChartDetailsBtn/.test(target)) return 'chart';
-      if (/settingTheme|settingDefault|settingHeaderCollapsed|settingLeftCollapsed|settingRightCollapsed|settingLayoutToolsCollapsed|settingCsvCollapsed|settingAddStudentCollapsed|settingHideHints|resetDismissedHintsBtn|settingDefaultSideTab|settingDesignCellSize|visHide|visForceNamesOnly|visibilityCredentialNote/.test(target)) return 'appearance';
+      if (/settingTheme|settingDefault|settingHeaderCollapsed|settingLeftCollapsed|settingRightCollapsed|settingLayoutToolsCollapsed|settingCsvCollapsed|settingAddStudentCollapsed|settingHideHints|resetDismissedHintsBtn|settingDefaultSideTab|settingDesignCellSize|visHide|visDisable|visForceNamesOnly|visibilityCredentialNote/.test(target)) return 'appearance';
       if (/settingsEncryption|settingsOpenSaveSetupBtn|settingsForgetLinkedFileBtn|saveHealth|settingAutoSaveMinutes|saveSetup/.test(target)) return 'saving';
       if (/settingAutoLockMinutes|clearLocalDataBtn|factoryResetEverythingBtn|settingSettingsAccessMethod|settingsAccessStatus|settingsLockPin|settingsVisibilityPin|settingsSaveLockPinBtn|settingsSaveVisibilityPinBtn|settingsPinStatus/.test(target)) return 'security';
       if (/settingsCustomObject|customObjectManagerList|settingsSampleBtn/.test(target)) return 'room';
@@ -13339,6 +13536,7 @@
     }
 
     function updateStudentRecord(oldId, data) {
+      if (eyeModeBlocksStudentEditing()) return blockEyeModeAction('student') && false;
       const oldKey = String(oldId || '');
       const student = getStudent(oldKey);
       if (!student) return false;
@@ -13366,6 +13564,7 @@
     }
 
     function openStudentEditModal(studentId) {
+      if (eyeModeBlocksStudentEditing()) return blockEyeModeAction('student');
       const student = getStudent(studentId);
       if (!student) return;
       el('editStudentOriginalId').value = student.id;
@@ -13397,6 +13596,7 @@
     }
 
     function openSeatEditModal(cellKey) {
+      if (eyeModeBlocksSeatEditing() || eyeModeBlocksRoomEditing()) return blockEyeModeAction(eyeModeBlocksSeatEditing() ? 'seat' : 'room');
       const cell = state.cells[cellKey];
       if (!cell) return;
       uiState.activeSeatEditCellKey = cellKey;
@@ -15856,6 +16056,7 @@
     }
 
     function applyRoomTemplate(templateId) {
+      if (eyeModeBlocksRoomEditing()) return blockEyeModeAction('room');
       const template = (state.roomTemplates || []).find(item => item.id === templateId);
       if (!template) return;
       pushUndoSnapshot('Before applying room template');
@@ -15899,6 +16100,7 @@
     }
 
     function saveSelectedCellsAsZone() {
+      if (eyeModeBlocksBubbleEditing() || eyeModeBlocksRoomEditing()) return blockEyeModeAction(eyeModeBlocksBubbleEditing() ? 'bubble' : 'room');
       const keys = selectedCellKeysArray();
       if (!keys.length) { setLiveStatusMessage('Select one or more cells before saving a zone.'); return; }
       const name = String(el('zoneNameInput')?.value || '').trim() || `Zone ${state.zones.length + 1}`;
@@ -15917,6 +16119,7 @@
     }
 
     function applyZoneToSelectedCells() {
+      if (eyeModeBlocksBubbleEditing() || eyeModeBlocksRoomEditing()) return blockEyeModeAction(eyeModeBlocksBubbleEditing() ? 'bubble' : 'room');
       const zoneId = String(el('zoneSelect')?.value || '');
       const keys = selectedCellKeysArray();
       if (!zoneId || !keys.length) { setLiveStatusMessage('Choose a zone and select cells first.'); return; }
@@ -15930,6 +16133,7 @@
     }
 
     function clearZonesFromSelectedCells() {
+      if (eyeModeBlocksBubbleEditing() || eyeModeBlocksRoomEditing()) return blockEyeModeAction(eyeModeBlocksBubbleEditing() ? 'bubble' : 'room');
       const keys = selectedCellKeysArray();
       if (!keys.length) { setLiveStatusMessage('Select cells first.'); return; }
       keys.forEach(key => { if (state.cells[key]) state.cells[key].zoneIds = []; });
@@ -16654,6 +16858,7 @@
       });
 
       el('addStudentBtn').addEventListener('click', () => {
+        if (eyeModeBlocksStudentEditing()) return blockEyeModeAction('student');
         const sensitiveDraft = noteDraftFromFields('studentNotes');
         if (sensitiveNotesNeedEncryptionWarning(sensitiveDraft)) warnSensitiveNotesNeedEncryption();
         addStudent({
@@ -16683,6 +16888,7 @@
       refreshAddStudentNotesSummary();
 
       el('clearStudentsBtn').addEventListener('click', () => {
+        if (eyeModeBlocksStudentEditing()) return blockEyeModeAction('student');
         showInAppConfirm('Clear all students and remove them from bubbles and seats?', () => {
           state.students = [];
           state.bubbles.forEach(b => b.studentIds = []);
@@ -16705,6 +16911,7 @@
       });
 
       el('addBubbleBtn').addEventListener('click', () => {
+        if (eyeModeBlocksBubbleEditing()) return blockEyeModeAction('bubble');
         const studentIds = Array.from(el('bubbleMemberPicker').querySelectorAll('input:checked')).map(input => input.value);
         addBubble({
           name: el('bubbleName').value,
@@ -16720,6 +16927,7 @@
       });
 
       el('clearBubblesBtn').addEventListener('click', () => {
+        if (eyeModeBlocksBubbleEditing()) return blockEyeModeAction('bubble');
         showInAppConfirm('Clear all bubbles and seat anchors?', () => {
           state.bubbles = [];
           Object.values(state.cells).forEach(cell => cell.anchorBubbleIds = []);
@@ -16741,12 +16949,13 @@
         if (event.key === 'Enter') el('settingsAddCustomObjectBtn').click();
       });
 
-      el('selectCellsBtn').addEventListener('click', toggleCellSelectionMode);
+      el('selectCellsBtn').addEventListener('click', () => { if (eyeModeBlocksRoomEditing()) return blockEyeModeAction('room'); toggleCellSelectionMode(); });
       el('clearCellSelectionBtn').addEventListener('click', clearCellSelection);
       document.addEventListener('mousemove', selectCellFromPointer);
       document.addEventListener('mouseup', endCellSelection);
 
       const updateGridFromInputs = () => {
+        if (eyeModeBlocksRoomEditing()) return blockEyeModeAction('room');
         state.rows = Math.max(1, Math.min(30, Number(el('rowsInput').value) || state.rows || 5));
         state.cols = Math.max(1, Math.min(30, Number(el('colsInput').value) || state.cols || 6));
         ensureGrid();
@@ -16764,11 +16973,13 @@
       el('colsInput').addEventListener('input', queueGridResize);
 
       el('makeAllSeatsBtn').addEventListener('click', () => {
+        if (eyeModeBlocksRoomEditing()) return blockEyeModeAction('room');
         Object.values(state.cells).forEach(cell => cell.type = 'seat');
         renderAll();
       });
 
       el('emptyGridBtn').addEventListener('click', () => {
+        if (eyeModeBlocksRoomEditing()) return blockEyeModeAction('room');
         showInAppConfirm('Set every grid cell to empty and clear assignments and anchors?', () => {
           Object.values(state.cells).forEach(cell => {
             cell.type = 'empty';
@@ -16789,8 +17000,8 @@
 
       el('generateBtn').addEventListener('click', generateChart);
       el('randomizeAllBtn').addEventListener('click', randomizeAndSeatEveryone);
-      el('clearAssignmentsBtn').addEventListener('click', () => { clearAssignments(false); renderAll(); });
-      el('clearAnchorsBtn').addEventListener('click', () => { clearAnchors(); renderAll(); });
+      el('clearAssignmentsBtn').addEventListener('click', () => { if (eyeModeBlocksSeatEditing()) return blockEyeModeAction('seat'); clearAssignments(false); renderAll(); });
+      el('clearAnchorsBtn').addEventListener('click', () => { if (eyeModeBlocksBubbleEditing() || eyeModeBlocksSeatEditing()) return blockEyeModeAction('bubble'); clearAnchors(); renderAll(); });
       el('analyzeBtn').addEventListener('click', runAnalyzeReport);
       el('settingsSampleBtn').addEventListener('click', handleLoadSampleData);
       el('resetDismissedHintsBtn')?.addEventListener('click', resetDismissedHints);
@@ -16798,6 +17009,7 @@
       document.body.addEventListener('dragstart', event => {
         const studentCard = event.target.closest('.student-card[data-student-id]');
         if (studentCard) {
+          if (eyeModeBlocksSeatEditing()) { event.preventDefault(); return blockEyeModeAction('seat'); }
           studentCard.classList.add('dragging');
           event.dataTransfer.setData('application/json', JSON.stringify({ type: 'student', id: studentCard.dataset.studentId }));
           event.dataTransfer.setData('text/plain', JSON.stringify({ type: 'student', id: studentCard.dataset.studentId }));
@@ -16807,6 +17019,7 @@
 
         const bubbleCard = event.target.closest('.bubble-card[data-bubble-id]');
         if (bubbleCard) {
+          if (eyeModeBlocksBubbleEditing() || eyeModeBlocksSeatEditing()) { event.preventDefault(); return blockEyeModeAction('bubble'); }
           bubbleCard.classList.add('dragging');
           event.dataTransfer.setData('application/json', JSON.stringify({ type: 'bubble', id: bubbleCard.dataset.bubbleId }));
           event.dataTransfer.setData('text/plain', JSON.stringify({ type: 'bubble', id: bubbleCard.dataset.bubbleId }));
@@ -16823,6 +17036,7 @@
       document.body.addEventListener('dragover', event => {
         const bubbleCard = event.target.closest('.bubble-card[data-bubble-id]');
         if (!bubbleCard) return;
+        if (eyeModeBlocksBubbleEditing()) { event.preventDefault(); return blockEyeModeAction('bubble'); }
         event.preventDefault();
         bubbleCard.classList.add('drop-target', 'drag-drop-active');
         if (event.dataTransfer) event.dataTransfer.dropEffect = 'copy';
@@ -16840,6 +17054,7 @@
         const bubbleCard = event.target.closest('.bubble-card[data-bubble-id]');
         if (!bubbleCard) return;
         event.preventDefault();
+        if (eyeModeBlocksBubbleEditing()) return blockEyeModeAction('bubble');
         bubbleCard.classList.remove('drop-target', 'drag-drop-active');
         const data = readDragData(event);
         if (data && data.type === 'student') addStudentToBubble(bubbleCard.dataset.bubbleId, data.id, true);
@@ -16849,6 +17064,7 @@
         const studentCard = event.target.closest('.student-card[data-student-id], .bubble-member-chip[data-student-id], .bubble-manager-member[data-student-id]');
         if (studentCard) {
           event.preventDefault();
+          if (eyeModeBlocksBubbleEditing()) { blockEyeModeAction('bubble'); return; }
           showStudentBubbleContextMenu(studentCard.dataset.studentId, event.clientX, event.clientY);
           return;
         }
@@ -16867,6 +17083,7 @@
         if (studentBubbleBtn) {
           event.preventDefault();
           event.stopPropagation();
+          if (eyeModeBlocksBubbleEditing()) { hideStudentBubbleContextMenu(); return blockEyeModeAction('bubble'); }
           toggleStudentBubbleMembership(studentBubbleBtn.getAttribute('data-menu-student-id'), studentBubbleBtn.getAttribute('data-toggle-student-bubble'));
           hideStudentBubbleContextMenu();
           return;
@@ -16885,6 +17102,7 @@
         if (editStudentBtn) {
           event.preventDefault();
           event.stopPropagation();
+          if (eyeModeBlocksStudentEditing()) return blockEyeModeAction('student');
           openStudentEditModal(editStudentBtn.getAttribute('data-edit-student-id'));
           hideStudentBubbleContextMenu();
           return;
@@ -16928,6 +17146,7 @@
         if (menuTypeBtn) {
           const menu = el('cellContextMenu');
           const cellKey = menu.dataset.cellKey;
+          if (eyeModeBlocksRoomEditing()) { hideCellContextMenu(); return blockEyeModeAction('room'); }
           if (cellKey) setCellsType(contextCellKeys(cellKey), menuTypeBtn.dataset.menuCellType);
           hideCellContextMenu();
           return;
@@ -16944,24 +17163,27 @@
         if (removeBubbleMemberBtn) {
           event.preventDefault();
           event.stopPropagation();
+          if (eyeModeBlocksBubbleEditing()) return blockEyeModeAction('bubble');
           removeStudentFromBubble(removeBubbleMemberBtn.getAttribute('data-remove-bubble-member'), removeBubbleMemberBtn.getAttribute('data-remove-student-id'));
           return;
         }
 
         const deleteStudentBtn = event.target.closest('[data-delete-student]');
-        if (deleteStudentBtn) deleteStudent(deleteStudentBtn.dataset.deleteStudent);
+        if (deleteStudentBtn) { if (eyeModeBlocksStudentEditing()) return blockEyeModeAction('student'); deleteStudent(deleteStudentBtn.dataset.deleteStudent); }
 
         const deleteBubbleBtn = event.target.closest('[data-delete-bubble]');
-        if (deleteBubbleBtn) deleteBubble(deleteBubbleBtn.dataset.deleteBubble);
+        if (deleteBubbleBtn) { if (eyeModeBlocksBubbleEditing()) return blockEyeModeAction('bubble'); deleteBubble(deleteBubbleBtn.dataset.deleteBubble); }
 
         const toggleSeatLockBtn = event.target.closest('[data-toggle-seat-lock]');
         if (toggleSeatLockBtn) {
+          if (eyeModeBlocksSeatEditing()) return blockEyeModeAction('seat');
           toggleSeatLock(toggleSeatLockBtn.dataset.toggleSeatLock);
           return;
         }
 
         const clearSeatBtn = event.target.closest('[data-clear-seat]');
         if (clearSeatBtn) {
+          if (eyeModeBlocksSeatEditing()) return blockEyeModeAction('seat');
           const cell = state.cells[clearSeatBtn.dataset.clearSeat];
           if (cell) {
             cell.assignedStudentId = null;
@@ -16973,24 +17195,27 @@
 
         const toggleStudentLockBtn = event.target.closest('[data-toggle-student-lock]');
         if (toggleStudentLockBtn) {
+          if (eyeModeBlocksSeatEditing()) return blockEyeModeAction('seat');
           toggleStudentLock(toggleStudentLockBtn.dataset.toggleStudentLock);
           return;
         }
 
         const clearStudentAssignmentBtn = event.target.closest('[data-clear-student-assignment]');
         if (clearStudentAssignmentBtn) {
+          if (eyeModeBlocksSeatEditing()) return blockEyeModeAction('seat');
           unassignStudent(clearStudentAssignmentBtn.dataset.clearStudentAssignment);
           return;
         }
 
         const blockSeatBtn = event.target.closest('[data-block-seat]');
-        if (blockSeatBtn) setCellType(blockSeatBtn.dataset.blockSeat, 'blocked');
+        if (blockSeatBtn) { if (eyeModeBlocksRoomEditing()) return blockEyeModeAction('room'); setCellType(blockSeatBtn.dataset.blockSeat, 'blocked'); }
 
         const makeSeatBtn = event.target.closest('[data-make-seat]');
-        if (makeSeatBtn) setCellType(makeSeatBtn.dataset.makeSeat, 'seat');
+        if (makeSeatBtn) { if (eyeModeBlocksRoomEditing()) return blockEyeModeAction('room'); setCellType(makeSeatBtn.dataset.makeSeat, 'seat'); }
 
         const clearAnchorBtn = event.target.closest('[data-clear-anchor-seat]');
         if (clearAnchorBtn) {
+          if (eyeModeBlocksBubbleEditing() || eyeModeBlocksSeatEditing()) return blockEyeModeAction('bubble');
           const cellKey = clearAnchorBtn.dataset.clearAnchorSeat;
           const cell = state.cells[cellKey];
           if (cell) {
@@ -17098,7 +17323,7 @@
       el('closeSaveSetupBtn')?.addEventListener('click', () => closeSaveSetupModal(false));
       el('saveSetupDoneBtn')?.addEventListener('click', () => closeSaveSetupModal(true));
       el('saveSetupModal')?.addEventListener('click', event => { if (event.target.id === 'saveSetupModal') closeSaveSetupModal(false); });
-            ['settingTheme','settingDefaultNamesOnly','settingHeaderCollapsed','settingLeftCollapsed','settingRightCollapsed','settingLayoutToolsCollapsed','settingCsvCollapsed','settingAddStudentCollapsed','settingHideHints','settingAutoSaveMinutes','settingDefaultSideTab','settingDesignCellSize','settingSettingsAccessMethod','settingAutoLockMinutes','visHideClassActions','visHideWizard','visHideSaveLoad','visHideSettings','visHidePrint','visHideLayoutTools','visHideStudentsPanel','visHideStatusPanel','visHideChartActions','visHideRoomHeaderActions','visForceNamesOnly'].forEach(id => {
+            ['settingTheme','settingDefaultNamesOnly','settingHeaderCollapsed','settingLeftCollapsed','settingRightCollapsed','settingLayoutToolsCollapsed','settingCsvCollapsed','settingAddStudentCollapsed','settingHideHints','settingAutoSaveMinutes','settingDefaultSideTab','settingDesignCellSize','settingSettingsAccessMethod','settingAutoLockMinutes','visHideClassActions','visHideWizard','visHideSaveLoad','visHideSettings','visHidePrint','visHideLayoutTools','visHideStudentsPanel','visHideStatusPanel','visHideChartActions','visHideRoomHeaderActions','visForceNamesOnly','visHideBubbleDetails','visDisableSeatEditing','visDisableRoomEditing','visDisableStudentEditing','visDisableBubbleEditing'].forEach(id => {
         const control = el(id);
         if (!control) return;
         control.addEventListener(control.tagName === 'SELECT' || control.type === 'number' ? 'input' : 'change', readPageSettingsForm);
@@ -17359,6 +17584,7 @@
       el('bubbleManagerZoneList')?.addEventListener('dragover', event => {
         const zoneCard = event.target.closest('.bubble-manager-zone[data-zone-id]');
         if (!zoneCard) return;
+        if (eyeModeBlocksBubbleEditing()) { event.preventDefault(); return blockEyeModeAction('bubble'); }
         event.preventDefault();
         zoneCard.classList.add('drop-target');
         if (event.dataTransfer) event.dataTransfer.dropEffect = 'copy';
@@ -17375,6 +17601,7 @@
         if (!zoneCard) return;
         event.preventDefault();
         event.stopPropagation();
+        if (eyeModeBlocksBubbleEditing()) return blockEyeModeAction('bubble');
         zoneCard.classList.remove('drop-target');
         const data = readDragData(event);
         if (!data) return;
@@ -17388,9 +17615,11 @@
       el('mobileActionPlaceBtn')?.addEventListener('click', () => setMobilePanel('layout'));
       el('mobileActionCancelBtn')?.addEventListener('click', clearMobileCarryItem);
       el('mobileActionEditBtn')?.addEventListener('click', () => {
+        if (eyeModeBlocksStudentEditing()) return blockEyeModeAction('student');
         if (uiState.mobileCarryItem?.type === 'student') openStudentEditModal(uiState.mobileCarryItem.id);
       });
       el('mobileActionBubbleBtn')?.addEventListener('click', () => {
+        if (eyeModeBlocksBubbleEditing()) return blockEyeModeAction('bubble');
         if (uiState.mobileCarryItem?.type === 'student') showStudentBubbleContextMenu(uiState.mobileCarryItem.id, 16, window.innerHeight - 220);
       });
 
@@ -17402,6 +17631,12 @@
       el('addStudentNoteLineBtn')?.addEventListener('click', addNoteLineToEditor);
       el('studentNotesModal')?.addEventListener('click', event => {
         if (event.target.id === 'studentNotesModal') closeStudentNotesModal();
+        const revealBtn = event.target.closest?.('[data-reveal-note-key]');
+        if (revealBtn) {
+          event.preventDefault();
+          revealNoteLineInEditor(revealBtn.getAttribute('data-reveal-note-key'));
+          return;
+        }
         const deleteBtn = event.target.closest?.('[data-delete-note-category]');
         if (deleteBtn) {
           event.preventDefault();
@@ -17436,6 +17671,7 @@
         if (event.target.id === 'seatEditModal') closeSeatEditModal();
       });
       el('seatEditAssignStudentBtn').addEventListener('click', () => {
+        if (eyeModeBlocksSeatEditing()) return blockEyeModeAction('seat');
         const cellKey = uiState.activeSeatEditCellKey;
         const studentId = el('seatEditStudentSelect').value;
         if (!cellKey || !studentId) return;
@@ -17445,6 +17681,7 @@
         refreshSeatEditModal();
       });
       el('seatEditClearStudentBtn').addEventListener('click', () => {
+        if (eyeModeBlocksSeatEditing()) return blockEyeModeAction('seat');
         const cell = state.cells[uiState.activeSeatEditCellKey];
         if (cell) {
           cell.assignedStudentId = null;
@@ -17454,6 +17691,7 @@
         }
       });
       el('seatEditLockBtn').addEventListener('click', () => {
+        if (eyeModeBlocksSeatEditing()) return blockEyeModeAction('seat');
         const key = uiState.activeSeatEditCellKey;
         if (key) {
           toggleSeatLock(key);
@@ -17461,6 +17699,7 @@
         }
       });
       el('seatEditAddBubbleBtn').addEventListener('click', () => {
+        if (eyeModeBlocksBubbleEditing() || eyeModeBlocksSeatEditing()) return blockEyeModeAction('bubble');
         const key = uiState.activeSeatEditCellKey;
         const bubbleId = el('seatEditBubbleSelect').value;
         if (!key || !bubbleId) return;
@@ -17471,6 +17710,7 @@
         refreshSeatEditModal();
       });
       el('seatEditClearBubblesBtn').addEventListener('click', () => {
+        if (eyeModeBlocksBubbleEditing() || eyeModeBlocksSeatEditing()) return blockEyeModeAction('bubble');
         const key = uiState.activeSeatEditCellKey;
         const cell = state.cells[key];
         if (!cell) return;
@@ -17483,6 +17723,7 @@
         refreshSeatEditModal();
       });
       el('seatEditApplyTypeBtn').addEventListener('click', () => {
+        if (eyeModeBlocksRoomEditing()) return blockEyeModeAction('room');
         const key = uiState.activeSeatEditCellKey;
         if (!key) return;
         setCellType(key, el('seatEditTypeSelect').value);
