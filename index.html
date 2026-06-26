@@ -1,4 +1,11 @@
 <!DOCTYPE html>
+<!--
+Seating Chart Bubble Builder
+Copyright (c) 2026 Chris L. Franklin
+
+Licensed under the MIT License.
+SPDX-License-Identifier: MIT
+-->
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -6708,6 +6715,7 @@
       <div class="modal-body">
         <div class="about-grid">
           <strong>License</strong><span id="licenseName">Loading...</span>
+          <strong>SPDX ID</strong><span id="licenseSpdx">Loading...</span>
           <strong>Copyright holder</strong><span id="licenseHolder">Loading...</span>
           <strong>Copyright year</strong><span id="licenseYear">Loading...</span>
         </div>
@@ -7388,25 +7396,41 @@
     const PAGE_LOCK_DATA_SESSION_KEY = 'seating-chart-bubble-builder-locked-data-v1';
     const VISIBILITY_CREDENTIAL_KEY = 'seating-chart-bubble-builder-visibility-v1';
     const HINT_DISMISS_STORAGE_KEY = 'seating-chart-bubble-builder-dismissed-hints-v1';
-    const APP_REVISION = '1.18.3';
-    const APP_LAST_UPDATED = 'June 26, 2026 8:49 PM EDT';
+    const APP_REVISION = '1.18.4';
+    const APP_LAST_UPDATED = 'June 26, 2026';
 
     const APP_LICENSE = {
-      name: 'Copyright / All rights reserved',
+      name: 'MIT License',
+      spdx: 'MIT',
       holder: 'Chris L. Franklin',
       year: '2026',
-      shortText: 'Copyright © 2026 Chris L. Franklin. All rights reserved.',
+      shortText: 'MIT License. Copyright © 2026 Chris L. Franklin.',
       text: [
-        'Copyright © 2026 Chris L. Franklin. All rights reserved.',
+        'MIT License',
         '',
-        'This single-file application, including its HTML, CSS, JavaScript, interface text, help content, design, and bundled documentation, is protected by copyright.',
+        'Copyright (c) 2026 Chris L. Franklin',
         '',
-        'Permission to use, copy, modify, distribute, host, or incorporate this file into another product is not granted unless the copyright holder gives written permission or a separate license is provided.',
+        'Permission is hereby granted, free of charge, to any person obtaining a copy',
+        'of this software and associated documentation files (the "Software"), to deal',
+        'in the Software without restriction, including without limitation the rights',
+        'to use, copy, modify, merge, publish, distribute, sublicense, and/or sell',
+        'copies of the Software, and to permit persons to whom the Software is',
+        'furnished to do so, subject to the following conditions:',
         '',
-        'The application is provided as-is, without warranties or guarantees of any kind. The user is responsible for protecting student information, choosing appropriate save and encryption settings, and following applicable school, district, privacy, and data-retention rules.',
+        'The above copyright notice and this permission notice shall be included in all',
+        'copies or substantial portions of the Software.',
         '',
-        'Save files and backup files created by this app contain user-provided seating-chart data. The copyright notice applies to the application code and bundled documentation, not to ownership of student or classroom data entered by the user.'
-      ].join('\n')
+        'THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR',
+        'IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,',
+        'FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE',
+        'AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER',
+        'LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,',
+        'OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE',
+        'SOFTWARE.',
+        '',
+        'Additional project notice:',
+        'This license covers the Seating Chart Bubble Builder application code, interface text, help content, CSS, JavaScript, and bundled documentation. It does not claim ownership over user-entered classroom, student, roster, note, seating-chart, save-file, or backup data. Users are responsible for protecting student information and following applicable school, district, privacy, and data-retention rules.',
+      ] .join('\n')
     };
 
     const PROJECT_FEATURES = [
@@ -7427,12 +7451,13 @@
       { title: 'Searchable help guide', text: 'Use the Help icon beside Settings to search every major feature, read examples, review security recommendations, and jump into the interactive How-To Tour.' },
       { title: 'Safer saving', text: 'Use a linked save file when the browser supports it, turn on auto-save, download dated backup packages or selected-data files, and watch the top banner when the app is saving only inside the browser.' },
       { title: 'Full reset and storage clarity', text: 'Use Clear Local Data for app-local cleanup or Factory Reset Everything to wipe browser storage, saved file permissions, session data, cookies available to this page, settings, classes, templates, and snapshots after a warning.' },
-      { title: 'Licensing and ownership', text: 'View the embedded copyright notice and license terms from About or Settings. Complete backups include license metadata so the file identifies the app source and terms.' },
+      { title: 'Licensing and ownership', text: 'View the embedded MIT License terms from About or Settings. Complete backups include license metadata so the file identifies the app source, copyright holder, and permissive reuse terms.' },
       { title: 'Settings subpages', text: 'Settings are split into Chart, Appearance, Saving, Security & Data, Room Objects, and About pages inside one large fixed-size window so the popup stays steady while switching topics.' },
       { title: 'Themes', text: 'Choose visual themes in Settings, including the default look, gradient styles, shimmer, high contrast, Windows XP, Windows 11, macOS Frosted, and Linux Terminal.' }
     ];
 
     const CHANGE_LOG = [
+      { version: '1.18.4', date: 'June 26, 2026', changes: ['Changed the embedded app license from custom all-rights-reserved terms to the standard MIT License.', 'Added an SPDX license header to the HTML for GitHub and license-scanning tools.', 'Updated About, Settings, License, and complete save/export metadata to identify the app as MIT licensed.', 'Kept the license notice clear that app licensing does not claim ownership of user-entered classroom or student data.'] },
       { version: '1.18.3', date: 'June 26, 2026', changes: ['Locked the Settings popup to one large stable size so it no longer resizes when switching subpages.', 'Changed Settings subpage content and navigation to scroll inside the fixed modal frame.', 'Adjusted mobile Settings sizing so the popup fills the safe viewport while keeping page navigation usable.'] },
       { version: '1.18.2', date: 'June 26, 2026', changes: ['Split the Settings popup into topic pages: Chart, Appearance, Saving, Security & Data, Room Objects, and About.', 'Added sticky Settings page navigation with active-page highlighting and compact mobile wrapping.', 'Updated the How-To tour Settings preparation so hidden Settings controls switch to the correct Settings page before being highlighted.'] },
       { version: '1.18.1', date: 'June 26, 2026', changes: ['Added embedded licensing metadata and an in-app License window.', 'Added license summary fields to About and Settings.', 'Added View License buttons beside the Change Log buttons.', 'Included app license metadata in complete save/export JSON files.', 'Clarified that license terms cover the application code and bundled documentation, not user-entered classroom data.'] },
@@ -11422,6 +11447,7 @@
       if (el('aboutLicenseSummary')) el('aboutLicenseSummary').textContent = APP_LICENSE.shortText;
       if (el('settingsLicenseSummary')) el('settingsLicenseSummary').textContent = APP_LICENSE.shortText;
       if (el('licenseName')) el('licenseName').textContent = APP_LICENSE.name;
+      if (el('licenseSpdx')) el('licenseSpdx').textContent = APP_LICENSE.spdx || 'MIT';
       if (el('licenseHolder')) el('licenseHolder').textContent = APP_LICENSE.holder;
       if (el('licenseYear')) el('licenseYear').textContent = APP_LICENSE.year;
       if (el('licenseText')) el('licenseText').textContent = APP_LICENSE.text;
@@ -11441,6 +11467,7 @@
     function appLicenseMetadata() {
       return {
         name: APP_LICENSE.name,
+        spdx: APP_LICENSE.spdx || 'MIT',
         holder: APP_LICENSE.holder,
         year: APP_LICENSE.year,
         shortText: APP_LICENSE.shortText,
