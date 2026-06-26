@@ -5856,6 +5856,215 @@
       border-color: #166534 !important;
     }
 
+
+
+    /* Revision 1.18.2: Settings subpages */
+    .settings-modal {
+      width: min(1040px, 96vw) !important;
+      max-width: 1040px !important;
+    }
+
+    .settings-body {
+      grid-template-columns: minmax(180px, 220px) minmax(0, 1fr);
+      align-items: start;
+      gap: 12px;
+    }
+
+    .settings-page-nav {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      display: grid;
+      gap: 6px;
+      align-self: start;
+      max-height: min(72vh, 680px);
+      overflow: auto;
+      padding: 8px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: #f8fafc;
+    }
+
+    .settings-page-tab {
+      justify-content: flex-start;
+      text-align: left;
+      white-space: normal;
+      line-height: 1.2;
+      min-height: 44px;
+      background: #ffffff;
+      color: var(--text);
+      border: 1px solid var(--border);
+      box-shadow: none;
+    }
+
+    .settings-page-tab:hover,
+    .settings-page-tab.active,
+    .settings-page-tab[aria-selected="true"] {
+      background: #edf3ff;
+      color: var(--accent-dark);
+      border-color: #9db7ef;
+      box-shadow: inset 3px 0 0 var(--accent);
+    }
+
+    .settings-page-tab span {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 10.5px;
+      font-weight: 750;
+      line-height: 1.2;
+    }
+
+    .settings-page-content {
+      min-width: 0;
+      display: block;
+    }
+
+    .settings-page {
+      display: none;
+      min-width: 0;
+    }
+
+    .settings-page.active {
+      display: grid;
+      gap: 10px;
+    }
+
+    .settings-page .settings-section {
+      margin-bottom: 0;
+    }
+
+    .settings-page-header {
+      border: 1px solid #bfdbfe;
+      border-radius: 14px;
+      background: #eff6ff;
+      padding: 10px 12px;
+      color: #1e3a8a;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .settings-page-header strong {
+      display: block;
+      margin-bottom: 2px;
+      color: #172554;
+      font-size: 13px;
+    }
+
+    body[data-theme="highContrast"] .settings-page-header,
+    body[data-theme="linux"] .settings-page-header {
+      background: var(--panel-2);
+      color: var(--text);
+      border-color: var(--border);
+    }
+
+    @media (max-width: 860px) {
+      .settings-body {
+        grid-template-columns: 1fr;
+      }
+      .settings-page-nav {
+        position: relative;
+        max-height: none;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .settings-page-tab {
+        min-height: 40px;
+        padding: 7px 8px;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .settings-page-nav {
+        grid-template-columns: 1fr;
+      }
+      .settings-page-tab span {
+        display: none;
+      }
+    }
+
+
+    /* Revision 1.18.3: fixed-size Settings modal */
+    .settings-modal {
+      width: min(1120px, 96vw) !important;
+      max-width: 1120px !important;
+      height: min(820px, 92vh) !important;
+      max-height: min(820px, 92vh) !important;
+      min-height: min(680px, 92vh) !important;
+    }
+
+    .settings-modal .panel-header {
+      flex: 0 0 auto !important;
+    }
+
+    .settings-modal .settings-body {
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
+      height: auto !important;
+      overflow: hidden !important;
+      grid-template-columns: minmax(190px, 230px) minmax(0, 1fr) !important;
+      align-items: stretch !important;
+    }
+
+    .settings-modal .settings-page-nav {
+      position: sticky;
+      top: 0;
+      height: 100% !important;
+      max-height: none !important;
+      min-height: 0 !important;
+      overflow: auto !important;
+      align-self: stretch !important;
+    }
+
+    .settings-modal .settings-page-content {
+      min-width: 0 !important;
+      min-height: 0 !important;
+      height: 100% !important;
+      overflow: auto !important;
+      padding-right: 2px;
+    }
+
+    .settings-modal .settings-page.active {
+      align-content: start !important;
+    }
+
+    @media (max-width: 860px) {
+      .settings-modal {
+        width: calc(100vw - 12px) !important;
+        max-width: calc(100vw - 12px) !important;
+        height: calc(100dvh - 12px) !important;
+        max-height: calc(100dvh - 12px) !important;
+        min-height: 0 !important;
+      }
+
+      .settings-modal .settings-body {
+        grid-template-columns: 1fr !important;
+        grid-template-rows: auto minmax(0, 1fr) !important;
+        align-items: stretch !important;
+      }
+
+      .settings-modal .settings-page-nav {
+        position: relative !important;
+        height: auto !important;
+        max-height: min(156px, 28dvh) !important;
+        overflow: auto !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      }
+
+      .settings-modal .settings-page-content {
+        height: auto !important;
+        min-height: 0 !important;
+        overflow: auto !important;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .settings-modal .settings-page-nav {
+        grid-template-columns: 1fr !important;
+        max-height: min(118px, 24dvh) !important;
+      }
+    }
+
+
   </style>
 </head>
 <body class="left-collapsed">
@@ -6463,10 +6672,12 @@
           <strong>Written by</strong><span>Chris L. Franklin</span>
           <strong>Revision</strong><span id="aboutRevision">Loading...</span>
           <strong>Last updated</strong><span id="aboutUpdated">Loading...</span>
+          <strong>License</strong><span id="aboutLicenseSummary">Loading...</span>
           <strong>Storage</strong><span>Runs locally in the browser. Use a linked save file or downloaded backup for durable storage.</span>
         </div>
         <div class="about-actions">
           <button id="aboutChangeLogBtn" class="secondary" type="button">View Change Log</button>
+          <button id="aboutLicenseBtn" class="secondary" type="button">View License</button>
         </div>
         <h3>Project Features</h3>
         <div id="aboutFeatureList" class="feature-list"></div>
@@ -6484,6 +6695,24 @@
       <div class="modal-body">
         <div class="hint">This list is stored inside the single HTML file and should be updated with every revision.</div>
         <div id="changeLogList" class="change-log-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="licenseModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="licenseModalTitle">
+    <div class="modal">
+      <div class="panel-header">
+        <h2 id="licenseModalTitle">License</h2>
+        <button id="closeLicenseBtn" class="tiny secondary" type="button">Close</button>
+      </div>
+      <div class="modal-body">
+        <div class="about-grid">
+          <strong>License</strong><span id="licenseName">Loading...</span>
+          <strong>Copyright holder</strong><span id="licenseHolder">Loading...</span>
+          <strong>Copyright year</strong><span id="licenseYear">Loading...</span>
+        </div>
+        <div id="licenseText" class="confirm-message"></div>
+        <div class="hint">This notice is embedded in the app file and included in complete save/export files as app metadata. It does not claim ownership over student or classroom data entered by users.</div>
       </div>
     </div>
   </div>
@@ -6516,187 +6745,231 @@
         <button id="closeSettingsBtn" class="tiny secondary" type="button">Close</button>
       </div>
       <div class="modal-body settings-body">
-                <section class="section settings-section">
-          <h3>Seating Chart Details</h3>
-          <div class="settings-grid two-col">
-            <div class="field"><label for="chartTitleInput">Chart Title</label><input id="chartTitleInput" autocomplete="off" placeholder="Seating Chart" /></div>
-            <div class="field"><label for="chartDateInput">Chart Date</label><input id="chartDateInput" type="date" /></div>
-            <div class="field"><label for="chartPeriodInput">Period / Section</label><input id="chartPeriodInput" autocomplete="off" placeholder="Period 1" /></div>
-            <div class="field"><label for="chartRoomInput">Room</label><input id="chartRoomInput" autocomplete="off" placeholder="Room 104" /></div>
-            <div class="field"><label for="chartTeacherInput">Teacher / Owner</label><input id="chartTeacherInput" autocomplete="off" /></div>
-          </div>
-          <button id="saveChartDetailsBtn" class="secondary" type="button">Save Chart Details</button>
-        </section>
-        <section class="section settings-section">
-          <h3>Session Timeout / Local Data</h3>
-          <div class="field"><label for="settingAutoLockMinutes">Auto-lock after inactive minutes</label><input id="settingAutoLockMinutes" type="number" min="0" max="240" step="1" /></div>
-          <div class="hint">Use 0 to disable auto-lock. For unattended encrypted auto-lock, set an encryption key for the current session. Without a session key, manual locking still prompts for the lock PIN.</div>
-          <div class="button-row" style="margin-top:8px;"><button id="clearLocalDataBtn" class="danger" type="button">Clear All Local Data</button><button id="factoryResetEverythingBtn" class="danger" type="button">Factory Reset Everything</button></div>
-        </section>
-        <section class="section settings-section">
-          <h3>Visual Theme</h3>
-          <div class="field">
-            <label for="settingTheme">Theme</label>
-            <select id="settingTheme">
-              <option value="default">Default</option>
-              <option value="gradient">Gradient Sky</option>
-              <option value="shimmer">Shimmer</option>
-              <option value="highContrast">High Contrast</option>
-              <option value="windowsXp">Windows XP</option>
-              <option value="windows11">Windows 11</option>
-              <option value="macos">macOS Frosted</option>
-              <option value="linux">Linux Terminal</option>
-            </select>
-          </div>
-          <div class="hint">Themes change the overall feel and colors without changing the seating data. Default keeps the existing look.</div>
-        </section>
-
-        <section class="section settings-section">
-          <h3>Page Load Defaults</h3>
-          <div class="settings-grid two-col">
-            <label class="checkline" for="settingDefaultNamesOnly"><input id="settingDefaultNamesOnly" type="checkbox" /> <span>Start/load in Names Only mode</span></label>
-            <label class="checkline" for="settingHeaderCollapsed"><input id="settingHeaderCollapsed" type="checkbox" /> <span>Collapse top header on load/import</span></label>
-            <label class="checkline" for="settingLeftCollapsed"><input id="settingLeftCollapsed" type="checkbox" /> <span>Collapse Students, Bubbles &amp; Zones on load/import</span></label>
-            <label class="checkline" for="settingRightCollapsed"><input id="settingRightCollapsed" type="checkbox" /> <span>Collapse Chart Status on load/import</span></label>
-            <label class="checkline" for="settingLayoutToolsCollapsed"><input id="settingLayoutToolsCollapsed" type="checkbox" /> <span>Collapse Layout Tools on load/import</span></label>
-            <label class="checkline" for="settingCsvCollapsed"><input id="settingCsvCollapsed" type="checkbox" /> <span>Collapse CSV Import on load/import</span></label>
-            <label class="checkline" for="settingAddStudentCollapsed"><input id="settingAddStudentCollapsed" type="checkbox" /> <span>Collapse Add Student when students exist</span></label>
-            <label class="checkline" for="settingHideHints"><input id="settingHideHints" type="checkbox" /> <span>Hide all text hints</span></label>
-          </div>
-          <div class="button-row" style="margin-top:8px;">
-            <button id="resetDismissedHintsBtn" class="secondary tiny" type="button">Reset Closed Hints</button>
-          </div>
-          <div class="row" style="margin-top:10px;">
-            <div class="field">
-              <label for="settingDefaultSideTab">Default Students, Bubbles &amp; Zones tab</label>
-              <select id="settingDefaultSideTab"><option value="students">Students</option><option value="bubbles">Bubbles</option><option value="zones">Zones</option></select>
+        <nav id="settingsPageNav" class="settings-page-nav" role="tablist" aria-label="Settings pages">
+          <button id="settingsPageChartBtn" class="settings-page-tab active" type="button" role="tab" aria-selected="true" aria-controls="settingsPageChart" data-settings-nav="chart">Chart<span>Title, date, room, and printable chart identity.</span></button>
+          <button id="settingsPageAppearanceBtn" class="settings-page-tab" type="button" role="tab" aria-selected="false" aria-controls="settingsPageAppearance" data-settings-nav="appearance">Appearance<span>Theme, default layout state, hints, and visibility-mode display choices.</span></button>
+          <button id="settingsPageSavingBtn" class="settings-page-tab" type="button" role="tab" aria-selected="false" aria-controls="settingsPageSaving" data-settings-nav="saving">Saving<span>Linked save file, auto-save, backups, and save/download encryption.</span></button>
+          <button id="settingsPageSecurityBtn" class="settings-page-tab" type="button" role="tab" aria-selected="false" aria-controls="settingsPageSecurity" data-settings-nav="security">Security & Data<span>Auto-lock, Settings access, PINs, local data cleanup, and full reset.</span></button>
+          <button id="settingsPageRoomBtn" class="settings-page-tab" type="button" role="tab" aria-selected="false" aria-controls="settingsPageRoom" data-settings-nav="room">Room Objects<span>Custom right-click room objects and sample classroom data.</span></button>
+          <button id="settingsPageAboutBtn" class="settings-page-tab" type="button" role="tab" aria-selected="false" aria-controls="settingsPageAbout" data-settings-nav="about">About<span>Revision, license, project features, and change history.</span></button>
+        </nav>
+        <div class="settings-page-content">
+          <div id="settingsPageChart" class="settings-page active" role="tabpanel" data-settings-panel="chart" aria-label="Chart settings">
+            <div class="settings-page-header">
+              <strong>Chart details</strong>
+              Title, date, room, and printable chart identity.
             </div>
-            <div class="field">
-              <label for="settingDesignCellSize">Default Design Mode cell size</label>
-              <input id="settingDesignCellSize" type="number" min="20" max="72" step="1" />
+            <section class="section settings-section">
+                      <h3>Seating Chart Details</h3>
+                      <div class="settings-grid two-col">
+                        <div class="field"><label for="chartTitleInput">Chart Title</label><input id="chartTitleInput" autocomplete="off" placeholder="Seating Chart" /></div>
+                        <div class="field"><label for="chartDateInput">Chart Date</label><input id="chartDateInput" type="date" /></div>
+                        <div class="field"><label for="chartPeriodInput">Period / Section</label><input id="chartPeriodInput" autocomplete="off" placeholder="Period 1" /></div>
+                        <div class="field"><label for="chartRoomInput">Room</label><input id="chartRoomInput" autocomplete="off" placeholder="Room 104" /></div>
+                        <div class="field"><label for="chartTeacherInput">Teacher / Owner</label><input id="chartTeacherInput" autocomplete="off" /></div>
+                      </div>
+                      <button id="saveChartDetailsBtn" class="secondary" type="button">Save Chart Details</button>
+                    </section>
+          </div>
+          <div id="settingsPageAppearance" class="settings-page" role="tabpanel" data-settings-panel="appearance" aria-label="Appearance settings">
+            <div class="settings-page-header">
+              <strong>Appearance and defaults</strong>
+              Theme, default layout state, hints, and visibility-mode display choices.
             </div>
+            <section class="section settings-section">
+                      <h3>Visual Theme</h3>
+                      <div class="field">
+                        <label for="settingTheme">Theme</label>
+                        <select id="settingTheme">
+                          <option value="default">Default</option>
+                          <option value="gradient">Gradient Sky</option>
+                          <option value="shimmer">Shimmer</option>
+                          <option value="highContrast">High Contrast</option>
+                          <option value="windowsXp">Windows XP</option>
+                          <option value="windows11">Windows 11</option>
+                          <option value="macos">macOS Frosted</option>
+                          <option value="linux">Linux Terminal</option>
+                        </select>
+                      </div>
+                      <div class="hint">Themes change the overall feel and colors without changing the seating data. Default keeps the existing look.</div>
+                    </section>
+            <section class="section settings-section">
+                      <h3>Page Load Defaults</h3>
+                      <div class="settings-grid two-col">
+                        <label class="checkline" for="settingDefaultNamesOnly"><input id="settingDefaultNamesOnly" type="checkbox" /> <span>Start/load in Names Only mode</span></label>
+                        <label class="checkline" for="settingHeaderCollapsed"><input id="settingHeaderCollapsed" type="checkbox" /> <span>Collapse top header on load/import</span></label>
+                        <label class="checkline" for="settingLeftCollapsed"><input id="settingLeftCollapsed" type="checkbox" /> <span>Collapse Students, Bubbles &amp; Zones on load/import</span></label>
+                        <label class="checkline" for="settingRightCollapsed"><input id="settingRightCollapsed" type="checkbox" /> <span>Collapse Chart Status on load/import</span></label>
+                        <label class="checkline" for="settingLayoutToolsCollapsed"><input id="settingLayoutToolsCollapsed" type="checkbox" /> <span>Collapse Layout Tools on load/import</span></label>
+                        <label class="checkline" for="settingCsvCollapsed"><input id="settingCsvCollapsed" type="checkbox" /> <span>Collapse CSV Import on load/import</span></label>
+                        <label class="checkline" for="settingAddStudentCollapsed"><input id="settingAddStudentCollapsed" type="checkbox" /> <span>Collapse Add Student when students exist</span></label>
+                        <label class="checkline" for="settingHideHints"><input id="settingHideHints" type="checkbox" /> <span>Hide all text hints</span></label>
+                      </div>
+                      <div class="button-row" style="margin-top:8px;">
+                        <button id="resetDismissedHintsBtn" class="secondary tiny" type="button">Reset Closed Hints</button>
+                      </div>
+                      <div class="row" style="margin-top:10px;">
+                        <div class="field">
+                          <label for="settingDefaultSideTab">Default Students, Bubbles &amp; Zones tab</label>
+                          <select id="settingDefaultSideTab"><option value="students">Students</option><option value="bubbles">Bubbles</option><option value="zones">Zones</option></select>
+                        </div>
+                        <div class="field">
+                          <label for="settingDesignCellSize">Default Design Mode cell size</label>
+                          <input id="settingDesignCellSize" type="number" min="20" max="72" step="1" />
+                        </div>
+                      </div>
+                      <div class="hint">These page settings save with linked, downloaded, and uploaded classes files, then reapply when the save is loaded. If there are no students, Add Student opens automatically even when its default is collapsed.</div>
+                    </section>
+            <section class="section settings-section">
+                      <h3>Eye / Visibility Mode</h3>
+                      <div class="hint">The eye button hides selected controls/sections for a cleaner or student-facing view. Entering is instant when a visibility PIN, lock PIN, or encryption key exists. Exiting requires one of those secrets.</div>
+                      <div class="settings-grid two-col">
+                        <label class="checkline" for="visHideClassActions"><input id="visHideClassActions" type="checkbox" /> <span>Hide class New/Rename/Duplicate/Delete</span></label>
+                        <label class="checkline" for="visHideWizard"><input id="visHideWizard" type="checkbox" /> <span>Hide Setup Wizard</span></label>
+                        <label class="checkline" for="visHideSaveLoad"><input id="visHideSaveLoad" type="checkbox" /> <span>Hide Save / Load</span></label>
+                        <label class="checkline" for="visHideSettings"><input id="visHideSettings" type="checkbox" /> <span>Hide Settings gear</span></label>
+                        <label class="checkline" for="visHidePrint"><input id="visHidePrint" type="checkbox" /> <span>Hide Print controls</span></label>
+                        <label class="checkline" for="visHideLayoutTools"><input id="visHideLayoutTools" type="checkbox" /> <span>Hide Layout Tools</span></label>
+                        <label class="checkline" for="visHideStudentsPanel"><input id="visHideStudentsPanel" type="checkbox" /> <span>Hide Students, Bubbles &amp; Zones panel</span></label>
+                        <label class="checkline" for="visHideStatusPanel"><input id="visHideStatusPanel" type="checkbox" /> <span>Hide Chart Status panel</span></label>
+                        <label class="checkline" for="visHideChartActions"><input id="visHideChartActions" type="checkbox" /> <span>Hide generate/randomize/clear controls</span></label>
+                        <label class="checkline" for="visHideRoomHeaderActions"><input id="visHideRoomHeaderActions" type="checkbox" /> <span>Hide Room Layout header buttons</span></label>
+                        <label class="checkline" for="visForceNamesOnly"><input id="visForceNamesOnly" type="checkbox" /> <span>Force Names Only while eye mode is active</span></label>
+                      </div>
+                      <div id="visibilityCredentialNote" class="hint"></div>
+                    </section>
           </div>
-          <div class="hint">These page settings save with linked, downloaded, and uploaded classes files, then reapply when the save is loaded. If there are no students, Add Student opens automatically even when its default is collapsed.</div>
-        </section>
-
-        <section class="section settings-section">
-          <h3>Eye / Visibility Mode</h3>
-          <div class="hint">The eye button hides selected controls/sections for a cleaner or student-facing view. Entering is instant when a visibility PIN, lock PIN, or encryption key exists. Exiting requires one of those secrets.</div>
-          <div class="settings-grid two-col">
-            <label class="checkline" for="visHideClassActions"><input id="visHideClassActions" type="checkbox" /> <span>Hide class New/Rename/Duplicate/Delete</span></label>
-            <label class="checkline" for="visHideWizard"><input id="visHideWizard" type="checkbox" /> <span>Hide Setup Wizard</span></label>
-            <label class="checkline" for="visHideSaveLoad"><input id="visHideSaveLoad" type="checkbox" /> <span>Hide Save / Load</span></label>
-            <label class="checkline" for="visHideSettings"><input id="visHideSettings" type="checkbox" /> <span>Hide Settings gear</span></label>
-            <label class="checkline" for="visHidePrint"><input id="visHidePrint" type="checkbox" /> <span>Hide Print controls</span></label>
-            <label class="checkline" for="visHideLayoutTools"><input id="visHideLayoutTools" type="checkbox" /> <span>Hide Layout Tools</span></label>
-            <label class="checkline" for="visHideStudentsPanel"><input id="visHideStudentsPanel" type="checkbox" /> <span>Hide Students, Bubbles &amp; Zones panel</span></label>
-            <label class="checkline" for="visHideStatusPanel"><input id="visHideStatusPanel" type="checkbox" /> <span>Hide Chart Status panel</span></label>
-            <label class="checkline" for="visHideChartActions"><input id="visHideChartActions" type="checkbox" /> <span>Hide generate/randomize/clear controls</span></label>
-            <label class="checkline" for="visHideRoomHeaderActions"><input id="visHideRoomHeaderActions" type="checkbox" /> <span>Hide Room Layout header buttons</span></label>
-            <label class="checkline" for="visForceNamesOnly"><input id="visForceNamesOnly" type="checkbox" /> <span>Force Names Only while eye mode is active</span></label>
-          </div>
-          <div id="visibilityCredentialNote" class="hint"></div>
-        </section>
-
-        <section class="section settings-section">
-          <h3>Settings Access</h3>
-          <div class="hint">Choose what credential is required before the Settings page opens. If the selected credential is not configured, Settings opens without a prompt. Auto uses Lock PIN first, then Eye PIN, then the current session encryption key.</div>
-          <div class="field" style="margin-top:8px;">
-            <label for="settingSettingsAccessMethod">Require for Settings access</label>
-            <select id="settingSettingsAccessMethod">
-              <option value="auto">Auto: Lock PIN → Eye PIN → Encryption key</option>
-              <option value="lock">Lock/Unlock PIN only</option>
-              <option value="eye">Eye Mode PIN only</option>
-              <option value="encryption">Encryption key only</option>
-            </select>
-          </div>
-          <div id="settingsAccessStatus" class="hint"></div>
-        </section>
-
-        <section class="section settings-section">
-          <h3>Lock / Visibility PINs</h3>
-          <div class="hint">PINs are stored as salted PBKDF2-SHA-256 hashes, not plain text. Chart data encryption still uses the encryption key when set, otherwise the lock PIN/password is used as a fallback.</div>
-          <div class="settings-grid two-col">
-            <div class="security-card">
-              <h4>Lock / Unlock PIN</h4>
-              <div class="field"><label for="settingsLockPin">New lock PIN/password</label><input id="settingsLockPin" type="password" autocomplete="new-password" /></div>
-              <div class="field"><label for="settingsLockPinConfirm">Confirm lock PIN/password</label><input id="settingsLockPinConfirm" type="password" autocomplete="new-password" /></div>
-              <button id="settingsSaveLockPinBtn" class="secondary" type="button">Save Lock PIN</button>
+          <div id="settingsPageSaving" class="settings-page" role="tabpanel" data-settings-panel="saving" aria-label="Saving settings">
+            <div class="settings-page-header">
+              <strong>Saving and backups</strong>
+              Linked save file, auto-save, backups, and save/download encryption.
             </div>
-            <div class="security-card">
-              <h4>Eye Mode Exit PIN</h4>
-              <div class="field"><label for="settingsVisibilityPin">New eye mode PIN/password</label><input id="settingsVisibilityPin" type="password" autocomplete="new-password" /></div>
-              <div class="field"><label for="settingsVisibilityPinConfirm">Confirm eye mode PIN/password</label><input id="settingsVisibilityPinConfirm" type="password" autocomplete="new-password" /></div>
-              <button id="settingsSaveVisibilityPinBtn" class="secondary" type="button">Save Eye PIN</button>
-            </div>
+            <section class="section settings-section">
+                      <h3>Save / Download Encryption</h3>
+                      <label class="checkline" for="settingsEncryptionEnabled">
+                        <input id="settingsEncryptionEnabled" type="checkbox" />
+                        <span>Encrypt saved/downloaded classes files</span>
+                      </label>
+                      <div class="encryption-key-row" style="margin-top:8px;">
+                        <label for="settingsEncryptionKey">Encryption key</label>
+                        <input id="settingsEncryptionKey" type="password" autocomplete="off" placeholder="Session key used for save/download/upload" />
+                      </div>
+                      <div class="encryption-note">When enabled, linked saves, backup packages, and downloaded classes files are encrypted with this key. Encrypted files can only be uploaded or loaded with the same key. The key is remembered only during this open browser session and is not written into the exported file.</div>
+                    </section>
+            <section class="section settings-section">
+                      <h3>Saving</h3>
+                      <div class="hint">Browser local auto-save starts by default. Choose a real save file for safer long-term storage; use downloads for portable backups or selected-data transfers.</div>
+                      <div id="saveHealthPanel" class="save-health-grid compact" aria-live="polite">
+                        <div class="save-health-card"><strong>Save method</strong><span id="saveHealthMethod">Checking...</span></div>
+                        <div class="save-health-card"><strong>Save file</strong><span id="saveHealthFile">Browser local save active.</span></div>
+                        <div class="save-health-card"><strong>Last save</strong><span id="saveHealthLastLinked">Never</span></div>
+                        <div class="save-health-card"><strong>Backup</strong><span id="saveHealthLastBackup">Never</span></div>
+                        <div class="save-health-card"><strong>Security</strong><span id="saveHealthEncryption">Checking...</span></div>
+                        <div class="save-health-card"><strong>Status</strong><span id="saveHealthLinkedStatus">Ready</span></div>
+                      </div>
+                      <div class="autosave-setting-row">
+                        <div>
+                          <label for="settingAutoSaveMinutes">Auto-save interval</label>
+                          <div class="muted">Minutes between saves. If no save file is chosen, the app auto-saves to browser local storage and creates local full-app snapshots. Use 0 to turn auto-save off.</div>
+                        </div>
+                        <input id="settingAutoSaveMinutes" type="number" min="0" max="120" step="1" value="0" />
+                      </div>
+                      <div class="save-settings-actions">
+                        <button id="settingsOpenSaveSetupBtn" class="secondary" type="button">Open Save Options</button>
+                        <button id="settingsForgetLinkedFileBtn" class="ghost" type="button">Forget Save File</button>
+                      </div>
+                    </section>
           </div>
-          <div id="settingsPinStatus" class="hint"></div>
-        </section>
+          <div id="settingsPageSecurity" class="settings-page" role="tabpanel" data-settings-panel="security" aria-label="Security &amp; Data settings">
+            <div class="settings-page-header">
+              <strong>Security and local data</strong>
+              Auto-lock, Settings access, PINs, local data cleanup, and full reset.
+            </div>
+            <section class="section settings-section">
+                      <h3>Session Timeout / Local Data</h3>
+                      <div class="field"><label for="settingAutoLockMinutes">Auto-lock after inactive minutes</label><input id="settingAutoLockMinutes" type="number" min="0" max="240" step="1" /></div>
+                      <div class="hint">Use 0 to disable auto-lock. For unattended encrypted auto-lock, set an encryption key for the current session. Without a session key, manual locking still prompts for the lock PIN.</div>
+                      <div class="button-row" style="margin-top:8px;"><button id="clearLocalDataBtn" class="danger" type="button">Clear All Local Data</button><button id="factoryResetEverythingBtn" class="danger" type="button">Factory Reset Everything</button></div>
+                    </section>
+            <section class="section settings-section">
+                      <h3>Settings Access</h3>
+                      <div class="hint">Choose what credential is required before the Settings page opens. If the selected credential is not configured, Settings opens without a prompt. Auto uses Lock PIN first, then Eye PIN, then the current session encryption key.</div>
+                      <div class="field" style="margin-top:8px;">
+                        <label for="settingSettingsAccessMethod">Require for Settings access</label>
+                        <select id="settingSettingsAccessMethod">
+                          <option value="auto">Auto: Lock PIN → Eye PIN → Encryption key</option>
+                          <option value="lock">Lock/Unlock PIN only</option>
+                          <option value="eye">Eye Mode PIN only</option>
+                          <option value="encryption">Encryption key only</option>
+                        </select>
+                      </div>
+                      <div id="settingsAccessStatus" class="hint"></div>
+                    </section>
+            <section class="section settings-section">
+                      <h3>Lock / Visibility PINs</h3>
+                      <div class="hint">PINs are stored as salted PBKDF2-SHA-256 hashes, not plain text. Chart data encryption still uses the encryption key when set, otherwise the lock PIN/password is used as a fallback.</div>
+                      <div class="settings-grid two-col">
+                        <div class="security-card">
+                          <h4>Lock / Unlock PIN</h4>
+                          <div class="field"><label for="settingsLockPin">New lock PIN/password</label><input id="settingsLockPin" type="password" autocomplete="new-password" /></div>
+                          <div class="field"><label for="settingsLockPinConfirm">Confirm lock PIN/password</label><input id="settingsLockPinConfirm" type="password" autocomplete="new-password" /></div>
+                          <button id="settingsSaveLockPinBtn" class="secondary" type="button">Save Lock PIN</button>
+                        </div>
+                        <div class="security-card">
+                          <h4>Eye Mode Exit PIN</h4>
+                          <div class="field"><label for="settingsVisibilityPin">New eye mode PIN/password</label><input id="settingsVisibilityPin" type="password" autocomplete="new-password" /></div>
+                          <div class="field"><label for="settingsVisibilityPinConfirm">Confirm eye mode PIN/password</label><input id="settingsVisibilityPinConfirm" type="password" autocomplete="new-password" /></div>
+                          <button id="settingsSaveVisibilityPinBtn" class="secondary" type="button">Save Eye PIN</button>
+                        </div>
+                      </div>
+                      <div id="settingsPinStatus" class="hint"></div>
+                    </section>
+          </div>
+          <div id="settingsPageRoom" class="settings-page" role="tabpanel" data-settings-panel="room" aria-label="Room Objects settings">
+            <div class="settings-page-header">
+              <strong>Room tools</strong>
+              Custom right-click room objects and sample classroom data.
+            </div>
+            <section class="section settings-section">
+                      <h3>Right-Click Room Objects</h3>
+                      <div class="hint">Add, rename, or delete custom room objects used in the Click Tool and right-click cell menu. Built-in objects like Wall, Door, Board, Projector, Carpet, and ADA Space remain available.</div>
+                      <div class="inline-control settings-custom-add">
+                        <input id="settingsCustomObjectName" placeholder="Sink, counter, shelf..." maxlength="28" />
+                        <button id="settingsAddCustomObjectBtn" class="secondary" type="button">Add Object</button>
+                      </div>
+                      <div id="customObjectManagerList" class="settings-list"></div>
+                    </section>
+            <section class="section settings-section">
+                      <h3>Sample Data</h3>
+                      <div class="hint">Loads sample students, bubbles, anchors, and a starter room layout into the current class.</div>
+                      <button id="settingsSampleBtn" class="secondary" type="button">Load Sample Data</button>
+                    </section>
+          </div>
+          <div id="settingsPageAbout" class="settings-page" role="tabpanel" data-settings-panel="about" aria-label="About settings">
+            <div class="settings-page-header">
+              <strong>About this app</strong>
+              Revision, license, project features, and change history.
+            </div>
+            <section class="section settings-section settings-about-section">
+                      <h3>About</h3>
+                      <p class="muted">A local, single-file, multi-class seating chart builder for arranging students, bubbles, rules, layout objects, anchors, locks, placements, design views, encrypted storage, and print views.</p>
+                      <div class="about-grid">
+                        <strong>Written by</strong><span>Chris L. Franklin</span>
+                        <strong>Revision</strong><span id="settingsRevision">Loading...</span>
+                        <strong>Last updated</strong><span id="settingsUpdated">Loading...</span>
+                        <strong>License</strong><span id="settingsLicenseSummary">Loading...</span>
+                        <strong>Storage</strong><span>Runs locally in the browser. Use a linked save file or downloaded backup for durable storage.</span>
+                      </div>
+                      <div class="about-actions">
+                        <button id="settingsChangeLogBtn" class="secondary" type="button">View Change Log</button>
+                        <button id="settingsLicenseBtn" class="secondary" type="button">View License</button>
+                      </div>
+                      <h4>Project Features</h4>
+                      <div id="settingsFeatureList" class="feature-list"></div>
+                    </section>
+          </div>
+        </div>
 
-        <section class="section settings-section">
-          <h3>Save / Download Encryption</h3>
-          <label class="checkline" for="settingsEncryptionEnabled">
-            <input id="settingsEncryptionEnabled" type="checkbox" />
-            <span>Encrypt saved/downloaded classes files</span>
-          </label>
-          <div class="encryption-key-row" style="margin-top:8px;">
-            <label for="settingsEncryptionKey">Encryption key</label>
-            <input id="settingsEncryptionKey" type="password" autocomplete="off" placeholder="Session key used for save/download/upload" />
-          </div>
-          <div class="encryption-note">When enabled, linked saves, backup packages, and downloaded classes files are encrypted with this key. Encrypted files can only be uploaded or loaded with the same key. The key is remembered only during this open browser session and is not written into the exported file.</div>
-        </section>
-        <section class="section settings-section">
-          <h3>Saving</h3>
-          <div class="hint">Browser local auto-save starts by default. Choose a real save file for safer long-term storage; use downloads for portable backups or selected-data transfers.</div>
-          <div id="saveHealthPanel" class="save-health-grid compact" aria-live="polite">
-            <div class="save-health-card"><strong>Save method</strong><span id="saveHealthMethod">Checking...</span></div>
-            <div class="save-health-card"><strong>Save file</strong><span id="saveHealthFile">Browser local save active.</span></div>
-            <div class="save-health-card"><strong>Last save</strong><span id="saveHealthLastLinked">Never</span></div>
-            <div class="save-health-card"><strong>Backup</strong><span id="saveHealthLastBackup">Never</span></div>
-            <div class="save-health-card"><strong>Security</strong><span id="saveHealthEncryption">Checking...</span></div>
-            <div class="save-health-card"><strong>Status</strong><span id="saveHealthLinkedStatus">Ready</span></div>
-          </div>
-          <div class="autosave-setting-row">
-            <div>
-              <label for="settingAutoSaveMinutes">Auto-save interval</label>
-              <div class="muted">Minutes between saves. If no save file is chosen, the app auto-saves to browser local storage and creates local full-app snapshots. Use 0 to turn auto-save off.</div>
-            </div>
-            <input id="settingAutoSaveMinutes" type="number" min="0" max="120" step="1" value="0" />
-          </div>
-          <div class="save-settings-actions">
-            <button id="settingsOpenSaveSetupBtn" class="secondary" type="button">Open Save Options</button>
-            <button id="settingsForgetLinkedFileBtn" class="ghost" type="button">Forget Save File</button>
-          </div>
-        </section>
-        <section class="section settings-section">
-          <h3>Right-Click Room Objects</h3>
-          <div class="hint">Add, rename, or delete custom room objects used in the Click Tool and right-click cell menu. Built-in objects like Wall, Door, Board, Projector, Carpet, and ADA Space remain available.</div>
-          <div class="inline-control settings-custom-add">
-            <input id="settingsCustomObjectName" placeholder="Sink, counter, shelf..." maxlength="28" />
-            <button id="settingsAddCustomObjectBtn" class="secondary" type="button">Add Object</button>
-          </div>
-          <div id="customObjectManagerList" class="settings-list"></div>
-        </section>
-        <section class="section settings-section">
-          <h3>Sample Data</h3>
-          <div class="hint">Loads sample students, bubbles, anchors, and a starter room layout into the current class.</div>
-          <button id="settingsSampleBtn" class="secondary" type="button">Load Sample Data</button>
-        </section>
-        <section class="section settings-section settings-about-section">
-          <h3>About</h3>
-          <p class="muted">A local, single-file, multi-class seating chart builder for arranging students, bubbles, rules, layout objects, anchors, locks, placements, design views, encrypted storage, and print views.</p>
-          <div class="about-grid">
-            <strong>Written by</strong><span>Chris L. Franklin</span>
-            <strong>Revision</strong><span id="settingsRevision">Loading...</span>
-            <strong>Last updated</strong><span id="settingsUpdated">Loading...</span>
-            <strong>Storage</strong><span>Runs locally in the browser. Use a linked save file or downloaded backup for durable storage.</span>
-          </div>
-          <div class="about-actions">
-            <button id="settingsChangeLogBtn" class="secondary" type="button">View Change Log</button>
-          </div>
-          <h4>Project Features</h4>
-          <div id="settingsFeatureList" class="feature-list"></div>
-        </section>
       </div>
       </div>
     </div>
@@ -7115,8 +7388,26 @@
     const PAGE_LOCK_DATA_SESSION_KEY = 'seating-chart-bubble-builder-locked-data-v1';
     const VISIBILITY_CREDENTIAL_KEY = 'seating-chart-bubble-builder-visibility-v1';
     const HINT_DISMISS_STORAGE_KEY = 'seating-chart-bubble-builder-dismissed-hints-v1';
-    const APP_REVISION = '1.18.0';
-    const APP_LAST_UPDATED = 'June 26, 2026 7:35 PM EDT';
+    const APP_REVISION = '1.18.3';
+    const APP_LAST_UPDATED = 'June 26, 2026 8:49 PM EDT';
+
+    const APP_LICENSE = {
+      name: 'Copyright / All rights reserved',
+      holder: 'Chris L. Franklin',
+      year: '2026',
+      shortText: 'Copyright © 2026 Chris L. Franklin. All rights reserved.',
+      text: [
+        'Copyright © 2026 Chris L. Franklin. All rights reserved.',
+        '',
+        'This single-file application, including its HTML, CSS, JavaScript, interface text, help content, design, and bundled documentation, is protected by copyright.',
+        '',
+        'Permission to use, copy, modify, distribute, host, or incorporate this file into another product is not granted unless the copyright holder gives written permission or a separate license is provided.',
+        '',
+        'The application is provided as-is, without warranties or guarantees of any kind. The user is responsible for protecting student information, choosing appropriate save and encryption settings, and following applicable school, district, privacy, and data-retention rules.',
+        '',
+        'Save files and backup files created by this app contain user-provided seating-chart data. The copyright notice applies to the application code and bundled documentation, not to ownership of student or classroom data entered by the user.'
+      ].join('\n')
+    };
 
     const PROJECT_FEATURES = [
       { title: 'Multiple classes', text: 'Create, rename, duplicate, delete, save, load, import, and export multiple classes, each with separate students, bubbles, layouts, seats, anchors, locks, and placements.' },
@@ -7136,10 +7427,15 @@
       { title: 'Searchable help guide', text: 'Use the Help icon beside Settings to search every major feature, read examples, review security recommendations, and jump into the interactive How-To Tour.' },
       { title: 'Safer saving', text: 'Use a linked save file when the browser supports it, turn on auto-save, download dated backup packages or selected-data files, and watch the top banner when the app is saving only inside the browser.' },
       { title: 'Full reset and storage clarity', text: 'Use Clear Local Data for app-local cleanup or Factory Reset Everything to wipe browser storage, saved file permissions, session data, cookies available to this page, settings, classes, templates, and snapshots after a warning.' },
+      { title: 'Licensing and ownership', text: 'View the embedded copyright notice and license terms from About or Settings. Complete backups include license metadata so the file identifies the app source and terms.' },
+      { title: 'Settings subpages', text: 'Settings are split into Chart, Appearance, Saving, Security & Data, Room Objects, and About pages inside one large fixed-size window so the popup stays steady while switching topics.' },
       { title: 'Themes', text: 'Choose visual themes in Settings, including the default look, gradient styles, shimmer, high contrast, Windows XP, Windows 11, macOS Frosted, and Linux Terminal.' }
     ];
 
     const CHANGE_LOG = [
+      { version: '1.18.3', date: 'June 26, 2026', changes: ['Locked the Settings popup to one large stable size so it no longer resizes when switching subpages.', 'Changed Settings subpage content and navigation to scroll inside the fixed modal frame.', 'Adjusted mobile Settings sizing so the popup fills the safe viewport while keeping page navigation usable.'] },
+      { version: '1.18.2', date: 'June 26, 2026', changes: ['Split the Settings popup into topic pages: Chart, Appearance, Saving, Security & Data, Room Objects, and About.', 'Added sticky Settings page navigation with active-page highlighting and compact mobile wrapping.', 'Updated the How-To tour Settings preparation so hidden Settings controls switch to the correct Settings page before being highlighted.'] },
+      { version: '1.18.1', date: 'June 26, 2026', changes: ['Added embedded licensing metadata and an in-app License window.', 'Added license summary fields to About and Settings.', 'Added View License buttons beside the Change Log buttons.', 'Included app license metadata in complete save/export JSON files.', 'Clarified that license terms cover the application code and bundled documentation, not user-entered classroom data.'] },
       { version: '1.18.0', date: 'June 26, 2026', changes: ['Updated About, feature summary, and Change Log metadata.', 'Fixed Settings so confirmation popups such as Clear Local Data take precedence by closing Settings first.', 'Added Factory Reset Everything to wipe app storage, browser storage available to the page, cookies available to the page, saved file permission metadata, settings, classes, templates, and snapshots after a warning.', 'Added a browser-only save warning banner with a Save Options button when no linked save file is selected.', 'Changed complete save files to include full-app snapshots and lightweight preferences such as dismissed hints.', 'Added disabled button styling so Undo and Redo go gray when unavailable.', 'Improved How-To tour popup preparation and added a visible first-save-location target.', 'Added theme settings with default, gradient, shimmer, high contrast, Windows XP, Windows 11, macOS Frosted, and Linux Terminal looks.'] },
       { version: '1.17.0', date: 'June 26, 2026', changes: ['Restored the mobile-only workspace layout with stronger mobile CSS overrides while leaving desktop layout rules alone.', 'Changed notes controls to notepad icon buttons and added warnings when private or substitute notes are created without an encryption key.', 'Added default local-browser autosave when no linked save file exists, plus prompts after repeated local-only changes to choose a durable save file and set an encryption key.', 'Changed snapshots to local full-dataset snapshots covering all classes, room templates, settings, and current app state, including automatic snapshots before auto-lock and during autosave.', 'Expanded Print Options with per-field chart detail controls for title, class, date, period, room, and teacher.'] },
       { version: '1.16.9', date: 'June 26, 2026', changes: ['Expanded Print Options so Bubble Configuration and Zone Configuration have granular detail checkboxes.', 'Bubble print details can now independently include rule type, priority, preferred zone, members, reserved seats, and color.', 'Zone print details can now independently include color, linked students, linked bubbles, and assigned seats.'] },
@@ -7258,7 +7554,8 @@
       linkedSaveStatus: 'No linked file selected.',
       linkedSaveLastSignature: '',
       linkedSaveAutoTimer: null,
-      restoreImportDraft: null
+      restoreImportDraft: null,
+      activeSettingsPage: 'chart'
     };
 
     const el = (id) => document.getElementById(id);
@@ -10432,7 +10729,10 @@
       closeAboutBtn: 'Close the About window.',
       aboutChangeLogBtn: 'Open the Change Log showing each revision and what changed.',
       settingsChangeLogBtn: 'Open the Change Log showing each revision and what changed.',
+      aboutLicenseBtn: 'Open the embedded app license and copyright notice.',
+      settingsLicenseBtn: 'Open the embedded app license and copyright notice.',
       closeChangeLogBtn: 'Close the Change Log window.',
+      closeLicenseBtn: 'Close the License window.',
       firstName: 'Enter the student first name used on student cards and seat labels.',
       lastName: 'Enter the student last name used on student cards and seat labels.',
       nickName: 'Enter an optional nickname. If present, this is the name shown on seats and student cards.',
@@ -11118,11 +11418,42 @@
       if (modal) modal.classList.remove('show');
     }
 
+    function updateLicenseInfo() {
+      if (el('aboutLicenseSummary')) el('aboutLicenseSummary').textContent = APP_LICENSE.shortText;
+      if (el('settingsLicenseSummary')) el('settingsLicenseSummary').textContent = APP_LICENSE.shortText;
+      if (el('licenseName')) el('licenseName').textContent = APP_LICENSE.name;
+      if (el('licenseHolder')) el('licenseHolder').textContent = APP_LICENSE.holder;
+      if (el('licenseYear')) el('licenseYear').textContent = APP_LICENSE.year;
+      if (el('licenseText')) el('licenseText').textContent = APP_LICENSE.text;
+    }
+
+    function openLicenseModal() {
+      updateLicenseInfo();
+      const modal = el('licenseModal');
+      if (modal) modal.classList.add('show');
+    }
+
+    function closeLicenseModal() {
+      const modal = el('licenseModal');
+      if (modal) modal.classList.remove('show');
+    }
+
+    function appLicenseMetadata() {
+      return {
+        name: APP_LICENSE.name,
+        holder: APP_LICENSE.holder,
+        year: APP_LICENSE.year,
+        shortText: APP_LICENSE.shortText,
+        text: APP_LICENSE.text
+      };
+    }
+
     function updateAboutInfo() {
       if (el('aboutRevision')) el('aboutRevision').textContent = APP_REVISION;
       if (el('aboutUpdated')) el('aboutUpdated').textContent = APP_LAST_UPDATED;
       if (el('settingsRevision')) el('settingsRevision').textContent = APP_REVISION;
       if (el('settingsUpdated')) el('settingsUpdated').textContent = APP_LAST_UPDATED;
+      updateLicenseInfo();
       renderAllFeatureLists();
     }
 
@@ -11490,10 +11821,41 @@
       renderAllFeatureLists();
       updateSaveHealthPanel();
       el('settingsModal').classList.add('show');
+      setSettingsPage(uiState.activeSettingsPage || 'chart');
     }
 
     function closeSettingsModal() {
       el('settingsModal').classList.remove('show');
+    }
+
+    const SETTINGS_PAGE_IDS = ['chart','appearance','saving','security','room','about'];
+
+    function setSettingsPage(page = 'chart') {
+      const selected = SETTINGS_PAGE_IDS.includes(page) ? page : 'chart';
+      uiState.activeSettingsPage = selected;
+      document.querySelectorAll('[data-settings-nav]').forEach(button => {
+        const active = button.dataset.settingsNav === selected;
+        button.classList.toggle('active', active);
+        button.setAttribute('aria-selected', active ? 'true' : 'false');
+      });
+      document.querySelectorAll('[data-settings-panel]').forEach(panel => {
+        panel.classList.toggle('active', panel.dataset.settingsPanel === selected);
+      });
+    }
+
+    function settingsPageForControlSelector(selector = '') {
+      const target = String(selector || '');
+      if (/chartTitleInput|chartDateInput|chartPeriodInput|chartRoomInput|chartTeacherInput|saveChartDetailsBtn/.test(target)) return 'chart';
+      if (/settingTheme|settingDefault|settingHeaderCollapsed|settingLeftCollapsed|settingRightCollapsed|settingLayoutToolsCollapsed|settingCsvCollapsed|settingAddStudentCollapsed|settingHideHints|resetDismissedHintsBtn|settingDefaultSideTab|settingDesignCellSize|visHide|visForceNamesOnly|visibilityCredentialNote/.test(target)) return 'appearance';
+      if (/settingsEncryption|settingsOpenSaveSetupBtn|settingsForgetLinkedFileBtn|saveHealth|settingAutoSaveMinutes|saveSetup/.test(target)) return 'saving';
+      if (/settingAutoLockMinutes|clearLocalDataBtn|factoryResetEverythingBtn|settingSettingsAccessMethod|settingsAccessStatus|settingsLockPin|settingsVisibilityPin|settingsSaveLockPinBtn|settingsSaveVisibilityPinBtn|settingsPinStatus/.test(target)) return 'security';
+      if (/settingsCustomObject|customObjectManagerList|settingsSampleBtn/.test(target)) return 'room';
+      if (/settingsRevision|settingsUpdated|settingsLicenseSummary|settingsChangeLogBtn|settingsLicenseBtn|settingsFeatureList/.test(target)) return 'about';
+      return uiState.activeSettingsPage || 'chart';
+    }
+
+    function settingsPageForTourStep(step) {
+      return settingsPageForControlSelector(step?.highlight || step?.selector || '');
     }
 
     function showSaveLoadMenu(x, y) {
@@ -11586,6 +11948,7 @@
       return JSON.stringify({
         app: 'Seating Chart Bubble Builder',
         version: APP_REVISION,
+        license: appLicenseMetadata(),
         exportedAt: new Date().toISOString(),
         encrypted: true,
         exportScope: scope === 'current' ? 'current-class' : scope === 'locked-session' ? 'locked-session' : 'all-classes',
@@ -14457,6 +14820,7 @@
       if (prep === 'settings') {
         document.body.classList.remove('header-collapsed');
         openSettingsModal();
+        setSettingsPage(settingsPageForTourStep(step));
       } else if (prep === 'print') {
         document.body.classList.remove('header-collapsed');
         openPrintOptionsModal();
@@ -14654,6 +15018,7 @@
       if (!target) return;
       if (step.action === 'openSettings') {
         openSettingsModal();
+        setSettingsPage(settingsPageForTourStep(step));
         markHowToTourSurface('settings');
       } else if (step.action === 'openSaveMenu') {
         const rect = target.getBoundingClientRect();
@@ -16620,13 +16985,22 @@
       el('settingsModal').addEventListener('click', event => {
         if (event.target.id === 'settingsModal') closeSettingsModal();
       });
+      document.querySelectorAll('[data-settings-nav]').forEach(button => {
+        button.addEventListener('click', () => setSettingsPage(button.dataset.settingsNav));
+      });
 
       if (el('closeAboutBtn')) el('closeAboutBtn').addEventListener('click', () => el('aboutModal').classList.remove('show'));
       if (el('aboutChangeLogBtn')) el('aboutChangeLogBtn').addEventListener('click', openChangeLogModal);
       if (el('settingsChangeLogBtn')) el('settingsChangeLogBtn').addEventListener('click', openChangeLogModal);
+      if (el('aboutLicenseBtn')) el('aboutLicenseBtn').addEventListener('click', openLicenseModal);
+      if (el('settingsLicenseBtn')) el('settingsLicenseBtn').addEventListener('click', openLicenseModal);
       if (el('closeChangeLogBtn')) el('closeChangeLogBtn').addEventListener('click', closeChangeLogModal);
+      if (el('closeLicenseBtn')) el('closeLicenseBtn').addEventListener('click', closeLicenseModal);
       if (el('aboutModal')) el('aboutModal').addEventListener('click', event => {
         if (event.target.id === 'aboutModal') el('aboutModal').classList.remove('show');
+      });
+      if (el('licenseModal')) el('licenseModal').addEventListener('click', event => {
+        if (event.target.id === 'licenseModal') closeLicenseModal();
       });
 
       installHowToTourSupport();
