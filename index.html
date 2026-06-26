@@ -4700,6 +4700,30 @@
       position: relative;
       z-index: 26001;
     }
+
+
+    /* Revision 1.17.5: How-To Tour modal/menu coordination */
+    body.how-to-tour-active .modal-backdrop.how-to-tour-surface,
+    body.how-to-tour-active .context-menu.how-to-tour-surface {
+      z-index: 25950 !important;
+    }
+
+    body.how-to-tour-active .how-to-tour-scrim {
+      z-index: 1;
+    }
+
+    body.how-to-tour-active .how-to-tour-spotlight {
+      z-index: 2;
+    }
+
+    body.how-to-tour-active .how-to-tour-popover {
+      z-index: 3;
+    }
+
+    body.how-to-tour-active .how-to-tour-target-ring {
+      z-index: 25960 !important;
+    }
+
     @media (max-width: 980px) {
       .help-guide-layout { grid-template-columns: 1fr; }
       .help-guide-nav { position: relative; max-height: 180px; }
@@ -5635,6 +5659,203 @@
       }
     }
 
+
+
+    /* Revision 1.18.0: save warning banner, disabled buttons, modal precedence, and themes */
+    button:disabled,
+    button[disabled] {
+      opacity: 0.45 !important;
+      cursor: not-allowed !important;
+      filter: grayscale(0.35);
+      transform: none !important;
+      box-shadow: none !important;
+    }
+
+    #confirmModal { z-index: 28000 !important; }
+    #encryptionKeyModal { z-index: 27900 !important; }
+
+    .local-save-banner {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 7px 12px;
+      border-bottom: 1px solid #fed7aa;
+      background: #fffbeb;
+      color: #7c2d12;
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.3;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
+      flex: 0 0 auto;
+    }
+
+    .local-save-banner:not([hidden]) { display: flex; }
+    .local-save-banner-text { min-width: 0; overflow-wrap: anywhere; }
+    body.local-save-warning-visible { --save-banner-height: 38px; }
+    body.local-save-warning-visible .app { height: calc(100vh - var(--header-offset) - var(--save-banner-height, 0px)); }
+
+    @media (max-width: 980px) {
+      .local-save-banner {
+        padding: 6px 8px;
+        font-size: 11px;
+        gap: 6px;
+      }
+      .local-save-banner button {
+        flex: 0 0 auto;
+        min-height: 28px !important;
+        height: 28px !important;
+        padding: 3px 7px !important;
+        font-size: 10px !important;
+      }
+      body.local-save-warning-visible .app { height: auto !important; }
+    }
+
+    body[data-theme="gradient"] {
+      --bg: #e0f2fe;
+      --panel-2: #eef6ff;
+      --accent: #2563eb;
+      --accent-dark: #1e40af;
+      background:
+        radial-gradient(circle at 18% 18%, rgba(56, 189, 248, 0.24), transparent 26rem),
+        radial-gradient(circle at 78% 10%, rgba(168, 85, 247, 0.16), transparent 24rem),
+        linear-gradient(135deg, #eff6ff 0%, #fdf2f8 48%, #ecfeff 100%) !important;
+    }
+
+    body[data-theme="shimmer"] {
+      --bg: #f8fafc;
+      --panel: rgba(255,255,255,0.92);
+      --panel-2: rgba(248,250,252,0.86);
+      --accent: #7c3aed;
+      --accent-dark: #5b21b6;
+      background: linear-gradient(115deg, #f8fafc, #eef2ff, #fdf2f8, #ecfeff, #f8fafc) !important;
+      background-size: 320% 320% !important;
+      animation: themeShimmer 12s ease infinite;
+    }
+
+    @keyframes themeShimmer {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    body[data-theme="highContrast"] {
+      --bg: #000000;
+      --panel: #0b0b0b;
+      --panel-2: #161616;
+      --text: #ffffff;
+      --muted: #facc15;
+      --border: #ffffff;
+      --accent: #22d3ee;
+      --accent-dark: #67e8f9;
+      --seat: #0f172a;
+      --seat-border: #ffffff;
+      --shadow: 0 0 0 2px rgba(255,255,255,0.3);
+      background: #000 !important;
+    }
+
+    body[data-theme="highContrast"] input,
+    body[data-theme="highContrast"] select,
+    body[data-theme="highContrast"] textarea,
+    body[data-theme="highContrast"] .section,
+    body[data-theme="highContrast"] .student-card,
+    body[data-theme="highContrast"] .bubble-card,
+    body[data-theme="highContrast"] .modal,
+    body[data-theme="highContrast"] .context-menu {
+      background: #050505 !important;
+      color: #fff !important;
+      border-color: #fff !important;
+    }
+
+    body[data-theme="windowsXp"] {
+      --bg: #dbeafe;
+      --panel-2: #ece9d8;
+      --text: #111827;
+      --muted: #1d4ed8;
+      --border: #7f9db9;
+      --accent: #2b64d8;
+      --accent-dark: #1747a6;
+      --radius: 7px;
+      background: linear-gradient(180deg, #3b82f6 0%, #dbeafe 34%, #bbf7d0 100%) !important;
+    }
+
+    body[data-theme="windowsXp"] header {
+      background: linear-gradient(180deg, #245edb 0%, #174ea6 48%, #0f3f8f 100%) !important;
+    }
+
+    body[data-theme="windowsXp"] .panel,
+    body[data-theme="windowsXp"] .section,
+    body[data-theme="windowsXp"] input,
+    body[data-theme="windowsXp"] select,
+    body[data-theme="windowsXp"] textarea,
+    body[data-theme="windowsXp"] button {
+      border-radius: 5px !important;
+    }
+
+    body[data-theme="windows11"] {
+      --bg: #eff6ff;
+      --panel: rgba(255,255,255,0.88);
+      --panel-2: rgba(248,250,252,0.78);
+      --accent: #0078d4;
+      --accent-dark: #005a9e;
+      --radius: 20px;
+      background:
+        radial-gradient(circle at 70% 20%, rgba(0, 120, 212, .18), transparent 30rem),
+        radial-gradient(circle at 25% 80%, rgba(99, 102, 241, .18), transparent 26rem),
+        #f8fafc !important;
+    }
+
+    body[data-theme="macos"] {
+      --bg: #f8fafc;
+      --panel: rgba(255,255,255,0.78);
+      --panel-2: rgba(255,255,255,0.54);
+      --accent: #0a84ff;
+      --accent-dark: #0060df;
+      --radius: 18px;
+      background:
+        radial-gradient(circle at 15% 15%, rgba(255, 45, 85, .14), transparent 26rem),
+        radial-gradient(circle at 78% 18%, rgba(10, 132, 255, .18), transparent 28rem),
+        linear-gradient(180deg, #ffffff 0%, #edf2f7 100%) !important;
+    }
+
+    body[data-theme="macos"] .panel,
+    body[data-theme="macos"] .modal,
+    body[data-theme="macos"] .context-menu,
+    body[data-theme="macos"] .class-manager {
+      backdrop-filter: blur(16px);
+    }
+
+    body[data-theme="linux"] {
+      --bg: #111827;
+      --panel: #111827;
+      --panel-2: #1f2937;
+      --text: #d1fae5;
+      --muted: #86efac;
+      --border: #22c55e;
+      --accent: #22c55e;
+      --accent-dark: #16a34a;
+      --seat: #052e16;
+      --seat-border: #22c55e;
+      background: #020617 !important;
+    }
+
+    body[data-theme="linux"] header {
+      background: linear-gradient(135deg, #020617 0%, #064e3b 100%) !important;
+    }
+
+    body[data-theme="linux"] input,
+    body[data-theme="linux"] select,
+    body[data-theme="linux"] textarea,
+    body[data-theme="linux"] .section,
+    body[data-theme="linux"] .student-card,
+    body[data-theme="linux"] .bubble-card,
+    body[data-theme="linux"] .modal,
+    body[data-theme="linux"] .context-menu {
+      background: #0f172a !important;
+      color: #d1fae5 !important;
+      border-color: #166534 !important;
+    }
+
   </style>
 </head>
 <body class="left-collapsed">
@@ -5674,6 +5895,11 @@
       <button id="printBtn" class="secondary icon-button" type="button" aria-label="Print" title="Open print options">🖨</button>
     </div>
   </header>
+
+  <div id="localSaveBanner" class="local-save-banner no-print" role="status" aria-live="polite" hidden>
+    <div id="localSaveBannerText" class="local-save-banner-text">Browser-only save is active.</div>
+    <button id="localSaveBannerInfoBtn" class="secondary tiny" type="button">Save Options</button>
+  </div>
 
   <nav id="mobilePanelNav" class="mobile-panel-nav no-print" aria-label="Mobile workspace sections">
     <button id="mobileLayoutBtn" class="active" type="button" data-mobile-panel="layout" aria-pressed="true"><span>Room</span><span>Layout</span></button>
@@ -6305,8 +6531,26 @@
           <h3>Session Timeout / Local Data</h3>
           <div class="field"><label for="settingAutoLockMinutes">Auto-lock after inactive minutes</label><input id="settingAutoLockMinutes" type="number" min="0" max="240" step="1" /></div>
           <div class="hint">Use 0 to disable auto-lock. For unattended encrypted auto-lock, set an encryption key for the current session. Without a session key, manual locking still prompts for the lock PIN.</div>
-          <div class="button-row" style="margin-top:8px;"><button id="clearLocalDataBtn" class="danger" type="button">Clear All Local Data</button></div>
+          <div class="button-row" style="margin-top:8px;"><button id="clearLocalDataBtn" class="danger" type="button">Clear All Local Data</button><button id="factoryResetEverythingBtn" class="danger" type="button">Factory Reset Everything</button></div>
         </section>
+        <section class="section settings-section">
+          <h3>Visual Theme</h3>
+          <div class="field">
+            <label for="settingTheme">Theme</label>
+            <select id="settingTheme">
+              <option value="default">Default</option>
+              <option value="gradient">Gradient Sky</option>
+              <option value="shimmer">Shimmer</option>
+              <option value="highContrast">High Contrast</option>
+              <option value="windowsXp">Windows XP</option>
+              <option value="windows11">Windows 11</option>
+              <option value="macos">macOS Frosted</option>
+              <option value="linux">Linux Terminal</option>
+            </select>
+          </div>
+          <div class="hint">Themes change the overall feel and colors without changing the seating data. Default keeps the existing look.</div>
+        </section>
+
         <section class="section settings-section">
           <h3>Page Load Defaults</h3>
           <div class="settings-grid two-col">
@@ -6325,7 +6569,7 @@
           <div class="row" style="margin-top:10px;">
             <div class="field">
               <label for="settingDefaultSideTab">Default Students, Bubbles &amp; Zones tab</label>
-              <select id="settingDefaultSideTab"><option value="students">Students</option><option value="bubbles">Bubbles</option></select>
+              <select id="settingDefaultSideTab"><option value="students">Students</option><option value="bubbles">Bubbles</option><option value="zones">Zones</option></select>
             </div>
             <div class="field">
               <label for="settingDesignCellSize">Default Design Mode cell size</label>
@@ -6633,6 +6877,7 @@
             <h3>Download or restore selected data</h3>
             <p>Use these when you need a backup, need to move a piece of setup to another class, or need to restore part of a saved file without replacing everything.</p>
             <div class="save-options-actions">
+              <button type="button" data-save-menu-action="choose-linked-file" class="secondary">Choose / Change Save File</button>
               <button type="button" data-save-menu-action="export-all" class="secondary">Download All Classes</button>
               <button type="button" data-save-menu-action="export-current" class="secondary">Download Current Class</button>
               <button type="button" data-save-menu-action="download-students" class="secondary">Download Student Data</button>
@@ -6678,6 +6923,7 @@
           <div class="restore-extra-options">
             <label class="checkline"><input id="restoreRoomTemplatesToggle" type="checkbox" /> <span>Room templates from file</span></label>
             <label class="checkline"><input id="restorePageSettingsToggle" type="checkbox" /> <span>Page/settings defaults from file</span></label>
+            <label class="checkline"><input id="restoreAppSnapshotsToggle" type="checkbox" /> <span>Full-app snapshots from file</span></label>
             <label class="checkline"><input id="restoreChartDetailsToggle" type="checkbox" /> <span>Chart details from selected class</span></label>
           </div>
         </div>
@@ -6869,8 +7115,8 @@
     const PAGE_LOCK_DATA_SESSION_KEY = 'seating-chart-bubble-builder-locked-data-v1';
     const VISIBILITY_CREDENTIAL_KEY = 'seating-chart-bubble-builder-visibility-v1';
     const HINT_DISMISS_STORAGE_KEY = 'seating-chart-bubble-builder-dismissed-hints-v1';
-    const APP_REVISION = '1.17.0';
-    const APP_LAST_UPDATED = 'June 26, 2026 5:10 PM EDT';
+    const APP_REVISION = '1.18.0';
+    const APP_LAST_UPDATED = 'June 26, 2026 7:35 PM EDT';
 
     const PROJECT_FEATURES = [
       { title: 'Multiple classes', text: 'Create, rename, duplicate, delete, save, load, import, and export multiple classes, each with separate students, bubbles, layouts, seats, anchors, locks, and placements.' },
@@ -6888,10 +7134,13 @@
       { title: 'Snapshots, templates, and recovery', text: 'Use undo/redo, save named class snapshots, reuse room templates, download printable PDF/SVG copies, and clear local data from Settings.' },
       { title: 'Student data quality', text: 'Use CSV field mapping, duplicate detection, and categorized student notes for private, substitute, and public visibility.' },
       { title: 'Searchable help guide', text: 'Use the Help icon beside Settings to search every major feature, read examples, review security recommendations, and jump into the interactive How-To Tour.' },
-      { title: 'Safer saving', text: 'Use a linked save file when the browser supports it, turn on auto-save, and download dated backup packages or selected-data files when moving data. If the app is embedded, use Download Backup and Upload Classes File instead because browser linked-file pickers may be blocked.' }
+      { title: 'Safer saving', text: 'Use a linked save file when the browser supports it, turn on auto-save, download dated backup packages or selected-data files, and watch the top banner when the app is saving only inside the browser.' },
+      { title: 'Full reset and storage clarity', text: 'Use Clear Local Data for app-local cleanup or Factory Reset Everything to wipe browser storage, saved file permissions, session data, cookies available to this page, settings, classes, templates, and snapshots after a warning.' },
+      { title: 'Themes', text: 'Choose visual themes in Settings, including the default look, gradient styles, shimmer, high contrast, Windows XP, Windows 11, macOS Frosted, and Linux Terminal.' }
     ];
 
     const CHANGE_LOG = [
+      { version: '1.18.0', date: 'June 26, 2026', changes: ['Updated About, feature summary, and Change Log metadata.', 'Fixed Settings so confirmation popups such as Clear Local Data take precedence by closing Settings first.', 'Added Factory Reset Everything to wipe app storage, browser storage available to the page, cookies available to the page, saved file permission metadata, settings, classes, templates, and snapshots after a warning.', 'Added a browser-only save warning banner with a Save Options button when no linked save file is selected.', 'Changed complete save files to include full-app snapshots and lightweight preferences such as dismissed hints.', 'Added disabled button styling so Undo and Redo go gray when unavailable.', 'Improved How-To tour popup preparation and added a visible first-save-location target.', 'Added theme settings with default, gradient, shimmer, high contrast, Windows XP, Windows 11, macOS Frosted, and Linux Terminal looks.'] },
       { version: '1.17.0', date: 'June 26, 2026', changes: ['Restored the mobile-only workspace layout with stronger mobile CSS overrides while leaving desktop layout rules alone.', 'Changed notes controls to notepad icon buttons and added warnings when private or substitute notes are created without an encryption key.', 'Added default local-browser autosave when no linked save file exists, plus prompts after repeated local-only changes to choose a durable save file and set an encryption key.', 'Changed snapshots to local full-dataset snapshots covering all classes, room templates, settings, and current app state, including automatic snapshots before auto-lock and during autosave.', 'Expanded Print Options with per-field chart detail controls for title, class, date, period, room, and teacher.'] },
       { version: '1.16.9', date: 'June 26, 2026', changes: ['Expanded Print Options so Bubble Configuration and Zone Configuration have granular detail checkboxes.', 'Bubble print details can now independently include rule type, priority, preferred zone, members, reserved seats, and color.', 'Zone print details can now independently include color, linked students, linked bubbles, and assigned seats.'] },
       { version: '1.16.8', date: 'June 26, 2026', changes: ['Added Print Options controls to include Bubble Configuration and Zone Configuration sections on the printable notes panel.', 'Printed bubbles now list rule type, priority, preferred zone, members, and reserved seats; printed zones now list color, linked students, linked bubbles, and seats assigned to each zone.'] },
@@ -7030,11 +7279,13 @@
     const escapeHtml = (value) => String(value ?? '').replace(/[&<>'"]/g, ch => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#039;', '"':'&quot;' }[ch]));
     const cssEscape = (value) => (window.CSS && typeof window.CSS.escape === 'function') ? window.CSS.escape(String(value)) : String(value ?? '').replace(/[^a-zA-Z0-9_-]/g, '\$&');
     const BUBBLE_COLORS = ['#2f6fed', '#e11d48', '#16a34a', '#f59e0b', '#7c3aed', '#0891b2', '#db2777', '#65a30d', '#ea580c', '#475569'];
+    const THEME_OPTIONS = ['default','gradient','shimmer','highContrast','windowsXp','windows11','macos','linux'];
     const defaultBubbleColor = (index = 0) => BUBBLE_COLORS[Math.abs(index) % BUBBLE_COLORS.length];
     const safeColor = (value, fallback = '#2f6fed') => /^#[0-9a-fA-F]{6}$/.test(String(value || '')) ? String(value) : fallback;
     const clampNumber = (value, min, max) => Math.max(min, Math.min(max, Number(value) || min));
     const DEFAULT_PAGE_SETTINGS = Object.freeze({
       defaultNamesOnly: true,
+      theme: 'default',
       headerCollapsed: false,
       leftCollapsed: true,
       rightCollapsed: false,
@@ -7067,6 +7318,7 @@
       const visibility = source.visibility && typeof source.visibility === 'object' ? source.visibility : {};
       return {
         defaultNamesOnly: source.defaultNamesOnly ?? DEFAULT_PAGE_SETTINGS.defaultNamesOnly,
+        theme: THEME_OPTIONS.includes(source.theme) ? source.theme : DEFAULT_PAGE_SETTINGS.theme,
         headerCollapsed: source.headerCollapsed ?? DEFAULT_PAGE_SETTINGS.headerCollapsed,
         leftCollapsed: source.leftCollapsed ?? DEFAULT_PAGE_SETTINGS.leftCollapsed,
         rightCollapsed: source.rightCollapsed ?? DEFAULT_PAGE_SETTINGS.rightCollapsed,
@@ -7323,6 +7575,7 @@
       uiState.pageSettings = mergePageSettings(settings);
       const cfg = pageSettings();
       uiState.namesOnlyLayout = !!cfg.defaultNamesOnly;
+      document.body.dataset.theme = cfg.theme || 'default';
       uiState.activeSideTab = cfg.defaultSideTab;
       uiState.designCellSize = clampNumber(cfg.designCellSize, 20, 72);
       uiState.addStudentCollapsed = !!cfg.addStudentCollapsed;
@@ -7652,7 +7905,7 @@
       title.textContent = options.title || 'Please Confirm';
       messageBox.textContent = String(message || 'Continue?');
       const confirmText = options.confirmText || 'Continue';
-      const isDeleteAction = /delete/i.test(confirmText);
+      const isDeleteAction = /delete|clear|reset|factory/i.test(confirmText);
       confirmBtn.textContent = isDeleteAction ? '🗑' : confirmText;
       confirmBtn.classList.toggle('icon-button', isDeleteAction);
       confirmBtn.classList.toggle('danger', isDeleteAction);
@@ -8121,6 +8374,10 @@
 
     function studentHasAnyNotes(student) {
       return ['private', 'substitute', 'public'].some(category => studentNoteValue(student, category));
+    }
+
+    function studentHasSensitiveNotes(student) {
+      return ['private', 'substitute'].some(category => studentNoteValue(student, category));
     }
 
     function studentNoteFlags(student) {
@@ -10224,7 +10481,9 @@
       applyZoneToSelectionBtn: 'Apply the selected seat zone to the selected grid cells.',
       clearZonesFromSelectionBtn: 'Remove zone labels from selected grid cells.',
       saveChartDetailsBtn: 'Save chart title, date, period, room, and teacher information for print/export.',
-      clearLocalDataBtn: 'Clear local saves, saved PIN hashes, and session lock data from this browser.',
+      clearLocalDataBtn: 'Clear local saves, saved PIN hashes, dismissed hints, saved snapshot data, and session lock data from this browser.',
+      factoryResetEverythingBtn: 'Factory reset the app from scratch by clearing browser storage available to this page, cookies available to this page, settings, classes, templates, snapshots, and saved file permission metadata.',
+      localSaveBannerInfoBtn: 'Open Save & Backup Options to choose a linked save file or download a durable backup copy.',
       importMappedCsvBtn: 'Import students using the selected CSV column mapping.',
       mobileActionPlaceBtn: 'Switch to Room Layout so the selected mobile item can be placed.',
       mobileActionEditBtn: 'Edit the selected mobile student.',
@@ -10871,6 +11130,7 @@
       const cfg = pageSettings();
       const setChecked = (id, value) => { const node = el(id); if (node) node.checked = !!value; };
       const setValue = (id, value) => { const node = el(id); if (node) node.value = String(value ?? ''); };
+      setValue('settingTheme', cfg.theme || 'default');
       setChecked('settingDefaultNamesOnly', cfg.defaultNamesOnly);
       setChecked('settingHeaderCollapsed', cfg.headerCollapsed);
       setChecked('settingLeftCollapsed', cfg.leftCollapsed);
@@ -10904,6 +11164,7 @@
       const value = id => el(id)?.value;
       uiState.pageSettings = mergePageSettings({
         defaultNamesOnly: checked('settingDefaultNamesOnly'),
+        theme: value('settingTheme'),
         headerCollapsed: checked('settingHeaderCollapsed'),
         leftCollapsed: checked('settingLeftCollapsed'),
         rightCollapsed: checked('settingRightCollapsed'),
@@ -11253,6 +11514,26 @@
       if (menu) menu.classList.remove('show');
     }
 
+    async function handleSaveMenuAction(action, insideSaveOptions = false) {
+      if (!action) return false;
+      const shouldCloseTour = uiState.howToTourActive;
+      hideSaveLoadMenu();
+      if (shouldCloseTour) closeHowToTour();
+      if (action === 'open-save-options') { openSaveSetupModal(); return true; }
+      if (action === 'save-primary') await writeLinkedSaveFile({ reason: 'manual', announce: true });
+      if (action === 'choose-linked-file') await chooseLinkedSaveFile();
+      if (action === 'load-linked') await loadFromLinkedSaveFile();
+      if (action === 'download-package') await downloadSavePackage();
+      if (action === 'download-students') await downloadStudentDataJson();
+      if (action === 'download-bubbles') downloadBubbleConfigJson();
+      if (action === 'download-rooms') downloadRoomLayoutJson();
+      if (action === 'export-all') await exportAndDownload('all');
+      if (action === 'export-current') await exportAndDownload('current');
+      if (action === 'import-json') el('importJson')?.click();
+      if (insideSaveOptions && action !== 'load-linked') closeSaveSetupModal(true);
+      return true;
+    }
+
 
     function bytesToBase64(bytes) {
       let binary = '';
@@ -11403,10 +11684,10 @@
 
     async function exportPayload(scope = 'all') {
       const plain = exportState(scope);
-      const notesRequireProtection = hasStudentNotes();
+      const notesRequireProtection = hasSensitiveStudentNotes();
       if (uiState.encryptionEnabled || notesRequireProtection) {
         if (!encryptionIsReady(true)) {
-          throw new Error(notesRequireProtection ? 'Student notes require an encryption key before saving or exporting.' : 'Encryption is enabled, but no usable encryption key is set.');
+          throw new Error(notesRequireProtection ? 'Private or Substitute notes require an encryption key before saving or exporting.' : 'Encryption is enabled, but no usable encryption key is set.');
         }
         return encryptText(plain, scope);
       }
@@ -11509,6 +11790,8 @@
       const activeClassId = incoming.activeClassId || root.activeClassId || classes[0]?.id || '';
       const roomTemplates = Array.isArray(root.roomTemplates) ? root.roomTemplates.map(normalizeRoomTemplateRecord) : (Array.isArray(incoming.roomTemplates) ? incoming.roomTemplates.map(normalizeRoomTemplateRecord) : []);
       const pageSettings = root.pageSettings || incoming.pageSettings || root.settings || incoming.settings || null;
+      const appSnapshotsFromFile = Array.isArray(root.appSnapshots) ? root.appSnapshots : (Array.isArray(incoming.appSnapshots) ? incoming.appSnapshots : []);
+      const preferences = root.preferences && typeof root.preferences === 'object' ? root.preferences : (incoming.preferences && typeof incoming.preferences === 'object' ? incoming.preferences : null);
       return {
         sourceLabel,
         encrypted,
@@ -11517,7 +11800,9 @@
         classes,
         activeClassId: classes.some(cls => cls.id === activeClassId) ? activeClassId : classes[0]?.id,
         roomTemplates,
+        appSnapshots: appSnapshotsFromFile.map(normalizeAppSnapshotRecord).filter(Boolean),
         pageSettings: pageSettings ? mergePageSettings(pageSettings) : null,
+        preferences,
         fullRestoreRecommended
       };
     }
@@ -11574,7 +11859,8 @@
           `${source.students.length} students`,
           `${source.bubbles.length} bubbles`,
           `${source.zones.length} zones`,
-          `${(source.snapshots || []).length} snapshots`
+          `${(source.snapshots || []).length} class snapshots`,
+          `${(draft.appSnapshots || []).length} full-app snapshots`
         ];
         summary.textContent = `${parts.join(' • ')}. Choose full restore, or uncheck it to restore selected pieces into the current class.`;
       }
@@ -11590,6 +11876,7 @@
       }
       if (el('restoreRoomTemplatesToggle')) el('restoreRoomTemplatesToggle').checked = !!draft.roomTemplates.length;
       if (el('restorePageSettingsToggle')) el('restorePageSettingsToggle').checked = !!draft.pageSettings;
+      if (el('restoreAppSnapshotsToggle')) el('restoreAppSnapshotsToggle').checked = !!(draft.appSnapshots || []).length;
       if (el('restoreChartDetailsToggle')) el('restoreChartDetailsToggle').checked = !!Object.keys(source.chartMeta || {}).length;
       updateRestorePartialEnabled();
     }
@@ -11639,12 +11926,16 @@
         classes: draft.classes,
         activeClassId: draft.activeClassId,
         roomTemplates: draft.roomTemplates,
+        appSnapshots: draft.appSnapshots || [],
         pageSettings: draft.pageSettings || mergePageSettings(uiState.pageSettings),
+        preferences: draft.preferences || null,
         state: {
           classes: draft.classes,
           activeClassId: draft.activeClassId,
           roomTemplates: draft.roomTemplates,
-          pageSettings: draft.pageSettings || mergePageSettings(uiState.pageSettings)
+          appSnapshots: draft.appSnapshots || [],
+          pageSettings: draft.pageSettings || mergePageSettings(uiState.pageSettings),
+          preferences: draft.preferences || null
         }
       });
       importState(payload);
@@ -11687,8 +11978,12 @@
       if (el('restoreRoomTemplatesToggle')?.checked && draft.roomTemplates.length) {
         state.roomTemplates = upsertById(state.roomTemplates || [], draft.roomTemplates, normalizeRoomTemplateRecord);
       }
+      if (el('restoreAppSnapshotsToggle')?.checked && (draft.appSnapshots || []).length) {
+        saveAppSnapshots(upsertById(appSnapshots(), draft.appSnapshots, normalizeAppSnapshotRecord));
+      }
       if (el('restorePageSettingsToggle')?.checked && draft.pageSettings) {
         uiState.pageSettings = mergePageSettings(draft.pageSettings);
+        if (draft.preferences?.dismissedHintKeys) saveDismissedHintKeys(new Set(draft.preferences.dismissedHintKeys));
         applyPageSettings(uiState.pageSettings, { skipRender: true });
       }
       persistActiveClass();
@@ -11960,25 +12255,22 @@
     }
 
     function offerEncryptionBeforeFirstSave() {
-      if (String(uiState.encryptionKey || '').trim()) return Promise.resolve(true);
-      if (safeStorageGet('sessionStorage', 'seating-chart-save-encryption-offer-v1') === 'dismissed') return Promise.resolve(true);
-      const notes = hasStudentNotes();
-      const mustEncrypt = notes || uiState.encryptionEnabled;
+      const hasKey = !!String(uiState.encryptionKey || '').trim();
+      const sensitiveNotes = hasSensitiveStudentNotes();
+      const keyRequired = (uiState.encryptionEnabled || sensitiveNotes) && !hasKey;
+      if (!keyRequired) return Promise.resolve(true);
       return new Promise(resolve => {
-        const message = mustEncrypt
-          ? 'Before this first save, create an encryption key. Student notes are present or encryption is enabled, so saves/downloads need a key before sensitive information can be stored safely. Use a memorable phrase that is hard to guess. The key is not stored in the file, and encrypted saves cannot be recovered if the key is lost.'
-          : 'Before this first save, you can create an encryption key. Encryption protects saved/downloaded files if they contain sensitive student information later. Use a memorable phrase that is hard to guess. The key is not stored in the file, and encrypted saves cannot be recovered if the key is lost.';
+        const message = sensitiveNotes
+          ? 'Private or Substitute notes exist, so Save Now needs an encryption key before those notes can be written to a linked file, browser local storage, or a downloaded backup. Set an encryption key, then press Save Now again.'
+          : 'Encryption is enabled, but no usable encryption key is set. Set an encryption key, then press Save Now again.';
         showInAppConfirm(message, () => {
           openSettingsToEncryptionKey();
           resolve(false);
         }, {
-          title: 'Create Encryption Key?',
-          confirmText: 'Create Key First',
-          cancelText: mustEncrypt ? 'Not Now' : 'Save Without Key',
-          onCancel: () => {
-            if (!mustEncrypt) safeStorageSet('sessionStorage', 'seating-chart-save-encryption-offer-v1', 'dismissed');
-            resolve(!mustEncrypt);
-          }
+          title: 'Encryption Key Needed',
+          confirmText: 'Set Encryption Key',
+          cancelText: 'Cancel Save',
+          onCancel: () => resolve(false)
         });
       });
     }
@@ -12179,8 +12471,8 @@
       if (backupNode) backupNode.textContent = formatSaveDate(meta.lastBackupAt || meta.lastPackageAt);
       if (encryptionNode) encryptionNode.textContent = uiState.encryptionEnabled && uiState.encryptionKey
         ? 'Encryption ready for linked saves and downloads.'
-        : hasStudentNotes()
-          ? 'Student notes exist. Set an encryption key before saving or downloading.'
+        : hasSensitiveStudentNotes()
+          ? 'Private or Substitute notes exist. Set an encryption key before saving or downloading.'
           : 'Encryption is off. Enable it before storing sensitive notes.';
       if (statusNode) statusNode.textContent = statusOverride || uiState.linkedSaveStatus || (linked ? 'Ready.' : 'Browser local autosave is active. Choose a save file for safer long-term storage.');
       const auto = el('settingAutoSaveMinutes');
@@ -12197,6 +12489,23 @@
       }
       const menuStatus = el('saveMenuStatus');
       if (menuStatus) menuStatus.textContent = linked ? `Using: ${uiState.linkedSaveFileName || meta.linkedFileName || 'Linked save file'} • Last save: ${formatSaveDate(meta.linkedLastSavedAt)}` : `Browser local autosave active • Last save: ${formatSaveDate(meta.localLastSavedAt)}`;
+      updateLocalSaveBanner();
+    }
+
+    function updateLocalSaveBanner() {
+      const banner = el('localSaveBanner');
+      if (!banner) return;
+      const meta = saveMeta();
+      const linked = !!uiState.linkedSaveHandle || !!meta.linkedFileName;
+      const localActive = !!meta.localSaveActive || !!safeStorageGet('localStorage', STORAGE_KEY);
+      const show = !!localActive && !linked && !document.body.classList.contains('print-preview-active');
+      document.body.classList.toggle('local-save-warning-visible', show);
+      banner.hidden = !show;
+      const textNode = el('localSaveBannerText');
+      if (textNode) {
+        const last = formatSaveDate(meta.localLastSavedAt);
+        textNode.textContent = `Browser-only autosave is active${last && last !== 'Never' ? ` • last local save: ${last}` : ''}. Choose a real save file or download backups so browser cleanup, profile changes, or another device do not remove your seating chart data.`;
+      }
     }
 
     function backupFilename(kind = 'backup', extension = 'json') {
@@ -13382,11 +13691,11 @@
             "click": "Use this as the normal daily save action."
       },
       {
-            "selector": "[data-save-menu-action=\"save-primary\"]",
-            "prepare": "saveMenu",
+            "selector": "[data-save-menu-action=\"choose-linked-file\"]",
+            "prepare": "saveOptions",
             "title": "First save location",
             "label": "Save",
-            "body": "If no save file is linked yet, Save Now asks where to create one. After that, the same button saves back to that file.",
+            "body": "Choose / Change Save File is where you create or pick a durable save file. Until you do that, the app warns that it is only saving inside this browser.",
             "click": "Choose a file in a backed-up or synced folder when possible."
       },
       {
@@ -14046,6 +14355,70 @@
       return HOW_TO_TOUR_STEPS[Math.max(0, Math.min(HOW_TO_TOUR_STEPS.length - 1, uiState.howToTourIndex || 0))];
     }
 
+    const HOW_TO_TOUR_ACTION_PREP = {
+      openSaveMenu: 'saveMenu',
+      openSettings: 'settings',
+      openPrint: 'print',
+      openManager: 'manager'
+    };
+
+    const HOW_TO_TOUR_SELECTOR_PREP = {
+      '#setupWizardBtn': 'wizard',
+      '#snapshotQuickBtn': 'snapshot',
+      '#openRoomTemplatesBtn': 'roomTemplate',
+      '#openAddStudentNotesBtn': 'studentNotes'
+    };
+
+    const HOW_TO_TOUR_SURFACE_BY_PREP = {
+      settings: '#settingsModal',
+      print: '#printOptionsModal',
+      saveOptions: '#saveSetupModal',
+      saveMenu: '#saveLoadMenu',
+      manager: '#bubbleManagerModal',
+      wizard: '#wizardModal',
+      snapshot: '#snapshotModal',
+      roomTemplate: '#roomTemplateModal',
+      studentNotes: '#studentNotesModal'
+    };
+
+    const HOW_TO_TOUR_HIGHLIGHT_BY_PREP = {
+      settings: '#settingsModal .modal',
+      print: '#printOptionsModal .modal',
+      saveOptions: '#saveSetupModal .modal',
+      saveMenu: '#saveLoadMenu',
+      manager: '#bubbleManagerModal .modal',
+      wizard: '#wizardModal .modal',
+      snapshot: '#snapshotModal .modal',
+      roomTemplate: '#roomTemplateModal .modal',
+      studentNotes: '#studentNotesModal .modal'
+    };
+
+    function howToTourPrepForStep(step) {
+      if (!step) return 'main';
+      return HOW_TO_TOUR_ACTION_PREP[step.action] || HOW_TO_TOUR_SELECTOR_PREP[step.selector] || step.prepare || 'main';
+    }
+
+    function howToTourTargetSelector(step) {
+      if (!step) return '';
+      if (step.highlight) return step.highlight;
+      const prep = howToTourPrepForStep(step);
+      if (HOW_TO_TOUR_ACTION_PREP[step.action] || HOW_TO_TOUR_SELECTOR_PREP[step.selector]) {
+        return HOW_TO_TOUR_HIGHLIGHT_BY_PREP[prep] || step.selector;
+      }
+      return step.selector;
+    }
+
+    function clearHowToTourSurfaces() {
+      document.querySelectorAll('.how-to-tour-surface').forEach(node => node.classList.remove('how-to-tour-surface'));
+    }
+
+    function markHowToTourSurface(prep) {
+      clearHowToTourSurfaces();
+      const selector = HOW_TO_TOUR_SURFACE_BY_PREP[prep];
+      const surface = selector ? document.querySelector(selector) : null;
+      if (surface) surface.classList.add('how-to-tour-surface');
+    }
+
     function closeTransientMenusForTour() {
       el('saveLoadMenu')?.classList.remove('show');
       el('studentBubbleContextMenu')?.classList.remove('show');
@@ -14059,7 +14432,13 @@
       closeClassNameModal();
       closeSnapshotModal();
       closeRoomTemplateModal();
+      closeChangeLogModal();
+      closePageLockNowModal();
+      closePageLockSetupModal();
+      closeSelectiveRestoreModal();
       el('csvMapModal')?.classList.remove('show');
+      el('confirmModal')?.classList.remove('show');
+      el('encryptionKeyModal')?.classList.remove('show');
       closeSettingsAccessModal();
       closeVisibilityExitModal();
       closeVisibilitySetupModal();
@@ -14067,7 +14446,8 @@
 
     function prepareHowToTourStep(step) {
       if (!step) return;
-      const prep = step.prepare || 'main';
+      const prep = howToTourPrepForStep(step);
+      clearHowToTourSurfaces();
       document.body.classList.remove('print-preview-active', 'print-clean', 'print-substitute');
       closeTransientMenusForTour();
       if (prep !== 'print') closePrintOptionsModal();
@@ -14092,6 +14472,20 @@
         document.body.classList.remove('left-collapsed');
         setMobilePanel('people');
         openBubbleManagerModal();
+      } else if (prep === 'wizard') {
+        document.body.classList.remove('header-collapsed');
+        openWizard(0);
+      } else if (prep === 'snapshot') {
+        document.body.classList.remove('header-collapsed');
+        openSnapshotModal();
+      } else if (prep === 'roomTemplate') {
+        setMobilePanel('layout');
+        openRoomTemplateModal();
+      } else if (prep === 'studentNotes') {
+        document.body.classList.remove('left-collapsed');
+        setMobilePanel('people');
+        setSideTab('students');
+        openStudentNotesModal({ mode: 'add' });
       } else if (prep === 'students' || prep === 'bubbles' || prep === 'zones' || prep === 'mainPeople') {
         document.body.classList.remove('left-collapsed');
         setMobilePanel('people');
@@ -14110,6 +14504,7 @@
         document.body.classList.remove('header-collapsed');
         setMobilePanel('layout');
       }
+      markHowToTourSurface(prep);
       refreshHeaderToggle();
       refreshPanelToggleButtons();
     }
@@ -14169,14 +14564,19 @@
       prepareHowToTourStep(step);
 
       requestAnimationFrame(() => {
-        const targetSelector = step.highlight || step.selector;
+        const targetSelector = howToTourTargetSelector(step);
         const target = document.querySelector(targetSelector);
         if (target) {
           target.scrollIntoView({ block: 'center', inline: 'center', behavior: 'auto' });
         }
         setTimeout(() => {
-          const resolvedTarget = document.querySelector(targetSelector);
+          let resolvedTarget = document.querySelector(targetSelector);
           const actionTarget = document.querySelector(step.selector);
+          if (!resolvedTarget) {
+            const prep = howToTourPrepForStep(step);
+            const fallbackSurface = HOW_TO_TOUR_HIGHLIGHT_BY_PREP[prep] || HOW_TO_TOUR_SURFACE_BY_PREP[prep];
+            resolvedTarget = fallbackSurface ? document.querySelector(fallbackSurface) : null;
+          }
           let rect = visibleRectForTarget(resolvedTarget);
           if (resolvedTarget && rect) {
             resolvedTarget.classList.add('how-to-tour-target-ring');
@@ -14226,6 +14626,7 @@
       clearHowToTourTarget();
       uiState.howToTourActive = false;
       document.body.classList.remove('how-to-tour-active');
+      clearHowToTourSurfaces();
       el('howToTourOverlay')?.setAttribute('aria-hidden', 'true');
       const spotlight = el('howToTourSpotlight');
       if (spotlight) spotlight.style.display = 'none';
@@ -14253,18 +14654,25 @@
       if (!target) return;
       if (step.action === 'openSettings') {
         openSettingsModal();
+        markHowToTourSurface('settings');
       } else if (step.action === 'openSaveMenu') {
         const rect = target.getBoundingClientRect();
         showSaveLoadMenu(rect.left, rect.bottom + 6);
+        markHowToTourSurface('saveMenu');
       } else if (step.action === 'openPrint') {
         openPrintOptionsModal();
+        markHowToTourSurface('print');
       } else if (step.action === 'openManager') {
         openBubbleManagerModal();
+        markHowToTourSurface('manager');
       } else if (step.action === 'focusTarget') {
         target.focus?.();
       } else {
         target.click?.();
       }
+      setTimeout(() => {
+        if (uiState.howToTourActive) renderHowToTourStep();
+      }, 90);
     }
 
     function installHowToTourSupport() {
@@ -14507,7 +14915,9 @@
         customObjects: deepClone(activeForExport.customObjects || []),
         zones: deepClone(activeForExport.zones || []),
         chartMeta: deepClone(activeForExport.chartMeta || {}),
-        pageSettings: mergePageSettings(uiState.pageSettings)
+        pageSettings: mergePageSettings(uiState.pageSettings),
+        appSnapshots: appSnapshots(),
+        preferences: { dismissedHintKeys: Array.from(loadDismissedHintKeys()) }
       };
       return JSON.stringify({
         app: 'Seating Chart Bubble Builder',
@@ -14517,7 +14927,9 @@
         activeClassId: exportedState.activeClassId,
         classes: classesToExport,
         roomTemplates: deepClone(state.roomTemplates || []),
+        appSnapshots: appSnapshots(),
         pageSettings: mergePageSettings(uiState.pageSettings),
+        preferences: { dismissedHintKeys: Array.from(loadDismissedHintKeys()) },
         state: exportedState
       }, null, 2);
     }
@@ -14528,6 +14940,10 @@
       state.roomTemplates = Array.isArray(parsed.roomTemplates) ? parsed.roomTemplates.map(normalizeRoomTemplateRecord) : (Array.isArray(incoming.roomTemplates) ? incoming.roomTemplates.map(normalizeRoomTemplateRecord) : (state.roomTemplates || []));
       const importedPageSettings = parsed.pageSettings || incoming.pageSettings || parsed.settings || incoming.settings || null;
       uiState.pageSettings = mergePageSettings(importedPageSettings || uiState.pageSettings);
+      const importedAppSnapshots = Array.isArray(parsed.appSnapshots) ? parsed.appSnapshots : (Array.isArray(incoming.appSnapshots) ? incoming.appSnapshots : null);
+      if (importedAppSnapshots) saveAppSnapshots(importedAppSnapshots.map(normalizeAppSnapshotRecord).filter(Boolean));
+      const importedPreferences = parsed.preferences || incoming.preferences || null;
+      if (importedPreferences?.dismissedHintKeys) saveDismissedHintKeys(new Set(importedPreferences.dismissedHintKeys));
       const importedClasses = Array.isArray(incoming.classes)
         ? incoming.classes
         : Array.isArray(parsed.classes)
@@ -14719,6 +15135,22 @@
       }, true);
     }
 
+    function normalizeAppSnapshotRecord(snapshot, index = 0) {
+      const source = snapshot && typeof snapshot === 'object' ? snapshot : {};
+      const rawData = typeof source.data === 'string' ? source.data : JSON.stringify(source.data || {});
+      if (!rawData || rawData === '{}') return null;
+      const record = {
+        id: source.id || uid('snapshot'),
+        name: String(source.name || `Snapshot ${index + 1}`).trim().slice(0, 60) || `Snapshot ${index + 1}`,
+        createdAt: source.createdAt || new Date().toISOString(),
+        automatic: !!source.automatic,
+        reason: String(source.reason || ''),
+        data: rawData
+      };
+      record.signature = source.signature || hashString(record.data);
+      return record;
+    }
+
     function appSnapshots() {
       try {
         const parsed = JSON.parse(safeStorageGet('localStorage', LOCAL_AUTOSAVE_SNAPSHOT_KEY) || '[]');
@@ -14729,7 +15161,7 @@
     }
 
     function saveAppSnapshots(items) {
-      safeStorageSet('localStorage', LOCAL_AUTOSAVE_SNAPSHOT_KEY, JSON.stringify((items || []).slice(0, 50)));
+      safeStorageSet('localStorage', LOCAL_AUTOSAVE_SNAPSHOT_KEY, JSON.stringify((items || []).map(normalizeAppSnapshotRecord).filter(Boolean).slice(0, 50)));
     }
 
     function openSnapshotModal() {
@@ -14958,8 +15390,8 @@
       return findings;
     }
 
-    function hasStudentNotes() {
-      return state.students.some(student => studentHasAnyNotes(student));
+    function hasSensitiveStudentNotes() {
+      return state.students.some(student => studentHasSensitiveNotes(student));
     }
 
     function defaultPrintOptions() {
@@ -15536,19 +15968,92 @@
     }
 
     function clearAllLocalData() {
-      showInAppConfirm('Clear local saved chart data, session keys, lock PIN, eye PIN, and local app preferences from this browser? Export first if you need a copy.', () => {
+      closeSettingsModal();
+      showInAppConfirm('Clear local saved chart data, snapshots, session keys, lock PIN, eye PIN, save prompts, dismissed hints, and local app preferences from this browser? Export first if you need a copy.', () => {
         safeStorageRemove('localStorage', STORAGE_KEY);
         safeStorageRemove('localStorage', PAGE_LOCK_CREDENTIAL_KEY);
         safeStorageRemove('localStorage', VISIBILITY_CREDENTIAL_KEY);
         safeStorageRemove('localStorage', LOCAL_AUTOSAVE_SNAPSHOT_KEY);
         safeStorageRemove('localStorage', SAVE_META_STORAGE_KEY);
+        safeStorageRemove('localStorage', SAVE_SETUP_STORAGE_KEY);
+        safeStorageRemove('localStorage', HINT_DISMISS_STORAGE_KEY);
         safeStorageRemove('sessionStorage', PAGE_LOCK_SESSION_KEY);
         safeStorageRemove('sessionStorage', PAGE_LOCK_DATA_SESSION_KEY);
         uiState.encryptionKey = '';
         uiState.encryptionEnabled = false;
-        setLiveStatusMessage('Local data and saved PIN hashes cleared from this browser.');
+        uiState.linkedSaveStatus = uiState.linkedSaveHandle ? uiState.linkedSaveStatus : 'No linked file selected.';
+        setLiveStatusMessage('Local browser data, snapshots, and saved PIN hashes cleared. The current open chart remains in memory until you reset or reload.');
         updatePinStatus();
-      }, { title: 'Clear All Local Data?', confirmText: 'Clear Local Data', cancelText: 'Cancel' });
+        updateSaveHealthPanel();
+      }, { title: 'Clear Local Browser Data?', confirmText: 'Clear Local Data', cancelText: 'Cancel' });
+    }
+
+    function clearCookiesForThisPage() {
+      try {
+        document.cookie.split(';').forEach(cookie => {
+          const name = cookie.split('=')[0]?.trim();
+          if (!name) return;
+          document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
+          document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=${location.pathname || '/'}`;
+        });
+      } catch (err) {}
+    }
+
+    function deleteLinkedSaveDatabase() {
+      return new Promise(resolve => {
+        try {
+          if (!window.indexedDB) { resolve(false); return; }
+          const request = indexedDB.deleteDatabase(LINKED_SAVE_DB_NAME);
+          request.onsuccess = () => resolve(true);
+          request.onerror = () => resolve(false);
+          request.onblocked = () => resolve(false);
+        } catch (err) {
+          resolve(false);
+        }
+      });
+    }
+
+    function resetInMemoryAppToFactory() {
+      state.classes = [createClassRecord('Class 1')];
+      state.activeClassId = state.classes[0].id;
+      state.roomTemplates = [];
+      state.students = [];
+      state.bubbles = [];
+      state.rows = 5;
+      state.cols = 6;
+      state.cells = {};
+      state.customObjects = [];
+      state.zones = [];
+      state.chartMeta = {};
+      uiState.pageSettings = mergePageSettings(null);
+      uiState.namesOnlyLayout = uiState.pageSettings.defaultNamesOnly;
+      uiState.encryptionEnabled = false;
+      uiState.encryptionKey = '';
+      uiState.undoStack = [];
+      uiState.redoStack = [];
+      uiState.selectedCellKeys.clear();
+      uiState.mobileCarryItem = null;
+      uiState.linkedSaveHandle = null;
+      uiState.linkedSaveFileName = '';
+      uiState.linkedSaveStatus = 'No linked file selected.';
+      ensureGrid();
+      ensureClassSystem();
+      applyPageSettings(uiState.pageSettings, { skipRender: true });
+      renderAll();
+      updateUndoRedoButtons();
+      updateSaveHealthPanel();
+    }
+
+    function factoryResetEverything() {
+      closeSettingsModal();
+      showInAppConfirm('This resets the entire app from scratch in this browser. It clears classes, settings, snapshots, room templates, localStorage, sessionStorage, saved file permission metadata, and cookies this page can access. Export a backup first if you need anything. Continue?', async () => {
+        try { localStorage.clear(); } catch (err) {}
+        try { sessionStorage.clear(); } catch (err) {}
+        clearCookiesForThisPage();
+        await deleteLinkedSaveDatabase();
+        resetInMemoryAppToFactory();
+        setLiveStatusMessage('Factory reset complete. The app is back to a blank Class 1 with default settings.');
+      }, { title: 'Factory Reset Everything?', confirmText: 'Factory Reset', cancelText: 'Cancel' });
     }
 
     function showMobileActionDrawer() {
@@ -15825,18 +16330,7 @@
           event.preventDefault();
           const action = saveMenuBtn.getAttribute('data-save-menu-action');
           const insideSaveOptions = !!saveMenuBtn.closest('#saveSetupModal');
-          hideSaveLoadMenu();
-          if (action === 'open-save-options') { openSaveSetupModal(); return; }
-          if (action === 'save-primary') await writeLinkedSaveFile({ reason: 'manual', announce: true });
-          if (action === 'load-linked') await loadFromLinkedSaveFile();
-          if (action === 'download-package') await downloadSavePackage();
-          if (action === 'download-students') await downloadStudentDataJson();
-          if (action === 'download-bubbles') downloadBubbleConfigJson();
-          if (action === 'download-rooms') downloadRoomLayoutJson();
-          if (action === 'export-all') await exportAndDownload('all');
-          if (action === 'export-current') await exportAndDownload('current');
-          if (action === 'import-json') el('importJson').click();
-          if (insideSaveOptions && action !== 'load-linked') closeSaveSetupModal(true);
+          await handleSaveMenuAction(action, insideSaveOptions);
           return;
         }
 
@@ -16028,6 +16522,7 @@
         uiState.encryptionKey = event.target.value || '';
       });
       el('settingsOpenSaveSetupBtn')?.addEventListener('click', openSaveSetupModal);
+      el('localSaveBannerInfoBtn')?.addEventListener('click', openSaveSetupModal);
       el('settingsForgetLinkedFileBtn')?.addEventListener('click', () => {
         showInAppConfirm('Forget the linked save file permission? This does not delete the actual file.', () => { forgetLinkedSaveFile(); }, {
           title: 'Forget Linked File?',
@@ -16038,7 +16533,7 @@
       el('closeSaveSetupBtn')?.addEventListener('click', () => closeSaveSetupModal(false));
       el('saveSetupDoneBtn')?.addEventListener('click', () => closeSaveSetupModal(true));
       el('saveSetupModal')?.addEventListener('click', event => { if (event.target.id === 'saveSetupModal') closeSaveSetupModal(false); });
-            ['settingDefaultNamesOnly','settingHeaderCollapsed','settingLeftCollapsed','settingRightCollapsed','settingLayoutToolsCollapsed','settingCsvCollapsed','settingAddStudentCollapsed','settingHideHints','settingAutoSaveMinutes','settingDefaultSideTab','settingDesignCellSize','settingSettingsAccessMethod','settingAutoLockMinutes','visHideClassActions','visHideWizard','visHideSaveLoad','visHideSettings','visHidePrint','visHideLayoutTools','visHideStudentsPanel','visHideStatusPanel','visHideChartActions','visHideRoomHeaderActions','visForceNamesOnly'].forEach(id => {
+            ['settingTheme','settingDefaultNamesOnly','settingHeaderCollapsed','settingLeftCollapsed','settingRightCollapsed','settingLayoutToolsCollapsed','settingCsvCollapsed','settingAddStudentCollapsed','settingHideHints','settingAutoSaveMinutes','settingDefaultSideTab','settingDesignCellSize','settingSettingsAccessMethod','settingAutoLockMinutes','visHideClassActions','visHideWizard','visHideSaveLoad','visHideSettings','visHidePrint','visHideLayoutTools','visHideStudentsPanel','visHideStatusPanel','visHideChartActions','visHideRoomHeaderActions','visForceNamesOnly'].forEach(id => {
         const control = el(id);
         if (!control) return;
         control.addEventListener(control.tagName === 'SELECT' || control.type === 'number' ? 'input' : 'change', readPageSettingsForm);
@@ -16197,6 +16692,13 @@
         const rect = event.currentTarget.getBoundingClientRect();
         showSaveLoadMenu(rect.left, rect.bottom + 4);
       });
+      el('saveLoadMenu')?.addEventListener('click', async event => {
+        const saveMenuBtn = event.target.closest('[data-save-menu-action]');
+        if (!saveMenuBtn) return;
+        event.preventDefault();
+        event.stopPropagation();
+        await handleSaveMenuAction(saveMenuBtn.getAttribute('data-save-menu-action'), false);
+      });
       el('snapshotQuickBtn')?.addEventListener('click', quickSnapshotAndOpenList);
       el('openRoomTemplatesBtn')?.addEventListener('click', openRoomTemplateModal);
 
@@ -16297,6 +16799,7 @@
       });
       el('saveChartDetailsBtn')?.addEventListener('click', saveChartDetailsFromSettings);
       el('clearLocalDataBtn')?.addEventListener('click', clearAllLocalData);
+      el('factoryResetEverythingBtn')?.addEventListener('click', factoryResetEverything);
 
       el('mobileActionPlaceBtn')?.addEventListener('click', () => setMobilePanel('layout'));
       el('mobileActionCancelBtn')?.addEventListener('click', clearMobileCarryItem);
