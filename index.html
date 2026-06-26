@@ -6826,7 +6826,7 @@
                     </section>
             <section class="section settings-section">
                       <h3>Eye / Visibility Mode</h3>
-                      <div class="hint">The eye button hides selected controls/sections for a cleaner or student-facing view. Entering is instant when a visibility PIN, lock PIN, or encryption key exists. Exiting requires one of those secrets.</div>
+                      <div class="hint">The eye button hides selected controls/sections for a cleaner or student-facing view. If an encryption key is active and an Eye/Lock PIN exists, entering asks for that PIN so the key can be wrapped and removed from active memory. Exiting restores controls and, when applicable, restores the wrapped key.</div>
                       <div class="settings-grid two-col">
                         <label class="checkline" for="visHideClassActions"><input id="visHideClassActions" type="checkbox" /> <span>Hide class New/Rename/Duplicate/Delete</span></label>
                         <label class="checkline" for="visHideWizard"><input id="visHideWizard" type="checkbox" /> <span>Hide Setup Wizard</span></label>
@@ -6858,7 +6858,7 @@
                         <label for="settingsEncryptionKey">Encryption key</label>
                         <input id="settingsEncryptionKey" type="password" autocomplete="off" placeholder="Session key used for save/download/upload" />
                       </div>
-                      <div class="encryption-note">When enabled, linked saves, backup packages, and downloaded classes files are encrypted with this key. Encrypted files can only be uploaded or loaded with the same key. The key is remembered only during this open browser session and is not written into the exported file.</div>
+                      <div class="encryption-note">When an encryption key is present, the entire save payload is encrypted: local browser saves, linked saves, backup packages, snapshots, settings, rosters, notes, bubbles, zones, and room data. Private/Substitute notes require a key. The key is not written into exported save files; while Lock or Eye Mode is active, it can be stored only as an encrypted wrapped key protected by the Lock/Eye PIN/password.</div>
                     </section>
             <section class="section settings-section">
                       <h3>Saving</h3>
@@ -7360,6 +7360,24 @@
     </div>
   </div>
 
+  <div id="visibilityProtectKeyModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="visibilityProtectKeyTitle">
+    <div class="modal" style="max-width: 540px;">
+      <div class="panel-header">
+        <h2 id="visibilityProtectKeyTitle">Protect Encryption Key for Eye Mode</h2>
+        <button id="visibilityProtectKeyCancelTopBtn" class="tiny secondary" type="button">Close</button>
+      </div>
+      <div class="modal-body">
+        <div class="hint" style="margin-bottom:10px;">An encryption key is active. Enter the Eye PIN or Lock PIN so the app can store that key only as an encrypted wrapped value while Eye Mode hides controls.</div>
+        <div class="field"><label for="visibilityProtectKeyInput">Eye PIN or Lock PIN/password</label><input id="visibilityProtectKeyInput" type="password" autocomplete="current-password" /></div>
+        <div id="visibilityProtectKeyError" class="warning" style="display:none; margin-top:8px;"></div>
+        <div class="button-row" style="margin-top:10px;">
+          <button id="visibilityProtectKeyCancelBtn" class="secondary" type="button">Cancel</button>
+          <button id="visibilityProtectKeyContinueBtn" type="button">Enter Eye Mode</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div id="visibilitySetupModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="visibilitySetupTitle">
     <div class="modal" style="max-width: 540px;">
       <div class="panel-header">
@@ -7390,9 +7408,11 @@
     const PAGE_LOCK_CREDENTIAL_KEY = 'seating-chart-bubble-builder-lock-v1';
     const PAGE_LOCK_SESSION_KEY = 'seating-chart-bubble-builder-locked-session-v1';
     const PAGE_LOCK_DATA_SESSION_KEY = 'seating-chart-bubble-builder-locked-data-v1';
+    const PAGE_LOCK_WRAPPED_KEY_SESSION_KEY = 'seating-chart-bubble-builder-lock-wrapped-encryption-key-v1';
+    const VISIBILITY_WRAPPED_KEY_SESSION_KEY = 'seating-chart-bubble-builder-visibility-wrapped-encryption-key-v1';
     const VISIBILITY_CREDENTIAL_KEY = 'seating-chart-bubble-builder-visibility-v1';
     const HINT_DISMISS_STORAGE_KEY = 'seating-chart-bubble-builder-dismissed-hints-v1';
-    const APP_REVISION = '1.18.5';
+    const APP_REVISION = '1.18.6';
     const APP_LAST_UPDATED = 'June 26, 2026';
 
     const APP_LICENSE = {
@@ -7441,7 +7461,7 @@
       { title: 'Auto placement', text: 'Generate or randomize seating while preserving locked students and scoring bubble rules and reserved seats.' },
       { title: 'Analysis and warnings', text: 'Analyze rule conflicts, warn only when a move creates a new bubble-rule collision, and display chart status.' },
       { title: 'Print views', text: 'Use a print-options popup for print as seen, clean names-only, or substitute mode, choose student details, include selected note categories, and optionally add bubble and zone configuration sections with granular detail checkboxes on the printout.' },
-      { title: 'Privacy, visibility, and lock tools', text: 'Run as a single local HTML file, optionally encrypt saves/exports, prompt for encrypted load keys, use Eye visibility mode to hide selected controls, protect Settings access with a selected credential, lock the page with encrypted stored data, use the How-To Tour to explain important setup/security choices, and open a searchable Help Guide for every major feature.' },
+      { title: 'Privacy, visibility, and lock tools', text: 'Run as a single local HTML file, encrypt full saves/exports when a session key is present, prompt for encrypted load keys, use Eye visibility mode to hide selected controls, protect Settings access with a selected credential, lock the page with encrypted stored data, use the How-To Tour to explain important setup/security choices, and open a searchable Help Guide for every major feature.' },
       { title: 'Snapshots, templates, and recovery', text: 'Use undo/redo, save named class snapshots, reuse room templates, download printable PDF/SVG copies, and clear local data from Settings.' },
       { title: 'Student data quality', text: 'Use CSV field mapping, duplicate detection, and categorized student notes for private, substitute, and public visibility.' },
       { title: 'Searchable help guide', text: 'Use the Help icon beside Settings to search every major feature, read examples, review security recommendations, and jump into the interactive How-To Tour.' },
@@ -7453,6 +7473,7 @@
     ];
 
     const CHANGE_LOG = [
+      { version: '1.18.6', date: 'June 26, 2026', changes: ['Changed save/export behavior so any active session encryption key encrypts the full save payload, including local browser saves, linked saves, backup packages, snapshots, settings, classes, rosters, notes, bubbles, zones, and room data.', 'When the page is manually locked with the Lock PIN/password, the session encryption key is wrapped with that PIN/password, removed from active memory, and restored only after successful unlock.', 'When Eye Mode is entered with an Eye PIN or Lock PIN available, the session encryption key is wrapped with that PIN/password, removed from active memory while hidden controls are active, and restored on exit.', 'Added wrapped-key cleanup to local-data clearing and factory reset paths, and updated security/help text to explain full-save encryption and wrapped session-key behavior.'] },
       { version: '1.18.5', date: 'June 26, 2026', changes: ['Moved license/SPDX information into harmless head metadata so the document begins with a clean doctype and the app layout cannot be affected by the license block.', 'Kept MIT license display, About/Settings license details, and export metadata unchanged.'] },
       { version: '1.18.4', date: 'June 26, 2026', changes: ['Changed the embedded app license from custom all-rights-reserved terms to the standard MIT License.', 'Moved SPDX details into HTML metadata for GitHub and license-scanning tools.', 'Updated About, Settings, License, and complete save/export metadata to identify the app as MIT licensed.', 'Kept the license notice clear that app licensing does not claim ownership of user-entered classroom or student data.'] },
       { version: '1.18.3', date: 'June 26, 2026', changes: ['Locked the Settings popup to one large stable size so it no longer resizes when switching subpages.', 'Changed Settings subpage content and navigation to scroll inside the fixed modal frame.', 'Adjusted mobile Settings sizing so the popup fills the safe viewport while keeping page navigation usable.'] },
@@ -8349,17 +8370,21 @@
     const getVisibilityCredential = () => getHashedCredential(VISIBILITY_CREDENTIAL_KEY);
     const saveVisibilityCredential = (secret) => saveHashedCredential(VISIBILITY_CREDENTIAL_KEY, secret);
 
-    async function verifyVisibilitySecret(secret) {
+    async function visibilitySecretSource(secret, allowEncryptionKey = true) {
       const value = String(secret || '');
-      if (!value) return false;
-      if (getVisibilityCredential() && await verifyHashedCredential(VISIBILITY_CREDENTIAL_KEY, value)) return true;
-      if (getLockCredential() && await verifyPageLockSecret(value)) return true;
-      if (uiState.encryptionKey && value === uiState.encryptionKey) return true;
-      return false;
+      if (!value) return '';
+      if (getVisibilityCredential() && await verifyHashedCredential(VISIBILITY_CREDENTIAL_KEY, value)) return 'eye-pin';
+      if (getLockCredential() && await verifyPageLockSecret(value)) return 'lock-pin';
+      if (allowEncryptionKey && currentSessionEncryptionKey() && value === currentSessionEncryptionKey()) return 'encryption-key';
+      return '';
+    }
+
+    async function verifyVisibilitySecret(secret) {
+      return Boolean(await visibilitySecretSource(secret, true));
     }
 
     function hasAnyVisibilityExitSecret() {
-      return Boolean(getVisibilityCredential() || getLockCredential() || String(uiState.encryptionKey || '').trim());
+      return Boolean(getVisibilityCredential() || getLockCredential() || currentSessionEncryptionKey());
     }
 
     function updateVisibilityCredentialNote() {
@@ -8367,7 +8392,7 @@
       if (!target) return;
       if (getVisibilityCredential()) target.textContent = 'Eye mode has its own exit PIN set.';
       else if (getLockCredential()) target.textContent = 'No eye PIN is set, so eye mode will use the Lock/Unlock PIN as a fallback.';
-      else if (uiState.encryptionKey) target.textContent = 'No PIN is set, so eye mode can be exited with the current session encryption key.';
+      else if (currentSessionEncryptionKey()) target.textContent = 'No PIN is set, so eye mode can be exited with the current session encryption key.';
       else target.textContent = 'No exit secret is set. The first time eye mode is used, the app will ask for an eye mode PIN.';
     }
 
@@ -8386,7 +8411,7 @@
     }
 
     function lockDataSecretFromSettings() {
-      const key = String(uiState.encryptionKey || '').trim();
+      const key = currentSessionEncryptionKey();
       return key ? { secret: key, source: 'encryption-key' } : null;
     }
 
@@ -8423,14 +8448,27 @@
     async function secureLockWithSecret(secret, source = 'page-pin') {
       try {
         const plain = exportState('all');
-        const encrypted = await encryptTextWithSecret(plain, secret, 'locked-session', {
+        const protectorSecret = String(secret || '');
+        const activeEncryptionKey = currentSessionEncryptionKey();
+        const canWrapWithEnteredSecret = activeEncryptionKey && !String(source || '').includes('encryption-key');
+        const wrappedKey = canWrapWithEnteredSecret
+          ? await wrapSessionEncryptionKeyValue(activeEncryptionKey, protectorSecret, 'page-lock', source)
+          : '';
+        const dataSecret = activeEncryptionKey || protectorSecret;
+        const lockEncryptionSource = activeEncryptionKey
+          ? (wrappedKey ? 'wrapped-encryption-key' : 'encryption-key')
+          : source;
+        const encrypted = await encryptTextWithSecret(plain, dataSecret, 'locked-session', {
           lockProtected: true,
-          lockEncryptionSource: source
+          lockEncryptionSource,
+          wrappedSessionKey: !!wrappedKey
         });
+        if (wrappedKey) safeStorageSet('sessionStorage', PAGE_LOCK_WRAPPED_KEY_SESSION_KEY, wrappedKey);
         uiState.lockedSnapshotEncrypted = encrypted;
         safeStorageSet('sessionStorage', PAGE_LOCK_DATA_SESSION_KEY, encrypted);
         safeStorageSet('localStorage', STORAGE_KEY, encrypted);
         wipeInMemoryChartDataForLock();
+        if (activeEncryptionKey) clearSessionEncryptionKeyFromMemory();
         uiState.pageLocked = true;
         safeStorageSet('sessionStorage', PAGE_LOCK_SESSION_KEY, 'true');
         document.body.classList.add('page-locked');
@@ -8451,11 +8489,6 @@
         openPageLockSetupModal();
         return;
       }
-      const keySecret = lockDataSecretFromSettings();
-      if (keySecret) {
-        secureLockWithSecret(keySecret.secret, keySecret.source);
-        return;
-      }
       openPageLockNowModal();
     }
 
@@ -8463,6 +8496,7 @@
       uiState.pageLocked = false;
       safeStorageRemove('sessionStorage', PAGE_LOCK_SESSION_KEY);
       safeStorageRemove('sessionStorage', PAGE_LOCK_DATA_SESSION_KEY);
+      safeStorageRemove('sessionStorage', PAGE_LOCK_WRAPPED_KEY_SESSION_KEY);
       uiState.lockedSnapshotEncrypted = '';
       document.body.classList.remove('page-locked');
       clearPageLockError();
@@ -8493,8 +8527,14 @@
         if (lockedText) {
           const envelope = JSON.parse(lockedText);
           let decryptSecret = secret;
-          if (envelope.lockEncryptionSource === 'encryption-key') {
-            decryptSecret = String(uiState.encryptionKey || '').trim();
+          if (envelope.lockEncryptionSource === 'wrapped-encryption-key') {
+            decryptSecret = await restoreProtectedSessionEncryptionKey('page-lock', secret);
+            if (!decryptSecret) {
+              showPageLockError('Could not restore the wrapped encryption key with that PIN/password.');
+              return;
+            }
+          } else if (envelope.lockEncryptionSource === 'encryption-key') {
+            decryptSecret = currentSessionEncryptionKey();
             if (!decryptSecret) decryptSecret = await requestEncryptionKey('This locked page was encrypted with the Settings encryption key. Enter that key to restore the chart data.');
             if (!decryptSecret) {
               showPageLockError('Encryption key is required to restore the locked data.');
@@ -8854,7 +8894,7 @@
     function sensitiveNotesNeedEncryptionWarning(draft = null) {
       const source = draft || uiState.noteEditorDraft || { private: [], substitute: [] };
       const hasSensitive = (Array.isArray(source.private) && source.private.some(Boolean)) || (Array.isArray(source.substitute) && source.substitute.some(Boolean));
-      return hasSensitive && !String(uiState.encryptionKey || '').trim();
+      return hasSensitive && !currentSessionEncryptionKey();
     }
 
     function warnSensitiveNotesNeedEncryption() {
@@ -8877,7 +8917,7 @@
       uiState.noteEditorDraft = uiState.noteEditorDraft || { private: [], substitute: [], public: [] };
       uiState.noteEditorDraft[category] = Array.isArray(uiState.noteEditorDraft[category]) ? uiState.noteEditorDraft[category] : [];
       uiState.noteEditorDraft[category].push(text);
-      if ((category === 'private' || category === 'substitute') && !String(uiState.encryptionKey || '').trim()) warnSensitiveNotesNeedEncryption();
+      if ((category === 'private' || category === 'substitute') && !currentSessionEncryptionKey()) warnSensitiveNotesNeedEncryption();
       el('noteEditorText').value = '';
       renderNotesEditor();
     }
@@ -11627,11 +11667,12 @@
       refreshNamesOnlyToggle();
       applyVisibilityClasses();
       renderGrid();
-      if (!getVisibilityCredential() && getLockCredential()) setLiveStatusMessage('Eye mode enabled. No eye PIN is set, so the Lock PIN will be accepted to exit.');
+      if (safeStorageGet('sessionStorage', VISIBILITY_WRAPPED_KEY_SESSION_KEY)) setLiveStatusMessage('Eye mode enabled. The session encryption key is wrapped and removed from active memory until you exit.');
+      else if (!getVisibilityCredential() && getLockCredential()) setLiveStatusMessage('Eye mode enabled. No eye PIN is set, so the Lock PIN will be accepted to exit.');
       else setLiveStatusMessage('Eye mode enabled. Hidden sections require a PIN/password or encryption key to restore.');
     }
 
-    function requestEnterVisibilityMode() {
+    async function requestEnterVisibilityMode() {
       if (uiState.visibilityMode) {
         openVisibilityExitModal();
         return;
@@ -11640,12 +11681,17 @@
         openVisibilitySetupModal();
         return;
       }
+      if (currentSessionEncryptionKey() && (getVisibilityCredential() || getLockCredential())) {
+        openVisibilityProtectKeyModal();
+        return;
+      }
       enterVisibilityMode();
     }
 
     function exitVisibilityMode() {
       uiState.visibilityMode = false;
       uiState.namesOnlyLayout = !!uiState.visibilityPreviousNamesOnly;
+      safeStorageRemove('sessionStorage', VISIBILITY_WRAPPED_KEY_SESSION_KEY);
       refreshNamesOnlyToggle();
       applyVisibilityClasses();
       renderGrid();
@@ -11657,6 +11703,48 @@
       if (!node) return;
       node.textContent = String(message || 'Could not exit eye mode.');
       node.style.display = 'block';
+    }
+
+    function showVisibilityProtectKeyError(message) {
+      const node = el('visibilityProtectKeyError');
+      if (!node) return;
+      node.textContent = String(message || 'Could not protect the encryption key for eye mode.');
+      node.style.display = 'block';
+    }
+
+    function openVisibilityProtectKeyModal() {
+      const modal = el('visibilityProtectKeyModal');
+      const input = el('visibilityProtectKeyInput');
+      const error = el('visibilityProtectKeyError');
+      if (!modal || !input) return;
+      input.value = '';
+      if (error) { error.textContent = ''; error.style.display = 'none'; }
+      modal.classList.add('show');
+      setTimeout(() => input.focus(), 50);
+    }
+
+    function closeVisibilityProtectKeyModal() {
+      el('visibilityProtectKeyModal')?.classList.remove('show');
+    }
+
+    async function protectEncryptionKeyAndEnterVisibilityMode() {
+      const input = el('visibilityProtectKeyInput');
+      const secret = String(input?.value || '');
+      if (!secret) { showVisibilityProtectKeyError('Enter the Eye PIN or Lock PIN/password.'); return; }
+      try {
+        const source = await visibilitySecretSource(secret, false);
+        if (!source) {
+          showVisibilityProtectKeyError('Incorrect Eye PIN or Lock PIN/password.');
+          input?.select();
+          input?.focus();
+          return;
+        }
+        await protectSessionEncryptionKeyForMode('visibility', secret, source);
+        closeVisibilityProtectKeyModal();
+        enterVisibilityMode();
+      } catch (err) {
+        showVisibilityProtectKeyError(err.message || 'Could not protect the encryption key for eye mode.');
+      }
     }
 
     function openVisibilityExitModal() {
@@ -11679,12 +11767,21 @@
       const secret = String(input?.value || '');
       if (!secret) { showVisibilityExitError('Enter the eye PIN, lock PIN, or current encryption key.'); return; }
       try {
-        const ok = await verifyVisibilitySecret(secret);
-        if (!ok) {
+        const source = await visibilitySecretSource(secret, true);
+        if (!source) {
           showVisibilityExitError('Incorrect PIN/password or encryption key.');
           input.select();
           input.focus();
           return;
+        }
+        if (safeStorageGet('sessionStorage', VISIBILITY_WRAPPED_KEY_SESSION_KEY)) {
+          const restored = await restoreProtectedSessionEncryptionKey('visibility', secret);
+          if (!restored) {
+            showVisibilityExitError('Could not restore the wrapped encryption key with that PIN/password.');
+            input.select();
+            input.focus();
+            return;
+          }
         }
         closeVisibilityExitModal();
         exitVisibilityMode();
@@ -11726,6 +11823,7 @@
       if (secret !== confirmSecret) { showVisibilitySetupError('The eye mode PIN/password entries do not match.'); return; }
       try {
         await saveVisibilityCredential(secret);
+        if (currentSessionEncryptionKey()) await protectSessionEncryptionKeyForMode('visibility', secret, 'eye-pin');
         closeVisibilitySetupModal();
         updateVisibilityCredentialNote();
         enterVisibilityMode();
@@ -11739,7 +11837,7 @@
       const method = cfg.settingsAccessMethod || 'auto';
       const lockAvailable = !!getLockCredential();
       const eyeAvailable = !!getVisibilityCredential();
-      const encryptionAvailable = !!String(uiState.encryptionKey || '').trim();
+      const encryptionAvailable = !!currentSessionEncryptionKey();
       const make = (type) => {
         if (type === 'lock' && lockAvailable) return { type, label: 'Lock/Unlock PIN', message: 'Enter the Lock/Unlock PIN to open Settings.' };
         if (type === 'eye' && eyeAvailable) return { type, label: 'Eye Mode PIN', message: 'Enter the Eye Mode PIN to open Settings.' };
@@ -11763,7 +11861,7 @@
       if (!requirement || !value) return false;
       if (requirement.type === 'lock') return verifyPageLockSecret(value);
       if (requirement.type === 'eye') return verifyHashedCredential(VISIBILITY_CREDENTIAL_KEY, value);
-      if (requirement.type === 'encryption') return value === String(uiState.encryptionKey || '');
+      if (requirement.type === 'encryption') return value === currentSessionEncryptionKey();
       return false;
     }
 
@@ -11838,7 +11936,7 @@
       const enabled = el('settingsEncryptionEnabled');
       const keyInput = el('settingsEncryptionKey');
       if (enabled) enabled.checked = !!uiState.encryptionEnabled;
-      if (keyInput) keyInput.value = uiState.encryptionKey || '';
+      if (keyInput) keyInput.value = currentSessionEncryptionKey();
       renderCustomObjectManager();
       renderZoneControls();
       loadChartDetailsIntoSettings();
@@ -11950,9 +12048,8 @@
     }
 
     function encryptionIsReady(showMessage = true) {
-      if (!uiState.encryptionEnabled) return false;
-      if (!uiState.encryptionKey) {
-        if (showMessage) setLiveStatusMessage('Encryption is enabled, but no encryption key is set in Settings.');
+      if (!currentSessionEncryptionKey()) {
+        if (showMessage) setLiveStatusMessage('Encryption needs a session key. Open Settings > Saving and enter an encryption key.');
         return false;
       }
       if (!window.crypto || !crypto.subtle) {
@@ -11989,7 +12086,7 @@
     }
 
     async function encryptText(plainText, scope = 'all') {
-      return encryptTextWithSecret(plainText, uiState.encryptionKey, scope);
+      return encryptTextWithSecret(plainText, currentSessionEncryptionKey(), scope);
     }
 
     function requestEncryptionKey(message = 'This file/local save is encrypted. Enter the encryption key to continue.') {
@@ -12002,11 +12099,11 @@
         const cancelBtn = el('encryptionKeyCancelBtn');
         const topCancelBtn = el('encryptionKeyCancelTopBtn');
         if (!modal || !input || !continueBtn || !cancelBtn) {
-          resolve(uiState.encryptionKey || '');
+          resolve(currentSessionEncryptionKey());
           return;
         }
         messageBox.textContent = message;
-        input.value = uiState.encryptionKey || '';
+        input.value = currentSessionEncryptionKey();
         if (errorBox) {
           errorBox.textContent = '';
           errorBox.style.display = 'none';
@@ -12030,9 +12127,7 @@
             input.focus();
             return;
           }
-          uiState.encryptionKey = key;
-          const settingsInput = el('settingsEncryptionKey');
-          if (settingsInput) settingsInput.value = key;
+          setSessionEncryptionKey(key);
           close(key);
         };
         cancelBtn.onclick = () => close(null);
@@ -12054,7 +12149,7 @@
 
     async function decryptTextEnvelope(parsed, keyOverride = '') {
       if (!parsed || !parsed.encrypted || !parsed.encryption) return null;
-      const secret = String(keyOverride || uiState.encryptionKey || '');
+      const secret = String(keyOverride || currentSessionEncryptionKey() || '');
       if (!secret) throw new Error('This file/local save is encrypted. Enter the encryption key first.');
       if (!window.crypto || !crypto.subtle) throw new Error('This browser does not support Web Crypto decryption.');
       const salt = base64ToBytes(parsed.encryption.salt);
@@ -12069,14 +12164,90 @@
       }
     }
 
+    function currentSessionEncryptionKey() {
+      return String(uiState.encryptionKey || '').trim();
+    }
+
+    function savePayloadWillEncrypt() {
+      return Boolean(currentSessionEncryptionKey());
+    }
+
+    function setSessionEncryptionKey(value) {
+      const key = String(value || '');
+      uiState.encryptionKey = key;
+      if (key) uiState.encryptionEnabled = true;
+      const settingsInput = el('settingsEncryptionKey');
+      if (settingsInput) settingsInput.value = key;
+      const settingsEnabled = el('settingsEncryptionEnabled');
+      if (settingsEnabled) settingsEnabled.checked = !!uiState.encryptionEnabled;
+      updateVisibilityCredentialNote();
+      updateSaveHealthPanel();
+    }
+
+    function clearSessionEncryptionKeyFromMemory() {
+      uiState.encryptionKey = '';
+      uiState.encryptionEnabled = true;
+      const settingsInput = el('settingsEncryptionKey');
+      if (settingsInput) settingsInput.value = '';
+      const settingsEnabled = el('settingsEncryptionEnabled');
+      if (settingsEnabled) settingsEnabled.checked = true;
+      updateVisibilityCredentialNote();
+      updateSaveHealthPanel();
+    }
+
+    function wrappedKeyStorageForMode(mode) {
+      return mode === 'visibility' ? VISIBILITY_WRAPPED_KEY_SESSION_KEY : PAGE_LOCK_WRAPPED_KEY_SESSION_KEY;
+    }
+
+    async function wrapSessionEncryptionKeyValue(keyValue, protectorSecret, mode, source = 'pin') {
+      const keyText = String(keyValue || '').trim();
+      const protector = String(protectorSecret || '');
+      if (!keyText || !protector) return '';
+      return encryptTextWithSecret(keyText, protector, `wrapped-encryption-key-${mode}`, {
+        wrappedKind: 'session-encryption-key',
+        wrappedFor: mode,
+        wrappedBy: source
+      });
+    }
+
+    async function protectSessionEncryptionKeyForMode(mode, protectorSecret, source = 'pin') {
+      const keyText = currentSessionEncryptionKey();
+      if (!keyText) return '';
+      const wrapped = await wrapSessionEncryptionKeyValue(keyText, protectorSecret, mode, source);
+      if (wrapped) {
+        safeStorageSet('sessionStorage', wrappedKeyStorageForMode(mode), wrapped);
+        clearSessionEncryptionKeyFromMemory();
+      }
+      return wrapped;
+    }
+
+    async function restoreProtectedSessionEncryptionKey(mode, protectorSecret) {
+      const stored = safeStorageGet('sessionStorage', wrappedKeyStorageForMode(mode));
+      if (!stored) return '';
+      const parsed = JSON.parse(stored);
+      if (!parsed || parsed.wrappedKind !== 'session-encryption-key') return '';
+      const restored = await decryptTextEnvelope(parsed, protectorSecret);
+      if (restored) {
+        setSessionEncryptionKey(restored);
+        safeStorageRemove('sessionStorage', wrappedKeyStorageForMode(mode));
+      }
+      return restored;
+    }
+
+    function clearWrappedSessionEncryptionKeys() {
+      safeStorageRemove('sessionStorage', PAGE_LOCK_WRAPPED_KEY_SESSION_KEY);
+      safeStorageRemove('sessionStorage', VISIBILITY_WRAPPED_KEY_SESSION_KEY);
+    }
+
     async function exportPayload(scope = 'all') {
       const plain = exportState(scope);
       const notesRequireProtection = hasSensitiveStudentNotes();
+      const hasKey = savePayloadWillEncrypt();
+      if (hasKey) return encryptText(plain, scope);
       if (uiState.encryptionEnabled || notesRequireProtection) {
         if (!encryptionIsReady(true)) {
           throw new Error(notesRequireProtection ? 'Private or Substitute notes require an encryption key before saving or exporting.' : 'Encryption is enabled, but no usable encryption key is set.');
         }
-        return encryptText(plain, scope);
       }
       return plain;
     }
@@ -12554,7 +12725,7 @@
 
     function linkedSavePickerOptions() {
       return {
-        suggestedName: exportFilename('all', uiState.encryptionEnabled && !!uiState.encryptionKey),
+        suggestedName: exportFilename('all', savePayloadWillEncrypt()),
         types: [{
           description: 'Seating Chart Classes JSON',
           accept: { 'application/json': ['.json'] }
@@ -12642,7 +12813,7 @@
     }
 
     function offerEncryptionBeforeFirstSave() {
-      const hasKey = !!String(uiState.encryptionKey || '').trim();
+      const hasKey = !!currentSessionEncryptionKey();
       const sensitiveNotes = hasSensitiveStudentNotes();
       const keyRequired = (uiState.encryptionEnabled || sensitiveNotes) && !hasKey;
       if (!keyRequired) return Promise.resolve(true);
@@ -12856,11 +13027,13 @@
       if (fileNode) fileNode.textContent = linked ? (uiState.linkedSaveFileName || meta.linkedFileName || 'Linked save file') : 'Browser local save is active by default.';
       if (linkedNode) linkedNode.textContent = linked ? formatSaveDate(meta.linkedLastSavedAt) : formatSaveDate(meta.localLastSavedAt);
       if (backupNode) backupNode.textContent = formatSaveDate(meta.lastBackupAt || meta.lastPackageAt);
-      if (encryptionNode) encryptionNode.textContent = uiState.encryptionEnabled && uiState.encryptionKey
-        ? 'Encryption ready for linked saves and downloads.'
-        : hasSensitiveStudentNotes()
-          ? 'Private or Substitute notes exist. Set an encryption key before saving or downloading.'
-          : 'Encryption is off. Enable it before storing sensitive notes.';
+      if (encryptionNode) encryptionNode.textContent = currentSessionEncryptionKey()
+        ? 'Full-save encryption ready. Local saves, linked saves, downloads, snapshots, settings, roster data, notes, bubbles, zones, and room data will be encrypted.'
+        : safeStorageGet('sessionStorage', PAGE_LOCK_WRAPPED_KEY_SESSION_KEY) || safeStorageGet('sessionStorage', VISIBILITY_WRAPPED_KEY_SESSION_KEY)
+          ? 'Encryption key is wrapped while locked/eye mode is active. Unlock or exit eye mode to restore it.'
+          : hasSensitiveStudentNotes()
+            ? 'Private or Substitute notes exist. Set an encryption key before saving or downloading.'
+            : 'Encryption key is not set. Saves may be unencrypted unless protected notes require a key.';
       if (statusNode) statusNode.textContent = statusOverride || uiState.linkedSaveStatus || (linked ? 'Ready.' : 'Browser local autosave is active. Choose a save file for safer long-term storage.');
       const auto = el('settingAutoSaveMinutes');
       if (auto && String(auto.value) !== String(pageSettings().autoSaveMinutes || 0)) auto.value = pageSettings().autoSaveMinutes || 0;
@@ -13055,7 +13228,7 @@
 
     async function downloadStudentDataJson() {
       const payload = JSON.stringify(buildStudentDataPayload(), null, 2);
-      const hasKey = String(uiState.encryptionKey || '').trim().length > 0;
+      const hasKey = currentSessionEncryptionKey().length > 0;
       const downloadPlain = () => {
         downloadText(`student-data-unencrypted-${new Date().toISOString().slice(0,10)}.json`, payload, 'application/json');
         setLiveStatusMessage('Student data downloaded without encryption after warning. Store it carefully.');
@@ -13402,11 +13575,11 @@
             "items": [
                   {
                         "title": "Encrypt saved/downloaded classes files",
-                        "text": "Encrypts linked saves, backup packages, and downloaded classes files using the current session encryption key."
+                        "text": "Encrypts the full save payload using the current session encryption key, including browser local saves, linked saves, backup packages, snapshots, settings, rosters, notes, bubbles, zones, and room data."
                   },
                   {
                         "title": "Encryption key",
-                        "text": "The key is remembered only for the current browser session and is not stored in the exported file. Keep it somewhere secure."
+                        "text": "The key is remembered only for the current browser session and is not stored in exported files. During manual Lock or Eye Mode with a PIN available, the key is stored only as an encrypted wrapped value and removed from active memory."
                   },
                   {
                         "title": "Settings Access",
@@ -13414,11 +13587,11 @@
                   },
                   {
                         "title": "Lock PIN/password",
-                        "text": "Locks the chart screen and encrypts visible chart data while locked."
+                        "text": "Locks the chart screen, encrypts the full working dataset while locked, and wraps the session encryption key with the Lock PIN/password when available."
                   },
                   {
                         "title": "Eye Mode PIN",
-                        "text": "Protects exit from a simplified or restricted visibility mode."
+                        "text": "Protects exit from a simplified or restricted visibility mode and can wrap the session encryption key while Eye Mode is active."
                   },
                   {
                         "title": "Auto-lock after inactive minutes",
@@ -13583,7 +13756,7 @@
                   "CSV headers might be First Name, Last Name, Nickname, Grade, Student ID, Substitute Notes, Public Notes."
             ],
             "warnings": [
-                  "Student notes trigger encryption protection for save/export so sensitive information is not stored as plain text."
+                  "Private/Substitute notes require encryption before save/export. Any active encryption key encrypts the full save payload, not just note fields."
             ]
       },
       {
@@ -14196,7 +14369,7 @@
             "title": "Enable encrypted saves and exports",
             "label": "Encryption",
             "body": "This setting encrypts linked saves, backup packages, and downloaded classes files using the encryption key below. Use it before storing real student notes.",
-            "click": "Check Encrypt saved/downloaded classes files before saving sensitive data."
+            "click": "Enter an encryption key before saving sensitive data. With a key present, the full save payload is encrypted automatically."
       },
       {
             "selector": "#settingsEncryptionKey",
@@ -16341,11 +16514,12 @@
       uiState.autoLockTimer = setTimeout(async () => {
         if (uiState.pageLocked) return;
         const keySecret = lockDataSecretFromSettings();
-        if (keySecret) {
+        if (keySecret && getLockCredential()) {
           createAutoLockSnapshot();
           await secureLockWithSecret(keySecret.secret, `auto-${keySecret.source}`);
         }
-        else setLiveStatusMessage('Auto-lock skipped because no encryption key or lock PIN is available.');
+        else if (keySecret && !getLockCredential()) setLiveStatusMessage('Auto-lock skipped because no Lock PIN/password is set. Set a Lock PIN/password so the encrypted screen can be unlocked later.');
+        else setLiveStatusMessage('Auto-lock skipped because no encryption key is available.');
       }, minutes * 60 * 1000);
     }
 
@@ -16368,6 +16542,7 @@
         safeStorageRemove('localStorage', HINT_DISMISS_STORAGE_KEY);
         safeStorageRemove('sessionStorage', PAGE_LOCK_SESSION_KEY);
         safeStorageRemove('sessionStorage', PAGE_LOCK_DATA_SESSION_KEY);
+        clearWrappedSessionEncryptionKeys();
         uiState.encryptionKey = '';
         uiState.encryptionEnabled = false;
         uiState.linkedSaveStatus = uiState.linkedSaveHandle ? uiState.linkedSaveStatus : 'No linked file selected.';
@@ -16418,6 +16593,7 @@
       uiState.namesOnlyLayout = uiState.pageSettings.defaultNamesOnly;
       uiState.encryptionEnabled = false;
       uiState.encryptionKey = '';
+      clearWrappedSessionEncryptionKeys();
       uiState.undoStack = [];
       uiState.redoStack = [];
       uiState.selectedCellKeys.clear();
@@ -16905,10 +17081,10 @@
       });
       el('settingsEncryptionEnabled').addEventListener('change', event => {
         uiState.encryptionEnabled = !!event.target.checked;
-        setLiveStatusMessage(uiState.encryptionEnabled ? 'Encryption enabled for linked saves, backup packages, and downloaded classes files when a key is set.' : 'Encryption disabled for linked saves, backup packages, and downloaded classes files.');
+        setLiveStatusMessage(uiState.encryptionEnabled ? 'Encryption enabled. Entering a key encrypts the full save payload for local saves, linked saves, downloads, snapshots, settings, rosters, notes, bubbles, zones, and room data.' : 'Encryption disabled unless an active key or protected notes require it.');
       });
       el('settingsEncryptionKey').addEventListener('input', event => {
-        uiState.encryptionKey = event.target.value || '';
+        setSessionEncryptionKey(event.target.value || '');
       });
       el('settingsOpenSaveSetupBtn')?.addEventListener('click', openSaveSetupModal);
       el('localSaveBannerInfoBtn')?.addEventListener('click', openSaveSetupModal);
@@ -16929,6 +17105,16 @@
       });
       el('settingsSaveLockPinBtn')?.addEventListener('click', saveLockPinFromSettings);
       el('settingsSaveVisibilityPinBtn')?.addEventListener('click', saveVisibilityPinFromSettings);
+      el('visibilityProtectKeyContinueBtn')?.addEventListener('click', protectEncryptionKeyAndEnterVisibilityMode);
+      el('visibilityProtectKeyCancelBtn')?.addEventListener('click', closeVisibilityProtectKeyModal);
+      el('visibilityProtectKeyCancelTopBtn')?.addEventListener('click', closeVisibilityProtectKeyModal);
+      el('visibilityProtectKeyModal')?.addEventListener('click', event => {
+        if (event.target.id === 'visibilityProtectKeyModal') closeVisibilityProtectKeyModal();
+      });
+      el('visibilityProtectKeyInput')?.addEventListener('keydown', event => {
+        if (event.key === 'Enter') protectEncryptionKeyAndEnterVisibilityMode();
+        if (event.key === 'Escape') closeVisibilityProtectKeyModal();
+      });
       el('visibilityExitContinueBtn')?.addEventListener('click', attemptVisibilityExit);
       el('visibilityExitCancelBtn')?.addEventListener('click', closeVisibilityExitModal);
       el('visibilityExitCancelTopBtn')?.addEventListener('click', closeVisibilityExitModal);
