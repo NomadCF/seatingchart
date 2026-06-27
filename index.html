@@ -6867,107 +6867,6 @@
     }
 
 
-
-    /* Revision 1.18.22: mobile workflows, compare summaries, templates, and view permissions */
-    .mobile-quick-actions-button {
-      display: none;
-      position: fixed;
-      right: 12px;
-      bottom: calc(var(--mobile-bottom-nav-height, 74px) + 12px + env(safe-area-inset-bottom, 0px));
-      z-index: 10070;
-      width: 48px;
-      min-width: 48px;
-      height: 48px;
-      min-height: 48px;
-      padding: 0 !important;
-      border-radius: 999px;
-      box-shadow: 0 14px 34px rgba(15, 23, 42, .26);
-    }
-    .mobile-quick-sheet {
-      display: none;
-      position: fixed;
-      left: 10px;
-      right: 10px;
-      bottom: calc(var(--mobile-bottom-nav-height, 74px) + 68px + env(safe-area-inset-bottom, 0px));
-      z-index: 10072;
-      max-height: min(62dvh, 460px);
-      overflow: auto;
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      background: rgba(255,255,255,.98);
-      box-shadow: 0 22px 64px rgba(15, 23, 42, .28);
-      padding: 10px;
-    }
-    .mobile-quick-sheet.show { display: block; }
-    .mobile-quick-title { font-weight: 950; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-    .mobile-quick-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
-    .mobile-quick-grid button { justify-content: flex-start; text-align: left; white-space: normal; min-height: 42px; line-height: 1.15; }
-    .compare-summary-panel,
-    .permissions-role-panel,
-    .interop-template-panel {
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      background: #f8fafc;
-      padding: 10px;
-      display: grid;
-      gap: 8px;
-    }
-    .compare-summary-grid,
-    .permissions-role-grid,
-    .interop-template-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 8px;
-    }
-    .compare-stat,
-    .permission-role-card,
-    .interop-template-card {
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      background: #fff;
-      padding: 9px;
-      min-width: 0;
-    }
-    .compare-stat strong,
-    .permission-role-card strong,
-    .interop-template-card strong { display: block; margin-bottom: 3px; }
-    .compare-changes-list { margin: 0; padding-left: 18px; color: var(--muted); font-size: 12px; line-height: 1.35; }
-    .permission-role-card.active { border-color: var(--accent); box-shadow: inset 0 0 0 2px rgba(37,99,235,.12); background: #eff6ff; }
-    .permission-role-card button,
-    .interop-template-card button { margin-top: 7px; width: 100%; white-space: normal; }
-    .permission-status-pill { display:inline-flex; align-items:center; justify-content:center; border-radius:999px; padding:3px 7px; font-size:11px; font-weight:900; border:1px solid var(--border); background:#fff; color:var(--muted); }
-    body.permission-no-edit .cell-actions button,
-    body.permission-no-edit button[data-edit-student],
-    body.permission-no-edit button[data-delete-student] { pointer-events: none; opacity: .48; }
-    body.permission-hide-bubbles .bubble-color-bar,
-    body.permission-hide-bubbles .student-bubble-dots,
-    body.permission-hide-bubbles .cell-zone-tags,
-    body.permission-hide-bubbles .anchor-dot,
-    body.permission-hide-bubbles .pill.together,
-    body.permission-hide-bubbles .pill.avoid,
-    body.permission-hide-bubbles .pill.special { display: none !important; }
-    body.permission-hide-side-students .left-panel,
-    body.permission-hide-side-status .right-panel { display: none !important; }
-    body.permission-hide-side-students.permission-hide-side-status .app { grid-template-columns: minmax(0, 1fr) !important; }
-    body.permission-hide-side-students:not(.permission-hide-side-status) .app { grid-template-columns: minmax(0, 1fr) var(--right-col) !important; }
-    body.permission-hide-side-status:not(.permission-hide-side-students) .app { grid-template-columns: var(--left-col) minmax(0, 1fr) !important; }
-    @media (max-width: 980px) {
-      body.permission-hide-side-students #mobilePeopleBtn,
-      body.permission-hide-side-status #mobileStatusBtn { display: none !important; }
-    }
-
-    @media (max-width: 980px) {
-      .mobile-quick-actions-button { display: inline-flex; }
-      body.mobile-carrying .mobile-quick-actions-button,
-      body.print-preview-active .mobile-quick-actions-button { display: none !important; }
-    }
-    @media (max-width: 560px) {
-      .mobile-quick-grid { grid-template-columns: 1fr; }
-      .compare-summary-grid,
-      .permissions-role-grid,
-      .interop-template-grid { grid-template-columns: 1fr; }
-    }
-
   </style>
 </head>
 <body class="left-collapsed">
@@ -7790,6 +7689,7 @@
                         <div class="save-health-card"><strong>Last save</strong><span id="saveHealthLastLinked">Never</span></div>
                         <div class="save-health-card"><strong>Backup</strong><span id="saveHealthLastBackup">Never</span></div>
                         <div class="save-health-card"><strong>Security</strong><span id="saveHealthEncryption">Checking...</span></div>
+                        <div class="save-health-card"><strong>Google Drive</strong><span id="saveHealthGoogleDriveStatus">Not connected.</span></div>
                         <div class="save-health-card"><strong>Status</strong><span id="saveHealthLinkedStatus">Ready</span></div>
                       </div>
                       <div class="autosave-setting-row">
@@ -7802,6 +7702,26 @@
                       <div class="save-settings-actions">
                         <button id="settingsOpenSaveSetupBtn" class="secondary" type="button">Open Save Options</button>
                         <button id="settingsForgetLinkedFileBtn" class="ghost" type="button">Forget Save File</button>
+                      </div>
+                    </section>
+                    <section class="section settings-section">
+                      <h3>Google Drive Storage</h3>
+                      <div class="hint">Optional cloud storage for encrypted saves. This public build uses the app's built-in Google OAuth Client ID. The page still must be hosted from an authorized HTTPS origin for Google Drive sign-in to work.</div>
+                      <div class="field">
+                        <label for="settingPreferredStorage">Preferred Save Now location</label>
+                        <select id="settingPreferredStorage">
+                          <option value="browser">Browser local autosave / downloads</option>
+                          <option value="linked">Linked save file when available</option>
+                          <option value="googleDrive">Google Drive</option>
+                        </select>
+                      </div>
+                      <div class="field"><label for="settingGoogleDriveFolderName">Drive folder name</label><input id="settingGoogleDriveFolderName" maxlength="120" placeholder="Seating Chart Builder Saves" /></div>
+                      <div id="googleDriveSettingsStatus" class="hint">Google Drive is not connected.</div>
+                      <div class="button-row">
+                        <button id="settingsGoogleDriveConnectBtn" class="secondary" type="button">Connect Google Drive</button>
+                        <button id="settingsGoogleDriveSaveBtn" class="secondary" type="button">Save Encrypted Copy</button>
+                        <button id="settingsGoogleDriveLoadBtn" class="secondary" type="button">Load from Drive</button>
+                        <button id="settingsGoogleDriveForgetBtn" class="secondary" type="button">Disconnect</button>
                       </div>
                     </section>
           </div>
@@ -8105,6 +8025,18 @@
               <button type="button" data-save-menu-action="import-json" class="secondary">Restore / Upload Classes File</button>
             </div>
           </section>
+          <section class="save-options-card">
+            <h3>Google Drive storage location</h3>
+            <p>Save and load the encrypted full-app save in the user's own Google Drive. This public build uses the app's built-in Google OAuth Client ID, and the encryption password still protects the data before upload.</p>
+            <div class="field"><label for="saveOptionGoogleDriveFolderName">Drive folder name</label><input id="saveOptionGoogleDriveFolderName" maxlength="120" placeholder="Seating Chart Builder Saves" /></div>
+            <div id="googleDriveSaveOptionsStatus" class="hint">Google Drive is not connected.</div>
+            <div class="save-options-actions">
+              <button type="button" data-save-menu-action="google-drive-connect" class="secondary">Connect Google Drive</button>
+              <button type="button" data-save-menu-action="google-drive-save" class="secondary">Save Encrypted Copy to Drive</button>
+              <button type="button" data-save-menu-action="google-drive-load" class="secondary">Load from Google Drive</button>
+              <button type="button" data-save-menu-action="google-drive-disconnect" class="secondary">Disconnect / Forget Drive Link</button>
+            </div>
+          </section>
         </div>
         <div id="saveSetupStatus" class="hint save-setup-status">Tip: student data downloads are encrypted automatically when an encryption key is available.</div>
         <div class="button-row" style="margin-top:12px; justify-content:flex-end;">
@@ -8378,6 +8310,9 @@
     const SAVE_META_STORAGE_KEY = 'seating-chart-save-meta-v1';
     const SAVE_SETUP_STORAGE_KEY = 'seating-chart-save-setup-v1';
     const LOCAL_AUTOSAVE_SNAPSHOT_KEY = 'seating-chart-bubble-builder-app-snapshots-v1';
+    const GOOGLE_DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.file';
+    const GOOGLE_DRIVE_CLIENT_ID = '288395515246-c1gk2vvpf5b63jlgv367vm26k81ofqdv.apps.googleusercontent.com';
+    const GOOGLE_DRIVE_APP_PROPERTY = 'seating-chart-builder';
 
     const PAGE_LOCK_CREDENTIAL_KEY = 'seating-chart-bubble-builder-lock-v1';
     const PAGE_LOCK_SESSION_KEY = 'seating-chart-bubble-builder-locked-session-v1';
@@ -8388,7 +8323,7 @@
     const WELCOME_SETUP_STORAGE_KEY = 'seating-chart-bubble-builder-secure-welcome-v1';
     const VISIBILITY_CREDENTIAL_KEY = 'seating-chart-bubble-builder-visibility-v1';
     const HINT_DISMISS_STORAGE_KEY = 'seating-chart-bubble-builder-dismissed-hints-v1';
-    const APP_REVISION = '1.18.22';
+    const APP_REVISION = '1.18.23';
     const APP_LAST_UPDATED = 'June 27, 2026';
 
     const APP_LICENSE = {
@@ -8441,7 +8376,7 @@
       { title: 'Snapshots, templates, and recovery', text: 'Use undo/redo, save named full-app snapshots, restore snapshots with the active session key, keep the encrypted snapshot index private, automatically create return points before restores, reuse room templates, download printable PDF/SVG copies, and clear local data from Settings.' },
       { title: 'Student data quality', text: 'Use CSV field mapping, duplicate detection, and categorized student notes for private, substitute, and public visibility.' },
       { title: 'Searchable help guide', text: 'Use the Help icon beside Settings to search every major feature, read examples, review security recommendations, and jump into the interactive How-To Tour.' },
-      { title: 'Safer saving', text: 'Use a linked save file when the browser supports it, turn on auto-save, download dated backup packages or selected-data files, and watch the top banner when the app is saving only inside the browser.' },
+      { title: 'Safer saving', text: 'Use encrypted browser local autosave, a linked save file when the browser supports it, optional Google Drive storage using the built-in app OAuth Client ID, dated backup packages, or selected-data files. The top banner warns when data is only saved inside the browser.' },
       { title: 'Full reset and storage clarity', text: 'Use Clear Local Data for app-local cleanup or Factory Reset Everything to wipe browser storage, saved file permissions, session data, cookies available to this page, settings, classes, templates, and snapshots after a warning.' },
       { title: 'Licensing and ownership', text: 'View the embedded MIT License terms from About or Settings. Complete backups include license metadata so the file identifies the app source, copyright holder, and permissive reuse terms.' },
       { title: 'Settings subpages', text: 'Settings are split into Chart, Appearance, Eye Mode, Saving, Security & Data, Room Objects, and About pages inside one large fixed-size window so the popup stays steady while switching topics.' },
@@ -8449,7 +8384,8 @@
     ];
 
     const CHANGE_LOG = [
-      { version: '1.18.22', date: 'June 27, 2026', changes: ['Added a mobile quick-action sheet for common phone/tablet workflows including add student, import CSV, snapshot, print, save, lock, and Settings.', 'Added What Changed compare summaries for snapshot previews and selective file restores so users can see counts and likely changes before replacing data.', 'Expanded import/export interoperability with downloadable roster CSV templates, current roster CSV export with a warning, bubble/zone and room-layout templates, and a template package.', 'Added a real view-permissions model with Teacher, Substitute, Student Display, Admin Review, and Privacy Review roles that drive display names, visible student details, notes access, and edit/privacy behavior.'] },
+      { version: '1.18.23', date: 'June 27, 2026', changes: ['Converted Google Drive storage to use the public app OAuth Client ID internally instead of asking each user to enter a Client ID.', 'Removed user-facing Google OAuth Client ID fields from Settings and Save & Backup Options.', 'Updated Google Drive setup text, status messages, and save/load checks for the public-app Drive workflow.'] },
+      { version: '1.18.22', date: 'June 27, 2026', changes: ['Added optional Google Drive as a save/load storage location using Google Identity Services and Drive API from the browser.', 'Google Drive uploads use the existing encrypted full-save payload only; student data is encrypted before it leaves the browser.', 'Added Google Drive folder name, connect, save, load, and disconnect controls in Save & Backup Options and Settings > Saving.', 'Save health now reports Google Drive connection/sync state, and manual Save Now can use Google Drive when selected as the preferred storage location.'] },
       { version: '1.18.21', date: 'June 27, 2026', changes: ['Performed a full static security/code audit pass, removed unused workflow-expansion leftovers, tightened snapshot-index encryption status checks, and made empty snapshot indexes encrypt instead of writing plaintext arrays.', 'Consolidated snapshot retention handling so snapshot loading, in-memory access, and encrypted persistence use the same configured retention limit.', 'Added audit notes for remaining browser-only security limitations and verified syntax, duplicate functions, static IDs, and dangerous JavaScript APIs.'] },
       { version: '1.18.20', date: 'June 27, 2026', changes: ['Repaired the mobile Security Setup screen so the checklist scrolls inside the modal instead of trapping content off-screen.', 'Made Security Setup actions stay reachable on small screens while the checklist rows scroll independently.', 'Opening a Security Setup row now keeps that row in view on mobile after the accordion collapses the others.'] },
       { version: '1.18.19', date: 'June 27, 2026', changes: ['Removed Settings navigation dot separators so stacked page labels align cleanly.', 'Changed the Security Setup checklist into a one-open-row accordion so opening one setup item collapses the others.', 'Added valid-entry autosave for Security Setup options so Lock PIN, Eye PIN, Settings access, and auto-lock changes persist without requiring the Save Security Setup button before Done.'] },
@@ -8589,6 +8525,12 @@
       linkedSaveStatus: 'No linked file selected.',
       linkedSaveLastSignature: '',
       linkedSaveAutoTimer: null,
+      googleDriveAccessToken: '',
+      googleDriveTokenExpiresAt: 0,
+      googleDriveTokenClient: null,
+      googleDriveBusy: false,
+      googleDriveStatus: 'Google Drive is not connected.',
+      googleDriveLastSyncAt: '',
       restoreImportDraft: null,
       activeSettingsPage: 'chart',
       appSnapshotsCache: null,
@@ -8632,6 +8574,13 @@
       addStudentCollapsed: true,
       hideHints: false,
       autoSaveMinutes: 1,
+      preferredStorage: 'browser',
+      googleDriveClientId: GOOGLE_DRIVE_CLIENT_ID,
+      googleDriveFolderName: 'Seating Chart Builder Saves',
+      googleDriveFolderId: '',
+      googleDriveFileId: '',
+      googleDriveFileName: '',
+      googleDriveLastSavedAt: '',
       defaultSideTab: 'students',
       designCellSize: 28,
       settingsAccessMethod: 'auto',
@@ -8674,6 +8623,13 @@
         addStudentCollapsed: source.addStudentCollapsed ?? DEFAULT_PAGE_SETTINGS.addStudentCollapsed,
         hideHints: source.hideHints ?? DEFAULT_PAGE_SETTINGS.hideHints,
         autoSaveMinutes: clampNumber(source.autoSaveMinutes ?? (source.autoSaveLinkedFile ? 3 : DEFAULT_PAGE_SETTINGS.autoSaveMinutes), 0, 120),
+        preferredStorage: ['browser','linked','googleDrive'].includes(source.preferredStorage) ? source.preferredStorage : DEFAULT_PAGE_SETTINGS.preferredStorage,
+        googleDriveClientId: GOOGLE_DRIVE_CLIENT_ID,
+        googleDriveFolderName: String(source.googleDriveFolderName || DEFAULT_PAGE_SETTINGS.googleDriveFolderName || 'Seating Chart Builder Saves').trim().slice(0, 120) || 'Seating Chart Builder Saves',
+        googleDriveFolderId: String(source.googleDriveFolderId || '').trim(),
+        googleDriveFileId: String(source.googleDriveFileId || '').trim(),
+        googleDriveFileName: String(source.googleDriveFileName || '').trim(),
+        googleDriveLastSavedAt: String(source.googleDriveLastSavedAt || '').trim(),
         defaultSideTab: ['students','bubbles','zones'].includes(source.defaultSideTab) ? source.defaultSideTab : 'students',
         designCellSize: clampNumber(source.designCellSize ?? DEFAULT_PAGE_SETTINGS.designCellSize, 20, 72),
         settingsAccessMethod: ['auto','lock','eye','encryption','none'].includes(source.settingsAccessMethod) ? source.settingsAccessMethod : DEFAULT_PAGE_SETTINGS.settingsAccessMethod,
@@ -9486,6 +9442,8 @@
       uiState.undoStack = [];
       uiState.redoStack = [];
       uiState.linkedSaveLastSignature = '';
+      uiState.googleDriveAccessToken = '';
+      uiState.googleDriveTokenExpiresAt = 0;
       scrubSensitiveDomForLock();
       hideMobileActionDrawer?.();
       updateUndoRedoButtons();
@@ -11864,6 +11822,10 @@
       settingsSampleBtn: 'Load sample students, bubbles, anchors, and a room layout into the current class so you can test the tool quickly.',
       settingsOpenSaveSetupBtn: 'Open the Save & Backup Options panel for downloads, selected-data exports, and restore/upload tools.',
       settingsForgetLinkedFileBtn: 'Forget the linked file permission without deleting the actual file.',
+      settingsGoogleDriveConnectBtn: 'Connect Google Drive with the built-in app OAuth Client ID so encrypted saves can be stored in the user\'s Drive.',
+      settingsGoogleDriveSaveBtn: 'Upload the encrypted full-app save to Google Drive.',
+      settingsGoogleDriveLoadBtn: 'Download the encrypted full-app save from Google Drive and open restore options.',
+      settingsGoogleDriveForgetBtn: 'Forget this page\'s Google Drive token and file/folder link without deleting Drive files.',
       classSelect: 'Switch between classes. Each class has its own students, bubbles, layout, seats, locks, anchors, and placements.',
       newClassBtn: 'Create a new empty class with its own independent roster, bubbles, layout, anchors, locks, and seating chart.',
       renameClassBtn: 'Rename the current class without changing its students, bubbles, layout, or seating chart.',
@@ -12636,6 +12598,9 @@
       setChecked('settingAddStudentCollapsed', cfg.addStudentCollapsed);
       setChecked('settingHideHints', cfg.hideHints);
       setValue('settingAutoSaveMinutes', cfg.autoSaveMinutes || 0);
+      setValue('settingPreferredStorage', cfg.preferredStorage || 'browser');
+      setValue('settingGoogleDriveFolderName', cfg.googleDriveFolderName || 'Seating Chart Builder Saves');
+      setValue('saveOptionGoogleDriveFolderName', cfg.googleDriveFolderName || 'Seating Chart Builder Saves');
       setValue('settingDefaultSideTab', cfg.defaultSideTab);
       setValue('settingDesignCellSize', cfg.designCellSize);
       setValue('settingSettingsAccessMethod', cfg.settingsAccessMethod || 'auto');
@@ -12693,6 +12658,13 @@
         addStudentCollapsed: checked('settingAddStudentCollapsed'),
         hideHints: checked('settingHideHints'),
         autoSaveMinutes: clampNumber(value('settingAutoSaveMinutes'), 0, 120),
+        preferredStorage: value('settingPreferredStorage') || pageSettings().preferredStorage || 'browser',
+        googleDriveClientId: GOOGLE_DRIVE_CLIENT_ID,
+        googleDriveFolderName: value('settingGoogleDriveFolderName') || pageSettings().googleDriveFolderName || 'Seating Chart Builder Saves',
+        googleDriveFolderId: pageSettings().googleDriveFolderId || '',
+        googleDriveFileId: pageSettings().googleDriveFileId || '',
+        googleDriveFileName: pageSettings().googleDriveFileName || '',
+        googleDriveLastSavedAt: pageSettings().googleDriveLastSavedAt || '',
         defaultSideTab: value('settingDefaultSideTab'),
         designCellSize: value('settingDesignCellSize'),
         settingsAccessMethod: value('settingSettingsAccessMethod'),
@@ -12727,7 +12699,7 @@
       updateSecurityStatusPanel();
       resetAutoLockTimer();
       scheduleLinkedAutoSave('settings');
-      setLiveStatusMessage('Page settings updated. Save to the linked file or download a backup copy to keep these defaults with the file.');
+      setLiveStatusMessage('Page settings updated. Save to the selected storage location or download a backup copy to keep these defaults with the file.');
     }
 
     function updatePinStatus(message = '') {
@@ -13168,7 +13140,7 @@
       if (/chartTitleInput|chartDateInput|chartPeriodInput|chartRoomInput|chartTeacherInput|saveChartDetailsBtn/.test(target)) return 'chart';
       if (/visHide|visDisable|visForceNamesOnly|visibilityCredentialNote/.test(target)) return 'eye';
       if (/settingTheme|settingDefault|settingHeaderCollapsed|settingLeftCollapsed|settingRightCollapsed|settingLayoutToolsCollapsed|settingCsvCollapsed|settingAddStudentCollapsed|settingHideHints|resetDismissedHintsBtn|settingDefaultSideTab|settingDesignCellSize/.test(target)) return 'appearance';
-      if (/settingsEncryption|settingsOpenSaveSetupBtn|settingsForgetLinkedFileBtn|saveHealth|settingAutoSaveMinutes|saveSetup/.test(target)) return 'saving';
+      if (/settingsEncryption|settingsOpenSaveSetupBtn|settingsForgetLinkedFileBtn|saveHealth|settingAutoSaveMinutes|saveSetup|GoogleDrive|settingPreferredStorage|settingGoogleDrive/.test(target)) return 'saving';
       if (/settingAutoLockMinutes|clearLocalDataBtn|factoryResetEverythingBtn|settingSettingsAccessMethod|settingsAccessStatus|settingsLockPin|settingsVisibilityPin|settingsSaveLockPinBtn|settingsSaveVisibilityPinBtn|settingsPinStatus/.test(target)) return 'security';
       if (/settingsCustomObject|customObjectManagerList|settingsSampleBtn/.test(target)) return 'room';
       if (/settingsRevision|settingsUpdated|settingsLicenseSummary|settingsChangeLogBtn|settingsLicenseBtn|settingsFeatureList/.test(target)) return 'about';
@@ -13206,6 +13178,10 @@
       if (action === 'save-primary') await writeLinkedSaveFile({ reason: 'manual', announce: true });
       if (action === 'choose-linked-file') await chooseLinkedSaveFile();
       if (action === 'load-linked') await loadFromLinkedSaveFile();
+      if (action === 'google-drive-connect') await connectGoogleDriveFromUi();
+      if (action === 'google-drive-save') await writeGoogleDriveSaveFile({ reason: 'manual', announce: true });
+      if (action === 'google-drive-load') await loadFromGoogleDriveFile();
+      if (action === 'google-drive-disconnect') forgetGoogleDriveLink();
       if (action === 'download-package') await downloadSavePackage();
       if (action === 'download-students') await downloadStudentDataJson();
       if (action === 'download-bubbles') await downloadBubbleConfigJson();
@@ -13213,7 +13189,7 @@
       if (action === 'export-all') await exportAndDownload('all');
       if (action === 'export-current') await exportAndDownload('current');
       if (action === 'import-json') el('importJson')?.click();
-      if (insideSaveOptions && action !== 'load-linked') closeSaveSetupModal(true);
+      if (insideSaveOptions && !['load-linked','google-drive-connect','google-drive-save','google-drive-load','google-drive-disconnect'].includes(action)) closeSaveSetupModal(true);
       return true;
     }
 
@@ -14052,6 +14028,7 @@
       try {
         const handle = await window.showSaveFilePicker(linkedSavePickerOptions());
         await setLinkedSaveHandle(handle);
+        updateGoogleDriveSettings({ preferredStorage: 'linked' });
         await writeLinkedSaveFile({ reason: 'manual', announce: true });
         updateSaveSetupDismissed(true);
         return handle;
@@ -14169,9 +14146,350 @@
       });
     }
 
+
+    function googleDriveConfig() {
+      const cfg = pageSettings();
+      return {
+        clientId: GOOGLE_DRIVE_CLIENT_ID,
+        folderName: String(cfg.googleDriveFolderName || 'Seating Chart Builder Saves').trim() || 'Seating Chart Builder Saves',
+        folderId: String(cfg.googleDriveFolderId || '').trim(),
+        fileId: String(cfg.googleDriveFileId || '').trim(),
+        fileName: String(cfg.googleDriveFileName || '').trim(),
+        lastSavedAt: String(cfg.googleDriveLastSavedAt || '').trim()
+      };
+    }
+
+    function googleDriveConfigured() {
+      return !!GOOGLE_DRIVE_CLIENT_ID;
+    }
+
+    function updateGoogleDriveSettings(updates = {}) {
+      uiState.pageSettings = mergePageSettings({ ...pageSettings(), ...updates });
+      updatePageSettingsForm();
+      updateSaveHealthPanel();
+    }
+
+    function escapeDriveQueryString(value) {
+      return String(value || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+    }
+
+    function syncGoogleDriveInputsToSettings(source = 'settings') {
+      const folderInput = el(source === 'saveOptions' ? 'saveOptionGoogleDriveFolderName' : 'settingGoogleDriveFolderName');
+      const folderName = String(folderInput?.value || pageSettings().googleDriveFolderName || 'Seating Chart Builder Saves').trim() || 'Seating Chart Builder Saves';
+      updateGoogleDriveSettings({ googleDriveClientId: GOOGLE_DRIVE_CLIENT_ID, googleDriveFolderName: folderName });
+      return googleDriveConfig();
+    }
+
+    function updateGoogleDriveStatus(message = '') {
+      const cfg = googleDriveConfig();
+      const connected = !!uiState.googleDriveAccessToken;
+      const fileText = cfg.fileName ? ` File: ${cfg.fileName}.` : '';
+      const base = message || uiState.googleDriveStatus || (connected ? `Connected to Google Drive.${fileText}` : 'Google Drive is not connected.');
+      uiState.googleDriveStatus = base;
+      ['googleDriveSettingsStatus','googleDriveSaveOptionsStatus','saveHealthGoogleDriveStatus'].forEach(id => {
+        const node = el(id);
+        if (node) node.textContent = base;
+      });
+    }
+
+    function loadGoogleIdentityServicesScript() {
+      if (window.google?.accounts?.oauth2) return Promise.resolve(true);
+      return new Promise((resolve, reject) => {
+        const existing = document.querySelector('script[data-google-identity-services]');
+        if (existing) {
+          existing.addEventListener('load', () => resolve(true), { once: true });
+          existing.addEventListener('error', () => reject(new Error('Could not load Google Identity Services.')), { once: true });
+          return;
+        }
+        const script = document.createElement('script');
+        script.src = 'https://accounts.google.com/gsi/client';
+        script.async = true;
+        script.defer = true;
+        script.dataset.googleIdentityServices = 'true';
+        script.onload = () => resolve(true);
+        script.onerror = () => reject(new Error('Could not load Google Identity Services. Check internet access and content-blocking settings.'));
+        document.head.appendChild(script);
+      });
+    }
+
+    function hasUsableGoogleDriveToken() {
+      return !!uiState.googleDriveAccessToken && Date.now() < Number(uiState.googleDriveTokenExpiresAt || 0) - 60000;
+    }
+
+    async function ensureGoogleDriveToken(interactive = true) {
+      if (hasUsableGoogleDriveToken()) return uiState.googleDriveAccessToken;
+      const cfg = googleDriveConfig();
+      if (!cfg.clientId) throw new Error('Google Drive is not configured for this build. Contact the app publisher.');
+      if (!interactive) throw new Error('Google Drive needs a fresh sign-in token. Use Connect Google Drive or Save to Google Drive.');
+      await loadGoogleIdentityServicesScript();
+      return new Promise((resolve, reject) => {
+        try {
+          uiState.googleDriveTokenClient = google.accounts.oauth2.initTokenClient({
+            client_id: cfg.clientId,
+            scope: GOOGLE_DRIVE_SCOPE,
+            prompt: '',
+            callback: response => {
+              if (!response || response.error) {
+                reject(new Error(response?.error_description || response?.error || 'Google authorization was canceled or failed.'));
+                return;
+              }
+              uiState.googleDriveAccessToken = response.access_token || '';
+              uiState.googleDriveTokenExpiresAt = Date.now() + (Number(response.expires_in || 3600) * 1000);
+              updateGoogleDriveStatus('Connected to Google Drive. Encrypted saves can be uploaded or loaded.');
+              resolve(uiState.googleDriveAccessToken);
+            }
+          });
+          uiState.googleDriveTokenClient.requestAccessToken({ prompt: uiState.googleDriveAccessToken ? '' : 'consent' });
+        } catch (err) {
+          reject(err);
+        }
+      });
+    }
+
+    async function googleDriveFetch(url, options = {}, interactive = true) {
+      let token = await ensureGoogleDriveToken(interactive);
+      const send = async () => fetch(url, {
+        ...options,
+        headers: {
+          ...(options.headers || {}),
+          Authorization: `Bearer ${token}`
+        }
+      });
+      let response = await send();
+      if (response.status === 401 && interactive) {
+        uiState.googleDriveAccessToken = '';
+        uiState.googleDriveTokenExpiresAt = 0;
+        token = await ensureGoogleDriveToken(true);
+        response = await send();
+      }
+      if (!response.ok) {
+        let detail = '';
+        try { detail = (await response.json())?.error?.message || ''; } catch (err) {}
+        throw new Error(detail || `Google Drive request failed (${response.status}).`);
+      }
+      return response;
+    }
+
+    async function findGoogleDriveAppFolder() {
+      const cfg = googleDriveConfig();
+      if (cfg.folderId) return cfg.folderId;
+      const q = [
+        "mimeType = 'application/vnd.google-apps.folder'",
+        'trashed = false',
+        `name = '${escapeDriveQueryString(cfg.folderName)}'`,
+        `appProperties has { key='app' and value='${GOOGLE_DRIVE_APP_PROPERTY}' }`
+      ].join(' and ');
+      const url = `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(q)}&fields=files(id,name)&spaces=drive&pageSize=10`;
+      const response = await googleDriveFetch(url, { method: 'GET' });
+      const data = await response.json();
+      const found = Array.isArray(data.files) && data.files[0];
+      if (found?.id) {
+        updateGoogleDriveSettings({ googleDriveFolderId: found.id });
+        return found.id;
+      }
+      return '';
+    }
+
+    async function createGoogleDriveAppFolder() {
+      const cfg = googleDriveConfig();
+      const metadata = {
+        name: cfg.folderName,
+        mimeType: 'application/vnd.google-apps.folder',
+        appProperties: { app: GOOGLE_DRIVE_APP_PROPERTY, kind: 'save-folder' }
+      };
+      const response = await googleDriveFetch('https://www.googleapis.com/drive/v3/files?fields=id,name', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(metadata)
+      });
+      const created = await response.json();
+      updateGoogleDriveSettings({ googleDriveFolderId: created.id || '', googleDriveFolderName: created.name || cfg.folderName });
+      return created.id;
+    }
+
+    async function ensureGoogleDriveAppFolder() {
+      return await findGoogleDriveAppFolder() || await createGoogleDriveAppFolder();
+    }
+
+    function googleDriveMultipartBody(metadata, content, contentType = 'application/json') {
+      const boundary = `seating_chart_boundary_${Date.now().toString(36)}_${Math.random().toString(36).slice(2)}`;
+      const body = [
+        `--${boundary}`,
+        'Content-Type: application/json; charset=UTF-8',
+        '',
+        JSON.stringify(metadata),
+        `--${boundary}`,
+        `Content-Type: ${contentType}; charset=UTF-8`,
+        '',
+        content,
+        `--${boundary}--`,
+        ''
+      ].join('\r\n');
+      return { boundary, body };
+    }
+
+    function googleDriveCurrentSaveFileName() {
+      const classPart = String(activeClassRecord()?.name || 'all-classes').replace(/[^a-z0-9._ -]+/gi, '-').replace(/\s+/g, '-').slice(0, 50) || 'all-classes';
+      return `seating-chart-${classPart}-current-encrypted.json`;
+    }
+
+    async function uploadGoogleDriveCurrentSave(payload, folderId) {
+      const cfg = googleDriveConfig();
+      const fileName = cfg.fileName || googleDriveCurrentSaveFileName();
+      const metadata = {
+        name: fileName,
+        mimeType: 'application/json',
+        appProperties: {
+          app: GOOGLE_DRIVE_APP_PROPERTY,
+          kind: 'current-save',
+          encrypted: 'true',
+          revision: APP_REVISION
+        }
+      };
+      if (!cfg.fileId && folderId) metadata.parents = [folderId];
+      const { boundary, body } = googleDriveMultipartBody(metadata, payload, 'application/json');
+      const isUpdate = !!cfg.fileId;
+      const url = isUpdate
+        ? `https://www.googleapis.com/upload/drive/v3/files/${encodeURIComponent(cfg.fileId)}?uploadType=multipart&fields=id,name,modifiedTime,webViewLink`
+        : 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,modifiedTime,webViewLink';
+      const response = await googleDriveFetch(url, {
+        method: isUpdate ? 'PATCH' : 'POST',
+        headers: { 'Content-Type': `multipart/related; boundary=${boundary}` },
+        body
+      });
+      return response.json();
+    }
+
+    async function connectGoogleDriveFromUi() {
+      try {
+        syncGoogleDriveInputsToSettings(document.activeElement?.id?.startsWith('saveOption') ? 'saveOptions' : 'settings');
+        await ensureGoogleDriveToken(true);
+        const folderId = await ensureGoogleDriveAppFolder();
+        updateGoogleDriveSettings({ preferredStorage: 'googleDrive', googleDriveFolderId: folderId });
+        updateSaveSetupDismissed(true);
+        updateGoogleDriveStatus('Connected to Google Drive. Folder is ready for encrypted saves.');
+        setLiveStatusMessage('Google Drive connected. Encrypted saves can now use Drive storage.');
+        await writeLocalBrowserSave({ reason: 'settings', announce: false });
+        return true;
+      } catch (err) {
+        updateGoogleDriveStatus(`Google Drive connection failed: ${err.message}`);
+        setLiveStatusMessage(`Google Drive connection failed: ${err.message}`);
+        return false;
+      }
+    }
+
+    async function writeGoogleDriveSaveFile(options = {}) {
+      const reason = options.reason || 'manual';
+      const announce = options.announce !== false;
+      try {
+        if (uiState.googleDriveBusy) return false;
+        syncGoogleDriveInputsToSettings(document.activeElement?.id?.startsWith('saveOption') ? 'saveOptions' : 'settings');
+        if (!googleDriveConfigured()) throw new Error('Google Drive is not configured for this build.');
+        if (!currentSessionEncryptionKey()) throw new Error('A session encryption password is required before saving to Google Drive.');
+        if (reason === 'auto' && !hasUsableGoogleDriveToken()) {
+          updateGoogleDriveStatus('Google Drive auto-save is pending. Open Save Options and connect Google Drive to refresh access.');
+          return writeLocalBrowserSave({ reason: 'auto', announce: false });
+        }
+        uiState.googleDriveBusy = true;
+        updateGoogleDriveStatus('Saving encrypted copy to Google Drive...');
+        const folderId = await ensureGoogleDriveAppFolder();
+        const payload = await exportPayload('all');
+        const saved = await uploadGoogleDriveCurrentSave(payload, folderId);
+        const now = saved.modifiedTime || new Date().toISOString();
+        updateGoogleDriveSettings({
+          preferredStorage: 'googleDrive',
+          googleDriveFolderId: folderId,
+          googleDriveFileId: saved.id || pageSettings().googleDriveFileId || '',
+          googleDriveFileName: saved.name || googleDriveCurrentSaveFileName(),
+          googleDriveLastSavedAt: now
+        });
+        uiState.googleDriveLastSyncAt = now;
+        uiState.linkedSaveLastSignature = currentSaveSignature();
+        updateSaveMeta({ googleDriveLastSavedAt: now, lastBackupAt: now, localSaveActive: true });
+        updateGoogleDriveStatus(`Saved encrypted copy to Google Drive: ${saved.name || 'current save'}.`);
+        if (announce) setLiveStatusMessage(`Saved encrypted copy to Google Drive: ${saved.name || 'current save'}.`);
+        updateSaveSetupDismissed(true);
+        updateSaveHealthPanel();
+        await writeLocalBrowserSave({ reason: 'google-drive-mirror', announce: false });
+        return true;
+      } catch (err) {
+        updateGoogleDriveStatus(`Google Drive save failed: ${err.message}`);
+        if (announce || reason !== 'auto') setLiveStatusMessage(`Google Drive save failed: ${err.message}`);
+        updateSaveHealthPanel();
+        return false;
+      } finally {
+        uiState.googleDriveBusy = false;
+      }
+    }
+
+    async function findGoogleDriveCurrentSaveFile() {
+      const cfg = googleDriveConfig();
+      if (cfg.fileId) return { id: cfg.fileId, name: cfg.fileName || 'Google Drive save' };
+      const folderId = await ensureGoogleDriveAppFolder();
+      const q = [
+        'trashed = false',
+        `'${escapeDriveQueryString(folderId)}' in parents`,
+        `appProperties has { key='app' and value='${GOOGLE_DRIVE_APP_PROPERTY}' }`,
+        "appProperties has { key='kind' and value='current-save' }"
+      ].join(' and ');
+      const url = `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(q)}&fields=files(id,name,modifiedTime,size)&spaces=drive&pageSize=10&orderBy=modifiedTime desc`;
+      const response = await googleDriveFetch(url, { method: 'GET' });
+      const data = await response.json();
+      return Array.isArray(data.files) && data.files[0] ? data.files[0] : null;
+    }
+
+    async function loadFromGoogleDriveFile() {
+      const load = async () => {
+        try {
+          syncGoogleDriveInputsToSettings(document.activeElement?.id?.startsWith('saveOption') ? 'saveOptions' : 'settings');
+          await ensureGoogleDriveToken(true);
+          const file = await findGoogleDriveCurrentSaveFile();
+          if (!file?.id) throw new Error('No app-created current save was found in the configured Google Drive folder.');
+          updateGoogleDriveStatus(`Downloading encrypted save from Google Drive: ${file.name || 'current save'}...`);
+          const response = await googleDriveFetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(file.id)}?alt=media`, { method: 'GET' });
+          const text = await response.text();
+          await importStateFromText(text, 'Google Drive save');
+          updateGoogleDriveSettings({ preferredStorage: 'googleDrive', googleDriveFileId: file.id, googleDriveFileName: file.name || '' });
+          updateGoogleDriveStatus(`Restore options opened for Google Drive save: ${file.name || 'current save'}.`);
+          setLiveStatusMessage('Google Drive save downloaded. Choose what to restore.');
+          updateSaveSetupDismissed(true);
+          updateSaveHealthPanel();
+          return true;
+        } catch (err) {
+          updateGoogleDriveStatus(`Google Drive load failed: ${err.message}`);
+          setLiveStatusMessage(`Google Drive load failed: ${err.message}`);
+          updateSaveHealthPanel();
+          return false;
+        }
+      };
+      showInAppConfirm('Load the encrypted save from Google Drive? You will choose whether to restore everything or only selected parts after it downloads.', () => { load(); }, {
+        title: 'Load from Google Drive?',
+        confirmText: 'Download and Review',
+        cancelText: 'Cancel'
+      });
+      return true;
+    }
+
+    function forgetGoogleDriveLink() {
+      uiState.googleDriveAccessToken = '';
+      uiState.googleDriveTokenExpiresAt = 0;
+      uiState.googleDriveTokenClient = null;
+      updateGoogleDriveSettings({
+        preferredStorage: pageSettings().preferredStorage === 'googleDrive' ? 'browser' : pageSettings().preferredStorage,
+        googleDriveFolderId: '',
+        googleDriveFileId: '',
+        googleDriveFileName: '',
+        googleDriveLastSavedAt: ''
+      });
+      updateGoogleDriveStatus('Google Drive disconnected. Existing Drive files were not deleted.');
+      setLiveStatusMessage('Google Drive link forgotten. Existing Drive files were not deleted.');
+      void writeLocalBrowserSave({ reason: 'settings', announce: false });
+    }
+
     async function writeLinkedSaveFile(options = {}) {
       const reason = options.reason || 'manual';
       const announce = options.announce !== false;
+      if (pageSettings().preferredStorage === 'googleDrive' && googleDriveConfigured()) return writeGoogleDriveSaveFile(options);
       if (!uiState.linkedSaveHandle) {
         if (reason === 'auto') return writeLocalBrowserSave({ reason: 'auto', announce: false });
         const proceed = await offerEncryptionBeforeFirstSave();
@@ -14283,7 +14601,7 @@
     }
 
     function maybePromptDurableSaveAfterLocalChanges() {
-      if (uiState.linkedSaveHandle || appIsEmbeddedFrame()) return;
+      if (uiState.linkedSaveHandle || (pageSettings().preferredStorage === 'googleDrive' && googleDriveConfigured()) || appIsEmbeddedFrame()) return;
       const meta = saveMeta();
       const count = Number(meta.localOnlyChangeCount || 0);
       const lastPrompt = Number(meta.localSavePromptCount || 0);
@@ -14307,7 +14625,10 @@
       if (sig === uiState.linkedSaveLastSignature) return;
       clearTimeout(uiState.linkedSaveAutoTimer);
       const reasonLabel = reason === 'settings' ? 'settings change' : reason === 'pending-save' ? 'pending save' : 'change';
-      if (uiState.linkedSaveHandle) {
+      if (pageSettings().preferredStorage === 'googleDrive' && googleDriveConfigured()) {
+        uiState.linkedSaveStatus = `Unsaved ${reasonLabel} queued for Google Drive auto-save in ${minutes} minute${minutes === 1 ? '' : 's'}.`;
+        updateGoogleDriveStatus(uiState.linkedSaveStatus);
+      } else if (uiState.linkedSaveHandle) {
         uiState.linkedSaveStatus = `Unsaved ${reasonLabel} queued for auto-save in ${minutes} minute${minutes === 1 ? '' : 's'}.`;
       } else {
         uiState.linkedSaveStatus = `Browser local auto-save queued in ${minutes} minute${minutes === 1 ? '' : 's'}.`;
@@ -14315,7 +14636,8 @@
       }
       updateSaveHealthPanel();
       uiState.linkedSaveAutoTimer = setTimeout(() => {
-        if (uiState.linkedSaveHandle) writeLinkedSaveFile({ reason: 'auto', announce: false });
+        if (pageSettings().preferredStorage === 'googleDrive' && googleDriveConfigured()) writeGoogleDriveSaveFile({ reason: 'auto', announce: false });
+        else if (uiState.linkedSaveHandle) writeLinkedSaveFile({ reason: 'auto', announce: false });
         else writeLocalBrowserSave({ reason: 'auto', announce: false });
       }, minutes * 60 * 1000);
     }
@@ -14325,6 +14647,8 @@
     }
 
     function openSaveSetupModal() {
+      updatePageSettingsForm();
+      updateGoogleDriveStatus();
       renderSaveHealthPanel();
       const modal = el('saveSetupModal');
       if (!modal) return;
@@ -14347,6 +14671,7 @@
     function updateSaveHealthPanel(statusOverride = '') {
       const meta = saveMeta();
       const linked = !!uiState.linkedSaveHandle;
+      const googleDrivePreferred = pageSettings().preferredStorage === 'googleDrive' && googleDriveConfigured();
       const supported = linkedSaveApiSupported();
       const localActive = !!meta.localSaveActive || !!safeStorageGet('localStorage', STORAGE_KEY);
       const methodNode = el('saveHealthMethod');
@@ -14355,13 +14680,14 @@
       const backupNode = el('saveHealthLastBackup');
       const encryptionNode = el('saveHealthEncryption');
       const statusNode = el('saveHealthLinkedStatus');
+      const googleNode = el('saveHealthGoogleDriveStatus');
       if (methodNode) {
-        const cls = linked ? 'good' : supported ? 'warn' : 'bad';
-        const text = linked ? 'Linked file' : localActive ? 'Browser local autosave' : supported ? 'No linked file yet' : 'Browser local autosave';
+        const cls = googleDrivePreferred ? 'good' : linked ? 'good' : supported ? 'warn' : 'bad';
+        const text = googleDrivePreferred ? 'Google Drive' : linked ? 'Linked file' : localActive ? 'Browser local autosave' : supported ? 'No linked file yet' : 'Browser local autosave';
         methodNode.innerHTML = `<span class="save-method-badge ${cls}">${escapeHtml(text)}</span>`;
       }
-      if (fileNode) fileNode.textContent = linked ? (uiState.linkedSaveFileName || meta.linkedFileName || 'Linked save file') : 'Browser local save is active by default.';
-      if (linkedNode) linkedNode.textContent = linked ? formatSaveDate(meta.linkedLastSavedAt) : formatSaveDate(meta.localLastSavedAt);
+      if (fileNode) fileNode.textContent = googleDrivePreferred ? (pageSettings().googleDriveFileName || pageSettings().googleDriveFolderName || 'Google Drive app folder') : linked ? (uiState.linkedSaveFileName || meta.linkedFileName || 'Linked save file') : 'Browser local save is active by default.';
+      if (linkedNode) linkedNode.textContent = googleDrivePreferred ? formatSaveDate(pageSettings().googleDriveLastSavedAt || meta.googleDriveLastSavedAt) : linked ? formatSaveDate(meta.linkedLastSavedAt) : formatSaveDate(meta.localLastSavedAt);
       if (backupNode) backupNode.textContent = formatSaveDate(meta.lastBackupAt || meta.lastPackageAt);
       if (encryptionNode) encryptionNode.textContent = currentSessionEncryptionKey()
         ? 'Full-save encryption ready. Local saves, linked saves, downloads, snapshots, settings, roster data, notes, bubbles, zones, and room data will be encrypted.'
@@ -14370,21 +14696,22 @@
           : hasSensitiveStudentNotes()
             ? 'Private or Substitute notes exist. Set the session encryption password before saving or downloading.'
             : 'Encryption password is not set. Secure save/export is blocked until a session password is active.';
-      if (statusNode) statusNode.textContent = statusOverride || uiState.linkedSaveStatus || (linked ? 'Ready.' : 'Browser local autosave is active. Choose a save file for safer long-term storage.');
+      if (googleNode) googleNode.textContent = googleDriveConfigured() ? (uiState.googleDriveStatus || `Configured folder: ${pageSettings().googleDriveFolderName || 'Seating Chart Builder Saves'}.`) : 'Not connected. Use Connect Google Drive to authorize encrypted Drive storage.';
+      if (statusNode) statusNode.textContent = statusOverride || (googleDrivePreferred ? (uiState.googleDriveStatus || 'Google Drive is selected.') : uiState.linkedSaveStatus) || (linked ? 'Ready.' : 'Browser local autosave is active. Choose a save file for safer long-term storage.');
       const auto = el('settingAutoSaveMinutes');
       if (auto && String(auto.value) !== String(pageSettings().autoSaveMinutes || 0)) auto.value = pageSettings().autoSaveMinutes || 0;
       const inline = el('inlineSaveStatus');
       if (inline) {
-        const hasSaveFile = linked || !!meta.linkedFileName;
+        const hasSaveFile = googleDrivePreferred || linked || !!meta.linkedFileName;
         inline.hidden = !hasSaveFile;
         if (hasSaveFile) {
-          const last = meta.linkedLastSavedAt || '';
-          inline.textContent = last ? `Saved ${formatSaveDate(last)}` : `Save file: ${uiState.linkedSaveFileName || meta.linkedFileName || 'selected'}`;
-          inline.title = `Save file: ${uiState.linkedSaveFileName || meta.linkedFileName || 'Linked save file'}`;
+          const last = googleDrivePreferred ? (pageSettings().googleDriveLastSavedAt || meta.googleDriveLastSavedAt || '') : (meta.linkedLastSavedAt || '');
+          inline.textContent = last ? `Saved ${formatSaveDate(last)}` : `Save: ${googleDrivePreferred ? 'Google Drive' : (uiState.linkedSaveFileName || meta.linkedFileName || 'selected')}`;
+          inline.title = googleDrivePreferred ? `Google Drive folder: ${pageSettings().googleDriveFolderName || 'Seating Chart Builder Saves'}` : `Save file: ${uiState.linkedSaveFileName || meta.linkedFileName || 'Linked save file'}`;
         }
       }
       const menuStatus = el('saveMenuStatus');
-      if (menuStatus) menuStatus.textContent = linked ? `Using: ${uiState.linkedSaveFileName || meta.linkedFileName || 'Linked save file'} • Last save: ${formatSaveDate(meta.linkedLastSavedAt)}` : `Browser local autosave active • Last save: ${formatSaveDate(meta.localLastSavedAt)}`;
+      if (menuStatus) menuStatus.textContent = googleDrivePreferred ? `Using: Google Drive • ${pageSettings().googleDriveFileName || pageSettings().googleDriveFolderName || 'configured'} • Last save: ${formatSaveDate(pageSettings().googleDriveLastSavedAt || meta.googleDriveLastSavedAt)}` : linked ? `Using: ${uiState.linkedSaveFileName || meta.linkedFileName || 'Linked save file'} • Last save: ${formatSaveDate(meta.linkedLastSavedAt)}` : `Browser local autosave active • Last save: ${formatSaveDate(meta.localLastSavedAt)}`;
       updateLocalSaveBanner();
       updateSecurityStatusPanel();
     }
@@ -18626,6 +18953,13 @@ This will replace the current classes, settings, room templates, and active layo
       el('settingsApplyEncryptionKeyBtn')?.addEventListener('click', applySettingsEncryptionKeyChange);
       el('settingsOpenSaveSetupBtn')?.addEventListener('click', openSaveSetupModal);
       el('localSaveBannerInfoBtn')?.addEventListener('click', openSaveSetupModal);
+      el('settingsGoogleDriveConnectBtn')?.addEventListener('click', connectGoogleDriveFromUi);
+      el('settingsGoogleDriveSaveBtn')?.addEventListener('click', () => writeGoogleDriveSaveFile({ reason: 'manual', announce: true }));
+      el('settingsGoogleDriveLoadBtn')?.addEventListener('click', loadFromGoogleDriveFile);
+      el('settingsGoogleDriveForgetBtn')?.addEventListener('click', forgetGoogleDriveLink);
+      ['saveOptionGoogleDriveFolderName'].forEach(id => {
+        el(id)?.addEventListener('input', () => syncGoogleDriveInputsToSettings('saveOptions'));
+      });
       el('settingsForgetLinkedFileBtn')?.addEventListener('click', () => {
         showInAppConfirm('Forget the linked save file permission? This does not delete the actual file.', () => { forgetLinkedSaveFile(); }, {
           title: 'Forget Linked File?',
@@ -18636,7 +18970,7 @@ This will replace the current classes, settings, room templates, and active layo
       el('closeSaveSetupBtn')?.addEventListener('click', () => closeSaveSetupModal(false));
       el('saveSetupDoneBtn')?.addEventListener('click', () => closeSaveSetupModal(true));
       el('saveSetupModal')?.addEventListener('click', event => { if (event.target.id === 'saveSetupModal') closeSaveSetupModal(false); });
-            ['settingTheme','settingDefaultNamesOnly','settingHeaderCollapsed','settingLeftCollapsed','settingRightCollapsed','settingLayoutToolsCollapsed','settingCsvCollapsed','settingAddStudentCollapsed','settingHideHints','settingAutoSaveMinutes','settingDefaultSideTab','settingDesignCellSize','settingSettingsAccessMethod','settingAutoLockMinutes','settingAutoLockOnBlur','settingAutoLockOnTabHidden','settingAutoLockOnReturnMinutes','settingPbkdf2Iterations','visHideClassActions','visHideWizard','visHideSaveLoad','visHideSettings','visHidePrint','visHideLayoutTools','visHideStudentsPanel','visHideStatusPanel','visHideChartActions','visHideRoomHeaderActions','visForceNamesOnly','visHideBubbleDetails','visDisableSeatEditing','visDisableRoomEditing','visDisableStudentEditing','visDisableBubbleEditing'].forEach(id => {
+            ['settingTheme','settingDefaultNamesOnly','settingHeaderCollapsed','settingLeftCollapsed','settingRightCollapsed','settingLayoutToolsCollapsed','settingCsvCollapsed','settingAddStudentCollapsed','settingHideHints','settingAutoSaveMinutes','settingPreferredStorage','settingGoogleDriveFolderName','settingDefaultSideTab','settingDesignCellSize','settingSettingsAccessMethod','settingAutoLockMinutes','settingAutoLockOnBlur','settingAutoLockOnTabHidden','settingAutoLockOnReturnMinutes','settingPbkdf2Iterations','visHideClassActions','visHideWizard','visHideSaveLoad','visHideSettings','visHidePrint','visHideLayoutTools','visHideStudentsPanel','visHideStatusPanel','visHideChartActions','visHideRoomHeaderActions','visForceNamesOnly','visHideBubbleDetails','visDisableSeatEditing','visDisableRoomEditing','visDisableStudentEditing','visDisableBubbleEditing'].forEach(id => {
         const control = el(id);
         if (!control) return;
         control.addEventListener(control.tagName === 'SELECT' || control.type === 'number' ? 'input' : 'change', readPageSettingsForm);
@@ -20031,464 +20365,6 @@ This will replace the current classes, settings, room templates, and active layo
       // Initial install before initializeApp wires the built-in events.
       installWorkflowDom();
       installWorkflowEvents();
-    })();
-
-
-    /* Revision 1.18.22 mobile workflows, compare view, import/export interoperability, and permission roles */
-    (function installMobileCompareInteropPermissions11822(){
-      const VIEW_ROLE_DEFINITIONS = Object.freeze({
-        teacher: { label: 'Teacher', desc: 'Full working view with editing, all details, bubbles/zones, and note reveal access.', allowEditing: true, showStudentDetails: true, showBubblesZones: true, allowPrivateNotes: true, allowSubstituteNotes: true, allowPublicNotes: true, initialsOnly: false },
-        substitute: { label: 'Substitute', desc: 'Seating, names, public notes, and substitute notes only. Editing and private notes stay blocked.', allowEditing: false, showStudentDetails: false, showBubblesZones: false, allowPrivateNotes: false, allowSubstituteNotes: true, allowPublicNotes: true, initialsOnly: false },
-        student: { label: 'Student Display', desc: 'Projector-safe classroom display. Names or nicknames only, no notes/details, no editing.', allowEditing: false, showStudentDetails: false, showBubblesZones: false, allowPrivateNotes: false, allowSubstituteNotes: false, allowPublicNotes: false, initialsOnly: false },
-        admin: { label: 'Admin Review', desc: 'Review roster details and layout without private/substitute note reveal by default.', allowEditing: false, showStudentDetails: true, showBubblesZones: true, allowPrivateNotes: false, allowSubstituteNotes: false, allowPublicNotes: true, initialsOnly: false },
-        privacy: { label: 'Privacy Review', desc: 'Initials-only, no notes/details, no bubbles/zones, no editing.', allowEditing: false, showStudentDetails: false, showBubblesZones: false, allowPrivateNotes: false, allowSubstituteNotes: false, allowPublicNotes: false, initialsOnly: true }
-      });
-      const VIEW_ROLE_KEYS = Object.keys(VIEW_ROLE_DEFINITIONS);
-      const oldMergePageSettings22 = mergePageSettings;
-      const oldApplyPageSettings22 = applyPageSettings;
-      const oldRenderNotesEditor22 = renderNotesEditor;
-      const oldStudentDisplay22 = studentDisplay;
-      const oldStudentMetaText22 = studentMetaText;
-      const oldOpenSettingsModal22 = openSettingsModal;
-      const oldReadPageSettingsForm22 = readPageSettingsForm;
-      const oldUpdatePageSettingsForm22 = updatePageSettingsForm;
-      const oldRenderSelectiveRestoreModal22 = renderSelectiveRestoreModal;
-      const oldApplySelectiveRestore22 = applySelectiveRestore;
-
-      PROJECT_FEATURES.unshift({ title: 'Mobile workflows, compare tools, templates, and view permissions', text: 'Use mobile quick actions, role-based view permissions, What Changed compare summaries before restore/preview work, and downloadable import/export templates for easier roster, bubble, zone, and room-layout interoperability.' });
-
-      function normalizeViewRoleKey(value) {
-        const key = String(value || '').trim();
-        return VIEW_ROLE_KEYS.includes(key) ? key : 'teacher';
-      }
-
-      mergePageSettings = function(value) {
-        const base = oldMergePageSettings22(value);
-        const source = value && typeof value === 'object' ? value : {};
-        return {
-          ...base,
-          activePermissionRole: normalizeViewRoleKey(source.activePermissionRole || source.privacyDisplayMode || 'teacher'),
-          enableMobileQuickActions: source.enableMobileQuickActions ?? true,
-          compareBeforeRestore: source.compareBeforeRestore ?? true,
-          interoperabilityWarnings: source.interoperabilityWarnings ?? true
-        };
-      };
-
-      function currentViewRole() { return normalizeViewRoleKey(pageSettings().activePermissionRole || pageSettings().privacyDisplayMode || 'teacher'); }
-      function currentViewPermissions() { return VIEW_ROLE_DEFINITIONS[currentViewRole()] || VIEW_ROLE_DEFINITIONS.teacher; }
-      function roleInitials(student) {
-        const first = String(student?.firstName || '').trim();
-        const last = String(student?.lastName || '').trim();
-        const nick = String(student?.nickName || student?.nickname || student?.nick || '').trim();
-        const parts = (first || last) ? [first, last] : nick.split(/\s+/);
-        const initials = parts.filter(Boolean).slice(0, 2).map(part => part[0]?.toUpperCase() || '').join('');
-        return initials || 'Student';
-      }
-
-      studentDisplay = function(student) {
-        const perms = currentViewPermissions();
-        if (perms.initialsOnly) return roleInitials(student);
-        if (currentViewRole() === 'student') return String(student?.nickName || student?.nickname || student?.nick || student?.firstName || oldStudentDisplay22(student));
-        return oldStudentDisplay22(student);
-      };
-
-      studentMetaText = function(student) {
-        return currentViewPermissions().showStudentDetails ? oldStudentMetaText22(student) : '';
-      };
-
-      function applyPermissionBodyFlags() {
-        const perms = currentViewPermissions();
-        const role = currentViewRole();
-        document.body.classList.toggle('permission-no-edit', !perms.allowEditing);
-        document.body.classList.toggle('permission-hide-bubbles', !perms.showBubblesZones);
-        document.body.classList.toggle('permission-hide-side-students', role === 'student' || role === 'privacy');
-        document.body.classList.toggle('permission-hide-side-status', role === 'student' || role === 'privacy');
-        document.body.dataset.viewRole = role;
-      }
-
-      function permissionVisibilityPatchForRole(role) {
-        const perms = VIEW_ROLE_DEFINITIONS[role] || VIEW_ROLE_DEFINITIONS.teacher;
-        if (role === 'teacher') {
-          return {
-            hideClassActions: false, hideWizard: false, hideSaveLoad: false, hideSettings: false, hidePrint: false,
-            hideLayoutTools: false, hideStudentsPanel: false, hideStatusPanel: false, hideChartActions: false,
-            hideRoomHeaderActions: false, forceNamesOnly: !!perms.initialsOnly, hideBubbleDetails: !perms.showBubblesZones,
-            disableSeatEditing: !perms.allowEditing, disableRoomEditing: !perms.allowEditing, disableStudentEditing: !perms.allowEditing, disableBubbleEditing: !perms.allowEditing
-          };
-        }
-        return {
-          hideClassActions: !perms.allowEditing,
-          hideWizard: true,
-          hideSaveLoad: role !== 'admin',
-          hideSettings: role !== 'admin',
-          hidePrint: false,
-          hideLayoutTools: !perms.allowEditing,
-          hideStudentsPanel: role === 'student' || role === 'privacy',
-          hideStatusPanel: role === 'student' || role === 'privacy',
-          hideChartActions: !perms.allowEditing,
-          hideRoomHeaderActions: !perms.allowEditing,
-          forceNamesOnly: true,
-          hideBubbleDetails: !perms.showBubblesZones,
-          disableSeatEditing: !perms.allowEditing,
-          disableRoomEditing: !perms.allowEditing,
-          disableStudentEditing: !perms.allowEditing,
-          disableBubbleEditing: !perms.allowEditing
-        };
-      }
-
-      function applyViewRole(role, options = {}) {
-        const nextRole = normalizeViewRoleKey(role);
-        const current = pageSettings();
-        uiState.pageSettings = mergePageSettings({
-          ...current,
-          activePermissionRole: nextRole,
-          privacyDisplayMode: nextRole,
-          visibility: { ...current.visibility, ...permissionVisibilityPatchForRole(nextRole) }
-        });
-        applyPageSettings(uiState.pageSettings, { skipRender: !!options.skipRender });
-        renderViewPermissionPanel();
-        updateMobileQuickRoleLabel();
-        if (!options.skipSave) void writeLocalBrowserSave({ reason: 'view-role', announce: false });
-        setLiveStatusMessage(`${VIEW_ROLE_DEFINITIONS[nextRole].label} view permissions applied.`);
-      }
-
-      applyPageSettings = function(settings = pageSettings(), options = {}) {
-        oldApplyPageSettings22(settings, options);
-        applyPermissionBodyFlags();
-        updateMobileQuickRoleLabel();
-      };
-
-      function categoryAllowedByViewRole(category) {
-        const perms = currentViewPermissions();
-        if (category === 'private') return !!perms.allowPrivateNotes;
-        if (category === 'substitute') return !!perms.allowSubstituteNotes;
-        if (category === 'public') return !!perms.allowPublicNotes;
-        return false;
-      }
-
-      renderNotesEditor = function() {
-        oldRenderNotesEditor22();
-        const draft = uiState.noteEditorDraft || { private: [], substitute: [], public: [] };
-        const list = el('notesEditorList');
-        if (!list) return;
-        ['private', 'substitute', 'public'].forEach(category => {
-          if (categoryAllowedByViewRole(category)) return;
-          const meta = NOTE_CATEGORY_META[category];
-          const count = Array.isArray(draft[category]) ? draft[category].length : 0;
-          if (!count) return;
-          Array.from(list.querySelectorAll(`[data-delete-note-category="${category}"]`)).forEach(btn => {
-            const row = btn.closest('.note-editor-row');
-            if (!row) return;
-            row.classList.add('sensitive-note-hidden');
-            const text = row.querySelector('.note-editor-text');
-            if (text) { text.classList.add('hidden-sensitive-note'); text.textContent = `${meta.label} note hidden by current ${VIEW_ROLE_DEFINITIONS[currentViewRole()].label} permissions.`; }
-            const reveal = row.querySelector('[data-reveal-note-key]');
-            if (reveal) reveal.remove();
-          });
-        });
-      };
-
-      function classSummary(cls) {
-        const c = normalizeClassRecord(cls || {});
-        return {
-          name: c.name || 'Unnamed class',
-          students: (c.students || []).length,
-          bubbles: (c.bubbles || []).length,
-          zones: (c.zones || []).length,
-          seats: Object.values(c.cells || {}).filter(cell => cell.type === 'seat').length,
-          assigned: Object.values(c.cells || {}).filter(cell => cell.assignedStudentId).length,
-          privateNotes: (c.students || []).filter(student => String(studentNoteValue(student, 'private') || '').trim()).length,
-          substituteNotes: (c.students || []).filter(student => String(studentNoteValue(student, 'substitute') || '').trim()).length,
-          publicNotes: (c.students || []).filter(student => String(studentNoteValue(student, 'public') || '').trim()).length,
-          layoutKeys: Object.keys(c.cells || {}).length
-        };
-      }
-
-      function compareClassRecords(before, after) {
-        const a = classSummary(before || {});
-        const b = classSummary(after || {});
-        const changes = [];
-        const stat = (label, key) => ({ label, before: a[key], after: b[key], delta: Number(b[key] || 0) - Number(a[key] || 0) });
-        const stats = [stat('Students', 'students'), stat('Bubbles', 'bubbles'), stat('Zones', 'zones'), stat('Seats', 'seats'), stat('Assigned seats', 'assigned'), stat('Private notes', 'privateNotes'), stat('Substitute notes', 'substituteNotes'), stat('Public notes', 'publicNotes')];
-        stats.forEach(s => { if (s.delta) changes.push(`${s.label}: ${s.before} → ${s.after} (${s.delta > 0 ? '+' : ''}${s.delta})`); });
-        const beforeIds = new Set((normalizeClassRecord(before || {}).students || []).map(s => String(s.id || '')));
-        const afterIds = new Set((normalizeClassRecord(after || {}).students || []).map(s => String(s.id || '')));
-        const added = Array.from(afterIds).filter(id => id && !beforeIds.has(id)).slice(0, 8);
-        const removed = Array.from(beforeIds).filter(id => id && !afterIds.has(id)).slice(0, 8);
-        if (added.length) changes.push(`Students added: ${added.join(', ')}${added.length >= 8 ? '…' : ''}`);
-        if (removed.length) changes.push(`Students removed: ${removed.join(', ')}${removed.length >= 8 ? '…' : ''}`);
-        return { before: a, after: b, stats, changes };
-      }
-
-      function compareSummaryHtml(title, beforeClass, afterClass, note = '') {
-        const cmp = compareClassRecords(beforeClass, afterClass);
-        return `<section class="compare-summary-panel"><h3>${escapeHtml(title)}</h3>${note ? `<div class="muted">${escapeHtml(note)}</div>` : ''}<div class="compare-summary-grid">${cmp.stats.map(s => `<div class="compare-stat"><strong>${escapeHtml(s.label)}</strong><span>${escapeHtml(s.before)} → ${escapeHtml(s.after)}${s.delta ? ` (${s.delta > 0 ? '+' : ''}${s.delta})` : ''}</span></div>`).join('')}</div>${cmp.changes.length ? `<ul class="compare-changes-list">${cmp.changes.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul>` : '<div class="successbox">No count-level changes detected. Detailed field changes may still exist.</div>'}</section>`;
-      }
-
-      renderSelectiveRestoreModal = function() {
-        oldRenderSelectiveRestoreModal22();
-        const draft = uiState.restoreImportDraft;
-        if (!draft || !pageSettings().compareBeforeRestore) return;
-        const panel = el('restorePartialPanel') || document.querySelector('#selectiveRestoreModal .modal-body');
-        if (!panel) return;
-        let compare = el('restoreCompareSummary');
-        if (!compare) {
-          compare = document.createElement('div');
-          compare.id = 'restoreCompareSummary';
-          compare.style.display = 'grid';
-          compare.style.gap = '10px';
-          panel.insertAdjacentElement('afterbegin', compare);
-        }
-        const source = restoreSourceClass();
-        const current = activeClassRecord() || normalizeClassRecord({ name: 'Current class' });
-        compare.innerHTML = compareSummaryHtml('What changed if you restore this source class?', current, source, 'This compares the current active class to the selected source class before restore. Full-file restore may also replace other classes, snapshots, templates, and settings.');
-      };
-
-      applySelectiveRestore = async function() {
-        if (pageSettings().compareBeforeRestore && uiState.restoreImportDraft) {
-          const source = restoreSourceClass();
-          const current = activeClassRecord();
-          const text = compareClassRecords(current, source).changes.slice(0, 8).join('\n') || 'No count-level changes detected.';
-          return showInAppConfirm(`Restore selected data?\n\nWhat changed preview:\n${text}\n\nA snapshot/undo point is created before restore.`, () => { void oldApplySelectiveRestore22(); }, { title: 'Confirm Restore', confirmText: 'Restore', cancelText: 'Cancel' });
-        }
-        return oldApplySelectiveRestore22();
-      };
-
-      async function previewSnapshotWithCompare(snapshotId) {
-        await ensureAppSnapshotsLoaded();
-        const snap = appSnapshots().find(item => String(item.id) === String(snapshotId));
-        if (!snap) return;
-        const body = el('snapshotPreviewBody');
-        if (!body) return;
-        body.innerHTML = '<div class="hint">Decrypting snapshot preview...</div>';
-        el('snapshotPreviewModal')?.classList.add('show');
-        try {
-          const text = await snapshotDataForRestore(snap.data);
-          const parsed = JSON.parse(text);
-          const classes = Array.isArray(parsed.classes) ? parsed.classes.map(normalizeClassRecord) : [];
-          const active = classes.find(cls => cls.id === parsed.activeClassId) || classes[0] || normalizeClassRecord({ name: 'Snapshot class' });
-          const current = activeClassRecord() || normalizeClassRecord({ name: 'Current class' });
-          const studentCount = classes.reduce((sum, cls) => sum + (cls.students || []).length, 0);
-          const bubbleCount = classes.reduce((sum, cls) => sum + (cls.bubbles || []).length, 0);
-          const assignedCount = classes.reduce((sum, cls) => sum + Object.values(cls.cells || {}).filter(cell => cell.assignedStudentId).length, 0);
-          body.innerHTML = `<h3>${escapeHtml(snap.name)}</h3><div class="muted">Created ${escapeHtml(new Date(snap.createdAt).toLocaleString())}</div><div class="snapshot-summary-grid"><div><strong>Classes</strong><br>${classes.length}</div><div><strong>Total students</strong><br>${studentCount}</div><div><strong>Total bubbles</strong><br>${bubbleCount}</div><div><strong>Total assigned seats</strong><br>${assignedCount}</div><div><strong>Snapshot active class</strong><br>${escapeHtml(active.name || 'Unknown')}</div><div><strong>Current active class</strong><br>${escapeHtml(current.name || 'Unknown')}</div></div>${compareSummaryHtml('What changed if restored?', current, active, 'This compares the current active class to the snapshot active class. Full snapshot restore may also replace settings, other classes, and app snapshots.')}<div class="warningbox">Restoring will first save a return-point snapshot of the current state.</div><div class="button-row"><button type="button" data-restore-snapshot="${escapeHtml(snap.id)}">Restore This Snapshot</button></div>`;
-        } catch (err) {
-          body.innerHTML = `<div class="warningbox">Could not preview this snapshot: ${escapeHtml(err.message || err)}</div>`;
-        }
-      }
-
-      function csvEscape(value) {
-        const text = String(value ?? '');
-        return /[",\n\r]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
-      }
-      function rowsToCsv(rows) { return rows.map(row => row.map(csvEscape).join(',')).join('\n'); }
-      function downloadBlankStudentCsvTemplate() {
-        const csv = rowsToCsv([
-          ['firstName','lastName','nickname','grade','id','privateNotes','substituteNotes','publicNotes'],
-          ['Ada','Lovelace','Ada','5','10001','','Needs printed instructions.','Likes front-row seat.']
-        ]);
-        downloadText('student-roster-template.csv', csv, 'text/csv');
-        setLiveStatusMessage('Blank roster CSV template downloaded.');
-      }
-      function downloadCurrentRosterCsv() {
-        const run = () => {
-          const rows = [['firstName','lastName','nickname','grade','id','privateNotes','substituteNotes','publicNotes']];
-          (state.students || []).forEach(s => rows.push([s.firstName || '', s.lastName || '', s.nickName || s.nickname || '', s.grade || '', s.id || '', studentNoteValue(s, 'private'), studentNoteValue(s, 'substitute'), studentNoteValue(s, 'public')]));
-          downloadText(`current-roster-import-ready-${new Date().toISOString().slice(0,10)}.csv`, rowsToCsv(rows), 'text/csv');
-          setLiveStatusMessage('Current roster CSV downloaded. Store it carefully; CSV is plaintext.');
-        };
-        if (pageSettings().interoperabilityWarnings) showInAppConfirm('Download a plaintext CSV roster?\n\nThis can include student names, IDs, and notes. Use encrypted JSON exports for protected storage. CSV is for interoperability only.', run, { title: 'Plaintext CSV Warning', confirmText: 'Download CSV', cancelText: 'Cancel' });
-        else run();
-      }
-      function downloadBubbleZoneTemplate() {
-        const payload = { kind: 'seating-chart-bubbles-config', bubbles: [{ id:'bubble-example', name:'Example Group', type:'together', priority:3, color:'#2f6fed', studentIds:['10001','10002'], anchorSeats:[], zoneId:'zone-example' }], zones: [{ id:'zone-example', name:'Front zone', color:'#8b5cf6', studentIds:[], bubbleIds:['bubble-example'] }] };
-        downloadText('bubble-zone-template.json', JSON.stringify(payload, null, 2), 'application/json');
-        setLiveStatusMessage('Bubble/zone JSON template downloaded.');
-      }
-      function downloadRoomLayoutTemplate() {
-        const cells = {};
-        Object.entries(state.cells || {}).forEach(([key, cell]) => { cells[key] = { row: cell.row, col: cell.col, type: cell.type, anchorBubbleIds: [], zoneIds: [...(cell.zoneIds || [])] }; });
-        const payload = { kind:'seating-chart-room-layouts', exportedAt:new Date().toISOString(), currentRoom:{ rows:state.rows, cols:state.cols, cells, zones:deepClone(state.zones || []), customObjects:deepClone(state.customObjects || []) }, roomTemplates:deepClone(state.roomTemplates || []) };
-        downloadText(`room-layout-template-${new Date().toISOString().slice(0,10)}.json`, JSON.stringify(payload, null, 2), 'application/json');
-        setLiveStatusMessage('Room layout template downloaded. Student assignments were not included.');
-      }
-      function downloadInteropTemplatePackage() {
-        const roster = rowsToCsv([['firstName','lastName','nickname','grade','id','privateNotes','substituteNotes','publicNotes'], ['Ada','Lovelace','Ada','5','10001','','Substitute-facing note','Public note']]);
-        const bubble = JSON.stringify({ kind:'seating-chart-bubbles-config', bubbles:[], zones:[] }, null, 2);
-        const room = JSON.stringify({ kind:'seating-chart-room-layouts', currentRoom:{ rows:5, cols:6, cells:{}, zones:[], customObjects:[] }, roomTemplates:[] }, null, 2);
-        const readme = 'Seating Chart Builder Import Templates\n\nUse roster-template.csv for student imports. Use bubble-zone-template.json and room-layout-template.json with Upload Classes File/selective restore. Current student data exports may be plaintext CSV only after an explicit warning.';
-        downloadBlob('seating-chart-import-templates.zip', createZipBlob([{ name:'roster-template.csv', content:roster }, { name:'bubble-zone-template.json', content:bubble }, { name:'room-layout-template.json', content:room }, { name:'README.txt', content:readme }]));
-        setLiveStatusMessage('Import/export template package downloaded.');
-      }
-
-      function renderViewPermissionPanel() {
-        const holder = el('viewPermissionsPanel');
-        if (!holder) return;
-        const active = currentViewRole();
-        holder.innerHTML = `<div class="permissions-role-grid">${VIEW_ROLE_KEYS.map(role => {
-          const def = VIEW_ROLE_DEFINITIONS[role];
-          const bits = [def.allowEditing ? 'Editing' : 'Read-only', def.showStudentDetails ? 'Details' : 'No details', def.showBubblesZones ? 'Bubbles/zones' : 'No bubbles/zones', def.allowPrivateNotes ? 'Private notes' : 'Private hidden', def.allowSubstituteNotes ? 'Sub notes' : 'Sub hidden'];
-          return `<div class="permission-role-card ${role === active ? 'active' : ''}"><strong>${escapeHtml(def.label)}</strong><div class="muted">${escapeHtml(def.desc)}</div><div>${bits.map(bit => `<span class="permission-status-pill">${escapeHtml(bit)}</span>`).join(' ')}</div><button type="button" class="secondary" data-apply-view-role="${escapeHtml(role)}">${role === active ? 'Applied' : 'Apply Role'}</button></div>`;
-        }).join('')}</div>`;
-        const select = el('settingPrivacyDisplayMode');
-        if (select && select.value !== active) select.value = active;
-      }
-
-      function renderInteropPanel() {
-        const holder = el('interopTemplatesPanel');
-        if (!holder) return;
-        holder.innerHTML = `<div class="interop-template-grid"><div class="interop-template-card"><strong>Blank roster CSV</strong><div class="muted">Header template for SIS/spreadsheet imports.</div><button type="button" data-interop-action="blank-roster">Download Template</button></div><div class="interop-template-card"><strong>Current roster CSV</strong><div class="muted">Plaintext interoperability export with warning.</div><button type="button" class="secondary" data-interop-action="current-roster">Download Current CSV</button></div><div class="interop-template-card"><strong>Bubble/Zone JSON</strong><div class="muted">Template for group and zone configuration.</div><button type="button" class="secondary" data-interop-action="bubble-template">Download Template</button></div><div class="interop-template-card"><strong>Room layout JSON</strong><div class="muted">Exports/imports room structure without student assignments.</div><button type="button" class="secondary" data-interop-action="room-template">Download Room Layout</button></div><div class="interop-template-card"><strong>Template package</strong><div class="muted">ZIP with roster, bubble/zone, room, and README templates.</div><button type="button" class="secondary" data-interop-action="template-package">Download Package</button></div></div>`;
-      }
-
-      function installPermissionsAndInteropDom() {
-        const privacyPage = el('settingsPagePrivacy');
-        if (privacyPage && !el('viewPermissionsPanel')) {
-          privacyPage.insertAdjacentHTML('afterbegin', `<section class="section settings-section"><h3>View Permission Roles</h3><div class="hint">Roles control visible details, note access, and editing behavior. They are display/permission guardrails, not separate user accounts.</div><div id="viewPermissionsPanel" class="permissions-role-panel"></div></section>`);
-        }
-        const importPage = el('settingsPageImport');
-        if (importPage && !el('interopTemplatesPanel')) {
-          importPage.insertAdjacentHTML('beforeend', `<section class="section settings-section"><h3>Import / Export Templates</h3><div class="hint">Use these for SIS/spreadsheet workflows and reusable room or group templates. Full protected saves should still use encrypted JSON/backup exports.</div><label class="checkline"><input id="settingInteropWarnings" type="checkbox" /> <span>Warn before plaintext interoperability exports</span></label><div id="interopTemplatesPanel" class="interop-template-panel"></div></section>`);
-        }
-      }
-
-      openSettingsModal = function(page = null) {
-        oldOpenSettingsModal22(page);
-        installPermissionsAndInteropDom();
-        renderViewPermissionPanel();
-        renderInteropPanel();
-        const warn = el('settingInteropWarnings');
-        if (warn) warn.checked = pageSettings().interoperabilityWarnings !== false;
-      };
-      updatePageSettingsForm = function() {
-        oldUpdatePageSettingsForm22();
-        const warn = el('settingInteropWarnings');
-        if (warn) warn.checked = pageSettings().interoperabilityWarnings !== false;
-        renderViewPermissionPanel();
-        renderInteropPanel();
-      };
-      readPageSettingsForm = function() {
-        oldReadPageSettingsForm22();
-        const current = pageSettings();
-        uiState.pageSettings = mergePageSettings({ ...current, activePermissionRole: normalizeViewRoleKey(current.privacyDisplayMode || current.activePermissionRole), interoperabilityWarnings: el('settingInteropWarnings') ? !!el('settingInteropWarnings').checked : current.interoperabilityWarnings });
-      };
-
-      function ensureMobileQuickDom() {
-        if (el('mobileQuickActionsBtn')) return;
-        document.body.insertAdjacentHTML('beforeend', `<button id="mobileQuickActionsBtn" class="mobile-quick-actions-button secondary no-print" type="button" aria-label="Mobile quick actions" title="Open mobile quick actions">☰</button><div id="mobileQuickSheet" class="mobile-quick-sheet no-print" role="dialog" aria-modal="false" aria-labelledby="mobileQuickTitle"><div class="mobile-quick-title"><span id="mobileQuickTitle">Quick Actions</span><button id="closeMobileQuickSheetBtn" class="tiny secondary" type="button">Close</button></div><div class="mobile-quick-grid"><button type="button" data-mobile-quick="add-student">Add Student</button><button type="button" data-mobile-quick="import-csv" class="secondary">Import CSV</button><button type="button" data-mobile-quick="snapshot" class="secondary">Snapshot</button><button type="button" data-mobile-quick="print" class="secondary">Print</button><button type="button" data-mobile-quick="save" class="secondary">Save / Load</button><button type="button" data-mobile-quick="settings" class="secondary">Settings</button><button type="button" data-mobile-quick="lock" class="secondary">Lock</button><button type="button" data-mobile-quick="view-role" id="mobileQuickRoleBtn" class="secondary">View: Teacher</button></div></div>`);
-      }
-      function updateMobileQuickRoleLabel() {
-        const btn = el('mobileQuickRoleBtn');
-        if (btn) btn.textContent = `View: ${VIEW_ROLE_DEFINITIONS[currentViewRole()].label}`;
-      }
-      function toggleMobileQuickSheet(force) {
-        const sheet = el('mobileQuickSheet');
-        if (!sheet) return;
-        const show = typeof force === 'boolean' ? force : !sheet.classList.contains('show');
-        sheet.classList.toggle('show', show);
-      }
-      function openAddStudentMobile() {
-        setMobilePanel('people');
-        uiState.addStudentCollapsed = false; refreshAddStudentCollapse();
-        setSideTab('students');
-        setTimeout(() => el('firstName')?.focus(), 120);
-      }
-      function openCsvMobile() {
-        setMobilePanel('people');
-        setSideTab('students');
-        uiState.csvImportCollapsed = false;
-        const body = el('csvImportBody');
-        if (body) body.classList.remove('collapsed');
-        el('toggleCsvImportBtn')?.setAttribute('aria-expanded', 'true');
-        setTimeout(() => el('csvFile')?.click(), 120);
-      }
-      function cycleMobileViewRole() {
-        const keys = VIEW_ROLE_KEYS;
-        const next = keys[(keys.indexOf(currentViewRole()) + 1) % keys.length];
-        applyViewRole(next);
-      }
-
-      function permissionEditBlockedTarget(target) {
-        if (currentViewPermissions().allowEditing) return null;
-        const selector = [
-          '#generateBtn','#randomizeAllBtn','#clearAssignmentsBtn','#clearAnchorsBtn','#addStudentBtn','#updateStudentBtn','#saveStudentNotesBtn','#importMappedCsvBtn',
-          '#applySeatEditBtn','#applyCustomObjectBtn','#addBubbleBtn','#updateBubbleBtn','#addZoneBtn','#updateZoneBtn','#newClassBtn','#renameClassBtn','#duplicateClassBtn','#deleteClassBtn',
-          '[data-delete-student]','[data-edit-student]','[data-delete-bubble]','[data-delete-zone]','[data-delete-note-category]','[data-cell-action]','[data-seat-action]'
-        ].join(',');
-        return target.closest?.(selector) || null;
-      }
-      function blockPermissionEditAction() {
-        setLiveStatusMessage(`${VIEW_ROLE_DEFINITIONS[currentViewRole()].label} view is read-only. Switch back to Teacher view to edit.`);
-      }
-
-      function installMobileQuickEvents() {
-        ensureMobileQuickDom();
-        document.addEventListener('dragstart', event => {
-          if (currentViewPermissions().allowEditing) return;
-          if (event.target?.closest?.('.student-card,.bubble-card,.cell,[draggable="true"]')) {
-            event.preventDefault();
-            blockPermissionEditAction();
-          }
-        }, true);
-        document.addEventListener('dblclick', event => {
-          if (currentViewPermissions().allowEditing) return;
-          if (event.target?.closest?.('.cell,.student-card,.bubble-card')) {
-            event.preventDefault();
-            event.stopImmediatePropagation();
-            blockPermissionEditAction();
-          }
-        }, true);
-        document.addEventListener('click', event => {
-          const blocked = permissionEditBlockedTarget(event.target);
-          if (blocked) { event.preventDefault(); event.stopImmediatePropagation(); blockPermissionEditAction(); return; }
-          const target = event.target;
-          if (target.closest?.('#mobileQuickActionsBtn')) { event.preventDefault(); toggleMobileQuickSheet(); return; }
-          if (target.closest?.('#closeMobileQuickSheetBtn')) { event.preventDefault(); toggleMobileQuickSheet(false); return; }
-          const action = target.closest?.('[data-mobile-quick]')?.getAttribute('data-mobile-quick');
-          if (action) {
-            event.preventDefault();
-            toggleMobileQuickSheet(false);
-            if (action === 'add-student') openAddStudentMobile();
-            if (action === 'import-csv') openCsvMobile();
-            if (action === 'snapshot') void quickSnapshotAndOpenList();
-            if (action === 'print') el('printBtn')?.click();
-            if (action === 'save') el('saveLoadMenuBtn')?.click();
-            if (action === 'settings') openSettingsModal();
-            if (action === 'lock') el('pageLockBtn')?.click();
-            if (action === 'view-role') cycleMobileViewRole();
-            return;
-          }
-          const applyRole = target.closest?.('[data-apply-view-role]')?.getAttribute('data-apply-view-role');
-          if (applyRole) { event.preventDefault(); applyViewRole(applyRole); return; }
-          const interop = target.closest?.('[data-interop-action]')?.getAttribute('data-interop-action');
-          if (interop) {
-            event.preventDefault();
-            if (interop === 'blank-roster') downloadBlankStudentCsvTemplate();
-            if (interop === 'current-roster') downloadCurrentRosterCsv();
-            if (interop === 'bubble-template') downloadBubbleZoneTemplate();
-            if (interop === 'room-template') downloadRoomLayoutTemplate();
-            if (interop === 'template-package') downloadInteropTemplatePackage();
-            return;
-          }
-          const preview = target.closest?.('[data-preview-snapshot]');
-          if (preview && pageSettings().compareBeforeRestore) {
-            event.preventDefault();
-            event.stopImmediatePropagation();
-            void previewSnapshotWithCompare(preview.getAttribute('data-preview-snapshot'));
-          }
-        }, true);
-      }
-
-      function install11822() {
-        installPermissionsAndInteropDom();
-        renderViewPermissionPanel();
-        renderInteropPanel();
-        ensureMobileQuickDom();
-        installMobileQuickEvents();
-        applyPermissionBodyFlags();
-        updateMobileQuickRoleLabel();
-      }
-
-      install11822();
     })();
 
 
