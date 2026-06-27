@@ -6967,7 +6967,8 @@
       box-shadow: 0 0 0 6px rgba(37,99,235,.12), 0 8px 18px rgba(15,23,42,.16);
     }
     .freeform-object.drop-target { outline: 4px solid rgba(37,99,235,.4); }
-    .freeform-object.locked { cursor: not-allowed; border-style: dashed; }
+    .freeform-object.locked { cursor: pointer; border-style: dashed; }
+    .freeform-object.locked:active { cursor: pointer; }
     .freeform-object.blocked { color: #fff; }
     .freeform-object.wall { border-radius: 7px; }
     .freeform-object.walkway { border-style: dashed; }
@@ -7036,7 +7037,7 @@
     }
 
 
-    /* Revision 1.19.2: welcome Drive load and audit UI cleanup */
+    /* Revision 1.19.3: freeform state stability and lock interaction fixes */
     .welcome-load-card .button-row {
       justify-content: flex-start;
     }
@@ -8553,7 +8554,7 @@
     const WELCOME_SETUP_STORAGE_KEY = 'seating-chart-bubble-builder-secure-welcome-v1';
     const VISIBILITY_CREDENTIAL_KEY = 'seating-chart-bubble-builder-visibility-v1';
     const HINT_DISMISS_STORAGE_KEY = 'seating-chart-bubble-builder-dismissed-hints-v1';
-    const APP_REVISION = '1.19.2';
+    const APP_REVISION = '1.19.3';
     const APP_LAST_UPDATED = 'June 27, 2026';
 
     const APP_LICENSE = {
@@ -10340,7 +10341,7 @@
     }
 
     function freeformSeatObjectsSorted() {
-      ensureFreeformLayout({ rebuildMissing: true });
+      ensureFreeformLayout();
       return freeformObjectsSorted((state.freeformLayout.objects || []).filter(obj => obj.type === 'seat'));
     }
 
@@ -10378,42 +10379,17 @@
 
     function ensureFreeformLayout({ rebuildMissing = false } = {}) {
       state.freeformLayout = normalizeFreeformLayout(state.freeformLayout);
-      const hasObjects = Array.isArray(state.freeformLayout.objects) && state.freeformLayout.objects.length;
-      if (!hasObjects || rebuildMissing) {
-        const existing = new Map((state.freeformLayout.objects || []).map(obj => [String(obj.cellKey || obj.id), obj]));
-        if (!hasObjects) {
-          state.freeformLayout.objects = createFreeformObjectsFromGrid({ keepAssignments: true });
-        } else {
-          const next = createFreeformObjectsFromGrid({ keepAssignments: true });
-          next.forEach(obj => {
-            const old = existing.get(String(obj.cellKey || obj.id));
-            if (old) {
-              const preservedType = old.type || obj.type;
-              Object.assign(obj, {
-                type: preservedType,
-                x: old.x,
-                y: old.y,
-                width: old.width,
-                height: old.height,
-                rotation: old.rotation,
-                locked: old.locked,
-                zIndex: old.zIndex,
-                color: old.color || objectTypeColor(preservedType),
-                label: old.label || (preservedType === 'seat' ? '' : objectLabel(preservedType)) || obj.label,
-                assignedStudentId: preservedType === 'seat' ? (old.assignedStudentId || obj.assignedStudentId || null) : null,
-                manual: preservedType === 'seat' ? Boolean(old.manual || obj.manual) : false,
-                anchorBubbleIds: preservedType === 'seat' ? deepClone(old.anchorBubbleIds || obj.anchorBubbleIds || []) : [],
-                zoneIds: deepClone(old.zoneIds || obj.zoneIds || [])
-              });
-            }
-          });
-          const nextKeys = new Set(next.map(obj => String(obj.cellKey || obj.id)));
-          (state.freeformLayout.objects || []).forEach(oldObj => {
-            const key = String(oldObj.cellKey || oldObj.id);
-            if (!nextKeys.has(key)) next.push(normalizeFreeformObject(oldObj, next.length));
-          });
-          state.freeformLayout.objects = next;
-        }
+      const objects = state.freeformLayout.objects || [];
+      if (!objects.length) {
+        state.freeformLayout.objects = createFreeformObjectsFromGrid({ keepAssignments: true });
+      } else if (rebuildMissing) {
+        // Freeform is an editor-owned canvas. Never rebuild existing objects from the grid during
+        // normal renders or interactions, because that overwrites user-edited x/y/size/rotation.
+        // Only append newly missing grid-derived objects when explicitly asked while preserving
+        // every existing object's geometry, lock state, label, z-order, and type.
+        const existingKeys = new Set(objects.map(obj => String(obj.cellKey || obj.id)));
+        const additions = createFreeformObjectsFromGrid({ keepAssignments: true }).filter(obj => !existingKeys.has(String(obj.cellKey || obj.id)));
+        if (additions.length) state.freeformLayout.objects.push(...additions.map((obj, index) => normalizeFreeformObject(obj, objects.length + index)));
       }
       state.freeformLayout.nextZ = Math.max(Number(state.freeformLayout.nextZ) || 1, ...state.freeformLayout.objects.map(obj => Number(obj.zIndex) || 1)) + 1;
       return state.freeformLayout;
@@ -10497,6 +10473,16 @@
       return layout.canvas.snap === false ? Number(value) : Math.round(Number(value) / size) * size;
     }
 
+
+    function commitFreeformLayoutChange(reason = 'freeform-edit', { render = true, syncToGrid = true } = {}) {
+      ensureFreeformLayout();
+      if (syncToGrid) syncFreeformAssignmentsToGridByPosition();
+      persistActiveClass();
+      scheduleLinkedAutoSave(reason);
+      updateSaveHealthPanel();
+      if (render) renderAll();
+    }
+
     function selectedFreeformObject() {
       const id = Array.from(uiState.freeformSelectedObjectIds || [])[0];
       return (state.freeformLayout?.objects || []).find(obj => obj.id === id) || null;
@@ -10538,13 +10524,15 @@
       }
       return `
         <div class="freeform-object-title">${escapeHtml(obj.label || objectLabel(obj.type))}</div>
-        <div class="freeform-object-meta">${escapeHtml(objectLabel(obj.type))}</div>
-        <div class="freeform-object-actions no-print"><button class="tiny secondary" data-freeform-delete="${escapeHtml(obj.id)}">Delete</button></div>`;
+        <div class="freeform-object-meta">${locked ? '<span class="pill locked">Locked</span>' : escapeHtml(objectLabel(obj.type))}</div>
+        <div class="freeform-object-actions no-print">
+          <button class="tiny ${locked ? 'ghost' : 'secondary'}" data-freeform-lock="${escapeHtml(obj.id)}">${locked ? 'Unlock' : 'Lock'}</button>
+          <button class="tiny secondary" data-freeform-delete="${escapeHtml(obj.id)}">Delete</button>
+        </div>`;
     }
 
     function renderFreeformLayout() {
-      ensureFreeformLayout({ rebuildMissing: true });
-      syncGridAssignmentsToFreeformByPosition();
+      ensureFreeformLayout();
       const grid = el('seatGrid');
       if (!grid) return;
       const layout = state.freeformLayout;
@@ -10630,10 +10618,10 @@
         return;
       }
       const resize = event.target.dataset.freeformResize === id;
-      if (obj.locked && !resize) return;
+      selectFreeformObject(id, event.shiftKey);
+      if (obj.locked) return;
       event.preventDefault();
       event.currentTarget.setPointerCapture?.(event.pointerId);
-      selectFreeformObject(id, event.shiftKey);
       uiState.freeformDrag = { id, resize, startX: event.clientX, startY: event.clientY, original: { x: obj.x, y: obj.y, width: obj.width, height: obj.height } };
       const move = ev => updateFreeformPointerDrag(ev);
       const up = ev => {
@@ -10670,10 +10658,7 @@
 
     function finishFreeformPointerDrag() {
       uiState.freeformDrag = null;
-      syncFreeformAssignmentsToGridByPosition();
-      persistActiveClass();
-      scheduleLinkedAutoSave('freeform-move');
-      updateSaveHealthPanel();
+      commitFreeformLayoutChange('freeform-move', { render: false, syncToGrid: true });
     }
 
     function addFreeformObject(type = null, overrides = {}) {
@@ -10697,8 +10682,7 @@
       }, state.freeformLayout.objects.length);
       state.freeformLayout.objects.push(obj);
       selectFreeformObject(obj.id);
-      syncFreeformAssignmentsToGridByPosition();
-      renderAll();
+      commitFreeformLayoutChange('freeform-add-object', { render: true, syncToGrid: true });
       return obj;
     }
 
@@ -10708,7 +10692,7 @@
       const copy = normalizeFreeformObject({ ...deepClone(obj), id: uid('freeform-object'), cellKey: '', x: obj.x + 24, y: obj.y + 24, zIndex: state.freeformLayout.nextZ++, assignedStudentId: null, manual: false, locked: false }, state.freeformLayout.objects.length);
       state.freeformLayout.objects.push(copy);
       selectFreeformObject(copy.id);
-      renderAll();
+      commitFreeformLayoutChange('freeform-duplicate-object', { render: true, syncToGrid: true });
     }
 
     function deleteSelectedFreeformObject() {
@@ -10716,15 +10700,14 @@
       if (!ids.size) return;
       state.freeformLayout.objects = (state.freeformLayout.objects || []).filter(obj => !ids.has(obj.id) || obj.locked);
       ids.clear();
-      syncFreeformAssignmentsToGridByPosition();
-      renderAll();
+      commitFreeformLayoutChange('freeform-delete-object', { render: true, syncToGrid: true });
     }
 
     function rotateFreeformObject(id, degrees = 15) {
       const obj = (state.freeformLayout?.objects || []).find(item => item.id === id);
       if (!obj || obj.locked) return;
       obj.rotation = ((Number(obj.rotation) || 0) + degrees) % 360;
-      renderAll();
+      commitFreeformLayoutChange('freeform-rotate-object', { render: true, syncToGrid: false });
     }
 
     function arrangeSelectedFreeformObject(direction) {
@@ -10733,7 +10716,7 @@
       ensureFreeformLayout();
       if (direction === 'front') obj.zIndex = state.freeformLayout.nextZ++;
       if (direction === 'back') obj.zIndex = 1;
-      renderAll();
+      commitFreeformLayoutChange('freeform-arrange-object', { render: true, syncToGrid: false });
     }
 
     function lockSelectedFreeformObject(toggle = true) {
@@ -10741,8 +10724,7 @@
       if (!obj) return;
       obj.locked = toggle ? !obj.locked : true;
       obj.manual = obj.type === 'seat' ? obj.locked : obj.manual;
-      syncFreeformAssignmentsToGridByPosition();
-      renderAll();
+      commitFreeformLayoutChange('freeform-lock-object', { render: true, syncToGrid: true });
     }
 
     function assignStudentToFreeformObject(studentId, objectId, render = true) {
@@ -10759,8 +10741,7 @@
       target.assignedStudentId = student.id;
       target.manual = true;
       target.locked = true;
-      syncFreeformAssignmentsToGridByPosition();
-      if (render) renderAll();
+      commitFreeformLayoutChange('freeform-assign-student', { render, syncToGrid: true });
       return true;
     }
 
@@ -13291,9 +13272,7 @@
         obj.anchorBubbleIds = obj.anchorBubbleIds || [];
       }
       state.freeformLayout.objects = state.freeformLayout.objects.map((item, index) => item.id === obj.id ? normalizeFreeformObject(obj, index) : item);
-      syncFreeformAssignmentsToGridByPosition();
-      renderAll();
-      scheduleLinkedAutoSave('freeform-context-type');
+      commitFreeformLayoutChange('freeform-context-type', { render: true, syncToGrid: true });
       setLiveStatusMessage(`Changed freeform object to ${objectLabel(nextType)}.`);
       return true;
     }
@@ -19871,22 +19850,19 @@ This will replace the current classes, settings, room templates, and active layo
             obj.assignedStudentId = null;
             obj.manual = false;
             obj.locked = false;
-            syncFreeformAssignmentsToGridByPosition();
-            renderAll();
+            commitFreeformLayoutChange('freeform-clear-seat', { render: true, syncToGrid: true });
           }
           return;
         }
 
         const freeformLockBtn = event.target.closest('[data-freeform-lock]');
         if (freeformLockBtn) {
-          if (eyeModeBlocksSeatEditing()) return blockEyeModeAction('seat');
           const obj = (state.freeformLayout?.objects || []).find(item => item.id === freeformLockBtn.dataset.freeformLock);
-          if (obj) {
-            obj.locked = !obj.locked;
-            obj.manual = obj.type === 'seat' ? obj.locked : obj.manual;
-            syncFreeformAssignmentsToGridByPosition();
-            renderAll();
-          }
+          if (!obj) return;
+          if (obj.type === 'seat' ? eyeModeBlocksSeatEditing() : eyeModeBlocksRoomEditing()) return blockEyeModeAction(obj.type === 'seat' ? 'seat' : 'room');
+          obj.locked = !obj.locked;
+          obj.manual = obj.type === 'seat' ? obj.locked : obj.manual;
+          commitFreeformLayoutChange('freeform-lock-object', { render: true, syncToGrid: true });
           return;
         }
 
@@ -19894,8 +19870,7 @@ This will replace the current classes, settings, room templates, and active layo
         if (freeformDeleteBtn) {
           if (eyeModeBlocksRoomEditing()) return blockEyeModeAction('room');
           state.freeformLayout.objects = (state.freeformLayout?.objects || []).filter(obj => obj.id !== freeformDeleteBtn.dataset.freeformDelete || obj.locked);
-          syncFreeformAssignmentsToGridByPosition();
-          renderAll();
+          commitFreeformLayoutChange('freeform-delete-object', { render: true, syncToGrid: true });
           return;
         }
 
