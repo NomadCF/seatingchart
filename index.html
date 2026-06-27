@@ -6870,7 +6870,7 @@
 
 
 
-    /* Revision 1.19.4: mobile Security Setup tap target repair and freeform action stability */
+    /* Revision 1.19.5: first-run note encryption prompt suppression */
     #securityWizardSteps summary.security-wizard-check-summary {
       touch-action: manipulation;
       user-select: none;
@@ -8571,7 +8571,7 @@
     const WELCOME_SETUP_STORAGE_KEY = 'seating-chart-bubble-builder-secure-welcome-v1';
     const VISIBILITY_CREDENTIAL_KEY = 'seating-chart-bubble-builder-visibility-v1';
     const HINT_DISMISS_STORAGE_KEY = 'seating-chart-bubble-builder-dismissed-hints-v1';
-    const APP_REVISION = '1.19.4';
+    const APP_REVISION = '1.19.5';
     const APP_LAST_UPDATED = 'June 27, 2026';
 
     const APP_LICENSE = {
@@ -8632,6 +8632,7 @@
     ];
 
     const CHANGE_LOG = [
+      { version: '1.19.5', date: 'June 27, 2026', changes: ['Fixed the lingering Encryption Recommended for Notes modal after first-run Welcome setup by making note-warning checks honor the freshly created encryption session, encryption-enabled state, and completed Welcome setup marker.', 'Added a defensive guard so the note-encryption recommendation cannot open while the session is already configured for encrypted saves.'] },
       { version: '1.19.4', date: 'June 27, 2026', changes: ['Stopped stale encryption-key prompts after first-run Welcome setup by keeping the newly created session key trusted through note warnings, first save, snapshot loading, and encrypted local-save paths.', 'Reworked Freeform Room Layout commits so drag, resize, rotate, lock/unlock, arrange, and type changes preserve each object\'s current position, size, rotation, lock state, and z-order without triggering global grid rebuilds.', 'Added a mobile-safe Security Setup accordion click handler so tapping each setup step expands it and collapses the others reliably on touch screens.'] },
       { version: '1.19.2', date: 'June 27, 2026', changes: ['Fixed Freeform Room Layout object conversion so right-click changes preserve the object\'s current canvas position, size, and rotation instead of snapping back to the original grid spot.', 'Added a Welcome-screen Google Drive load option for returning users so encrypted Drive saves can be opened before creating a new local chart.', 'Prevented first-run encrypted setup from immediately triggering redundant save/encryption prompts after the password has just been created.', 'Completed a full code, workflow, usability, and security audit pass with conservative cleanup of duplicate/obsolete helper code and updated audit documentation.'] },
       { version: '1.19.1', date: 'June 27, 2026', changes: ['Fixed Freeform Room Layout right-click object conversion so seats and room objects can be changed through the context menu.', 'Fixed encrypted load security so typing an incorrect encryption key no longer stores that bad key or allows the app to proceed as if decrypted.', 'Verified encrypted local-save/import flows only set the active session key after successful AES-GCM decryption.'] },
@@ -10183,17 +10184,30 @@
       return !!uiState.welcomeSecurityJustCompleted || (Number(uiState.suppressEncryptionPromptUntil || 0) > Date.now());
     }
 
+    function welcomeEncryptionSetupRecorded() {
+      try {
+        return safeStorageGet('localStorage', WELCOME_SETUP_STORAGE_KEY) === 'true';
+      } catch (err) {
+        return false;
+      }
+    }
+
+    function noteEncryptionSessionIsConfigured() {
+      return !!currentSessionEncryptionKey() || !!uiState.encryptionEnabled || recentlyCompletedWelcomeSecuritySetup() || welcomeEncryptionSetupRecorded();
+    }
+
     function activeEncryptionKeyIsReady() {
-      return !!currentSessionEncryptionKey();
+      return noteEncryptionSessionIsConfigured();
     }
 
     function sensitiveNotesNeedEncryptionWarning(draft = null) {
       const source = draft || uiState.noteEditorDraft || { private: [], substitute: [] };
       const hasSensitive = (Array.isArray(source.private) && source.private.some(Boolean)) || (Array.isArray(source.substitute) && source.substitute.some(Boolean));
-      return hasSensitive && !activeEncryptionKeyIsReady() && !recentlyCompletedWelcomeSecuritySetup();
+      return hasSensitive && !noteEncryptionSessionIsConfigured();
     }
 
     function warnSensitiveNotesNeedEncryption() {
+      if (noteEncryptionSessionIsConfigured()) return;
       showInAppConfirm('Private and Substitute notes can contain sensitive student information. Set an encryption key before saving so local autosaves, linked saves, and downloads are encrypted. Use a phrase you can remember but others cannot guess. There is no recovery if the key is lost.', () => {
         openSettingsToEncryptionKey();
       }, {
@@ -14382,9 +14396,14 @@
       if (password !== confirm) { showWelcomeSecurityError('The encryption password entries do not match.'); confirmInput?.select(); confirmInput?.focus(); return; }
       try {
         setSessionEncryptionKey(password);
+        uiState.encryptionEnabled = true;
         uiState.welcomeSecurityJustCompleted = true;
-        uiState.suppressEncryptionPromptUntil = Date.now() + 30000;
+        uiState.suppressEncryptionPromptUntil = Date.now() + 120000;
         safeStorageSet('localStorage', WELCOME_SETUP_STORAGE_KEY, 'true');
+        const confirmTitle = el('confirmModalTitle');
+        if (confirmTitle && confirmTitle.textContent === 'Encryption Recommended for Notes') {
+          el('confirmModal')?.classList.remove('show');
+        }
         updateSaveSetupDismissed(true);
         updateSaveMeta({ localOnlyChangeCount: 0, localSavePromptCount: 0, localSaveActive: true });
         await writeLocalBrowserSave({ reason: 'welcome', announce: false, skipDurablePrompt: true });
@@ -15598,7 +15617,7 @@
         if (!options.skipDurablePrompt && !String(reason).includes('fallback') && !['google-drive-mirror','settings','google-drive-settings','welcome','security-wizard','security-setup'].includes(reason)) maybePromptDurableSaveAfterLocalChanges();
         return true;
       } catch (err) {
-        if (reason !== 'auto' && reason !== 'welcome' && !recentlyCompletedWelcomeSecuritySetup() && String(err.message || '').toLowerCase().includes('encryption')) {
+        if (reason !== 'auto' && reason !== 'welcome' && !noteEncryptionSessionIsConfigured() && String(err.message || '').toLowerCase().includes('encryption')) {
           warnSensitiveNotesNeedEncryption();
         }
         if (announce) setLiveStatusMessage(`Local browser save failed: ${err.message}`);
