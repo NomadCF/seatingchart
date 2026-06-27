@@ -6457,6 +6457,220 @@
       }
     }
 
+
+    /* Revision 1.18.18: Settings spacing repair and collapsible security setup checklist */
+    .settings-modal {
+      display: flex !important;
+      flex-direction: column !important;
+      width: min(1120px, 96vw) !important;
+      height: min(820px, 92vh) !important;
+      max-height: min(820px, 92vh) !important;
+    }
+    .settings-modal .modal-body.settings-body {
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
+      padding: 12px !important;
+      display: grid !important;
+      grid-template-columns: minmax(210px, 246px) minmax(0, 1fr) !important;
+      grid-template-rows: auto minmax(0, 1fr) !important;
+      gap: 12px !important;
+      align-items: stretch !important;
+      overflow: hidden !important;
+      background: #ffffff;
+    }
+    .settings-modal .settings-search-shell {
+      grid-column: 1 / -1 !important;
+      grid-row: 1 !important;
+      align-self: start !important;
+      margin: 0 !important;
+      padding: 9px !important;
+    }
+    .settings-modal .settings-page-nav {
+      grid-column: 1 !important;
+      grid-row: 2 !important;
+      position: relative !important;
+      top: auto !important;
+      align-self: stretch !important;
+      min-height: 0 !important;
+      height: auto !important;
+      max-height: none !important;
+      overflow: auto !important;
+      padding: 8px !important;
+      gap: 7px !important;
+      align-content: start !important;
+    }
+    .settings-modal .settings-page-content {
+      grid-column: 2 !important;
+      grid-row: 2 !important;
+      align-self: stretch !important;
+      min-width: 0 !important;
+      min-height: 0 !important;
+      height: auto !important;
+      overflow: auto !important;
+      padding: 0 4px 0 0 !important;
+      display: block !important;
+    }
+    .settings-modal .settings-page-tab {
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) !important;
+      justify-items: stretch !important;
+      align-content: start !important;
+      text-align: left !important;
+      gap: 4px !important;
+      width: 100% !important;
+      min-width: 0 !important;
+      min-height: 58px !important;
+      padding: 10px 11px !important;
+      white-space: normal !important;
+      line-height: 1.2 !important;
+    }
+    .settings-modal .settings-page-tab .settings-page-title {
+      display: block !important;
+      font-size: 12.5px !important;
+      font-weight: 950 !important;
+      line-height: 1.18 !important;
+      min-width: 0 !important;
+      overflow-wrap: anywhere !important;
+    }
+    .settings-modal .settings-page-tab .settings-page-dot {
+      justify-self: center !important;
+      align-self: center !important;
+      width: 4px !important;
+      height: 4px !important;
+      margin: 0 !important;
+      border-radius: 999px !important;
+      background: currentColor !important;
+      opacity: .48 !important;
+    }
+    .settings-modal .settings-page-tab .settings-page-desc {
+      display: block !important;
+      font-size: 10.5px !important;
+      line-height: 1.25 !important;
+      font-weight: 750 !important;
+      color: var(--muted) !important;
+      min-width: 0 !important;
+      overflow-wrap: anywhere !important;
+    }
+    .settings-modal .settings-page.active {
+      display: grid !important;
+      gap: 10px !important;
+      align-content: start !important;
+    }
+    .settings-modal .section.settings-section {
+      margin-bottom: 0 !important;
+    }
+    .security-setup-modal {
+      width: min(860px, 96vw) !important;
+      max-width: 860px !important;
+    }
+    .security-wizard-layout {
+      display: grid !important;
+      grid-template-rows: auto minmax(0, 1fr) auto !important;
+      gap: 10px !important;
+      overflow: hidden !important;
+    }
+    .security-wizard-intro {
+      border: 1px solid #bfdbfe;
+      background: #eff6ff;
+      color: #1e3a8a;
+      border-radius: 12px;
+      padding: 9px 10px;
+      font-size: 12px;
+      line-height: 1.35;
+    }
+    .security-wizard-checklist {
+      display: grid;
+      gap: 8px;
+      min-height: 0;
+      overflow: auto;
+      padding-right: 2px;
+    }
+    .security-wizard-check {
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      background: #ffffff;
+      overflow: hidden;
+    }
+    .security-wizard-check[open] {
+      box-shadow: 0 8px 20px rgba(15, 23, 42, .06);
+      border-color: #bfdbfe;
+    }
+    .security-wizard-check-summary {
+      list-style: none;
+      display: grid;
+      grid-template-columns: 30px minmax(0, 1fr) auto;
+      gap: 9px;
+      align-items: center;
+      padding: 10px;
+      cursor: pointer;
+      background: #f8fafc;
+    }
+    .security-wizard-check-summary::-webkit-details-marker { display: none; }
+    .security-wizard-check-number {
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      color: #1d4ed8;
+      font-weight: 950;
+      font-size: 12px;
+    }
+    .security-wizard-check.done .security-wizard-check-number {
+      background: #ecfdf5;
+      border-color: #bbf7d0;
+      color: #047857;
+    }
+    .security-wizard-check.warn .security-wizard-check-number {
+      background: #fffbeb;
+      border-color: #fed7aa;
+      color: #92400e;
+    }
+    .security-wizard-check-title { font-weight: 950; color: var(--text); line-height: 1.2; }
+    .security-wizard-check-text { color: var(--muted); font-size: 12px; line-height: 1.32; margin-top: 2px; }
+    .security-wizard-expand { color: var(--muted); font-size: 11px; font-weight: 900; white-space: nowrap; }
+    .security-wizard-check-body { padding: 10px; display: grid; gap: 8px; }
+    .security-wizard-check-body .security-card,
+    .security-wizard-check-body .auto-lock-card,
+    .security-wizard-check-body .security-wizard-panel {
+      margin: 0 !important;
+    }
+    .security-wizard-static-status {
+      border-style: dashed;
+      background: #fbfcff;
+    }
+    @media (max-width: 860px) {
+      .settings-modal {
+        width: calc(100vw - 12px) !important;
+        height: calc(100dvh - 12px) !important;
+        max-height: calc(100dvh - 12px) !important;
+      }
+      .settings-modal .modal-body.settings-body {
+        grid-template-columns: 1fr !important;
+        grid-template-rows: auto auto minmax(0, 1fr) !important;
+      }
+      .settings-modal .settings-search-shell { grid-column: 1 !important; grid-row: 1 !important; }
+      .settings-modal .settings-page-nav {
+        grid-column: 1 !important;
+        grid-row: 2 !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        height: auto !important;
+        max-height: min(172px, 30dvh) !important;
+      }
+      .settings-modal .settings-page-content { grid-column: 1 !important; grid-row: 3 !important; }
+    }
+    @media (max-width: 560px) {
+      .settings-modal .modal-body.settings-body { padding: 8px !important; gap: 8px !important; }
+      .settings-modal .settings-page-nav { grid-template-columns: 1fr !important; max-height: min(136px, 24dvh) !important; }
+      .settings-modal .settings-page-tab { min-height: 44px !important; }
+      .settings-modal .settings-page-tab .settings-page-desc { display: none !important; }
+      .settings-modal .settings-page-tab .settings-page-dot { display: none !important; }
+      .security-wizard-check-summary { grid-template-columns: 28px minmax(0, 1fr); }
+      .security-wizard-expand { grid-column: 2; justify-self: start; }
+    }
+
   </style>
 </head>
 <body class="left-collapsed">
@@ -7878,7 +8092,7 @@
     const WELCOME_SETUP_STORAGE_KEY = 'seating-chart-bubble-builder-secure-welcome-v1';
     const VISIBILITY_CREDENTIAL_KEY = 'seating-chart-bubble-builder-visibility-v1';
     const HINT_DISMISS_STORAGE_KEY = 'seating-chart-bubble-builder-dismissed-hints-v1';
-    const APP_REVISION = '1.18.17';
+    const APP_REVISION = '1.18.18';
     const APP_LAST_UPDATED = 'June 27, 2026';
 
     const APP_LICENSE = {
@@ -7939,6 +8153,7 @@
     ];
 
     const CHANGE_LOG = [
+      { version: '1.18.18', date: 'June 27, 2026', changes: ['Repaired additional Settings modal spacing and alignment so search, page navigation, and content panels keep consistent two-column sizing.', 'Converted the Security Setup Wizard into compact collapsible checklist rows with live completion checks for valid Lock PIN, Eye PIN, Settings access, and auto-lock entries.', 'Fixed Security Setup saving so Settings access choices and PIN/auto-lock configuration are persisted immediately to the encrypted browser save when possible.'] },
       { version: '1.18.17', date: 'June 27, 2026', changes: ['Fixed the Settings modal layout so the Settings search bar spans the full modal width and the left navigation/content columns align correctly again.', 'Removed PBKDF2 iteration controls from the first-run Security Setup Wizard so basic onboarding focuses on Lock PIN, Eye PIN, Settings access, and auto-lock behavior.', 'Kept PBKDF2 iteration control available only in the advanced Security & Data settings page for users who intentionally want to raise encryption work factors.'] },
       { version: '1.18.16', date: 'June 27, 2026', changes: ['Converted the post-Welcome Security Setup Wizard from a checklist/status screen into an inline setup flow with Lock PIN, Eye PIN, Settings access, and auto-lock controls directly on the wizard screen.', 'Added wizard-side validation and save behavior so first-run users can finish security setup without opening the full Settings modal.', 'Kept the wizard status checks visible below the inline controls so users can confirm active key, storage encryption, Settings protection, PIN readiness, auto-lock, and snapshot/index encryption state.'] },
       { version: '1.18.15', date: 'June 27, 2026', changes: ['Cleaned up the first-run Welcome flow so demo-data and security-step actions no longer run under the Welcome modal.', 'Changed Security Setup into the second step after the encryption password is created, avoiding overlapping setup popups.', 'Removed the Try Demo Data button from Welcome; demo/sample data remains available from existing Settings/help workflows instead of first-run security onboarding.'] },
@@ -18835,50 +19050,90 @@ This will replace the current classes, settings, room templates, and active layo
         return options.map(([value, label]) => `<option value="${value}" ${current === value ? 'selected' : ''}>${escapeHtml(label)}</option>`).join('');
       }
 
+      function wizardPinEntryStatus(prefix, existing) {
+        const pin = String(el(prefix)?.value || '');
+        const confirm = String(el(`${prefix}Confirm`)?.value || '');
+        const hasEntry = !!(pin || confirm);
+        const valid = hasEntry && pin.length >= 4 && pin === confirm;
+        return { hasEntry, valid, done: !!existing || valid };
+      }
+
+      function securityWizardCurrentState() {
+        const cfg = pageSettings();
+        const requestedAccess = String(el('securityWizardSettingsAccessMethod')?.value || cfg.settingsAccessMethod || 'auto');
+        const lockState = wizardPinEntryStatus('securityWizardLockPin', getLockCredential());
+        const eyeState = wizardPinEntryStatus('securityWizardEyePin', getVisibilityCredential());
+        const autoMinutes = clampNumber(el('securityWizardAutoLockMinutes')?.value ?? cfg.autoLockMinutes ?? 0, 0, 240);
+        const onBlur = el('securityWizardAutoLockOnBlur') ? !!el('securityWizardAutoLockOnBlur').checked : !!cfg.autoLockOnBlur;
+        const onHidden = el('securityWizardAutoLockOnTabHidden') ? !!el('securityWizardAutoLockOnTabHidden').checked : !!cfg.autoLockOnTabHidden;
+        const returnMinutes = clampNumber(el('securityWizardAutoLockOnReturnMinutes')?.value ?? cfg.autoLockOnReturnMinutes ?? 0, 0, 240);
+        const accessLabels = {
+          auto: 'Auto: Lock PIN → Eye PIN → Encryption key',
+          lock: 'Lock/Unlock PIN only',
+          eye: 'Eye Mode PIN only',
+          encryption: 'Encryption key only',
+          none: 'No prompt / unlocked Settings'
+        };
+        const activeKey = !!currentSessionEncryptionKey();
+        const storageEncrypted = (() => { try { const local = JSON.parse(safeStorageGet('localStorage', STORAGE_KEY) || 'null'); const snaps = JSON.parse(safeStorageGet('localStorage', LOCAL_AUTOSAVE_SNAPSHOT_KEY) || 'null'); return !!(local?.encrypted && (!snaps || Array.isArray(snaps) || snaps?.encrypted)); } catch (err) { return false; } })();
+        const autoLock = autoMinutes > 0 || onBlur || onHidden || returnMinutes > 0;
+        return [
+          { key:'encryption', title:'Encryption password', done:activeKey, warn:!activeKey, text: activeKey ? 'Active session encryption key is present.' : 'Create or enter the encryption password before continuing.', staticOnly:true },
+          { key:'settings', title:'Settings access requirement', done:requestedAccess !== 'none', warn:requestedAccess === 'none', text: requestedAccess === 'none' ? 'Settings will open without a prompt. Save only if this is intentional.' : `Settings will require: ${accessLabels[requestedAccess] || accessLabels.auto}.`, body:'settings' },
+          { key:'lock', title:'Lock PIN/password', done:lockState.done, warn:!lockState.done, text: lockState.valid ? 'Ready to save a valid Lock PIN/password.' : (getLockCredential() ? 'Lock PIN/password is already set.' : 'Enter matching Lock PIN/password values with at least 4 characters.'), body:'lock' },
+          { key:'eye', title:'Eye Mode PIN/password', done:eyeState.done, warn:!eyeState.done, text: eyeState.valid ? 'Ready to save a valid Eye Mode PIN/password.' : (getVisibilityCredential() ? 'Eye Mode PIN/password is already set.' : 'Enter matching Eye Mode PIN/password values with at least 4 characters.'), body:'eye' },
+          { key:'autolock', title:'Auto-lock rules', done:autoLock, warn:!autoLock, text: autoLock ? 'At least one auto-lock trigger is configured.' : 'No auto-lock triggers are enabled yet.', body:'autolock' },
+          { key:'storage', title:'Storage encryption', done:storageEncrypted, warn:!storageEncrypted, text: storageEncrypted ? 'Local browser save and snapshot index are encrypted or empty.' : 'Save once after setup to encrypt current browser storage.', staticOnly:true }
+        ];
+      }
+
+      function securityWizardSummaryHtml(step, index) {
+        const num = step.done ? '✓' : index;
+        return `<summary class="security-wizard-check-summary"><div class="security-wizard-check-number">${escapeHtml(num)}</div><div><div class="security-wizard-check-title">${escapeHtml(step.title)}</div><div class="security-wizard-check-text">${escapeHtml(step.text)}</div></div>${step.staticOnly ? '<span class="security-wizard-expand">Status</span>' : '<span class="security-wizard-expand">Click to configure</span>'}</summary>`;
+      }
+
+      function securityWizardBodyHtml(kind, cfg) {
+        if (kind === 'settings') {
+          return `<div class="security-wizard-check-body"><div class="field"><label for="securityWizardSettingsAccessMethod">Require before Settings opens</label><select id="securityWizardSettingsAccessMethod">${settingsAccessOptionsHtml(cfg.settingsAccessMethod || 'auto')}</select></div><div class="setting-inline-warning">Choosing <strong>No prompt</strong> means anyone with the unlocked page can change security, save/export, Eye Mode, and reset settings. The app will ask for confirmation before applying that.</div></div>`;
+        }
+        if (kind === 'lock') {
+          return `<div class="security-wizard-check-body"><div class="security-card"><h4>Lock / Unlock PIN</h4><div class="field"><label for="securityWizardLockPin">New lock PIN/password</label><input id="securityWizardLockPin" type="password" autocomplete="new-password" placeholder="Leave blank to keep current PIN" /></div><div class="field"><label for="securityWizardLockPinConfirm">Confirm lock PIN/password</label><input id="securityWizardLockPinConfirm" type="password" autocomplete="new-password" /></div><div class="muted">Used for normal lock/unlock and auto-lock restore during this page session.</div></div></div>`;
+        }
+        if (kind === 'eye') {
+          return `<div class="security-wizard-check-body"><div class="security-card"><h4>Eye Mode Exit PIN</h4><div class="field"><label for="securityWizardEyePin">New Eye Mode PIN/password</label><input id="securityWizardEyePin" type="password" autocomplete="new-password" placeholder="Leave blank to keep current PIN" /></div><div class="field"><label for="securityWizardEyePinConfirm">Confirm Eye Mode PIN/password</label><input id="securityWizardEyePinConfirm" type="password" autocomplete="new-password" /></div><div class="muted">Used to exit Eye Mode without needing the full encryption password.</div></div></div>`;
+        }
+        if (kind === 'autolock') {
+          return `<div class="security-wizard-check-body"><div class="auto-lock-grid"><div class="auto-lock-card"><label for="securityWizardAutoLockMinutes">Auto-lock after inactive minutes</label><input id="securityWizardAutoLockMinutes" type="number" min="0" max="240" step="1" value="${escapeHtml(cfg.autoLockMinutes || 0)}" /><div class="muted">Use 0 to disable inactivity auto-lock.</div></div><label class="checkline auto-lock-card" for="securityWizardAutoLockOnBlur"><input id="securityWizardAutoLockOnBlur" type="checkbox" ${cfg.autoLockOnBlur ? 'checked' : ''} /> <span>Lock immediately when this window loses focus</span></label><label class="checkline auto-lock-card" for="securityWizardAutoLockOnTabHidden"><input id="securityWizardAutoLockOnTabHidden" type="checkbox" ${cfg.autoLockOnTabHidden ? 'checked' : ''} /> <span>Lock immediately when this tab becomes hidden/inactive</span></label><div class="auto-lock-card"><label for="securityWizardAutoLockOnReturnMinutes">Lock when returning after inactive minutes</label><input id="securityWizardAutoLockOnReturnMinutes" type="number" min="0" max="240" step="1" value="${escapeHtml(cfg.autoLockOnReturnMinutes || 0)}" /><div class="muted">Example: set 10 so returning after 10+ hidden minutes locks immediately.</div></div></div></div>`;
+        }
+        return '<div class="security-wizard-check-body"><div class="muted">Status only.</div></div>';
+      }
+
+      function updateSecurityWizardLiveStatus() {
+        const box = el('securityWizardSteps');
+        if (!box) return;
+        const steps = securityWizardCurrentState();
+        steps.forEach((step, idx) => {
+          const row = box.querySelector(`[data-security-check="${step.key}"]`);
+          if (!row) return;
+          row.classList.toggle('done', !!step.done);
+          row.classList.toggle('warn', !!step.warn);
+          const number = row.querySelector('.security-wizard-check-number');
+          const text = row.querySelector('.security-wizard-check-text');
+          if (number) number.textContent = step.done ? '✓' : String(idx + 1);
+          if (text) text.textContent = step.text;
+        });
+      }
+
       function renderSecuritySetupWizard() {
         const box = el('securityWizardSteps');
         if (!box) return;
         const cfg = pageSettings();
-        const stepsHtml = setupWizardSteps().map((step, idx) => `<div class="workflow-step ${step.done ? 'done' : step.warn ? 'warn' : ''}"><div class="workflow-step-number">${step.done ? '✓' : idx + 1}</div><div><h3>${escapeHtml(step.title)}</h3><p>${escapeHtml(step.text)}</p></div></div>`).join('');
+        const steps = securityWizardCurrentState();
         box.innerHTML = `
-          <div class="security-wizard-panel">
-            <h3>Finish Security Setup Here</h3>
-            <div class="hint">This wizard now configures the same core security settings directly, without sending first-time users into the full Settings page. The encryption password was already created on the Welcome screen.</div>
-            <div class="security-wizard-grid">
-              <div class="security-card">
-                <h4>Lock / Unlock PIN</h4>
-                <div class="field"><label for="securityWizardLockPin">New lock PIN/password</label><input id="securityWizardLockPin" type="password" autocomplete="new-password" placeholder="Leave blank to keep current PIN" /></div>
-                <div class="field"><label for="securityWizardLockPinConfirm">Confirm lock PIN/password</label><input id="securityWizardLockPinConfirm" type="password" autocomplete="new-password" /></div>
-                <div class="muted">Used for normal lock/unlock and auto-lock restore during this page session.</div>
-              </div>
-              <div class="security-card">
-                <h4>Eye Mode Exit PIN</h4>
-                <div class="field"><label for="securityWizardEyePin">New Eye Mode PIN/password</label><input id="securityWizardEyePin" type="password" autocomplete="new-password" placeholder="Leave blank to keep current PIN" /></div>
-                <div class="field"><label for="securityWizardEyePinConfirm">Confirm Eye Mode PIN/password</label><input id="securityWizardEyePinConfirm" type="password" autocomplete="new-password" /></div>
-                <div class="muted">Used to exit Eye Mode without needing the full encryption password.</div>
-              </div>
-              <div class="security-wizard-panel security-wizard-full">
-                <h3>Settings Access</h3>
-                <div class="field"><label for="securityWizardSettingsAccessMethod">Require before Settings opens</label><select id="securityWizardSettingsAccessMethod">${settingsAccessOptionsHtml(cfg.settingsAccessMethod || 'auto')}</select></div>
-                <div class="setting-inline-warning">Choosing <strong>No prompt</strong> means anyone with the unlocked page can change security, save/export, Eye Mode, and reset settings. The app will ask for confirmation before applying that.</div>
-              </div>
-              <div class="security-wizard-panel security-wizard-full">
-                <h3>Auto-lock Rules</h3>
-                <div class="auto-lock-grid">
-                  <div class="auto-lock-card"><label for="securityWizardAutoLockMinutes">Auto-lock after inactive minutes</label><input id="securityWizardAutoLockMinutes" type="number" min="0" max="240" step="1" value="${escapeHtml(cfg.autoLockMinutes || 0)}" /><div class="muted">Use 0 to disable inactivity auto-lock.</div></div>
-                  <label class="checkline auto-lock-card" for="securityWizardAutoLockOnBlur"><input id="securityWizardAutoLockOnBlur" type="checkbox" ${cfg.autoLockOnBlur ? 'checked' : ''} /> <span>Lock immediately when this window loses focus</span></label>
-                  <label class="checkline auto-lock-card" for="securityWizardAutoLockOnTabHidden"><input id="securityWizardAutoLockOnTabHidden" type="checkbox" ${cfg.autoLockOnTabHidden ? 'checked' : ''} /> <span>Lock immediately when this tab becomes hidden/inactive</span></label>
-                  <div class="auto-lock-card"><label for="securityWizardAutoLockOnReturnMinutes">Lock when returning after inactive minutes</label><input id="securityWizardAutoLockOnReturnMinutes" type="number" min="0" max="240" step="1" value="${escapeHtml(cfg.autoLockOnReturnMinutes || 0)}" /><div class="muted">Example: set 10 so returning after 10+ hidden minutes locks immediately.</div></div>
-                </div>
-              </div>
-              <div class="security-wizard-panel security-wizard-full">
-                <h3>Advanced Encryption Settings</h3>
-                <div class="security-wizard-advanced-note">The app uses secure defaults during first-run setup. Advanced encryption strength settings remain available later in Settings → Security &amp; Data for users who know they need them.</div>
-              </div>
-            </div>
-          </div>
-          <div class="security-wizard-status-title">Current Security Status</div>
-          ${stepsHtml}`;
+          <div class="security-wizard-intro"><strong>Step 2: Finish security setup.</strong> The encryption password is already active. Open only the rows you want to configure, then save. The status circles update as soon as typed values are valid, because making users guess is apparently frowned upon.</div>
+          <div class="security-wizard-checklist">
+            ${steps.map((step, idx) => `<details class="security-wizard-check ${step.done ? 'done' : step.warn ? 'warn' : ''} ${step.staticOnly ? 'security-wizard-static-status' : ''}" data-security-check="${escapeHtml(step.key)}">${securityWizardSummaryHtml(step, idx + 1)}${securityWizardBodyHtml(step.body, cfg)}</details>`).join('')}
+          </div>`;
         securityWizardMessage();
       }
 
@@ -18902,7 +19157,7 @@ This will replace the current classes, settings, room templates, and active layo
             await saveVisibilityCredential(eyePin);
           }
           uiState.pageSettings = mergePageSettings({
-            ...cfg,
+            ...pageSettings(),
             settingsAccessMethod: requestedAccess,
             autoLockMinutes: clampNumber(el('securityWizardAutoLockMinutes')?.value || 0, 0, 240),
             autoLockOnBlur: !!el('securityWizardAutoLockOnBlur')?.checked,
@@ -18914,10 +19169,10 @@ This will replace the current classes, settings, room templates, and active layo
           resetAutoLockTimer();
           updateSecurityStatusPanel();
           updatePinStatus('Security Setup Wizard updated.');
-          scheduleLinkedAutoSave('security setup wizard');
           ['securityWizardLockPin','securityWizardLockPinConfirm','securityWizardEyePin','securityWizardEyePinConfirm'].forEach(id => { const node = el(id); if (node) node.value = ''; });
+          await writeLocalBrowserSave({ reason: 'security-setup-wizard', announce: false });
           renderSecuritySetupWizard();
-          securityWizardMessage('Security setup saved.');
+          securityWizardMessage('Security setup saved to encrypted browser storage.');
           setLiveStatusMessage('Security setup saved.');
         };
         if (requestedAccess === 'none' && (cfg.settingsAccessMethod || 'auto') !== 'none') {
@@ -19425,8 +19680,10 @@ This will replace the current classes, settings, room templates, and active layo
         });
         document.addEventListener('input', event => {
           if (event.target?.id === 'settingsSearchInput') settingsSearchFilter();
+          if (String(event.target?.id || '').startsWith('securityWizard')) updateSecurityWizardLiveStatus();
         });
         document.addEventListener('change', event => {
+          if (String(event.target?.id || '').startsWith('securityWizard')) updateSecurityWizardLiveStatus();
           if (event.target?.id === 'settingPrivacyDisplayMode') applyPrivacyDisplayMode(event.target.value);
           if (event.target?.id === 'csvImportDuplicateMode' || event.target?.id === 'csvImportSnapshotBefore') {
             uiState.pageSettings = mergePageSettings({ ...pageSettings(), csvDuplicateMode: csvDuplicateModeForCurrentImport(), csvSnapshotBeforeImport: !!el('csvImportSnapshotBefore')?.checked });
