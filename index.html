@@ -6288,6 +6288,95 @@
     }
 
 
+  
+
+    /* Revision 1.18.14: workflow expansion, settings search, timeline, repair, and safer print/export */
+    .settings-search-shell {
+      display: grid;
+      gap: 6px;
+      padding: 8px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: #ffffff;
+      margin-bottom: 8px;
+    }
+    .settings-search-shell label { margin: 0; }
+    .settings-search-shell input { width: 100%; }
+    .settings-page-tab.settings-search-hidden { display: none !important; }
+    .settings-page-tab mark { background: #fef08a; color: #111827; border-radius: 4px; padding: 0 2px; }
+    .workflow-card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 9px; }
+    .workflow-card {
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      background: #ffffff;
+      padding: 10px;
+      display: grid;
+      gap: 6px;
+      align-content: start;
+    }
+    .workflow-card strong { font-size: 13px; }
+    .workflow-card span, .workflow-card p { color: var(--muted); font-size: 12px; line-height: 1.35; margin: 0; }
+    .workflow-stepper { display: grid; gap: 8px; }
+    .workflow-step {
+      display: grid;
+      grid-template-columns: 28px minmax(0, 1fr);
+      gap: 8px;
+      align-items: start;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 9px;
+      background: #f8fafc;
+    }
+    .workflow-step-number {
+      width: 26px; height: 26px; border-radius: 999px;
+      display: grid; place-items: center;
+      background: #eff6ff; color: #1d4ed8; font-weight: 950; border: 1px solid #bfdbfe;
+    }
+    .workflow-step.done .workflow-step-number { background: #ecfdf5; color: #047857; border-color: #bbf7d0; }
+    .workflow-step.warn .workflow-step-number { background: #fffbeb; color: #92400e; border-color: #fed7aa; }
+    .workflow-step h3 { margin: 0 0 3px; font-size: 13px; }
+    .workflow-step p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.35; }
+    .timeline-list { display: grid; gap: 8px; position: relative; }
+    .snapshot-timeline-row {
+      display: grid;
+      grid-template-columns: 18px minmax(0, 1fr) auto;
+      gap: 8px;
+      align-items: start;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #fff;
+      padding: 9px;
+    }
+    .snapshot-timeline-dot { width: 12px; height: 12px; border-radius: 999px; background: var(--accent); margin-top: 4px; box-shadow: 0 0 0 4px #eff6ff; }
+    .snapshot-timeline-row.return-point .snapshot-timeline-dot { background: #16a34a; }
+    .snapshot-timeline-row.auto .snapshot-timeline-dot { background: #f59e0b; }
+    .snapshot-summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 7px; margin: 8px 0; }
+    .snapshot-summary-grid div { border: 1px solid var(--border); border-radius: 10px; padding: 7px; background: #f8fafc; }
+    .history-list { display: grid; gap: 7px; max-height: 48vh; overflow: auto; }
+    .history-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: start; border: 1px solid var(--border); border-radius: 10px; padding: 8px; background: #fff; }
+    .danger-zone {
+      border: 2px solid #fecaca !important;
+      background: #fff1f2 !important;
+      box-shadow: inset 0 0 0 1px rgba(220, 38, 38, .08);
+    }
+    .danger-zone h3 { color: #991b1b; }
+    .danger-zone .hint { border-color: #fecaca; background: #fff7f7; color: #7f1d1d; }
+    .save-health-report { display: grid; gap: 7px; margin-top: 8px; }
+    .health-finding { border: 1px solid var(--border); border-radius: 10px; background: #fff; padding: 8px; font-size: 12px; line-height: 1.35; }
+    .health-finding.good { border-color: #bbf7d0; background: #f0fdf4; color: #14532d; }
+    .health-finding.warn { border-color: #fed7aa; background: #fffbeb; color: #92400e; }
+    .health-finding.bad { border-color: #fecaca; background: #fff1f2; color: #991b1b; }
+    .privacy-mode-buttons { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 7px; }
+    .privacy-mode-buttons button { justify-content: flex-start; text-align: left; white-space: normal; }
+    .print-security-warning { border: 1px solid #fed7aa; background: #fffbeb; color: #92400e; border-radius: 12px; padding: 9px; font-size: 12px; line-height: 1.35; }
+    .csv-wizard-stage { border: 1px solid #bfdbfe; background: #eff6ff; color: #1e3a8a; border-radius: 12px; padding: 8px 9px; font-size: 12px; font-weight: 800; line-height: 1.35; margin-bottom: 8px; }
+    .setting-inline-warning { border: 1px solid #fed7aa; background: #fffbeb; color: #92400e; border-radius: 10px; padding: 8px; font-size: 12px; line-height: 1.35; }
+    .modal.workflow-modal { width: min(900px, 96vw) !important; max-width: 900px !important; }
+    @media (max-width: 760px) {
+      .snapshot-timeline-row { grid-template-columns: 18px minmax(0, 1fr); }
+      .snapshot-timeline-row .button-row { grid-column: 1 / -1; }
+    }
+
   </style>
 </head>
 <body class="left-collapsed">
@@ -7708,7 +7797,7 @@
     const WELCOME_SETUP_STORAGE_KEY = 'seating-chart-bubble-builder-secure-welcome-v1';
     const VISIBILITY_CREDENTIAL_KEY = 'seating-chart-bubble-builder-visibility-v1';
     const HINT_DISMISS_STORAGE_KEY = 'seating-chart-bubble-builder-dismissed-hints-v1';
-    const APP_REVISION = '1.18.13';
+    const APP_REVISION = '1.18.14';
     const APP_LAST_UPDATED = 'June 26, 2026';
 
     const APP_LICENSE = {
@@ -7769,6 +7858,7 @@
     ];
 
     const CHANGE_LOG = [
+      { version: '1.18.14', date: 'June 26, 2026', changes: ['Added a guided Security Setup Wizard, privacy display modes, Settings search, snapshot timeline/preview/retention controls, reveal timeouts for private/substitute notes, print/export safety warnings, import duplicate workflow options, undo/redo history panel, versioned migration hooks, save-health checks, automatic data repair, and a dedicated maintenance/danger-zone page.', 'Expanded password-change handling so the current browser save and encrypted snapshot index are re-encrypted with the new password, with an optional full local-snapshot re-encryption pass.', 'Added conservative data integrity checks and repair for orphaned seat assignments, stale bubble/zone references, invalid anchors, and duplicate/suspicious student references without adding the excluded recovery workflow, security presets, or emergency lock button.'] },
       { version: '1.18.13', date: 'June 26, 2026', changes: ['Fixed PIN-based auto-lock so loss-of-focus, tab-hidden, and inactivity locks wrap the active encryption key with the Lock PIN/password entered this session instead of forcing the full encryption password after unlock.', 'Cached the Lock PIN/password only in volatile page memory after the user sets or successfully enters it, then clears that cache on local-data clear, factory reset, or reload.', 'Changed the first lock after creating a Lock PIN/password to use that PIN/password for wrapping the active session key instead of falling back to the full encryption key.'] },
       { version: '1.18.12', date: 'June 26, 2026', changes: ['Encrypted the entire local snapshot index, including snapshot names and timestamps, instead of leaving snapshot metadata visible beside encrypted payloads.', 'Added password-strength meters and passphrase recommendations to Welcome and Settings encryption password changes.', 'Added a Settings workflow for changing the active encryption password with a warning that only new saves/backups/snapshots use the new password.', 'Added a configurable PBKDF2 iteration setting for future encryption operations.', 'Expanded auto-lock with inactivity timeout, lock on window focus loss, lock on tab hidden, and lock when returning after the tab was inactive too long.', 'Added a Security Status panel showing active key presence, encrypted local storage, Settings protection, Lock PIN, and Eye PIN status.'] },
       { version: '1.18.11', date: 'June 26, 2026', changes: ['Moved Welcome password reveal controls into the right side of each password input.', 'Ran a security and structure audit focused on encryption workflow, locked/Eye Mode behavior, storage paths, duplicate handlers, static ID references, and syntax.', 'Stopped pre-filling active encryption keys into Settings or encryption prompts so unlocked-session keys are not unnecessarily written into input elements.', 'Tightened export paths so full saves, student exports, bubble/zone exports, and room-layout exports require encrypted output instead of warning-and-plaintext fallbacks.'] },
@@ -18414,6 +18504,766 @@ This will replace the current classes, settings, room templates, and active layo
         setTimeout(() => { uiState.skipNextCellClick = false; }, 0);
       }, { passive: true });
     }
+
+
+
+    /* Revision 1.18.14 workflow expansion module */
+    (function installWorkflowExpansion11814(){
+      const ADDON_REVISION = '1.18.14';
+      const MIGRATION_SCHEMA_VERSION = '2026-06-26.workflow-expansion-v1';
+      const oldMergePageSettings = mergePageSettings;
+      const oldUpdatePageSettingsForm = updatePageSettingsForm;
+      const oldReadPageSettingsForm = readPageSettingsForm;
+      const oldOpenSettingsModal = openSettingsModal;
+      const oldCloseSettingsModal = closeSettingsModal;
+      const oldRenderSnapshotList = renderSnapshotList;
+      const oldSaveAppSnapshots = saveAppSnapshots;
+      const oldRenderCsvMappingWizard = renderCsvMappingWizard;
+      const oldImportMappedCsvStudents = importMappedCsvStudents;
+      const oldPushUndoSnapshot = pushUndoSnapshot;
+      const oldUndoLastChange = undoLastChange;
+      const oldRedoLastChange = redoLastChange;
+      const oldStartPrintPreviewFromOptions = startPrintPreviewFromOptions;
+      const oldExportChartPdf = exportChartPdf;
+      const oldExportChartSvg = exportChartSvg;
+      const oldApplySettingsEncryptionKeyChange = applySettingsEncryptionKeyChange;
+      const oldImportState = importState;
+      const oldImportStateDirectFromText = importStateDirectFromText;
+      const oldOpenWelcomeSecurityModal = openWelcomeSecurityModal;
+      const oldCloseWelcomeSecurityModal = closeWelcomeSecurityModal;
+      const oldCompleteWelcomeSecuritySetup = completeWelcomeSecuritySetup;
+      const oldUpdateSecurityStatusPanel = updateSecurityStatusPanel;
+
+      PROJECT_FEATURES.unshift({ title: 'Workflow expansion and maintenance tools', text: 'Security Setup Wizard, privacy display modes, snapshot timeline/preview/retention, Settings search, import duplicate controls, undo history, save-health checks, repair tools, and print/export warnings help users understand and maintain the encrypted single-file app.' });
+
+      function addonDefaults() {
+        return {
+          noteRevealTimeoutSeconds: 30,
+          noteRevealHideOnBlur: true,
+          snapshotRetention: 50,
+          privacyDisplayMode: 'teacher',
+          csvDuplicateMode: 'update',
+          csvSnapshotBeforeImport: true,
+          printSecurityWarnings: true,
+          exportSecurityWarnings: true,
+          reencryptSnapshotsOnPasswordChange: true,
+          migrationSchemaVersion: MIGRATION_SCHEMA_VERSION
+        };
+      }
+
+      function normalizeAddonSettings(source = {}) {
+        const defaults = addonDefaults();
+        const mode = ['teacher','substitute','student','admin','privacy'].includes(source.privacyDisplayMode) ? source.privacyDisplayMode : defaults.privacyDisplayMode;
+        return {
+          noteRevealTimeoutSeconds: clampNumber(source.noteRevealTimeoutSeconds ?? defaults.noteRevealTimeoutSeconds, 0, 600),
+          noteRevealHideOnBlur: source.noteRevealHideOnBlur ?? defaults.noteRevealHideOnBlur,
+          snapshotRetention: clampNumber(source.snapshotRetention ?? defaults.snapshotRetention, 5, 200),
+          privacyDisplayMode: mode,
+          csvDuplicateMode: ['update','skip','create'].includes(source.csvDuplicateMode) ? source.csvDuplicateMode : defaults.csvDuplicateMode,
+          csvSnapshotBeforeImport: source.csvSnapshotBeforeImport ?? defaults.csvSnapshotBeforeImport,
+          printSecurityWarnings: source.printSecurityWarnings ?? defaults.printSecurityWarnings,
+          exportSecurityWarnings: source.exportSecurityWarnings ?? defaults.exportSecurityWarnings,
+          reencryptSnapshotsOnPasswordChange: source.reencryptSnapshotsOnPasswordChange ?? defaults.reencryptSnapshotsOnPasswordChange,
+          migrationSchemaVersion: String(source.migrationSchemaVersion || defaults.migrationSchemaVersion)
+        };
+      }
+
+      mergePageSettings = function(value) {
+        const base = oldMergePageSettings(value);
+        return { ...base, ...normalizeAddonSettings(value || {}) };
+      };
+
+      function setValue(id, value) { const node = el(id); if (node) node.value = String(value ?? ''); }
+      function setChecked(id, value) { const node = el(id); if (node) node.checked = !!value; }
+      function checked(id) { return !!el(id)?.checked; }
+      function valueOf(id) { return el(id)?.value; }
+
+      function updateAddonSettingsForm() {
+        const cfg = pageSettings();
+        setValue('settingPrivacyDisplayMode', cfg.privacyDisplayMode || 'teacher');
+        setValue('settingNoteRevealTimeoutSeconds', cfg.noteRevealTimeoutSeconds ?? 30);
+        setChecked('settingNoteRevealHideOnBlur', cfg.noteRevealHideOnBlur);
+        setValue('settingSnapshotRetention', cfg.snapshotRetention ?? 50);
+        setValue('settingCsvDuplicateMode', cfg.csvDuplicateMode || 'update');
+        setChecked('settingCsvSnapshotBeforeImport', cfg.csvSnapshotBeforeImport);
+        setChecked('settingPrintSecurityWarnings', cfg.printSecurityWarnings);
+        setChecked('settingExportSecurityWarnings', cfg.exportSecurityWarnings);
+        setChecked('settingsReencryptAllSnapshots', cfg.reencryptSnapshotsOnPasswordChange);
+        updateLockWorkflowReadiness();
+        renderSaveHealthReport(false);
+      }
+
+      function readAddonSettingsForm() {
+        const current = mergePageSettings(uiState.pageSettings);
+        uiState.pageSettings = mergePageSettings({
+          ...current,
+          noteRevealTimeoutSeconds: valueOf('settingNoteRevealTimeoutSeconds') ?? current.noteRevealTimeoutSeconds,
+          noteRevealHideOnBlur: el('settingNoteRevealHideOnBlur') ? checked('settingNoteRevealHideOnBlur') : current.noteRevealHideOnBlur,
+          snapshotRetention: valueOf('settingSnapshotRetention') ?? current.snapshotRetention,
+          privacyDisplayMode: valueOf('settingPrivacyDisplayMode') || current.privacyDisplayMode,
+          csvDuplicateMode: valueOf('settingCsvDuplicateMode') || current.csvDuplicateMode,
+          csvSnapshotBeforeImport: el('settingCsvSnapshotBeforeImport') ? checked('settingCsvSnapshotBeforeImport') : current.csvSnapshotBeforeImport,
+          printSecurityWarnings: el('settingPrintSecurityWarnings') ? checked('settingPrintSecurityWarnings') : current.printSecurityWarnings,
+          exportSecurityWarnings: el('settingExportSecurityWarnings') ? checked('settingExportSecurityWarnings') : current.exportSecurityWarnings,
+          reencryptSnapshotsOnPasswordChange: el('settingsReencryptAllSnapshots') ? checked('settingsReencryptAllSnapshots') : current.reencryptSnapshotsOnPasswordChange,
+          migrationSchemaVersion: MIGRATION_SCHEMA_VERSION
+        });
+      }
+
+      updatePageSettingsForm = function() {
+        oldUpdatePageSettingsForm();
+        updateAddonSettingsForm();
+      };
+
+      readPageSettingsForm = function() {
+        oldReadPageSettingsForm();
+        readAddonSettingsForm();
+        trimSnapshotsToRetention();
+        updateLockWorkflowReadiness();
+      };
+
+      function settingsTabHtml(id, title, desc) {
+        return `<button id="settingsPage${id[0].toUpperCase()+id.slice(1)}Btn" class="settings-page-tab" type="button" role="tab" aria-selected="false" aria-controls="settingsPage${id[0].toUpperCase()+id.slice(1)}" data-settings-nav="${id}"><span class="settings-page-title">${escapeHtml(title)}</span><span class="settings-page-dot" aria-hidden="true"></span><span class="settings-page-desc">${escapeHtml(desc)}</span></button>`;
+      }
+
+      function panelHeader(title, text) {
+        return `<div class="settings-page-header"><strong>${escapeHtml(title)}</strong>${escapeHtml(text)}</div>`;
+      }
+
+      function installSettingsExpansionDom() {
+        const nav = el('settingsPageNav');
+        const content = document.querySelector('.settings-page-content');
+        if (!nav || !content || el('settingsSearchInput')) return;
+        nav.insertAdjacentHTML('beforebegin', `<div class="settings-search-shell"><label for="settingsSearchInput">Search Settings</label><input id="settingsSearchInput" type="search" autocomplete="off" placeholder="Search encryption, lock, notes, snapshots, import, print, repair..." /><div id="settingsSearchSummary" class="muted">Type to filter Settings sections.</div></div>`);
+        const aboutTab = el('settingsPageAboutBtn');
+        const tabs = [
+          ['privacy','Privacy Views','Teacher, substitute, student, admin, and initials-only display modes.'],
+          ['snapshots','Snapshots','Timeline, preview, retention, and restore workflow.'],
+          ['import','Import','CSV mapping, duplicate behavior, and import safety options.'],
+          ['maintenance','Maintenance','Save health, repair, migration status, and danger-zone actions.']
+        ];
+        tabs.forEach(([id,title,desc]) => { if (!document.querySelector(`[data-settings-nav="${id}"]`)) aboutTab?.insertAdjacentHTML('beforebegin', settingsTabHtml(id,title,desc)); });
+        const aboutPanel = el('settingsPageAbout');
+        const panels = `
+          <div id="settingsPagePrivacy" class="settings-page" role="tabpanel" data-settings-panel="privacy" aria-label="Privacy Views settings">
+            ${panelHeader('Privacy display modes','Pick a display profile, then apply it to Eye Mode and print-facing behavior. These are convenience configurations, not a separate password system.')}
+            <section class="section settings-section"><h3>Display Profile</h3>
+              <div class="field"><label for="settingPrivacyDisplayMode">Privacy display mode</label><select id="settingPrivacyDisplayMode"><option value="teacher">Teacher Full View</option><option value="substitute">Substitute View</option><option value="student">Student Display View</option><option value="admin">Admin Review View</option><option value="privacy">Privacy Mode / Initials Only</option></select></div>
+              <div class="privacy-mode-buttons"><button type="button" class="secondary" data-apply-privacy-mode="teacher">Teacher Full View<br><span class="muted">Everything visible while unlocked.</span></button><button type="button" class="secondary" data-apply-privacy-mode="substitute">Substitute View<br><span class="muted">Sub/public notes only, editing blocked.</span></button><button type="button" class="secondary" data-apply-privacy-mode="student">Student Display<br><span class="muted">Names/nicknames only, no notes.</span></button><button type="button" class="secondary" data-apply-privacy-mode="admin">Admin Review<br><span class="muted">Details visible, private notes still reveal-only.</span></button><button type="button" class="secondary" data-apply-privacy-mode="privacy">Initials Only<br><span class="muted">Hide details and force names-only display.</span></button></div>
+              <div class="hint">Applying a privacy view updates the Eye Mode checkboxes. Eye Mode still requires its PIN/encryption workflow to enter or exit.</div>
+            </section>
+            <section class="section settings-section"><h3>Private/Substitute Note Reveal Timeout</h3><div class="field"><label for="settingNoteRevealTimeoutSeconds">Hide revealed non-public notes after seconds</label><input id="settingNoteRevealTimeoutSeconds" type="number" min="0" max="600" step="5" /></div><label class="checkline"><input id="settingNoteRevealHideOnBlur" type="checkbox" /> <span>Hide revealed notes when the browser loses focus or the tab becomes hidden</span></label><div class="hint">Use 0 to keep revealed notes visible until the note editor closes. Public notes are not affected.</div></section>
+            <section class="section settings-section"><h3>Print / Export Warnings</h3><label class="checkline"><input id="settingPrintSecurityWarnings" type="checkbox" /> <span>Warn before print/PDF/SVG when private notes, substitute notes, IDs, grade, or bubble/zone details are included</span></label><label class="checkline"><input id="settingExportSecurityWarnings" type="checkbox" /> <span>Warn before encrypted exports that include student records, notes, snapshots, or room metadata</span></label></section>
+          </div>
+          <div id="settingsPageSnapshots" class="settings-page" role="tabpanel" data-settings-panel="snapshots" aria-label="Snapshot settings">
+            ${panelHeader('Snapshot timeline','Snapshots are encrypted with the active session password. Restores save a return point first so users can roll forward again.')}
+            <section class="section settings-section"><h3>Snapshot Timeline</h3><div class="field"><label for="settingSnapshotRetention">Keep most recent snapshots</label><input id="settingSnapshotRetention" type="number" min="5" max="200" step="5" /></div><div class="button-row"><button id="openSnapshotTimelineBtn" type="button">Open Snapshot Timeline</button><button id="trimSnapshotsNowBtn" class="secondary" type="button">Apply Retention Now</button></div><div class="hint">Retention trims the encrypted local snapshot index and payload list. Downloaded backups are not changed.</div></section>
+          </div>
+          <div id="settingsPageImport" class="settings-page" role="tabpanel" data-settings-panel="import" aria-label="Import settings">
+            ${panelHeader('Import workflow','CSV imports now include duplicate behavior, preview, optional before-import snapshot, and mapping guidance.')}
+            <section class="section settings-section"><h3>CSV Import Defaults</h3><div class="field"><label for="settingCsvDuplicateMode">When imported students match existing ID or name</label><select id="settingCsvDuplicateMode"><option value="update">Update existing matching student</option><option value="skip">Skip matching students</option><option value="create">Create a new student anyway</option></select></div><label class="checkline"><input id="settingCsvSnapshotBeforeImport" type="checkbox" /> <span>Create a snapshot before CSV import</span></label><div class="hint">The import wizard still shows a preview before applying changes. This setting controls what happens to duplicates after the user confirms import.</div></section>
+          </div>
+          <div id="settingsPageMaintenance" class="settings-page" role="tabpanel" data-settings-panel="maintenance" aria-label="Maintenance settings">
+            ${panelHeader('Maintenance and data integrity','Run save-health checks, repair orphaned references, review migration status, and keep destructive actions fenced off.')}
+            <section class="section settings-section"><h3>Save Health Check</h3><div class="button-row"><button id="runSaveHealthCheckBtn" type="button">Check Save Health</button><button id="repairDataIntegrityBtn" class="secondary" type="button">Repair Safe Issues</button></div><div id="saveHealthReport" class="save-health-report"><div class="health-finding warn">Run a check to review encryption, snapshots, IDs, seat assignments, bubbles, zones, and settings.</div></div></section>
+            <section class="section settings-section"><h3>Migration Status</h3><div id="migrationStatusBox" class="hint">Current migration schema: ${MIGRATION_SCHEMA_VERSION}. Older saves are normalized when loaded.</div></section>
+            <section id="settingsDangerZone" class="section settings-section danger-zone"><h3>Danger Zone</h3><div class="hint">These actions erase or reset local browser data. They do not decrypt or recover old backups, and they do not change files already downloaded elsewhere.</div><div id="dangerZoneButtonSlot" class="button-row"></div></section>
+          </div>`;
+        aboutPanel?.insertAdjacentHTML('beforebegin', panels);
+        ['privacy','snapshots','import','maintenance'].forEach(id => { if (!SETTINGS_PAGE_IDS.includes(id)) SETTINGS_PAGE_IDS.splice(Math.max(0, SETTINGS_PAGE_IDS.indexOf('about')), 0, id); });
+        const clearBtn = el('clearLocalDataBtn');
+        const factoryBtn = el('factoryResetEverythingBtn');
+        const slot = el('dangerZoneButtonSlot');
+        if (slot) { if (clearBtn) slot.appendChild(clearBtn); if (factoryBtn) slot.appendChild(factoryBtn); }
+        const statusPanel = el('securityStatusPanel');
+        if (statusPanel && !el('securitySetupWizardOpenBtn')) {
+          statusPanel.closest('section')?.insertAdjacentHTML('beforebegin', `<section class="section settings-section"><h3>Security Setup Wizard</h3><div class="hint">Walk through encryption, Settings access, Lock PIN, Eye PIN, auto-lock, and security status in one guided sequence.</div><div class="button-row"><button id="securitySetupWizardOpenBtn" type="button">Open Security Setup Wizard</button></div></section>`);
+          statusPanel.closest('section')?.insertAdjacentHTML('afterend', `<section class="section settings-section"><h3>Lock Workflow Readiness</h3><div id="lockWorkflowReadiness" class="save-health-report"></div></section>`);
+        }
+        const saveEncryptionCard = el('settingsApplyEncryptionKeyBtn')?.closest('.security-card') || el('settingsEncryptionKey')?.closest('.security-card');
+        if (saveEncryptionCard && !el('settingsReencryptAllSnapshots')) {
+          saveEncryptionCard.insertAdjacentHTML('beforeend', `<label class="checkline"><input id="settingsReencryptAllSnapshots" type="checkbox" checked /> <span>Re-encrypt local snapshots with the new password when possible</span></label><div class="setting-inline-warning">Changing the encryption password updates the current browser save and future saves. Older downloaded files still need their original password. Local snapshots can be re-encrypted only when they decrypt with the current active password.</div>`);
+        }
+      }
+
+      function installStandaloneModals() {
+        if (!el('securitySetupWizardModal')) {
+          document.body.insertAdjacentHTML('beforeend', `<div id="securitySetupWizardModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="securitySetupWizardTitle"><div class="modal workflow-modal"><div class="panel-header"><h2 id="securitySetupWizardTitle">Security Setup Wizard</h2><button id="closeSecuritySetupWizardBtn" class="tiny secondary" type="button">Close</button></div><div class="modal-body"><div id="securityWizardSteps" class="workflow-stepper"></div><div class="button-row" style="margin-top:12px;"><button id="securityWizardOpenSettingsBtn" class="secondary" type="button">Open Relevant Settings</button><button id="securityWizardRefreshBtn" class="secondary" type="button">Refresh Status</button><button id="securityWizardDoneBtn" type="button">Done</button></div></div></div></div>`);
+        }
+        if (!el('snapshotPreviewModal')) {
+          document.body.insertAdjacentHTML('beforeend', `<div id="snapshotPreviewModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="snapshotPreviewTitle"><div class="modal workflow-modal"><div class="panel-header"><h2 id="snapshotPreviewTitle">Snapshot Preview</h2><button id="closeSnapshotPreviewBtn" class="tiny secondary" type="button">Close</button></div><div id="snapshotPreviewBody" class="modal-body"></div></div></div>`);
+        }
+        if (!el('undoHistoryModal')) {
+          document.body.insertAdjacentHTML('beforeend', `<div id="undoHistoryModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="undoHistoryTitle"><div class="modal workflow-modal"><div class="panel-header"><h2 id="undoHistoryTitle">Undo / Redo History</h2><button id="closeUndoHistoryBtn" class="tiny secondary" type="button">Close</button></div><div class="modal-body"><div class="hint">This panel shows recent edit checkpoints captured during this browser session. It is not a replacement for encrypted snapshots.</div><div id="undoHistoryList" class="history-list"></div><div class="button-row" style="margin-top:10px;"><button id="undoHistoryUndoBtn" class="secondary" type="button">Undo Last</button><button id="undoHistoryRedoBtn" class="secondary" type="button">Redo Last</button></div></div></div></div>`);
+        }
+      }
+
+      function installWelcomeAndHeaderExtras() {
+        const startBtn = el('welcomeSecurityStartBtn');
+        const row = startBtn?.closest('.button-row');
+        if (row && !el('welcomeDemoDataBtn')) {
+          startBtn.insertAdjacentHTML('afterend', `<button id="welcomeDemoDataBtn" class="secondary" type="button">Try Demo Data</button><button id="welcomeSecurityWizardBtn" class="secondary" type="button">View Security Steps</button>`);
+        }
+        const redo = el('redoBtn');
+        if (redo && !el('undoHistoryBtn')) redo.insertAdjacentHTML('afterend', `<button id="undoHistoryBtn" class="secondary icon-button" type="button" aria-label="Undo history" title="Open Undo / Redo history">↕</button>`);
+      }
+
+      function installCsvWizardExtras() {
+        const body = el('csvMappingFields')?.closest('.modal-body');
+        if (!body || el('csvWizardStage')) return;
+        const hint = body.querySelector('.hint');
+        hint?.insertAdjacentHTML('afterend', `<div id="csvWizardStage" class="csv-wizard-stage">Step 1 of 4: Map columns, preview rows, choose duplicate handling, then import.</div><div class="settings-grid two-col"><div class="field"><label for="csvImportDuplicateMode">Duplicate handling for this import</label><select id="csvImportDuplicateMode"><option value="update">Update matching existing students</option><option value="skip">Skip matching students</option><option value="create">Create a new student anyway</option></select></div><label class="checkline" style="align-self:end;"><input id="csvImportSnapshotBefore" type="checkbox" /> <span>Snapshot before import</span></label></div>`);
+      }
+
+      function installWorkflowDom() {
+        installSettingsExpansionDom();
+        installStandaloneModals();
+        installWelcomeAndHeaderExtras();
+        installCsvWizardExtras();
+      }
+
+      function setupWizardSteps() {
+        const cfg = pageSettings();
+        const activeKey = !!currentSessionEncryptionKey();
+        const lock = !!getLockCredential();
+        const eye = !!getVisibilityCredential();
+        const settingsProtected = settingsAccessRequirementText() !== 'Settings opens without a prompt.';
+        const autoLock = Number(cfg.autoLockMinutes || 0) > 0 || !!cfg.autoLockOnBlur || !!cfg.autoLockOnTabHidden || Number(cfg.autoLockOnReturnMinutes || 0) > 0;
+        const storageEncrypted = (() => { try { const local = JSON.parse(safeStorageGet('localStorage', STORAGE_KEY) || 'null'); const snaps = JSON.parse(safeStorageGet('localStorage', LOCAL_AUTOSAVE_SNAPSHOT_KEY) || 'null'); return !!(local?.encrypted && (!snaps || Array.isArray(snaps) || snaps?.encrypted)); } catch (err) { return false; } })();
+        return [
+          { title:'Encryption password', done:activeKey, text: activeKey ? 'Active session key is present.' : 'Enter the encryption password from Welcome or Settings > Saving.' },
+          { title:'Settings protection', done:settingsProtected, warn:!settingsProtected, text: settingsProtected ? settingsAccessRequirementText() : 'Settings opens without a prompt. Re-enable protection in Settings > Security & Data.' },
+          { title:'Lock PIN/password', done:lock, warn:!lock, text: lock ? 'Lock PIN/password is set. Auto-lock can use it after it has been entered this session.' : 'Set a Lock PIN/password to avoid using the full encryption password for normal locks.' },
+          { title:'Eye PIN/password', done:eye, warn:!eye, text: eye ? 'Eye Mode exit PIN/password is set.' : 'Set an Eye PIN/password if student-facing visibility mode will be used.' },
+          { title:'Auto-lock rules', done:autoLock, warn:!autoLock, text: autoLock ? 'Auto-lock has at least one trigger enabled.' : 'Auto-lock is optional, but recommended on shared or mobile devices.' },
+          { title:'Storage encryption', done:storageEncrypted, warn:!storageEncrypted, text: storageEncrypted ? 'Local browser save and snapshot index are encrypted or empty.' : 'Run a manual save after setting the encryption password.' }
+        ];
+      }
+
+      function renderSecuritySetupWizard() {
+        const box = el('securityWizardSteps');
+        if (!box) return;
+        box.innerHTML = setupWizardSteps().map((step, idx) => `<div class="workflow-step ${step.done ? 'done' : step.warn ? 'warn' : ''}"><div class="workflow-step-number">${step.done ? '✓' : idx + 1}</div><div><h3>${escapeHtml(step.title)}</h3><p>${escapeHtml(step.text)}</p></div></div>`).join('');
+      }
+
+      function openSecuritySetupWizard() { installWorkflowDom(); renderSecuritySetupWizard(); el('securitySetupWizardModal')?.classList.add('show'); }
+      function closeSecuritySetupWizard() { el('securitySetupWizardModal')?.classList.remove('show'); }
+
+      function updateLockWorkflowReadiness() {
+        const node = el('lockWorkflowReadiness');
+        if (!node) return;
+        const cfg = pageSettings();
+        const rows = [];
+        rows.push({ kind: currentSessionEncryptionKey() ? 'good' : 'warn', text: currentSessionEncryptionKey() ? 'Active encryption key is present for save/snapshot work.' : 'No active encryption key is present. Saves and snapshot index writes will need the password.' });
+        rows.push({ kind: getLockCredential() ? 'good' : 'warn', text: getLockCredential() ? 'Lock PIN/password is set.' : 'Lock PIN/password is not set.' });
+        rows.push({ kind: uiState.pageLockSecretForSession ? 'good' : 'warn', text: uiState.pageLockSecretForSession ? 'Lock PIN/password has been entered this session, so auto-lock can wrap the session key with the PIN.' : 'Lock PIN/password has not been entered this session. Auto-lock may ask you to lock/unlock once before PIN-only restore works.' });
+        rows.push({ kind: (Number(cfg.autoLockMinutes || 0) || cfg.autoLockOnBlur || cfg.autoLockOnTabHidden || Number(cfg.autoLockOnReturnMinutes || 0)) ? 'good' : 'warn', text: 'Auto-lock triggers: ' + [Number(cfg.autoLockMinutes || 0) ? `${cfg.autoLockMinutes} minute inactivity` : '', cfg.autoLockOnBlur ? 'loss of focus' : '', cfg.autoLockOnTabHidden ? 'tab hidden' : '', Number(cfg.autoLockOnReturnMinutes || 0) ? `return after ${cfg.autoLockOnReturnMinutes} minutes` : ''].filter(Boolean).join(', ') || 'none enabled' });
+        node.innerHTML = rows.map(row => `<div class="health-finding ${row.kind}">${escapeHtml(row.text)}</div>`).join('');
+      }
+
+      updateSecurityStatusPanel = function() {
+        oldUpdateSecurityStatusPanel();
+        updateLockWorkflowReadiness();
+      };
+
+      function privacyProfiles(mode) {
+        return {
+          teacher: { hideClassActions:false, hideWizard:false, hideSaveLoad:false, hideSettings:false, hidePrint:false, hideLayoutTools:false, hideStudentsPanel:false, hideStatusPanel:false, hideChartActions:false, hideRoomHeaderActions:false, forceNamesOnly:false, hideBubbleDetails:false, disableSeatEditing:false, disableRoomEditing:false, disableStudentEditing:false, disableBubbleEditing:false },
+          substitute: { hideClassActions:true, hideWizard:true, hideSaveLoad:true, hideSettings:true, hidePrint:false, hideLayoutTools:true, hideStudentsPanel:false, hideStatusPanel:false, hideChartActions:true, hideRoomHeaderActions:true, forceNamesOnly:true, hideBubbleDetails:false, disableSeatEditing:true, disableRoomEditing:true, disableStudentEditing:true, disableBubbleEditing:true },
+          student: { hideClassActions:true, hideWizard:true, hideSaveLoad:true, hideSettings:true, hidePrint:true, hideLayoutTools:true, hideStudentsPanel:true, hideStatusPanel:true, hideChartActions:true, hideRoomHeaderActions:true, forceNamesOnly:true, hideBubbleDetails:true, disableSeatEditing:true, disableRoomEditing:true, disableStudentEditing:true, disableBubbleEditing:true },
+          admin: { hideClassActions:false, hideWizard:true, hideSaveLoad:false, hideSettings:false, hidePrint:false, hideLayoutTools:false, hideStudentsPanel:false, hideStatusPanel:false, hideChartActions:false, hideRoomHeaderActions:false, forceNamesOnly:false, hideBubbleDetails:false, disableSeatEditing:true, disableRoomEditing:true, disableStudentEditing:false, disableBubbleEditing:false },
+          privacy: { hideClassActions:true, hideWizard:true, hideSaveLoad:true, hideSettings:true, hidePrint:true, hideLayoutTools:true, hideStudentsPanel:false, hideStatusPanel:true, hideChartActions:true, hideRoomHeaderActions:true, forceNamesOnly:true, hideBubbleDetails:true, disableSeatEditing:true, disableRoomEditing:true, disableStudentEditing:true, disableBubbleEditing:true }
+        }[mode] || null;
+      }
+
+      function applyPrivacyDisplayMode(mode) {
+        const profile = privacyProfiles(mode);
+        if (!profile) return;
+        uiState.pageSettings = mergePageSettings({ ...pageSettings(), privacyDisplayMode: mode, visibility: { ...pageSettings().visibility, ...profile } });
+        updatePageSettingsForm();
+        applyPageSettings(uiState.pageSettings, { skipRender: false });
+        setLiveStatusMessage(`Applied ${mode.replace(/^[a-z]/, c => c.toUpperCase())} privacy display mode to Eye Mode settings.`);
+      }
+
+      function noteRevealTimeoutMs() {
+        const seconds = Number(pageSettings().noteRevealTimeoutSeconds || 0);
+        return seconds > 0 ? seconds * 1000 : 0;
+      }
+
+      function clearNoteRevealTimers() {
+        Object.values(uiState.noteRevealTimers || {}).forEach(timer => clearTimeout(timer));
+        uiState.noteRevealTimers = {};
+      }
+
+      const oldRevealNoteLineInEditor = revealNoteLineInEditor;
+      revealNoteLineInEditor = function(noteKey) {
+        oldRevealNoteLineInEditor(noteKey);
+        const key = String(noteKey || '');
+        if (!key) return;
+        uiState.noteRevealTimers = uiState.noteRevealTimers || {};
+        if (uiState.noteRevealTimers[key]) clearTimeout(uiState.noteRevealTimers[key]);
+        const ms = noteRevealTimeoutMs();
+        if (ms > 0) {
+          uiState.noteRevealTimers[key] = setTimeout(() => {
+            if (uiState.noteEditorRevealed) delete uiState.noteEditorRevealed[key];
+            delete uiState.noteRevealTimers[key];
+            renderNotesEditor();
+          }, ms);
+        }
+      };
+
+      const oldCloseStudentNotesModal = closeStudentNotesModal;
+      closeStudentNotesModal = function() { clearNoteRevealTimers(); oldCloseStudentNotesModal(); };
+
+      function hideRevealedSensitiveNotes(reason = '') {
+        if (!uiState.noteEditorRevealed || !Object.keys(uiState.noteEditorRevealed).length) return;
+        uiState.noteEditorRevealed = {};
+        clearNoteRevealTimers();
+        renderNotesEditor();
+        if (reason) setLiveStatusMessage(reason);
+      }
+
+      function snapshotRetentionLimit() { return clampNumber(pageSettings().snapshotRetention || 50, 5, 200); }
+      function trimSnapshotsToRetention() {
+        if (!Array.isArray(uiState.appSnapshotsCache)) return;
+        const limit = snapshotRetentionLimit();
+        if (uiState.appSnapshotsCache.length > limit) {
+          uiState.appSnapshotsCache = uiState.appSnapshotsCache.slice(0, limit);
+          uiState.appSnapshotsLoaded = true;
+          void persistAppSnapshotsIndexEncrypted();
+        }
+      }
+
+      saveAppSnapshots = function(items) {
+        const limit = snapshotRetentionLimit();
+        uiState.appSnapshotsCache = (items || []).map(normalizeAppSnapshotRecord).filter(Boolean).slice(0, limit);
+        uiState.appSnapshotsLoaded = true;
+        void persistAppSnapshotsIndexEncrypted();
+      };
+
+      renderSnapshotList = function() {
+        const list = el('snapshotList');
+        if (!list) return;
+        const items = appSnapshots();
+        if (!items.length) {
+          list.innerHTML = '<div class="hint">No full-app snapshots saved yet.</div>';
+          return;
+        }
+        list.classList.add('timeline-list');
+        list.innerHTML = items.map(item => {
+          const kind = item.reason === 'before-restore' ? 'return-point' : item.automatic ? 'auto' : '';
+          const reason = item.reason ? ` · ${item.reason.replace(/-/g, ' ')}` : '';
+          return `<div class="snapshot-timeline-row ${kind}"><div class="snapshot-timeline-dot" aria-hidden="true"></div><div class="settings-list-main"><strong>${escapeHtml(item.name)}</strong><div class="muted">${escapeHtml(new Date(item.createdAt).toLocaleString())}${item.automatic ? ' · automatic' : ''}${escapeHtml(reason)}</div><div class="muted">${escapeHtml(item.signature || '').slice(0, 10)}</div></div><div class="button-row"><button class="tiny secondary" data-preview-snapshot="${escapeHtml(item.id)}" type="button">Preview</button><button class="tiny secondary" data-restore-snapshot="${escapeHtml(item.id)}" type="button">Restore</button><button class="tiny danger icon-button" data-delete-snapshot="${escapeHtml(item.id)}" type="button" aria-label="Delete snapshot" title="Delete this snapshot">🗑</button></div></div>`;
+        }).join('');
+      };
+
+      async function previewSnapshot(snapshotId) {
+        await ensureAppSnapshotsLoaded();
+        const snap = appSnapshots().find(item => item.id === snapshotId);
+        if (!snap) return;
+        const body = el('snapshotPreviewBody');
+        if (!body) return;
+        body.innerHTML = '<div class="hint">Decrypting snapshot preview...</div>';
+        el('snapshotPreviewModal')?.classList.add('show');
+        try {
+          const text = await snapshotDataForRestore(snap.data);
+          const parsed = JSON.parse(text);
+          const classes = Array.isArray(parsed.classes) ? parsed.classes : [];
+          const active = classes.find(cls => cls.id === parsed.activeClassId) || classes[0] || {};
+          const studentCount = classes.reduce((sum, cls) => sum + (cls.students || []).length, 0);
+          const bubbleCount = classes.reduce((sum, cls) => sum + (cls.bubbles || []).length, 0);
+          const zoneCount = classes.reduce((sum, cls) => sum + (cls.zones || []).length, 0);
+          const assignedCount = classes.reduce((sum, cls) => sum + Object.values(cls.cells || {}).filter(cell => cell.assignedStudentId).length, 0);
+          body.innerHTML = `<h3>${escapeHtml(snap.name)}</h3><div class="muted">Created ${escapeHtml(new Date(snap.createdAt).toLocaleString())}</div><div class="snapshot-summary-grid"><div><strong>Classes</strong><br>${classes.length}</div><div><strong>Students</strong><br>${studentCount}</div><div><strong>Bubbles</strong><br>${bubbleCount}</div><div><strong>Zones</strong><br>${zoneCount}</div><div><strong>Assigned seats</strong><br>${assignedCount}</div><div><strong>Active class</strong><br>${escapeHtml(active.name || 'Unknown')}</div></div><div class="warningbox">Preview only. Restoring will first save a return-point snapshot of the current state.</div><div class="button-row"><button type="button" data-restore-snapshot="${escapeHtml(snap.id)}">Restore This Snapshot</button></div>`;
+        } catch (err) {
+          body.innerHTML = `<div class="warningbox">Could not preview this snapshot: ${escapeHtml(err.message || err)}</div>`;
+        }
+      }
+
+      function collectPrintSecurityConcerns(options) {
+        const concerns = [];
+        if (!pageSettings().printSecurityWarnings) return concerns;
+        if (options.notes?.private) concerns.push('private notes');
+        if (options.notes?.substitute) concerns.push('substitute notes');
+        if (options.details?.id) concerns.push('student IDs');
+        if (options.details?.grade) concerns.push('grades');
+        if (options.sections?.bubbles) concerns.push('bubble configuration');
+        if (options.sections?.zones) concerns.push('zone configuration');
+        return concerns;
+      }
+
+      function confirmSensitiveOutput(kind, concerns, proceed) {
+        if (!concerns.length) { proceed(); return; }
+        showInAppConfirm(`${kind} includes ${concerns.join(', ')}. Continue only if this output is appropriate for the audience and district workflow.`, proceed, { title: `${kind} Security Check`, confirmText: 'Continue', cancelText: 'Cancel' });
+      }
+
+      startPrintPreviewFromOptions = function() {
+        const options = readPrintOptionsFromModal();
+        confirmSensitiveOutput('Print preview', collectPrintSecurityConcerns(options), () => oldStartPrintPreviewFromOptions());
+      };
+      exportChartPdf = function() { const options = currentPrintOptions(); confirmSensitiveOutput('PDF export', collectPrintSecurityConcerns(options), () => oldExportChartPdf()); };
+      exportChartSvg = function() { const options = currentPrintOptions(); confirmSensitiveOutput('SVG export', collectPrintSecurityConcerns(options), () => oldExportChartSvg()); };
+
+      function exportConcernsForScope(scope) {
+        if (!pageSettings().exportSecurityWarnings) return [];
+        const concerns = ['encrypted student data'];
+        if (hasSensitiveStudentNotes()) concerns.push('private/substitute notes');
+        if (scope === 'all') concerns.push('all classes and snapshots');
+        return concerns;
+      }
+
+      // Function declarations live in local script scope, so wrap known names directly when present.
+      const oldExportAndDownload = exportAndDownload;
+      exportAndDownload = function(scope = 'all') { confirmSensitiveOutput('JSON export', exportConcernsForScope(scope), () => oldExportAndDownload(scope)); };
+      const oldDownloadSavePackage = downloadSavePackage;
+      downloadSavePackage = function() { confirmSensitiveOutput('Backup package download', exportConcernsForScope('all'), () => oldDownloadSavePackage()); };
+      const oldDownloadStudentDataJson = downloadStudentDataJson;
+      downloadStudentDataJson = function() { confirmSensitiveOutput('Student data export', exportConcernsForScope('current'), () => oldDownloadStudentDataJson()); };
+      const oldDownloadBubbleConfigJson = downloadBubbleConfigJson;
+      downloadBubbleConfigJson = function() { confirmSensitiveOutput('Bubble/zone export', exportConcernsForScope('current'), () => oldDownloadBubbleConfigJson()); };
+      const oldDownloadRoomLayoutJson = downloadRoomLayoutJson;
+      downloadRoomLayoutJson = function() { confirmSensitiveOutput('Room layout export', ['room metadata'], () => oldDownloadRoomLayoutJson()); };
+
+      function renderUndoHistory() {
+        const list = el('undoHistoryList');
+        if (!list) return;
+        const labels = uiState.undoHistoryLabels || [];
+        const redo = uiState.redoHistoryLabels || [];
+        const rows = [];
+        labels.slice(-25).reverse().forEach((item, idx) => rows.push({ type:'Undo', item, idx }));
+        redo.slice(-25).reverse().forEach((item, idx) => rows.push({ type:'Redo', item, idx }));
+        list.innerHTML = rows.length ? rows.map(row => `<div class="history-row"><div><strong>${escapeHtml(row.type)} checkpoint</strong><div class="muted">${escapeHtml(row.item.reason || 'Change')} · ${escapeHtml(new Date(row.item.at || Date.now()).toLocaleString())}</div></div><span class="pill">${escapeHtml(row.type)}</span></div>`).join('') : '<div class="hint">No undo or redo checkpoints captured yet.</div>';
+      }
+
+      pushUndoSnapshot = function(reason = 'change') {
+        const before = uiState.undoStack.length;
+        oldPushUndoSnapshot(reason);
+        if (uiState.undoStack.length > before) {
+          uiState.undoHistoryLabels = uiState.undoHistoryLabels || [];
+          uiState.undoHistoryLabels.push({ reason, at: new Date().toISOString() });
+          if (uiState.undoHistoryLabels.length > 60) uiState.undoHistoryLabels.shift();
+          uiState.redoHistoryLabels = [];
+        }
+      };
+      undoLastChange = function() {
+        const label = (uiState.undoHistoryLabels || []).pop();
+        oldUndoLastChange();
+        if (label) { uiState.redoHistoryLabels = uiState.redoHistoryLabels || []; uiState.redoHistoryLabels.push({ ...label, reason: `Redo: ${label.reason || 'Change'}`, at: new Date().toISOString() }); }
+        renderUndoHistory();
+      };
+      redoLastChange = function() {
+        const label = (uiState.redoHistoryLabels || []).pop();
+        oldRedoLastChange();
+        if (label) { uiState.undoHistoryLabels = uiState.undoHistoryLabels || []; uiState.undoHistoryLabels.push({ ...label, reason: label.reason || 'Redone change', at: new Date().toISOString() }); }
+        renderUndoHistory();
+      };
+
+      function migrationList() {
+        return [
+          { id:'normalize-page-settings', run: data => { data.pageSettings = mergePageSettings(data.pageSettings || data.state?.pageSettings || {}); return data; } },
+          { id:'ensure-classes-array', run: data => { const incoming = data.state || data; if (!Array.isArray(incoming.classes) && Array.isArray(data.classes)) incoming.classes = data.classes; return data; } },
+          { id:'stamp-schema-version', run: data => { data.migrationSchemaVersion = MIGRATION_SCHEMA_VERSION; return data; } }
+        ];
+      }
+
+      function migratePayloadObject(payload) {
+        let data = payload && typeof payload === 'object' ? payload : {};
+        migrationList().forEach(migration => { data = migration.run(data) || data; });
+        return data;
+      }
+
+      importState = function(json) {
+        const parsed = migratePayloadObject(JSON.parse(json));
+        oldImportState(JSON.stringify(parsed));
+      };
+
+      importStateDirectFromText = async function(text, sourceLabel = 'local save') {
+        let parsed = JSON.parse(text);
+        if (parsed && parsed.encrypted) {
+          const key = await requestEncryptionKey(`This ${sourceLabel} is encrypted. Enter the encryption key to continue.`);
+          if (!key) throw new Error('Encrypted load canceled.');
+          const decryptedText = await decryptTextEnvelope(parsed, key);
+          parsed = migratePayloadObject(JSON.parse(decryptedText));
+          importState(JSON.stringify(parsed));
+          return;
+        }
+        parsed = migratePayloadObject(parsed);
+        importState(JSON.stringify(parsed));
+      };
+
+      function collectSaveHealthFindings() {
+        const findings = [];
+        persistActiveClass();
+        const localRaw = safeStorageGet('localStorage', STORAGE_KEY);
+        try { const local = JSON.parse(localRaw || 'null'); findings.push({ kind: local?.encrypted ? 'good' : 'bad', text: local?.encrypted ? 'Local browser save is encrypted.' : 'Local browser save is missing or not encrypted.' }); } catch (err) { findings.push({ kind:'bad', text:'Local browser save is unreadable JSON.' }); }
+        try { const raw = safeStorageGet('localStorage', LOCAL_AUTOSAVE_SNAPSHOT_KEY); const snaps = raw ? JSON.parse(raw) : null; findings.push({ kind: !snaps || snaps?.encrypted ? 'good' : 'warn', text: !snaps ? 'Snapshot index is empty.' : snaps?.encrypted ? 'Snapshot index is encrypted.' : 'Snapshot index is not encrypted.' }); } catch (err) { findings.push({ kind:'bad', text:'Snapshot index is unreadable JSON.' }); }
+        const classes = state.classes || [];
+        findings.push({ kind: classes.length ? 'good' : 'bad', text: `${classes.length} class record(s) found.` });
+        classes.forEach(cls => {
+          const students = cls.students || [];
+          const ids = new Set(students.map(s => String(s.id || '')));
+          const names = new Set();
+          const duplicateIds = students.map(s => String(s.id || '')).filter((id, idx, arr) => id && arr.indexOf(id) !== idx);
+          if (duplicateIds.length) findings.push({ kind:'warn', text:`${cls.name || 'Class'} has duplicate student IDs: ${Array.from(new Set(duplicateIds)).join(', ')}.` });
+          students.forEach(s => { const name = studentFullName(s).trim().toLowerCase(); if (name && names.has(name)) findings.push({ kind:'warn', text:`${cls.name || 'Class'} may have duplicate student name: ${studentFullName(s)}.` }); names.add(name); });
+          Object.entries(cls.cells || {}).forEach(([key, cell]) => { if (cell.assignedStudentId && !ids.has(String(cell.assignedStudentId))) findings.push({ kind:'bad', text:`${cls.name || 'Class'} seat ${key} references a missing student (${cell.assignedStudentId}).` }); });
+          const bubbleIds = new Set((cls.bubbles || []).map(b => String(b.id)));
+          const zoneIds = new Set((cls.zones || []).map(z => String(z.id)));
+          (cls.bubbles || []).forEach(b => { (b.studentIds || []).forEach(id => { if (!ids.has(String(id))) findings.push({ kind:'bad', text:`Bubble ${b.name || b.id} references missing student ${id}.` }); }); (b.anchorSeats || []).forEach(key => { if (!cls.cells?.[key]) findings.push({ kind:'bad', text:`Bubble ${b.name || b.id} references missing seat ${key}.` }); }); if (b.zoneId && !zoneIds.has(String(b.zoneId))) findings.push({ kind:'bad', text:`Bubble ${b.name || b.id} references missing zone ${b.zoneId}.` }); });
+          (cls.zones || []).forEach(z => { (z.studentIds || []).forEach(id => { if (!ids.has(String(id))) findings.push({ kind:'bad', text:`Zone ${z.name || z.id} references missing student ${id}.` }); }); (z.bubbleIds || []).forEach(id => { if (!bubbleIds.has(String(id))) findings.push({ kind:'bad', text:`Zone ${z.name || z.id} references missing bubble ${id}.` }); }); });
+        });
+        if (!findings.some(f => f.kind === 'bad' || f.kind === 'warn')) findings.push({ kind:'good', text:'No data integrity issues found in the current loaded state.' });
+        return findings;
+      }
+
+      function renderSaveHealthReport(run = true) {
+        const node = el('saveHealthReport');
+        if (!node) return;
+        if (!run) return;
+        const findings = collectSaveHealthFindings();
+        node.innerHTML = findings.map(f => `<div class="health-finding ${escapeHtml(f.kind)}">${escapeHtml(f.text)}</div>`).join('');
+      }
+
+      function repairClassRecordSafe(cls) {
+        const c = normalizeClassRecord(cls);
+        const studentIds = new Set((c.students || []).map(student => String(student.id || '')));
+        const bubbleIds = new Set((c.bubbles || []).map(bubble => String(bubble.id || '')));
+        const zoneIds = new Set((c.zones || []).map(zone => String(zone.id || '')));
+        const validSeatKeys = new Set(Object.entries(c.cells || {}).filter(([, cell]) => cell && cell.type === 'seat').map(([key]) => String(key)));
+        Object.values(c.cells || {}).forEach(cell => {
+          if (!cell) return;
+          cell.zoneIds = Array.from(new Set((cell.zoneIds || []).map(String).filter(id => zoneIds.has(id))));
+          if (cell.type !== 'seat') {
+            cell.assignedStudentId = null;
+            cell.manual = false;
+            cell.anchorBubbleIds = [];
+            return;
+          }
+          if (cell.assignedStudentId && !studentIds.has(String(cell.assignedStudentId))) {
+            cell.assignedStudentId = null;
+            cell.manual = false;
+          }
+          cell.anchorBubbleIds = Array.from(new Set((cell.anchorBubbleIds || []).map(String).filter(id => bubbleIds.has(id))));
+        });
+        c.bubbles = (c.bubbles || []).map((bubble, index) => {
+          const b = normalizeBubbleRecord(bubble, index);
+          b.studentIds = Array.from(new Set((b.studentIds || []).map(String).filter(id => studentIds.has(id))));
+          b.anchorSeats = Array.from(new Set((b.anchorSeats || []).map(String).filter(key => validSeatKeys.has(key))));
+          if (b.zoneId && !zoneIds.has(String(b.zoneId))) b.zoneId = '';
+          b.anchorSeats.forEach(key => {
+            const cell = c.cells[key];
+            if (cell && cell.type === 'seat') {
+              cell.anchorBubbleIds = Array.from(new Set([...(cell.anchorBubbleIds || []).map(String), String(b.id)]));
+            }
+          });
+          return b;
+        });
+        const repairedBubbleIds = new Set((c.bubbles || []).map(bubble => String(bubble.id || '')));
+        c.zones = (c.zones || []).map((zone, index) => {
+          const z = normalizeZoneRecord(zone, index);
+          z.studentIds = Array.from(new Set((z.studentIds || []).map(String).filter(id => studentIds.has(id))));
+          z.bubbleIds = Array.from(new Set((z.bubbleIds || []).map(String).filter(id => repairedBubbleIds.has(id))));
+          c.bubbles.filter(bubble => String(bubble.zoneId || '') === String(z.id)).forEach(bubble => {
+            if (!z.bubbleIds.includes(String(bubble.id))) z.bubbleIds.push(String(bubble.id));
+          });
+          return z;
+        });
+        return normalizeClassRecord(c);
+      }
+
+      function repairDataIntegrity() {
+        showInAppConfirm('Repair safe data integrity issues? This removes orphaned seat assignments, stale bubble/zone/student references, invalid anchors, and normalizes class records. A snapshot/undo point is created first.', () => {
+          pushUndoSnapshot('Before data integrity repair');
+          persistActiveClass();
+          state.classes = (state.classes || []).map(repairClassRecordSafe).filter(Boolean);
+          if (!state.classes.length) state.classes = [createClassRecord('Class 1')];
+          if (!state.activeClassId || !state.classes.some(cls => cls.id === state.activeClassId)) state.activeClassId = state.classes[0].id;
+          applyClassToState(state.activeClassId);
+          renderAll();
+          renderSaveHealthReport(true);
+          setLiveStatusMessage('Safe data repair complete. Review the save health report.');
+        }, { title:'Repair Data Integrity?', confirmText:'Repair Safe Issues', cancelText:'Cancel' });
+      }
+
+      applySettingsEncryptionKeyChange = async function() {
+        const input = el('settingsEncryptionKey');
+        const newKey = String(input?.value || '');
+        if (!newKey) { setLiveStatusMessage('Enter a new encryption password before updating the session key.'); input?.focus(); return; }
+        const strength = passwordStrengthDetails(newKey);
+        updatePasswordStrengthDisplay('settingsEncryptionKey', 'settingsPasswordStrength');
+        if (!strength.acceptable) { setLiveStatusMessage('Use a stronger encryption password before updating. A 4-word passphrase or 16+ mixed characters is recommended.'); input?.focus(); return; }
+        const oldKey = currentSessionEncryptionKey();
+        const reencryptSnapshots = !!el('settingsReencryptAllSnapshots')?.checked;
+        showInAppConfirm('Update the active encryption password? The current browser save and snapshot index will be re-encrypted with the new password. Older downloaded saves/backups still require the old password used when they were created.', async () => {
+          let converted = 0;
+          let skipped = 0;
+          let preparedSnapshots = [];
+          try {
+            await ensureAppSnapshotsLoaded({ force: true });
+            if (reencryptSnapshots && oldKey) {
+              for (const snap of appSnapshots()) {
+                try {
+                  const plain = await snapshotDataForRestore(snap.data);
+                  preparedSnapshots.push({ snap, plain });
+                } catch (err) { skipped++; preparedSnapshots.push({ snap, plain: null }); }
+              }
+            }
+            setSessionEncryptionKey(newKey);
+            if (reencryptSnapshots && preparedSnapshots.length) {
+              const next = [];
+              for (const item of preparedSnapshots) {
+                if (item.plain) { next.push({ ...item.snap, data: await snapshotDataForStorage(item.plain), signature: hashString(item.plain) }); converted++; }
+                else next.push(item.snap);
+              }
+              uiState.appSnapshotsCache = next.map(normalizeAppSnapshotRecord).filter(Boolean).slice(0, snapshotRetentionLimit());
+              uiState.appSnapshotsLoaded = true;
+            }
+            if (input) input.value = '';
+            updatePasswordStrengthDisplay('settingsEncryptionKey', 'settingsPasswordStrength');
+            await persistAppSnapshotsIndexEncrypted();
+            await writeLocalBrowserSave({ reason: 'encryption-key-updated', announce: false });
+            setLiveStatusMessage(`Session encryption password updated. Current browser save and snapshot index use the new password${reencryptSnapshots ? `; ${converted} snapshot(s) re-encrypted${skipped ? `, ${skipped} skipped` : ''}` : ''}. Older downloaded files still need their original password.`);
+            updateSaveHealthPanel();
+            updateSecurityStatusPanel();
+          } catch (err) {
+            setLiveStatusMessage(err.message || 'Could not update encryption password.');
+          }
+        }, { title:'Update Encryption Password?', confirmText:'Update Password', cancelText:'Cancel' });
+      };
+
+      function csvDuplicateModeForCurrentImport() {
+        return el('csvImportDuplicateMode')?.value || pageSettings().csvDuplicateMode || 'update';
+      }
+
+      renderCsvMappingWizard = function() {
+        oldRenderCsvMappingWizard();
+        installCsvWizardExtras();
+        setValue('csvImportDuplicateMode', pageSettings().csvDuplicateMode || 'update');
+        setChecked('csvImportSnapshotBefore', pageSettings().csvSnapshotBeforeImport);
+        const stage = el('csvWizardStage');
+        if (stage) stage.textContent = 'Step 2 of 4: Confirm mapped fields and duplicate behavior. Preview updates as mappings change.';
+      };
+
+      importMappedCsvStudents = async function() {
+        const draft = uiState.csvImportDraft;
+        if (!draft) return;
+        const mode = csvDuplicateModeForCurrentImport();
+        const makeSnapshot = !!el('csvImportSnapshotBefore')?.checked;
+        if (makeSnapshot) await createAppSnapshotWithName(`Before CSV import - ${new Date().toLocaleString()}`, { silent: true, reason: 'before-import' });
+        pushUndoSnapshot('Before CSV import');
+        let added = 0, updated = 0, skipped = 0;
+        draft.rows.forEach(row => {
+          const student = mappedStudentFromCsvRow(row);
+          if (!(student.firstName || student.lastName || student.id)) return;
+          const incomingName = studentFullName(student).trim().toLowerCase();
+          const match = state.students.find(existing => String(existing.id || '') === String(student.id || '') || (incomingName && studentFullName(existing).trim().toLowerCase() === incomingName));
+          if (match && mode === 'skip') { skipped++; return; }
+          if (match && mode === 'update') { updateStudentRecord(match.id, { ...match, ...student, id: match.id }); updated++; return; }
+          if (match && mode === 'create') student.id = uid('student');
+          addStudent(student); added++;
+        });
+        uiState.csvImportDraft = null;
+        el('csvMapModal')?.classList.remove('show');
+        renderAll();
+        setLiveStatusMessage(`CSV import complete: ${added} added, ${updated} updated, ${skipped} skipped.`);
+      };
+
+      function changelogCategory(change) {
+        const text = String(change || '').toLowerCase();
+        if (/encrypt|password|pin|lock|security|eye|visibility|private|protect/.test(text)) return 'Security';
+        if (/fix|bug|repair|error|cleanup|audit/.test(text)) return 'Bug fixes';
+        if (/internal|metadata|license|migration|schema|technical/.test(text)) return 'Technical';
+        return 'User-facing';
+      }
+
+      renderChangeLog = function() {
+        const target = el('changeLogList');
+        if (!target) return;
+        target.innerHTML = CHANGE_LOG.map(entry => {
+          const groups = {};
+          (entry.changes || []).forEach(change => { const cat = changelogCategory(change); groups[cat] = groups[cat] || []; groups[cat].push(change); });
+          return `<div class="change-log-entry"><strong>Revision ${escapeHtml(entry.version)} <span class="muted">• ${escapeHtml(entry.date)}</span></strong>${Object.entries(groups).map(([cat, items]) => `<h4 style="margin:8px 0 4px;font-size:12px;">${escapeHtml(cat)}</h4><ul>${items.map(change => `<li>${escapeHtml(change)}</li>`).join('')}</ul>`).join('')}</div>`;
+        }).join('');
+      };
+
+      function settingsSearchFilter() {
+        const input = el('settingsSearchInput');
+        const q = String(input?.value || '').trim().toLowerCase();
+        const buttons = Array.from(document.querySelectorAll('[data-settings-nav]'));
+        let visible = 0;
+        buttons.forEach(button => {
+          const text = button.textContent.toLowerCase();
+          const match = !q || text.includes(q);
+          button.classList.toggle('settings-search-hidden', !match);
+          if (match) visible++;
+        });
+        const summary = el('settingsSearchSummary');
+        if (summary) summary.textContent = q ? `${visible} Settings section(s) match "${q}".` : 'Type to filter Settings sections.';
+      }
+
+      function openSnapshotTimeline() { openSnapshotModal(); }
+
+      openSettingsModal = function() {
+        installWorkflowDom();
+        oldOpenSettingsModal();
+        updateAddonSettingsForm();
+      };
+      closeSettingsModal = function() {
+        oldCloseSettingsModal();
+      };
+
+      openWelcomeSecurityModal = function() { installWorkflowDom(); oldOpenWelcomeSecurityModal(); };
+      closeWelcomeSecurityModal = function() { oldCloseWelcomeSecurityModal(); };
+      completeWelcomeSecuritySetup = async function() { await oldCompleteWelcomeSecuritySetup(); if (!el('welcomeSecurityModal')?.classList.contains('show') && currentSessionEncryptionKey()) openSecuritySetupWizard(); };
+
+      function tryDemoDataFromWelcome() {
+        const load = () => { loadSample(); renderAll(); setLiveStatusMessage('Demo data loaded. Create an encryption password to continue into the app.'); const input = el('welcomeEncryptionKeyInput'); input?.focus(); };
+        if (state.students.length || state.bubbles.length) showInAppConfirm('Load demo data? This replaces the current starter data behind the Welcome screen.', load, { title:'Load Demo Data?', confirmText:'Load Demo', cancelText:'Cancel' });
+        else load();
+      }
+
+      function installWorkflowEvents() {
+        if (document.body.dataset.workflowExpansion11814 === 'true') return;
+        document.body.dataset.workflowExpansion11814 = 'true';
+        document.addEventListener('click', event => {
+          const target = event.target;
+          if (target.closest?.('#securitySetupWizardOpenBtn,#welcomeSecurityWizardBtn')) { event.preventDefault(); openSecuritySetupWizard(); return; }
+          if (target.closest?.('#closeSecuritySetupWizardBtn,#securityWizardDoneBtn')) { event.preventDefault(); closeSecuritySetupWizard(); return; }
+          if (target.closest?.('#securityWizardRefreshBtn')) { event.preventDefault(); renderSecuritySetupWizard(); return; }
+          if (target.closest?.('#securityWizardOpenSettingsBtn')) { event.preventDefault(); closeSecuritySetupWizard(); requestOpenSettingsModal(); setSettingsPage('security'); return; }
+          const privacyBtn = target.closest?.('[data-apply-privacy-mode]');
+          if (privacyBtn) { event.preventDefault(); applyPrivacyDisplayMode(privacyBtn.getAttribute('data-apply-privacy-mode')); return; }
+          if (target.closest?.('#openSnapshotTimelineBtn')) { event.preventDefault(); openSnapshotTimeline(); return; }
+          if (target.closest?.('#trimSnapshotsNowBtn')) { event.preventDefault(); trimSnapshotsToRetention(); renderSnapshotList(); setLiveStatusMessage('Snapshot retention applied.'); return; }
+          const preview = target.closest?.('[data-preview-snapshot]');
+          if (preview) { event.preventDefault(); previewSnapshot(preview.getAttribute('data-preview-snapshot')); return; }
+          if (target.closest?.('#closeSnapshotPreviewBtn') || target.id === 'snapshotPreviewModal') { event.preventDefault(); el('snapshotPreviewModal')?.classList.remove('show'); return; }
+          if (target.closest?.('#undoHistoryBtn')) { event.preventDefault(); renderUndoHistory(); el('undoHistoryModal')?.classList.add('show'); return; }
+          if (target.closest?.('#closeUndoHistoryBtn') || target.id === 'undoHistoryModal') { event.preventDefault(); el('undoHistoryModal')?.classList.remove('show'); return; }
+          if (target.closest?.('#undoHistoryUndoBtn')) { event.preventDefault(); undoLastChange(); return; }
+          if (target.closest?.('#undoHistoryRedoBtn')) { event.preventDefault(); redoLastChange(); return; }
+          if (target.closest?.('#runSaveHealthCheckBtn')) { event.preventDefault(); renderSaveHealthReport(true); return; }
+          if (target.closest?.('#repairDataIntegrityBtn')) { event.preventDefault(); repairDataIntegrity(); return; }
+          if (target.closest?.('#welcomeDemoDataBtn')) { event.preventDefault(); tryDemoDataFromWelcome(); return; }
+        });
+        document.addEventListener('input', event => {
+          if (event.target?.id === 'settingsSearchInput') settingsSearchFilter();
+        });
+        document.addEventListener('change', event => {
+          if (event.target?.id === 'settingPrivacyDisplayMode') applyPrivacyDisplayMode(event.target.value);
+          if (event.target?.id === 'csvImportDuplicateMode' || event.target?.id === 'csvImportSnapshotBefore') {
+            uiState.pageSettings = mergePageSettings({ ...pageSettings(), csvDuplicateMode: csvDuplicateModeForCurrentImport(), csvSnapshotBeforeImport: !!el('csvImportSnapshotBefore')?.checked });
+          }
+        });
+        window.addEventListener('blur', () => { if (pageSettings().noteRevealHideOnBlur) hideRevealedSensitiveNotes('Revealed private/substitute notes hidden because the window lost focus.'); });
+        document.addEventListener('visibilitychange', () => { if (document.hidden && pageSettings().noteRevealHideOnBlur) hideRevealedSensitiveNotes('Revealed private/substitute notes hidden because the tab became inactive.'); });
+      }
+
+      // Initial install before initializeApp wires the built-in events.
+      installWorkflowDom();
+      installWorkflowEvents();
+    })();
+
 
     async function initializeApp() {
       uiState.pageSettings = mergePageSettings(null);
