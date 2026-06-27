@@ -6871,7 +6871,7 @@
 
 
     /* Revision 1.19.5: first-run note encryption prompt suppression */
-    /* Revision 1.19.6: freeform assigned-seat details and room orientation markers */
+    /* Revision 1.19.8: freeform lock workflow cleanup and removed unused arrange controls */
     #securityWizardSteps summary.security-wizard-check-summary {
       touch-action: manipulation;
       user-select: none;
@@ -7097,13 +7097,6 @@
     }
     .freeform-room-marker.front { top: 8px; }
     .freeform-room-marker.back { bottom: 8px; }
-    .freeform-arrange-note {
-      flex-basis: 100%;
-      font-size: 11px;
-      line-height: 1.25;
-      color: var(--muted);
-      max-width: 520px;
-    }
 
     .freeform-rotate-handle {
       position: absolute;
@@ -7638,10 +7631,7 @@
             <button id="duplicateFreeformObjectBtn" class="secondary" type="button">Duplicate</button>
             <button id="lockFreeformObjectBtn" class="secondary" type="button">Lock/Unlock</button>
             <button id="rotateFreeformObjectBtn" class="secondary" type="button">Rotate</button>
-            <button id="bringFreeformForwardBtn" class="secondary" type="button" title="Move the selected object above overlapping objects. This does not mark the front of the room.">Bring Forward</button>
-            <button id="sendFreeformBackBtn" class="secondary" type="button" title="Move the selected object behind overlapping objects. This does not mark the back of the room.">Send Back</button>
             <button id="deleteFreeformObjectBtn" class="danger" type="button">Delete</button>
-            <div class="freeform-arrange-note">Bring Forward and Send Back only control overlapping object stacking. The canvas labels the room orientation: Front of Room is the top edge, Back of Room is the bottom edge.</div>
             <button id="convertGridToFreeformBtn" class="secondary" type="button">Convert Grid</button>
             <button id="mapFreeformToGridBtn" class="secondary" type="button">Map to Grid</button>
             <div class="field small"><label for="freeformCanvasWidthInput">Canvas W</label><input id="freeformCanvasWidthInput" type="number" min="400" max="12000" value="1400" /></div>
@@ -7649,7 +7639,7 @@
             <div class="field small"><label for="freeformGridSizeInput">Snap</label><input id="freeformGridSizeInput" type="number" min="5" max="80" value="20" /></div>
             <label class="checkline" title="Snap dragged and resized freeform objects to the canvas grid."><input id="freeformSnapToggle" type="checkbox" checked /> <span>Snap to grid</span></label>
           </div>
-          <div class="hint" style="max-width:620px;">Grid mode uses rows and columns. Freeform mode lets you drag, resize, rotate, lock, and save real room placements. The top of the freeform canvas is labeled Front of Room and the bottom is Back of Room. Use Map to Grid before printing a simple row/column version; the app maps freeform seat order back into grid seats.</div>
+          <div class="hint" style="max-width:620px;">Grid mode uses rows and columns. Freeform mode lets you drag, resize, rotate, lock, and save real room placements. The top of the freeform canvas is labeled Front of Room and the bottom is Back of Room. Lock a freeform object to prevent movement and seat edits until it is unlocked. Use Map to Grid before printing a simple row/column version; the app maps freeform seat order back into grid seats.</div>
         </div>
       </div>
 
@@ -8652,7 +8642,7 @@
     const WELCOME_SETUP_STORAGE_KEY = 'seating-chart-bubble-builder-secure-welcome-v1';
     const VISIBILITY_CREDENTIAL_KEY = 'seating-chart-bubble-builder-visibility-v1';
     const HINT_DISMISS_STORAGE_KEY = 'seating-chart-bubble-builder-dismissed-hints-v1';
-    const APP_REVISION = '1.19.6';
+    const APP_REVISION = '1.19.8';
     const APP_LAST_UPDATED = 'June 27, 2026';
 
     const APP_LICENSE = {
@@ -8713,6 +8703,8 @@
     ];
 
     const CHANGE_LOG = [
+      { version: '1.19.8', date: 'June 27, 2026', changes: ['Removed the misleading Freeform Bring Forward and Send Back toolbar buttons and their unused arrange code so room Front/Back only means actual room orientation markers.', 'Made Freeform seat lock state authoritative for Freeform editing: locked seats can be selected and unlocked but cannot be reassigned, cleared, retagged, or converted until unlocked.', 'Synced Freeform lock/unlock changes with the linked Standard Grid seat without resetting freeform position, size, rotation, object type, or bubble display.'] },
+      { version: '1.19.7', date: 'June 27, 2026', changes: ['Linked freeform seat lock/unlock state with the matching Standard Grid cell so both views agree before editing, printing, generating, or switching modes.', 'Made the freeform double-click seat editor open with the selected freeform seat state, including assigned student, bubbles, zones, and lock status.', 'Updated freeform assign, clear, lock, unlock, and object-type actions so they preserve canvas geometry while syncing only the matching grid seat state.'] },
       { version: '1.19.6', date: 'June 27, 2026', changes: ['Fixed Freeform Room Layout seat cards so assigned student names, bubble color bars, reserved bubble anchors, and zone tags display on freeform seats instead of showing Drop student here.', 'Added freeform assignment repair that fills missing freeform seat assignments from matching grid cells without rebuilding the canvas geometry.', 'Renamed Front/Back freeform toolbar controls to Bring Forward/Send Back and added visible Front of Room/Back of Room orientation markers on the freeform canvas.'] },
       { version: '1.19.5', date: 'June 27, 2026', changes: ['Fixed the lingering Encryption Recommended for Notes modal after first-run Welcome setup by making note-warning checks honor the freshly created encryption session, encryption-enabled state, and completed Welcome setup marker.', 'Added a defensive guard so the note-encryption recommendation cannot open while the session is already configured for encrypted saves.'] },
       { version: '1.19.4', date: 'June 27, 2026', changes: ['Stopped stale encryption-key prompts after first-run Welcome setup by keeping the newly created session key trusted through note warnings, first save, snapshot loading, and encrypted local-save paths.', 'Reworked Freeform Room Layout commits so drag, resize, rotate, lock/unlock, arrange, and type changes preserve each object\'s current position, size, rotation, lock state, and z-order without triggering global grid rebuilds.', 'Added a mobile-safe Security Setup accordion click handler so tapping each setup step expands it and collapses the others reliably on touch screens.'] },
@@ -8831,6 +8823,7 @@
       skipNextCellClick: false,
       selectionAnchorKey: null,
       activeSeatEditCellKey: null,
+      activeSeatEditFreeformObjectId: null,
       namesOnlyLayout: true,
       activeSideTab: 'students',
       encryptionEnabled: false,
@@ -10534,7 +10527,7 @@
         if (!cell) return;
         obj.assignedStudentId = cell.assignedStudentId || null;
         obj.manual = Boolean(cell.manual);
-        obj.locked = Boolean(cell.manual || obj.locked);
+        obj.locked = Boolean(cell.manual);
         obj.anchorBubbleIds = deepClone(cell.anchorBubbleIds || []);
         obj.zoneIds = deepClone(cell.zoneIds || []);
       });
@@ -10655,7 +10648,7 @@
         if (!obj.assignedStudentId && cell.assignedStudentId && !assignedElsewhere.has(String(cell.assignedStudentId))) {
           obj.assignedStudentId = String(cell.assignedStudentId);
           obj.manual = Boolean(cell.manual);
-          obj.locked = Boolean(obj.locked || cell.manual);
+          obj.locked = Boolean(cell.manual);
           assignedElsewhere.add(String(cell.assignedStudentId));
         }
         if ((!obj.anchorBubbleIds || !obj.anchorBubbleIds.length) && Array.isArray(cell.anchorBubbleIds) && cell.anchorBubbleIds.length) {
@@ -10664,6 +10657,126 @@
         if ((!obj.zoneIds || !obj.zoneIds.length) && Array.isArray(cell.zoneIds) && cell.zoneIds.length) {
           obj.zoneIds = deepClone(cell.zoneIds);
         }
+      });
+    }
+
+    function gridSeatEntryForStudent(studentId) {
+      const id = String(studentId || '');
+      if (!id) return null;
+      return Object.entries(state.cells || {}).find(([, cell]) => cell && cell.type === 'seat' && String(cell.assignedStudentId || '') === id) || null;
+    }
+
+    function ensureFreeformSeatGridLink(obj) {
+      if (!obj || obj.type !== 'seat') return '';
+      ensureGrid();
+      if (obj.cellKey && state.cells[obj.cellKey] && state.cells[obj.cellKey].type === 'seat') return obj.cellKey;
+      const assignedEntry = gridSeatEntryForStudent(obj.assignedStudentId);
+      if (assignedEntry) {
+        obj.cellKey = assignedEntry[0];
+        return obj.cellKey;
+      }
+      const seats = freeformSeatObjectsSorted();
+      const gridSeats = gridSeatEntriesSorted();
+      const index = Math.max(0, seats.findIndex(seat => seat.id === obj.id));
+      const mapped = gridSeats[index] || gridSeats.find(([, cell]) => !cell.assignedStudentId) || null;
+      if (mapped) {
+        obj.cellKey = mapped[0];
+        return obj.cellKey;
+      }
+      return '';
+    }
+
+    function activeSeatEditFreeformObject() {
+      const id = uiState.activeSeatEditFreeformObjectId || '';
+      return id ? (state.freeformLayout?.objects || []).find(obj => obj.id === id && obj.type === 'seat') || null : null;
+    }
+
+    function mirrorGridSeatToFreeformObject(obj) {
+      if (!obj || obj.type !== 'seat') return false;
+      const cell = freeformSeatFallbackCell(obj);
+      if (!cell) return false;
+      obj.assignedStudentId = cell.assignedStudentId || null;
+      obj.manual = Boolean(cell.manual);
+      obj.locked = Boolean(cell.manual);
+      obj.anchorBubbleIds = deepClone(cell.anchorBubbleIds || []);
+      obj.zoneIds = deepClone(cell.zoneIds || []);
+      return true;
+    }
+
+    function mirrorLinkedFreeformSeatsFromGrid(cellKey = '') {
+      if (!state.freeformLayout || !Array.isArray(state.freeformLayout.objects)) return;
+      state.freeformLayout.objects.forEach(obj => {
+        if (!obj || obj.type !== 'seat') return;
+        if (cellKey && String(obj.cellKey || '') !== String(cellKey)) return;
+        mirrorGridSeatToFreeformObject(obj);
+      });
+    }
+
+    function mirrorFreeformSeatToGrid(obj, { clearStudentDuplicates = true, preserveObjectLock = true } = {}) {
+      if (!obj) return false;
+      ensureGrid();
+      if (obj.type !== 'seat') {
+        if (obj.cellKey && state.cells[obj.cellKey]) applyCellTypeWithoutRender(obj.cellKey, obj.type || 'empty');
+        return true;
+      }
+      const cellKey = ensureFreeformSeatGridLink(obj);
+      const cell = cellKey ? state.cells[cellKey] : null;
+      if (!cell) return false;
+      if (clearStudentDuplicates && obj.assignedStudentId) {
+        Object.entries(state.cells).forEach(([key, other]) => {
+          if (key !== cellKey && other && other.assignedStudentId === obj.assignedStudentId) {
+            other.assignedStudentId = null;
+            other.manual = false;
+          }
+        });
+      }
+      cell.type = 'seat';
+      cell.assignedStudentId = obj.assignedStudentId || null;
+      cell.manual = Boolean(obj.assignedStudentId && (obj.locked || obj.manual));
+      obj.manual = Boolean(cell.manual);
+      if (!preserveObjectLock) obj.locked = Boolean(cell.manual);
+      cell.anchorBubbleIds = deepClone(obj.anchorBubbleIds || []);
+      cell.zoneIds = deepClone(obj.zoneIds || []);
+      return true;
+    }
+
+    function mirrorActiveSeatEditFreeformFromGrid() {
+      const obj = activeSeatEditFreeformObject();
+      if (!obj) return false;
+      mirrorGridSeatToFreeformObject(obj);
+      return true;
+    }
+
+    function setFreeformObjectLocked(obj, locked) {
+      if (!obj) return false;
+      obj.locked = Boolean(locked);
+      if (obj.type === 'seat') {
+        obj.manual = Boolean(obj.assignedStudentId && obj.locked);
+        mirrorFreeformSeatToGrid(obj, { preserveObjectLock: true });
+      }
+      return true;
+    }
+
+    function activeSeatEditLocked() {
+      const obj = activeSeatEditFreeformObject();
+      if (obj) return Boolean(obj.locked);
+      const key = uiState.activeSeatEditCellKey;
+      return Boolean(key && state.cells[key]?.manual);
+    }
+
+    function blockLockedSeatEditAction() {
+      setLiveStatusMessage('Unlock this seat before changing its student, bubbles, type, or assignment.');
+      return true;
+    }
+
+    function setSeatEditLockedControls(isLocked) {
+      const ids = ['seatEditStudentSelect','seatEditAssignStudentBtn','seatEditClearStudentBtn','seatEditBubbleSelect','seatEditAddBubbleBtn','seatEditClearBubblesBtn','seatEditTypeSelect','seatEditApplyTypeBtn'];
+      ids.forEach(id => {
+        const node = el(id);
+        if (!node) return;
+        node.disabled = Boolean(isLocked);
+        if (isLocked) node.title = 'Unlock this seat before editing this value.';
+        else node.removeAttribute('title');
       });
     }
 
@@ -10732,7 +10845,7 @@
           ${bubbleDisplay.chipsHtml}
           ${bubbleDisplay.zonesHtml}
           <div class="freeform-object-actions no-print">
-            ${student ? `<button class="tiny secondary" data-freeform-clear-seat="${escapeHtml(obj.id)}">Clear</button>` : ''}
+            ${student ? `<button class="tiny secondary" data-freeform-clear-seat="${escapeHtml(obj.id)}" ${locked ? 'disabled title="Unlock this seat before clearing the student."' : ''}>Clear</button>` : ''}
             <button class="tiny ${locked ? 'ghost' : 'secondary'}" data-freeform-lock="${escapeHtml(obj.id)}">${locked ? 'Unlock' : 'Lock'}</button>
           </div>`;
       }
@@ -10794,16 +10907,21 @@
         });
         node.addEventListener('dblclick', event => {
           event.stopPropagation();
-          if (obj.type === 'seat' && obj.cellKey && state.cells[obj.cellKey]) openSeatEditModal(obj.cellKey);
+          if (obj.type !== 'seat') return;
+          const cellKey = ensureFreeformSeatGridLink(obj);
+          if (!cellKey || !state.cells[cellKey]) return;
+          mirrorFreeformSeatToGrid(obj, { clearStudentDuplicates: false });
+          openSeatEditModal(cellKey, { freeformObjectId: obj.id });
         });
         node.addEventListener('dragover', event => {
-          if (obj.type === 'seat' && !eyeModeBlocksSeatEditing()) { event.preventDefault(); node.classList.add('drop-target'); }
+          if (obj.type === 'seat' && !obj.locked && !eyeModeBlocksSeatEditing()) { event.preventDefault(); node.classList.add('drop-target'); }
         });
         node.addEventListener('dragleave', () => node.classList.remove('drop-target'));
         node.addEventListener('drop', event => {
           event.preventDefault();
           node.classList.remove('drop-target');
           if (obj.type !== 'seat') return;
+          if (obj.locked) return blockLockedSeatEditAction();
           if (eyeModeBlocksSeatEditing()) return blockEyeModeAction('seat');
           let data;
           try { data = JSON.parse(event.dataTransfer.getData('application/json')); } catch { return; }
@@ -10931,20 +11049,11 @@
       commitFreeformLayoutChange('freeform-rotate-object', { render: true, syncToGrid: false });
     }
 
-    function arrangeSelectedFreeformObject(direction) {
-      const obj = selectedFreeformObject();
-      if (!obj) return;
-      ensureFreeformLayout();
-      if (direction === 'front') obj.zIndex = state.freeformLayout.nextZ++;
-      if (direction === 'back') obj.zIndex = 1;
-      commitFreeformLayoutChange('freeform-arrange-object', { render: true, syncToGrid: false });
-    }
 
     function lockSelectedFreeformObject(toggle = true) {
       const obj = selectedFreeformObject();
       if (!obj) return;
-      obj.locked = toggle ? !obj.locked : true;
-      obj.manual = obj.type === 'seat' ? obj.locked : obj.manual;
+      setFreeformObjectLocked(obj, toggle ? !obj.locked : true);
       commitFreeformLayoutChange('freeform-lock-object', { render: true, syncToGrid: false });
     }
 
@@ -10952,16 +11061,19 @@
       const student = getStudent(studentId);
       const target = (state.freeformLayout?.objects || []).find(obj => obj.id === objectId && obj.type === 'seat');
       if (!student || !target) return false;
+      if (target.locked) { blockLockedSeatEditAction(); return false; }
       (state.freeformLayout.objects || []).forEach(obj => {
-        if (obj.type === 'seat' && obj.assignedStudentId === student.id) {
+        if (obj.type === 'seat' && obj.assignedStudentId === student.id && obj.id !== target.id) {
           obj.assignedStudentId = null;
           obj.manual = false;
           obj.locked = false;
+          mirrorFreeformSeatToGrid(obj, { clearStudentDuplicates: false });
         }
       });
       target.assignedStudentId = student.id;
       target.manual = true;
       target.locked = true;
+      mirrorFreeformSeatToGrid(target);
       commitFreeformLayoutChange('freeform-assign-student', { render, syncToGrid: false });
       return true;
     }
@@ -11060,6 +11172,15 @@
           cell.manual = false;
         }
       });
+      if (state.freeformLayout && Array.isArray(state.freeformLayout.objects)) {
+        state.freeformLayout.objects.forEach(obj => {
+          if (obj.type === 'seat' && obj.assignedStudentId === studentId) {
+            obj.assignedStudentId = null;
+            obj.manual = false;
+            obj.locked = false;
+          }
+        });
+      }
     }
 
     function affectedStudentIdsForMove(studentId, targetCellKey) {
@@ -11195,6 +11316,7 @@
         if (warning) {
           showInAppConfirm(warning, () => {
             applyMoveOrSwap(studentId, cellKey, manual);
+            mirrorLinkedFreeformSeatsFromGrid();
             renderAll();
             setLiveStatusMessage('Move completed after bubble-rule warning.');
           }, {
@@ -11208,6 +11330,7 @@
       }
 
       applyMoveOrSwap(studentId, cellKey, manual);
+      mirrorLinkedFreeformSeatsFromGrid();
       renderAll();
       return true;
     }
@@ -11242,6 +11365,7 @@
       keys.forEach(key => {
         if (applyCellTypeWithoutRender(key, type)) changed += 1;
       });
+      keys.forEach(key => mirrorLinkedFreeformSeatsFromGrid(key));
       renderAll();
       if (changed > 1) setLiveStatusMessage(`Marked ${changed} cells as ${objectLabel(type)}.`);
     }
@@ -11391,14 +11515,17 @@
       const cell = state.cells[cellKey];
       if (!cell || cell.type !== 'seat' || !cell.assignedStudentId) return;
       cell.manual = !cell.manual;
+      mirrorLinkedFreeformSeatsFromGrid(cellKey);
       renderAll();
     }
 
     function toggleStudentLock(studentId) {
       if (eyeModeBlocksSeatEditing()) return blockEyeModeAction('seat');
-      const cell = assignedSeatForStudent(studentId);
-      if (!cell) return;
+      const entry = gridSeatEntryForStudent(studentId);
+      if (!entry) return;
+      const [cellKey, cell] = entry;
       cell.manual = !cell.manual;
+      mirrorLinkedFreeformSeatsFromGrid(cellKey);
       renderAll();
     }
 
@@ -11415,6 +11542,7 @@
           if (obj.type === 'seat' && (!keepManual || !obj.locked)) {
             obj.assignedStudentId = null;
             obj.manual = false;
+            obj.locked = false;
           }
         });
       }
@@ -12883,7 +13011,7 @@
       closeSeatEditBtn: 'Close the seat edit window.',
       seatEditAssignStudentBtn: 'Assign the selected student to this cell. If the cell is not a seat, it becomes a seat first.',
       seatEditClearStudentBtn: 'Remove the current student from this seat and unlock the seat.',
-      seatEditLockBtn: 'Lock or unlock the current seated student for Generate and Randomize.',
+      seatEditLockBtn: 'Lock or unlock the current seat. In Freeform mode, locked seats cannot be moved, reassigned, converted, or retagged until unlocked.',
       seatEditAddBubbleBtn: 'Reserve this seat for the selected bubble. More than one bubble can reserve the same seat.',
       seatEditClearBubblesBtn: 'Remove all bubble reservations from this seat.',
       seatEditApplyTypeBtn: 'Change this cell to the selected room object or seat type.',
@@ -13477,6 +13605,7 @@
       if (eyeModeBlocksRoomEditing()) return blockEyeModeAction('room');
       const obj = (state.freeformLayout?.objects || []).find(item => item.id === objectId);
       if (!obj) return false;
+      if (obj.locked) return blockLockedSeatEditAction() && false;
       const nextType = String(type || 'empty');
       const wasSeat = obj.type === 'seat';
       obj.type = nextType;
@@ -13487,10 +13616,14 @@
         obj.manual = false;
         obj.anchorBubbleIds = [];
         obj.locked = false;
+        if (obj.cellKey && state.cells[obj.cellKey]) applyCellTypeWithoutRender(obj.cellKey, nextType);
       } else if (!wasSeat) {
         obj.width = Math.max(Number(obj.width) || 118, 96);
         obj.height = Math.max(Number(obj.height) || 72, 54);
         obj.anchorBubbleIds = obj.anchorBubbleIds || [];
+        mirrorFreeformSeatToGrid(obj, { clearStudentDuplicates: false });
+      } else {
+        mirrorFreeformSeatToGrid(obj, { clearStudentDuplicates: false });
       }
       state.freeformLayout.objects = state.freeformLayout.objects.map((item, index) => item.id === obj.id ? normalizeFreeformObject(obj, index) : item);
       commitFreeformLayoutChange('freeform-context-type', { render: true, syncToGrid: false });
@@ -16301,11 +16434,15 @@
       return built + custom;
     }
 
-    function openSeatEditModal(cellKey) {
+    function openSeatEditModal(cellKey, options = {}) {
       if (eyeModeBlocksSeatEditing() || eyeModeBlocksRoomEditing()) return blockEyeModeAction(eyeModeBlocksSeatEditing() ? 'seat' : 'room');
       const cell = state.cells[cellKey];
       if (!cell) return;
       uiState.activeSeatEditCellKey = cellKey;
+      uiState.activeSeatEditFreeformObjectId = options.freeformObjectId || null;
+      const freeformObj = activeSeatEditFreeformObject();
+      if (freeformObj) mirrorFreeformSeatToGrid(freeformObj, { clearStudentDuplicates: false, preserveObjectLock: true });
+      const seatLocked = freeformObj ? Boolean(freeformObj.locked) : Boolean(cell.manual);
       const student = getStudent(cell.assignedStudentId);
       const anchors = (cell.anchorBubbleIds || []).map(getBubble).filter(Boolean);
       el('seatEditTitle').textContent = `Edit Cell ${cell.row},${cell.col}`;
@@ -16319,19 +16456,26 @@
       ).join('');
       el('seatEditBubbleSelect').innerHTML = bubbleOptions;
       el('seatEditTypeSelect').innerHTML = cellTypeOptionsHtml(cell.type);
-      el('seatEditLockBtn').textContent = cell.manual ? 'Unlock Seat' : 'Lock Seat';
-      el('seatEditLockBtn').disabled = cell.type !== 'seat' || !cell.assignedStudentId;
+      el('seatEditLockBtn').textContent = seatLocked ? 'Unlock Seat' : 'Lock Seat';
+      el('seatEditLockBtn').disabled = cell.type !== 'seat' || (!cell.assignedStudentId && !freeformObj);
+      setSeatEditLockedControls(seatLocked);
+      if (freeformObj) {
+        el('seatEditTitle').textContent = `Edit Freeform Seat${cell.row && cell.col ? ` · Grid ${cell.row},${cell.col}` : ''}`;
+        el('seatEditSummary').textContent += freeformObj.locked ? ' · Freeform locked: unlock before changing assignment, bubbles, or type' : ' · Freeform unlocked';
+      }
       el('seatEditModal').classList.add('show');
     }
 
     function closeSeatEditModal() {
       el('seatEditModal').classList.remove('show');
       uiState.activeSeatEditCellKey = null;
+      uiState.activeSeatEditFreeformObjectId = null;
     }
 
     function refreshSeatEditModal() {
       const key = uiState.activeSeatEditCellKey;
-      if (key && el('seatEditModal').classList.contains('show')) openSeatEditModal(key);
+      const freeformObjectId = uiState.activeSeatEditFreeformObjectId;
+      if (key && el('seatEditModal').classList.contains('show')) openSeatEditModal(key, { freeformObjectId });
     }
 
 
@@ -19877,8 +20021,6 @@ This will replace the current classes, settings, room templates, and active layo
       el('deleteFreeformObjectBtn')?.addEventListener('click', deleteSelectedFreeformObject);
       el('lockFreeformObjectBtn')?.addEventListener('click', () => lockSelectedFreeformObject(true));
       el('rotateFreeformObjectBtn')?.addEventListener('click', () => { const obj = selectedFreeformObject(); if (obj) rotateFreeformObject(obj.id, 15); });
-      el('bringFreeformForwardBtn')?.addEventListener('click', () => arrangeSelectedFreeformObject('front'));
-      el('sendFreeformBackBtn')?.addEventListener('click', () => arrangeSelectedFreeformObject('back'));
 
       el('makeAllSeatsBtn').addEventListener('click', () => {
         if (eyeModeBlocksRoomEditing()) return blockEyeModeAction('room');
@@ -20091,10 +20233,12 @@ This will replace the current classes, settings, room templates, and active layo
         if (freeformClearBtn) {
           if (eyeModeBlocksSeatEditing()) return blockEyeModeAction('seat');
           const obj = (state.freeformLayout?.objects || []).find(item => item.id === freeformClearBtn.dataset.freeformClearSeat);
+          if (obj?.locked) return blockLockedSeatEditAction();
           if (obj) {
             obj.assignedStudentId = null;
             obj.manual = false;
             obj.locked = false;
+            mirrorFreeformSeatToGrid(obj, { clearStudentDuplicates: false });
             commitFreeformLayoutChange('freeform-clear-seat', { render: true, syncToGrid: false });
           }
           return;
@@ -20105,8 +20249,7 @@ This will replace the current classes, settings, room templates, and active layo
           const obj = (state.freeformLayout?.objects || []).find(item => item.id === freeformLockBtn.dataset.freeformLock);
           if (!obj) return;
           if (obj.type === 'seat' ? eyeModeBlocksSeatEditing() : eyeModeBlocksRoomEditing()) return blockEyeModeAction(obj.type === 'seat' ? 'seat' : 'room');
-          obj.locked = !obj.locked;
-          obj.manual = obj.type === 'seat' ? obj.locked : obj.manual;
+          setFreeformObjectLocked(obj, !obj.locked);
           commitFreeformLayoutChange('freeform-lock-object', { render: true, syncToGrid: false });
           return;
         }
@@ -20133,6 +20276,7 @@ This will replace the current classes, settings, room templates, and active layo
           if (cell) {
             cell.assignedStudentId = null;
             cell.manual = false;
+            mirrorLinkedFreeformSeatsFromGrid(clearSeatBtn.dataset.clearSeat);
             renderAll();
           }
           return;
@@ -20623,45 +20767,60 @@ This will replace the current classes, settings, room templates, and active layo
       });
       el('seatEditAssignStudentBtn').addEventListener('click', () => {
         if (eyeModeBlocksSeatEditing()) return blockEyeModeAction('seat');
+        if (activeSeatEditLocked()) return blockLockedSeatEditAction();
         const cellKey = uiState.activeSeatEditCellKey;
         const studentId = el('seatEditStudentSelect').value;
         if (!cellKey || !studentId) return;
         const cell = state.cells[cellKey];
         if (cell && cell.type !== 'seat') applyCellTypeWithoutRender(cellKey, 'seat');
         assignStudentToCell(studentId, cellKey, true, true);
+        mirrorActiveSeatEditFreeformFromGrid();
         refreshSeatEditModal();
       });
       el('seatEditClearStudentBtn').addEventListener('click', () => {
         if (eyeModeBlocksSeatEditing()) return blockEyeModeAction('seat');
+        if (activeSeatEditLocked()) return blockLockedSeatEditAction();
         const cell = state.cells[uiState.activeSeatEditCellKey];
         if (cell) {
           cell.assignedStudentId = null;
           cell.manual = false;
+          mirrorLinkedFreeformSeatsFromGrid(uiState.activeSeatEditCellKey);
           renderAll();
           refreshSeatEditModal();
         }
       });
       el('seatEditLockBtn').addEventListener('click', () => {
         if (eyeModeBlocksSeatEditing()) return blockEyeModeAction('seat');
+        const obj = activeSeatEditFreeformObject();
         const key = uiState.activeSeatEditCellKey;
+        if (obj) {
+          setFreeformObjectLocked(obj, !obj.locked);
+          commitFreeformLayoutChange('freeform-seat-editor-lock', { render: true, syncToGrid: false });
+          refreshSeatEditModal();
+          return;
+        }
         if (key) {
           toggleSeatLock(key);
+          mirrorActiveSeatEditFreeformFromGrid();
           refreshSeatEditModal();
         }
       });
       el('seatEditAddBubbleBtn').addEventListener('click', () => {
         if (eyeModeBlocksBubbleEditing() || eyeModeBlocksSeatEditing()) return blockEyeModeAction('bubble');
+        if (activeSeatEditLocked()) return blockLockedSeatEditAction();
         const key = uiState.activeSeatEditCellKey;
         const bubbleId = el('seatEditBubbleSelect').value;
         if (!key || !bubbleId) return;
         const cell = state.cells[key];
         if (cell && cell.type !== 'seat') applyCellTypeWithoutRender(key, 'seat');
         addBubbleAnchorWithoutRender(bubbleId, key);
+        mirrorLinkedFreeformSeatsFromGrid(key);
         renderAll();
         refreshSeatEditModal();
       });
       el('seatEditClearBubblesBtn').addEventListener('click', () => {
         if (eyeModeBlocksBubbleEditing() || eyeModeBlocksSeatEditing()) return blockEyeModeAction('bubble');
+        if (activeSeatEditLocked()) return blockLockedSeatEditAction();
         const key = uiState.activeSeatEditCellKey;
         const cell = state.cells[key];
         if (!cell) return;
@@ -20670,14 +20829,24 @@ This will replace the current classes, settings, room templates, and active layo
           if (bubble) bubble.anchorSeats = (bubble.anchorSeats || []).filter(seatKey => seatKey !== key);
         });
         cell.anchorBubbleIds = [];
+        mirrorLinkedFreeformSeatsFromGrid(key);
         renderAll();
         refreshSeatEditModal();
       });
       el('seatEditApplyTypeBtn').addEventListener('click', () => {
         if (eyeModeBlocksRoomEditing()) return blockEyeModeAction('room');
+        if (activeSeatEditLocked()) return blockLockedSeatEditAction();
         const key = uiState.activeSeatEditCellKey;
+        const nextType = el('seatEditTypeSelect').value;
+        const obj = activeSeatEditFreeformObject();
+        if (obj) {
+          setFreeformObjectType(obj.id, nextType);
+          refreshSeatEditModal();
+          return;
+        }
         if (!key) return;
-        setCellType(key, el('seatEditTypeSelect').value);
+        setCellType(key, nextType);
+        mirrorLinkedFreeformSeatsFromGrid(key);
         refreshSeatEditModal();
       });
 
