@@ -6290,15 +6290,17 @@
 
   
 
-    /* Revision 1.18.15: welcome flow cleanup and post-password security setup */
+    /* Revision 1.18.16: inline security setup wizard controls */
     .settings-search-shell {
       display: grid;
+      grid-column: 1 / -1;
       gap: 6px;
       padding: 8px;
       border: 1px solid var(--border);
       border-radius: 14px;
       background: #ffffff;
-      margin-bottom: 8px;
+      margin-bottom: 0;
+      min-width: 0;
     }
     .settings-search-shell label { margin: 0; }
     .settings-search-shell input { width: 100%; }
@@ -6372,9 +6374,87 @@
     .csv-wizard-stage { border: 1px solid #bfdbfe; background: #eff6ff; color: #1e3a8a; border-radius: 12px; padding: 8px 9px; font-size: 12px; font-weight: 800; line-height: 1.35; margin-bottom: 8px; }
     .setting-inline-warning { border: 1px solid #fed7aa; background: #fffbeb; color: #92400e; border-radius: 10px; padding: 8px; font-size: 12px; line-height: 1.35; }
     .modal.workflow-modal { width: min(900px, 96vw) !important; max-width: 900px !important; }
+    .modal.workflow-modal.security-setup-modal { width: min(980px, 96vw) !important; max-width: 980px !important; }
+    .security-wizard-layout { display: grid; gap: 12px; }
+    .security-wizard-panel { border: 1px solid var(--border); border-radius: 14px; background: #f8fafc; padding: 11px; display: grid; gap: 9px; }
+    .security-wizard-panel h3 { margin: 0; font-size: 14px; }
+    .security-wizard-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .security-wizard-full { grid-column: 1 / -1; }
+    .security-wizard-actions { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; align-items: center; margin-top: 10px; }
+    .security-wizard-actions .button-row { margin-left: auto; }
+    .security-wizard-status-title { font-weight: 900; color: var(--text); margin: 2px 0 0; }
+    @media (max-width: 760px) {
+      .security-wizard-grid { grid-template-columns: 1fr; }
+      .security-wizard-actions { justify-content: stretch; }
+      .security-wizard-actions .button-row,
+      .security-wizard-actions button { width: 100%; margin-left: 0; }
+    }
     @media (max-width: 760px) {
       .snapshot-timeline-row { grid-template-columns: 18px minmax(0, 1fr); }
       .snapshot-timeline-row .button-row { grid-column: 1 / -1; }
+    }
+
+
+    /* Revision 1.18.17: Settings modal alignment repair and simpler first-run security wizard */
+    .settings-modal .settings-body {
+      display: grid !important;
+      grid-template-columns: minmax(190px, 230px) minmax(0, 1fr) !important;
+      grid-template-rows: auto minmax(0, 1fr) !important;
+      align-items: stretch !important;
+      gap: 12px !important;
+      overflow: hidden !important;
+    }
+    .settings-modal .settings-search-shell {
+      grid-column: 1 / -1 !important;
+      grid-row: 1 !important;
+    }
+    .settings-modal .settings-page-nav {
+      grid-column: 1 !important;
+      grid-row: 2 !important;
+      min-width: 0 !important;
+      height: 100% !important;
+      max-height: none !important;
+    }
+    .settings-modal .settings-page-content {
+      grid-column: 2 !important;
+      grid-row: 2 !important;
+      min-width: 0 !important;
+      min-height: 0 !important;
+      height: 100% !important;
+      overflow: auto !important;
+    }
+    .settings-modal .settings-page-tab {
+      width: 100% !important;
+      min-width: 0 !important;
+    }
+    .security-wizard-advanced-note {
+      border: 1px solid #bfdbfe;
+      background: #eff6ff;
+      color: #1e3a8a;
+      border-radius: 12px;
+      padding: 8px 9px;
+      font-size: 12px;
+      line-height: 1.35;
+    }
+    @media (max-width: 860px) {
+      .settings-modal .settings-body {
+        grid-template-columns: 1fr !important;
+        grid-template-rows: auto auto minmax(0, 1fr) !important;
+      }
+      .settings-modal .settings-search-shell {
+        grid-column: 1 !important;
+        grid-row: 1 !important;
+      }
+      .settings-modal .settings-page-nav {
+        grid-column: 1 !important;
+        grid-row: 2 !important;
+        height: auto !important;
+        max-height: min(156px, 28dvh) !important;
+      }
+      .settings-modal .settings-page-content {
+        grid-column: 1 !important;
+        grid-row: 3 !important;
+      }
     }
 
   </style>
@@ -7798,8 +7878,8 @@
     const WELCOME_SETUP_STORAGE_KEY = 'seating-chart-bubble-builder-secure-welcome-v1';
     const VISIBILITY_CREDENTIAL_KEY = 'seating-chart-bubble-builder-visibility-v1';
     const HINT_DISMISS_STORAGE_KEY = 'seating-chart-bubble-builder-dismissed-hints-v1';
-    const APP_REVISION = '1.18.15';
-    const APP_LAST_UPDATED = 'June 26, 2026';
+    const APP_REVISION = '1.18.17';
+    const APP_LAST_UPDATED = 'June 27, 2026';
 
     const APP_LICENSE = {
       name: 'MIT License',
@@ -7859,6 +7939,8 @@
     ];
 
     const CHANGE_LOG = [
+      { version: '1.18.17', date: 'June 27, 2026', changes: ['Fixed the Settings modal layout so the Settings search bar spans the full modal width and the left navigation/content columns align correctly again.', 'Removed PBKDF2 iteration controls from the first-run Security Setup Wizard so basic onboarding focuses on Lock PIN, Eye PIN, Settings access, and auto-lock behavior.', 'Kept PBKDF2 iteration control available only in the advanced Security & Data settings page for users who intentionally want to raise encryption work factors.'] },
+      { version: '1.18.16', date: 'June 27, 2026', changes: ['Converted the post-Welcome Security Setup Wizard from a checklist/status screen into an inline setup flow with Lock PIN, Eye PIN, Settings access, and auto-lock controls directly on the wizard screen.', 'Added wizard-side validation and save behavior so first-run users can finish security setup without opening the full Settings modal.', 'Kept the wizard status checks visible below the inline controls so users can confirm active key, storage encryption, Settings protection, PIN readiness, auto-lock, and snapshot/index encryption state.'] },
       { version: '1.18.15', date: 'June 27, 2026', changes: ['Cleaned up the first-run Welcome flow so demo-data and security-step actions no longer run under the Welcome modal.', 'Changed Security Setup into the second step after the encryption password is created, avoiding overlapping setup popups.', 'Removed the Try Demo Data button from Welcome; demo/sample data remains available from existing Settings/help workflows instead of first-run security onboarding.'] },
       { version: '1.18.14', date: 'June 26, 2026', changes: ['Added a guided Security Setup Wizard, privacy display modes, Settings search, snapshot timeline/preview/retention controls, reveal timeouts for private/substitute notes, print/export safety warnings, import duplicate workflow options, undo/redo history panel, versioned migration hooks, save-health checks, automatic data repair, and a dedicated maintenance/danger-zone page.', 'Expanded password-change handling so the current browser save and encrypted snapshot index are re-encrypted with the new password, with an optional full local-snapshot re-encryption pass.', 'Added conservative data integrity checks and repair for orphaned seat assignments, stale bubble/zone references, invalid anchors, and duplicate/suspicious student references without adding the excluded recovery workflow, security presets, or emergency lock button.'] },
       { version: '1.18.13', date: 'June 26, 2026', changes: ['Fixed PIN-based auto-lock so loss-of-focus, tab-hidden, and inactivity locks wrap the active encryption key with the Lock PIN/password entered this session instead of forcing the full encryption password after unlock.', 'Cached the Lock PIN/password only in volatile page memory after the user sets or successfully enters it, then clears that cache on local-data clear, factory reset, or reload.', 'Changed the first lock after creating a Lock PIN/password to use that PIN/password for wrapping the active session key instead of falling back to the full encryption key.'] },
@@ -18511,7 +18593,7 @@ This will replace the current classes, settings, room templates, and active layo
 
     /* Revision 1.18.14 workflow expansion module */
     (function installWorkflowExpansion11814(){
-      const ADDON_REVISION = '1.18.15';
+      const ADDON_REVISION = '1.18.17';
       const MIGRATION_SCHEMA_VERSION = '2026-06-26.workflow-expansion-v1';
       const oldMergePageSettings = mergePageSettings;
       const oldUpdatePageSettingsForm = updatePageSettingsForm;
@@ -18690,7 +18772,7 @@ This will replace the current classes, settings, room templates, and active layo
 
       function installStandaloneModals() {
         if (!el('securitySetupWizardModal')) {
-          document.body.insertAdjacentHTML('beforeend', `<div id="securitySetupWizardModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="securitySetupWizardTitle"><div class="modal workflow-modal"><div class="panel-header"><h2 id="securitySetupWizardTitle">Security Setup Wizard</h2><button id="closeSecuritySetupWizardBtn" class="tiny secondary" type="button">Close</button></div><div class="modal-body"><div id="securityWizardSteps" class="workflow-stepper"></div><div class="button-row" style="margin-top:12px;"><button id="securityWizardOpenSettingsBtn" class="secondary" type="button">Open Relevant Settings</button><button id="securityWizardRefreshBtn" class="secondary" type="button">Refresh Status</button><button id="securityWizardDoneBtn" type="button">Done</button></div></div></div></div>`);
+          document.body.insertAdjacentHTML('beforeend', `<div id="securitySetupWizardModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="securitySetupWizardTitle"><div class="modal workflow-modal security-setup-modal"><div class="panel-header"><h2 id="securitySetupWizardTitle">Security Setup Wizard</h2><button id="closeSecuritySetupWizardBtn" class="tiny secondary" type="button">Close</button></div><div class="modal-body security-wizard-layout"><div id="securityWizardSteps" class="workflow-stepper"></div><div class="security-wizard-actions"><div id="securityWizardMessage" class="muted" aria-live="polite">Set the security options here, then save.</div><div class="button-row"><button id="securityWizardRefreshBtn" class="secondary" type="button">Refresh Status</button><button id="securityWizardSaveBtn" type="button">Save Security Setup</button><button id="securityWizardDoneBtn" class="secondary" type="button">Done</button></div></div></div></div></div>`);
         }
         if (!el('snapshotPreviewModal')) {
           document.body.insertAdjacentHTML('beforeend', `<div id="snapshotPreviewModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="snapshotPreviewTitle"><div class="modal workflow-modal"><div class="panel-header"><h2 id="snapshotPreviewTitle">Snapshot Preview</h2><button id="closeSnapshotPreviewBtn" class="tiny secondary" type="button">Close</button></div><div id="snapshotPreviewBody" class="modal-body"></div></div></div>`);
@@ -18737,14 +18819,118 @@ This will replace the current classes, settings, room templates, and active layo
         ];
       }
 
+      function securityWizardMessage(message = '') {
+        const node = el('securityWizardMessage');
+        if (node) node.textContent = message || 'Set the security options here, then save.';
+      }
+
+      function settingsAccessOptionsHtml(current) {
+        const options = [
+          ['auto', 'Auto: Lock PIN → Eye PIN → Encryption key'],
+          ['lock', 'Lock/Unlock PIN only'],
+          ['eye', 'Eye Mode PIN only'],
+          ['encryption', 'Encryption key only'],
+          ['none', 'No prompt / unlocked Settings']
+        ];
+        return options.map(([value, label]) => `<option value="${value}" ${current === value ? 'selected' : ''}>${escapeHtml(label)}</option>`).join('');
+      }
+
       function renderSecuritySetupWizard() {
         const box = el('securityWizardSteps');
         if (!box) return;
-        box.innerHTML = setupWizardSteps().map((step, idx) => `<div class="workflow-step ${step.done ? 'done' : step.warn ? 'warn' : ''}"><div class="workflow-step-number">${step.done ? '✓' : idx + 1}</div><div><h3>${escapeHtml(step.title)}</h3><p>${escapeHtml(step.text)}</p></div></div>`).join('');
+        const cfg = pageSettings();
+        const stepsHtml = setupWizardSteps().map((step, idx) => `<div class="workflow-step ${step.done ? 'done' : step.warn ? 'warn' : ''}"><div class="workflow-step-number">${step.done ? '✓' : idx + 1}</div><div><h3>${escapeHtml(step.title)}</h3><p>${escapeHtml(step.text)}</p></div></div>`).join('');
+        box.innerHTML = `
+          <div class="security-wizard-panel">
+            <h3>Finish Security Setup Here</h3>
+            <div class="hint">This wizard now configures the same core security settings directly, without sending first-time users into the full Settings page. The encryption password was already created on the Welcome screen.</div>
+            <div class="security-wizard-grid">
+              <div class="security-card">
+                <h4>Lock / Unlock PIN</h4>
+                <div class="field"><label for="securityWizardLockPin">New lock PIN/password</label><input id="securityWizardLockPin" type="password" autocomplete="new-password" placeholder="Leave blank to keep current PIN" /></div>
+                <div class="field"><label for="securityWizardLockPinConfirm">Confirm lock PIN/password</label><input id="securityWizardLockPinConfirm" type="password" autocomplete="new-password" /></div>
+                <div class="muted">Used for normal lock/unlock and auto-lock restore during this page session.</div>
+              </div>
+              <div class="security-card">
+                <h4>Eye Mode Exit PIN</h4>
+                <div class="field"><label for="securityWizardEyePin">New Eye Mode PIN/password</label><input id="securityWizardEyePin" type="password" autocomplete="new-password" placeholder="Leave blank to keep current PIN" /></div>
+                <div class="field"><label for="securityWizardEyePinConfirm">Confirm Eye Mode PIN/password</label><input id="securityWizardEyePinConfirm" type="password" autocomplete="new-password" /></div>
+                <div class="muted">Used to exit Eye Mode without needing the full encryption password.</div>
+              </div>
+              <div class="security-wizard-panel security-wizard-full">
+                <h3>Settings Access</h3>
+                <div class="field"><label for="securityWizardSettingsAccessMethod">Require before Settings opens</label><select id="securityWizardSettingsAccessMethod">${settingsAccessOptionsHtml(cfg.settingsAccessMethod || 'auto')}</select></div>
+                <div class="setting-inline-warning">Choosing <strong>No prompt</strong> means anyone with the unlocked page can change security, save/export, Eye Mode, and reset settings. The app will ask for confirmation before applying that.</div>
+              </div>
+              <div class="security-wizard-panel security-wizard-full">
+                <h3>Auto-lock Rules</h3>
+                <div class="auto-lock-grid">
+                  <div class="auto-lock-card"><label for="securityWizardAutoLockMinutes">Auto-lock after inactive minutes</label><input id="securityWizardAutoLockMinutes" type="number" min="0" max="240" step="1" value="${escapeHtml(cfg.autoLockMinutes || 0)}" /><div class="muted">Use 0 to disable inactivity auto-lock.</div></div>
+                  <label class="checkline auto-lock-card" for="securityWizardAutoLockOnBlur"><input id="securityWizardAutoLockOnBlur" type="checkbox" ${cfg.autoLockOnBlur ? 'checked' : ''} /> <span>Lock immediately when this window loses focus</span></label>
+                  <label class="checkline auto-lock-card" for="securityWizardAutoLockOnTabHidden"><input id="securityWizardAutoLockOnTabHidden" type="checkbox" ${cfg.autoLockOnTabHidden ? 'checked' : ''} /> <span>Lock immediately when this tab becomes hidden/inactive</span></label>
+                  <div class="auto-lock-card"><label for="securityWizardAutoLockOnReturnMinutes">Lock when returning after inactive minutes</label><input id="securityWizardAutoLockOnReturnMinutes" type="number" min="0" max="240" step="1" value="${escapeHtml(cfg.autoLockOnReturnMinutes || 0)}" /><div class="muted">Example: set 10 so returning after 10+ hidden minutes locks immediately.</div></div>
+                </div>
+              </div>
+              <div class="security-wizard-panel security-wizard-full">
+                <h3>Advanced Encryption Settings</h3>
+                <div class="security-wizard-advanced-note">The app uses secure defaults during first-run setup. Advanced encryption strength settings remain available later in Settings → Security &amp; Data for users who know they need them.</div>
+              </div>
+            </div>
+          </div>
+          <div class="security-wizard-status-title">Current Security Status</div>
+          ${stepsHtml}`;
+        securityWizardMessage();
+      }
+
+      async function applySecuritySetupWizard() {
+        const cfg = pageSettings();
+        const requestedAccess = String(el('securityWizardSettingsAccessMethod')?.value || cfg.settingsAccessMethod || 'auto');
+        const applyCoreSettings = async () => {
+          const lockPin = String(el('securityWizardLockPin')?.value || '');
+          const lockConfirm = String(el('securityWizardLockPinConfirm')?.value || '');
+          const eyePin = String(el('securityWizardEyePin')?.value || '');
+          const eyeConfirm = String(el('securityWizardEyePinConfirm')?.value || '');
+          if (lockPin || lockConfirm) {
+            if (lockPin.length < 4) throw new Error('Use at least 4 characters for the Lock PIN/password.');
+            if (lockPin !== lockConfirm) throw new Error('Lock PIN/password entries do not match.');
+            await savePageLockCredential(lockPin);
+            cachePageLockSecretForSession(lockPin);
+          }
+          if (eyePin || eyeConfirm) {
+            if (eyePin.length < 4) throw new Error('Use at least 4 characters for the Eye Mode PIN/password.');
+            if (eyePin !== eyeConfirm) throw new Error('Eye Mode PIN/password entries do not match.');
+            await saveVisibilityCredential(eyePin);
+          }
+          uiState.pageSettings = mergePageSettings({
+            ...cfg,
+            settingsAccessMethod: requestedAccess,
+            autoLockMinutes: clampNumber(el('securityWizardAutoLockMinutes')?.value || 0, 0, 240),
+            autoLockOnBlur: !!el('securityWizardAutoLockOnBlur')?.checked,
+            autoLockOnTabHidden: !!el('securityWizardAutoLockOnTabHidden')?.checked,
+            autoLockOnReturnMinutes: clampNumber(el('securityWizardAutoLockOnReturnMinutes')?.value || 0, 0, 240),
+            pbkdf2Iterations: cfg.pbkdf2Iterations || DEFAULT_PAGE_SETTINGS.pbkdf2Iterations
+          });
+          applyPageSettings(uiState.pageSettings, { skipRender: false });
+          resetAutoLockTimer();
+          updateSecurityStatusPanel();
+          updatePinStatus('Security Setup Wizard updated.');
+          scheduleLinkedAutoSave('security setup wizard');
+          ['securityWizardLockPin','securityWizardLockPinConfirm','securityWizardEyePin','securityWizardEyePinConfirm'].forEach(id => { const node = el(id); if (node) node.value = ''; });
+          renderSecuritySetupWizard();
+          securityWizardMessage('Security setup saved.');
+          setLiveStatusMessage('Security setup saved.');
+        };
+        if (requestedAccess === 'none' && (cfg.settingsAccessMethod || 'auto') !== 'none') {
+          showInAppConfirm('Disable the Settings access prompt? Anyone with this unlocked page could open Settings and change security, Eye Mode, save, local data, and reset options. The chart data can still be encrypted at rest, but the Settings door itself will be open while the page is unlocked.', () => {
+            void applyCoreSettings().catch(err => securityWizardMessage(err.message || 'Could not save security setup.'));
+          }, { title: 'Disable Settings Protection?', confirmText: 'Disable Prompt', cancelText: 'Keep Protected' });
+          return;
+        }
+        await applyCoreSettings();
       }
 
       function openSecuritySetupWizard() { installWorkflowDom(); renderSecuritySetupWizard(); el('securitySetupWizardModal')?.classList.add('show'); }
-      function closeSecuritySetupWizard() { el('securitySetupWizardModal')?.classList.remove('show'); }
+      function closeSecuritySetupWizard() { el('securitySetupWizardModal')?.classList.remove('show'); ['securityWizardLockPin','securityWizardLockPinConfirm','securityWizardEyePin','securityWizardEyePinConfirm'].forEach(id => { const node = el(id); if (node) node.value = ''; }); }
 
       function updateLockWorkflowReadiness() {
         const node = el('lockWorkflowReadiness');
@@ -19222,7 +19408,7 @@ This will replace the current classes, settings, room templates, and active layo
           if (target.closest?.('#securitySetupWizardOpenBtn')) { event.preventDefault(); openSecuritySetupWizard(); return; }
           if (target.closest?.('#closeSecuritySetupWizardBtn,#securityWizardDoneBtn')) { event.preventDefault(); closeSecuritySetupWizard(); return; }
           if (target.closest?.('#securityWizardRefreshBtn')) { event.preventDefault(); renderSecuritySetupWizard(); return; }
-          if (target.closest?.('#securityWizardOpenSettingsBtn')) { event.preventDefault(); closeSecuritySetupWizard(); requestOpenSettingsModal(); setSettingsPage('security'); return; }
+          if (target.closest?.('#securityWizardSaveBtn')) { event.preventDefault(); applySecuritySetupWizard().catch(err => securityWizardMessage(err.message || 'Could not save security setup.')); return; }
           const privacyBtn = target.closest?.('[data-apply-privacy-mode]');
           if (privacyBtn) { event.preventDefault(); applyPrivacyDisplayMode(privacyBtn.getAttribute('data-apply-privacy-mode')); return; }
           if (target.closest?.('#openSnapshotTimelineBtn')) { event.preventDefault(); openSnapshotTimeline(); return; }
