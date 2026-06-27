@@ -6193,7 +6193,6 @@
     body.welcome-security-active { overflow: hidden; }
     .settings-page-tab { display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; gap: 2px; padding: 10px 10px 11px; }
     .settings-page-tab .settings-page-title { display: block; margin: 0; color: inherit; font-size: 12.5px; font-weight: 950; line-height: 1.18; }
-    .settings-page-tab .settings-page-dot { width: 4px; height: 4px; display: block; align-self: center; margin: 2px 0; border-radius: 999px; background: currentColor; opacity: 0.48; flex: 0 0 4px; }
     .settings-page-tab .settings-page-desc { display: block; margin: 0; color: var(--muted); font-size: 10.5px; font-weight: 750; line-height: 1.25; }
     .settings-page-tab.active .settings-page-desc, .settings-page-tab[aria-selected="true"] .settings-page-desc { color: #31508a; }
     @media (max-width: 700px) { .welcome-hero { grid-template-columns: 1fr; } .welcome-hero-icon { margin: 0 auto; } }
@@ -6532,16 +6531,6 @@
       min-width: 0 !important;
       overflow-wrap: anywhere !important;
     }
-    .settings-modal .settings-page-tab .settings-page-dot {
-      justify-self: center !important;
-      align-self: center !important;
-      width: 4px !important;
-      height: 4px !important;
-      margin: 0 !important;
-      border-radius: 999px !important;
-      background: currentColor !important;
-      opacity: .48 !important;
-    }
     .settings-modal .settings-page-tab .settings-page-desc {
       display: block !important;
       font-size: 10.5px !important;
@@ -6666,7 +6655,6 @@
       .settings-modal .settings-page-nav { grid-template-columns: 1fr !important; max-height: min(136px, 24dvh) !important; }
       .settings-modal .settings-page-tab { min-height: 44px !important; }
       .settings-modal .settings-page-tab .settings-page-desc { display: none !important; }
-      .settings-modal .settings-page-tab .settings-page-dot { display: none !important; }
       .security-wizard-check-summary { grid-template-columns: 28px minmax(0, 1fr); }
       .security-wizard-expand { grid-column: 2; justify-self: start; }
     }
@@ -7353,13 +7341,13 @@
       </div>
       <div class="modal-body settings-body">
         <nav id="settingsPageNav" class="settings-page-nav" role="tablist" aria-label="Settings pages">
-          <button id="settingsPageChartBtn" class="settings-page-tab active" type="button" role="tab" aria-selected="true" aria-controls="settingsPageChart" data-settings-nav="chart"><span class="settings-page-title">Chart</span><span class="settings-page-dot" aria-hidden="true"></span><span class="settings-page-desc">Title, date, room, and printable chart identity.</span></button>
-          <button id="settingsPageAppearanceBtn" class="settings-page-tab" type="button" role="tab" aria-selected="false" aria-controls="settingsPageAppearance" data-settings-nav="appearance"><span class="settings-page-title">Appearance</span><span class="settings-page-dot" aria-hidden="true"></span><span class="settings-page-desc">Theme, default layout state, and hint behavior.</span></button>
-          <button id="settingsPageEyeBtn" class="settings-page-tab" type="button" role="tab" aria-selected="false" aria-controls="settingsPageEye" data-settings-nav="eye"><span class="settings-page-title">Eye Mode</span><span class="settings-page-dot" aria-hidden="true"></span><span class="settings-page-desc">Student-facing visibility, edit blocking, and hidden-detail protection.</span></button>
-          <button id="settingsPageSavingBtn" class="settings-page-tab" type="button" role="tab" aria-selected="false" aria-controls="settingsPageSaving" data-settings-nav="saving"><span class="settings-page-title">Saving</span><span class="settings-page-dot" aria-hidden="true"></span><span class="settings-page-desc">Linked save file, auto-save, backups, and save/download encryption.</span></button>
-          <button id="settingsPageSecurityBtn" class="settings-page-tab" type="button" role="tab" aria-selected="false" aria-controls="settingsPageSecurity" data-settings-nav="security"><span class="settings-page-title">Security &amp; Data</span><span class="settings-page-dot" aria-hidden="true"></span><span class="settings-page-desc">Auto-lock, Settings access, PINs, local data cleanup, and full reset.</span></button>
-          <button id="settingsPageRoomBtn" class="settings-page-tab" type="button" role="tab" aria-selected="false" aria-controls="settingsPageRoom" data-settings-nav="room"><span class="settings-page-title">Room Objects</span><span class="settings-page-dot" aria-hidden="true"></span><span class="settings-page-desc">Custom right-click room objects and sample classroom data.</span></button>
-          <button id="settingsPageAboutBtn" class="settings-page-tab" type="button" role="tab" aria-selected="false" aria-controls="settingsPageAbout" data-settings-nav="about"><span class="settings-page-title">About</span><span class="settings-page-dot" aria-hidden="true"></span><span class="settings-page-desc">Revision, license, project features, and change history.</span></button>
+          <button id="settingsPageChartBtn" class="settings-page-tab active" type="button" role="tab" aria-selected="true" aria-controls="settingsPageChart" data-settings-nav="chart"><span class="settings-page-title">Chart</span><span class="settings-page-desc">Title, date, room, and printable chart identity.</span></button>
+          <button id="settingsPageAppearanceBtn" class="settings-page-tab" type="button" role="tab" aria-selected="false" aria-controls="settingsPageAppearance" data-settings-nav="appearance"><span class="settings-page-title">Appearance</span><span class="settings-page-desc">Theme, default layout state, and hint behavior.</span></button>
+          <button id="settingsPageEyeBtn" class="settings-page-tab" type="button" role="tab" aria-selected="false" aria-controls="settingsPageEye" data-settings-nav="eye"><span class="settings-page-title">Eye Mode</span><span class="settings-page-desc">Student-facing visibility, edit blocking, and hidden-detail protection.</span></button>
+          <button id="settingsPageSavingBtn" class="settings-page-tab" type="button" role="tab" aria-selected="false" aria-controls="settingsPageSaving" data-settings-nav="saving"><span class="settings-page-title">Saving</span><span class="settings-page-desc">Linked save file, auto-save, backups, and save/download encryption.</span></button>
+          <button id="settingsPageSecurityBtn" class="settings-page-tab" type="button" role="tab" aria-selected="false" aria-controls="settingsPageSecurity" data-settings-nav="security"><span class="settings-page-title">Security &amp; Data</span><span class="settings-page-desc">Auto-lock, Settings access, PINs, local data cleanup, and full reset.</span></button>
+          <button id="settingsPageRoomBtn" class="settings-page-tab" type="button" role="tab" aria-selected="false" aria-controls="settingsPageRoom" data-settings-nav="room"><span class="settings-page-title">Room Objects</span><span class="settings-page-desc">Custom right-click room objects and sample classroom data.</span></button>
+          <button id="settingsPageAboutBtn" class="settings-page-tab" type="button" role="tab" aria-selected="false" aria-controls="settingsPageAbout" data-settings-nav="about"><span class="settings-page-title">About</span><span class="settings-page-desc">Revision, license, project features, and change history.</span></button>
         </nav>
         <div class="settings-page-content">
           <div id="settingsPageChart" class="settings-page active" role="tabpanel" data-settings-panel="chart" aria-label="Chart settings">
@@ -8092,7 +8080,7 @@
     const WELCOME_SETUP_STORAGE_KEY = 'seating-chart-bubble-builder-secure-welcome-v1';
     const VISIBILITY_CREDENTIAL_KEY = 'seating-chart-bubble-builder-visibility-v1';
     const HINT_DISMISS_STORAGE_KEY = 'seating-chart-bubble-builder-dismissed-hints-v1';
-    const APP_REVISION = '1.18.18';
+    const APP_REVISION = '1.18.19';
     const APP_LAST_UPDATED = 'June 27, 2026';
 
     const APP_LICENSE = {
@@ -8153,6 +8141,7 @@
     ];
 
     const CHANGE_LOG = [
+      { version: '1.18.19', date: 'June 27, 2026', changes: ['Removed Settings navigation dot separators so stacked page labels align cleanly.', 'Changed the Security Setup checklist into a one-open-row accordion so opening one setup item collapses the others.', 'Added valid-entry autosave for Security Setup options so Lock PIN, Eye PIN, Settings access, and auto-lock changes persist without requiring the Save Security Setup button before Done.'] },
       { version: '1.18.18', date: 'June 27, 2026', changes: ['Repaired additional Settings modal spacing and alignment so search, page navigation, and content panels keep consistent two-column sizing.', 'Converted the Security Setup Wizard into compact collapsible checklist rows with live completion checks for valid Lock PIN, Eye PIN, Settings access, and auto-lock entries.', 'Fixed Security Setup saving so Settings access choices and PIN/auto-lock configuration are persisted immediately to the encrypted browser save when possible.'] },
       { version: '1.18.17', date: 'June 27, 2026', changes: ['Fixed the Settings modal layout so the Settings search bar spans the full modal width and the left navigation/content columns align correctly again.', 'Removed PBKDF2 iteration controls from the first-run Security Setup Wizard so basic onboarding focuses on Lock PIN, Eye PIN, Settings access, and auto-lock behavior.', 'Kept PBKDF2 iteration control available only in the advanced Security & Data settings page for users who intentionally want to raise encryption work factors.'] },
       { version: '1.18.16', date: 'June 27, 2026', changes: ['Converted the post-Welcome Security Setup Wizard from a checklist/status screen into an inline setup flow with Lock PIN, Eye PIN, Settings access, and auto-lock controls directly on the wizard screen.', 'Added wizard-side validation and save behavior so first-run users can finish security setup without opening the full Settings modal.', 'Kept the wizard status checks visible below the inline controls so users can confirm active key, storage encryption, Settings protection, PIN readiness, auto-lock, and snapshot/index encryption state.'] },
@@ -18808,7 +18797,7 @@ This will replace the current classes, settings, room templates, and active layo
 
     /* Revision 1.18.14 workflow expansion module */
     (function installWorkflowExpansion11814(){
-      const ADDON_REVISION = '1.18.17';
+      const ADDON_REVISION = '1.18.19';
       const MIGRATION_SCHEMA_VERSION = '2026-06-26.workflow-expansion-v1';
       const oldMergePageSettings = mergePageSettings;
       const oldUpdatePageSettingsForm = updatePageSettingsForm;
@@ -18922,7 +18911,7 @@ This will replace the current classes, settings, room templates, and active layo
       };
 
       function settingsTabHtml(id, title, desc) {
-        return `<button id="settingsPage${id[0].toUpperCase()+id.slice(1)}Btn" class="settings-page-tab" type="button" role="tab" aria-selected="false" aria-controls="settingsPage${id[0].toUpperCase()+id.slice(1)}" data-settings-nav="${id}"><span class="settings-page-title">${escapeHtml(title)}</span><span class="settings-page-dot" aria-hidden="true"></span><span class="settings-page-desc">${escapeHtml(desc)}</span></button>`;
+        return `<button id="settingsPage${id[0].toUpperCase()+id.slice(1)}Btn" class="settings-page-tab" type="button" role="tab" aria-selected="false" aria-controls="settingsPage${id[0].toUpperCase()+id.slice(1)}" data-settings-nav="${id}"><span class="settings-page-title">${escapeHtml(title)}</span><span class="settings-page-desc">${escapeHtml(desc)}</span></button>`;
       }
 
       function panelHeader(title, text) {
@@ -18987,7 +18976,7 @@ This will replace the current classes, settings, room templates, and active layo
 
       function installStandaloneModals() {
         if (!el('securitySetupWizardModal')) {
-          document.body.insertAdjacentHTML('beforeend', `<div id="securitySetupWizardModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="securitySetupWizardTitle"><div class="modal workflow-modal security-setup-modal"><div class="panel-header"><h2 id="securitySetupWizardTitle">Security Setup Wizard</h2><button id="closeSecuritySetupWizardBtn" class="tiny secondary" type="button">Close</button></div><div class="modal-body security-wizard-layout"><div id="securityWizardSteps" class="workflow-stepper"></div><div class="security-wizard-actions"><div id="securityWizardMessage" class="muted" aria-live="polite">Set the security options here, then save.</div><div class="button-row"><button id="securityWizardRefreshBtn" class="secondary" type="button">Refresh Status</button><button id="securityWizardSaveBtn" type="button">Save Security Setup</button><button id="securityWizardDoneBtn" class="secondary" type="button">Done</button></div></div></div></div></div>`);
+          document.body.insertAdjacentHTML('beforeend', `<div id="securitySetupWizardModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="securitySetupWizardTitle"><div class="modal workflow-modal security-setup-modal"><div class="panel-header"><h2 id="securitySetupWizardTitle">Security Setup Wizard</h2><button id="closeSecuritySetupWizardBtn" class="tiny secondary" type="button">Close</button></div><div class="modal-body security-wizard-layout"><div id="securityWizardSteps" class="workflow-stepper"></div><div class="security-wizard-actions"><div id="securityWizardMessage" class="muted" aria-live="polite">Valid security options auto-save. The Save button is still available for a manual save.</div><div class="button-row"><button id="securityWizardRefreshBtn" class="secondary" type="button">Refresh Status</button><button id="securityWizardSaveBtn" type="button">Save Security Setup</button><button id="securityWizardDoneBtn" class="secondary" type="button">Done</button></div></div></div></div></div>`);
         }
         if (!el('snapshotPreviewModal')) {
           document.body.insertAdjacentHTML('beforeend', `<div id="snapshotPreviewModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="snapshotPreviewTitle"><div class="modal workflow-modal"><div class="panel-header"><h2 id="snapshotPreviewTitle">Snapshot Preview</h2><button id="closeSnapshotPreviewBtn" class="tiny secondary" type="button">Close</button></div><div id="snapshotPreviewBody" class="modal-body"></div></div></div>`);
@@ -19036,7 +19025,7 @@ This will replace the current classes, settings, room templates, and active layo
 
       function securityWizardMessage(message = '') {
         const node = el('securityWizardMessage');
-        if (node) node.textContent = message || 'Set the security options here, then save.';
+        if (node) node.textContent = message || 'Valid security options auto-save. The Save button is still available for a manual save.';
       }
 
       function settingsAccessOptionsHtml(current) {
@@ -19124,21 +19113,52 @@ This will replace the current classes, settings, room templates, and active layo
         });
       }
 
-      function renderSecuritySetupWizard() {
+      function renderSecuritySetupWizard(openKey = '') {
         const box = el('securityWizardSteps');
         if (!box) return;
         const cfg = pageSettings();
         const steps = securityWizardCurrentState();
         box.innerHTML = `
-          <div class="security-wizard-intro"><strong>Step 2: Finish security setup.</strong> The encryption password is already active. Open only the rows you want to configure, then save. The status circles update as soon as typed values are valid, because making users guess is apparently frowned upon.</div>
+          <div class="security-wizard-intro"><strong>Step 2: Finish security setup.</strong> The encryption password is already active. Open one row at a time; valid changes auto-save to encrypted browser storage. The status circles update as soon as typed values are valid, because making users guess is apparently frowned upon.</div>
           <div class="security-wizard-checklist">
-            ${steps.map((step, idx) => `<details class="security-wizard-check ${step.done ? 'done' : step.warn ? 'warn' : ''} ${step.staticOnly ? 'security-wizard-static-status' : ''}" data-security-check="${escapeHtml(step.key)}">${securityWizardSummaryHtml(step, idx + 1)}${securityWizardBodyHtml(step.body, cfg)}</details>`).join('')}
+            ${steps.map((step, idx) => `<details class="security-wizard-check ${step.done ? 'done' : step.warn ? 'warn' : ''} ${step.staticOnly ? 'security-wizard-static-status' : ''}" data-security-check="${escapeHtml(step.key)}" ${openKey && openKey === step.key ? 'open' : ''}>${securityWizardSummaryHtml(step, idx + 1)}${securityWizardBodyHtml(step.body, cfg)}</details>`).join('')}
           </div>`;
         securityWizardMessage();
       }
 
-      async function applySecuritySetupWizard() {
+      function securityWizardOpenKey() {
+        return document.querySelector('#securityWizardSteps details[open]')?.getAttribute('data-security-check') || '';
+      }
+
+      function securityWizardCanAutoApply() {
+        const lockState = wizardPinEntryStatus('securityWizardLockPin', getLockCredential());
+        const eyeState = wizardPinEntryStatus('securityWizardEyePin', getVisibilityCredential());
+        if (lockState.hasEntry && !lockState.valid) return false;
+        if (eyeState.hasEntry && !eyeState.valid) return false;
+        return true;
+      }
+
+      let securityWizardAutoSaveTimer = 0;
+      let securityWizardSuppressAutosave = false;
+      let securityWizardConfirmingSettingsNone = false;
+
+      function scheduleSecurityWizardAutosave() {
+        if (!el('securitySetupWizardModal')?.classList.contains('show')) return;
+        updateSecurityWizardLiveStatus();
+        if (!securityWizardCanAutoApply()) {
+          securityWizardMessage('Complete matching PIN/password fields before auto-save runs.');
+          return;
+        }
+        window.clearTimeout(securityWizardAutoSaveTimer);
+        securityWizardAutoSaveTimer = window.setTimeout(() => {
+          if (securityWizardSuppressAutosave) return;
+          void applySecuritySetupWizard({ silent: true, preserveOpen: true }).catch(err => securityWizardMessage(err.message || 'Could not auto-save security setup.'));
+        }, 650);
+      }
+
+      async function applySecuritySetupWizard(options = {}) {
         const cfg = pageSettings();
+        const opts = options || {};
         const requestedAccess = String(el('securityWizardSettingsAccessMethod')?.value || cfg.settingsAccessMethod || 'auto');
         const applyCoreSettings = async () => {
           const lockPin = String(el('securityWizardLockPin')?.value || '');
@@ -19171,21 +19191,26 @@ This will replace the current classes, settings, room templates, and active layo
           updatePinStatus('Security Setup Wizard updated.');
           ['securityWizardLockPin','securityWizardLockPinConfirm','securityWizardEyePin','securityWizardEyePinConfirm'].forEach(id => { const node = el(id); if (node) node.value = ''; });
           await writeLocalBrowserSave({ reason: 'security-setup-wizard', announce: false });
-          renderSecuritySetupWizard();
-          securityWizardMessage('Security setup saved to encrypted browser storage.');
-          setLiveStatusMessage('Security setup saved.');
+          securityWizardSuppressAutosave = true;
+          renderSecuritySetupWizard(opts.preserveOpen ? securityWizardOpenKey() : '');
+          securityWizardSuppressAutosave = false;
+          securityWizardMessage(opts.silent ? 'Security setup auto-saved to encrypted browser storage.' : 'Security setup saved to encrypted browser storage.');
+          setLiveStatusMessage(opts.silent ? 'Security setup auto-saved.' : 'Security setup saved.');
         };
         if (requestedAccess === 'none' && (cfg.settingsAccessMethod || 'auto') !== 'none') {
+          if (securityWizardConfirmingSettingsNone) return;
+          securityWizardConfirmingSettingsNone = true;
           showInAppConfirm('Disable the Settings access prompt? Anyone with this unlocked page could open Settings and change security, Eye Mode, save, local data, and reset options. The chart data can still be encrypted at rest, but the Settings door itself will be open while the page is unlocked.', () => {
+            securityWizardConfirmingSettingsNone = false;
             void applyCoreSettings().catch(err => securityWizardMessage(err.message || 'Could not save security setup.'));
-          }, { title: 'Disable Settings Protection?', confirmText: 'Disable Prompt', cancelText: 'Keep Protected' });
+          }, { title: 'Disable Settings Protection?', confirmText: 'Disable Prompt', cancelText: 'Keep Protected', onCancel: () => { securityWizardConfirmingSettingsNone = false; const select = el('securityWizardSettingsAccessMethod'); if (select) select.value = cfg.settingsAccessMethod || 'auto'; updateSecurityWizardLiveStatus(); } });
           return;
         }
         await applyCoreSettings();
       }
 
       function openSecuritySetupWizard() { installWorkflowDom(); renderSecuritySetupWizard(); el('securitySetupWizardModal')?.classList.add('show'); }
-      function closeSecuritySetupWizard() { el('securitySetupWizardModal')?.classList.remove('show'); ['securityWizardLockPin','securityWizardLockPinConfirm','securityWizardEyePin','securityWizardEyePinConfirm'].forEach(id => { const node = el(id); if (node) node.value = ''; }); }
+      function closeSecuritySetupWizard() { window.clearTimeout(securityWizardAutoSaveTimer); el('securitySetupWizardModal')?.classList.remove('show'); ['securityWizardLockPin','securityWizardLockPinConfirm','securityWizardEyePin','securityWizardEyePinConfirm'].forEach(id => { const node = el(id); if (node) node.value = ''; }); }
 
       function updateLockWorkflowReadiness() {
         const node = el('lockWorkflowReadiness');
@@ -19661,8 +19686,18 @@ This will replace the current classes, settings, room templates, and active layo
         document.addEventListener('click', event => {
           const target = event.target;
           if (target.closest?.('#securitySetupWizardOpenBtn')) { event.preventDefault(); openSecuritySetupWizard(); return; }
-          if (target.closest?.('#closeSecuritySetupWizardBtn,#securityWizardDoneBtn')) { event.preventDefault(); closeSecuritySetupWizard(); return; }
-          if (target.closest?.('#securityWizardRefreshBtn')) { event.preventDefault(); renderSecuritySetupWizard(); return; }
+          if (target.closest?.('#closeSecuritySetupWizardBtn')) { event.preventDefault(); closeSecuritySetupWizard(); return; }
+          if (target.closest?.('#securityWizardDoneBtn')) {
+            event.preventDefault();
+            window.clearTimeout(securityWizardAutoSaveTimer);
+            if (securityWizardCanAutoApply()) {
+              applySecuritySetupWizard({ silent: true }).then(() => closeSecuritySetupWizard()).catch(err => securityWizardMessage(err.message || 'Could not auto-save before closing.'));
+            } else {
+              securityWizardMessage('Fix unmatched PIN/password fields before finishing.');
+            }
+            return;
+          }
+          if (target.closest?.('#securityWizardRefreshBtn')) { event.preventDefault(); renderSecuritySetupWizard(securityWizardOpenKey()); return; }
           if (target.closest?.('#securityWizardSaveBtn')) { event.preventDefault(); applySecuritySetupWizard().catch(err => securityWizardMessage(err.message || 'Could not save security setup.')); return; }
           const privacyBtn = target.closest?.('[data-apply-privacy-mode]');
           if (privacyBtn) { event.preventDefault(); applyPrivacyDisplayMode(privacyBtn.getAttribute('data-apply-privacy-mode')); return; }
@@ -19680,15 +19715,20 @@ This will replace the current classes, settings, room templates, and active layo
         });
         document.addEventListener('input', event => {
           if (event.target?.id === 'settingsSearchInput') settingsSearchFilter();
-          if (String(event.target?.id || '').startsWith('securityWizard')) updateSecurityWizardLiveStatus();
+          if (String(event.target?.id || '').startsWith('securityWizard')) scheduleSecurityWizardAutosave();
         });
         document.addEventListener('change', event => {
-          if (String(event.target?.id || '').startsWith('securityWizard')) updateSecurityWizardLiveStatus();
+          if (String(event.target?.id || '').startsWith('securityWizard')) scheduleSecurityWizardAutosave();
           if (event.target?.id === 'settingPrivacyDisplayMode') applyPrivacyDisplayMode(event.target.value);
           if (event.target?.id === 'csvImportDuplicateMode' || event.target?.id === 'csvImportSnapshotBefore') {
             uiState.pageSettings = mergePageSettings({ ...pageSettings(), csvDuplicateMode: csvDuplicateModeForCurrentImport(), csvSnapshotBeforeImport: !!el('csvImportSnapshotBefore')?.checked });
           }
         });
+        document.addEventListener('toggle', event => {
+          const row = event.target;
+          if (!(row instanceof HTMLDetailsElement) || !row.matches('#securityWizardSteps details.security-wizard-check') || !row.open) return;
+          row.parentElement?.querySelectorAll('details.security-wizard-check[open]').forEach(other => { if (other !== row) other.open = false; });
+        }, true);
         window.addEventListener('blur', () => { if (pageSettings().noteRevealHideOnBlur) hideRevealedSensitiveNotes('Revealed private/substitute notes hidden because the window lost focus.'); });
         document.addEventListener('visibilitychange', () => { if (document.hidden && pageSettings().noteRevealHideOnBlur) hideRevealedSensitiveNotes('Revealed private/substitute notes hidden because the tab became inactive.'); });
       }
