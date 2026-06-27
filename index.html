@@ -6867,6 +6867,47 @@
     }
 
 
+
+    /* Revision 1.18.25: Settings nav wrapping and save fallback status polish */
+    .settings-modal .settings-page-tab,
+    .settings-page-tab {
+      min-width: 0 !important;
+      max-width: 100% !important;
+      overflow: hidden !important;
+      white-space: normal !important;
+      text-align: left !important;
+    }
+
+    .settings-modal .settings-page-tab .settings-page-title,
+    .settings-modal .settings-page-tab .settings-page-desc,
+    .settings-page-tab .settings-page-title,
+    .settings-page-tab .settings-page-desc {
+      min-width: 0 !important;
+      max-width: 100% !important;
+      overflow-wrap: anywhere !important;
+      word-break: normal !important;
+      hyphens: auto !important;
+      white-space: normal !important;
+    }
+
+    .settings-modal .settings-page-tab .settings-page-title,
+    .settings-page-tab .settings-page-title {
+      display: block !important;
+    }
+
+    .settings-modal .settings-page-tab .settings-page-desc,
+    .settings-page-tab .settings-page-desc {
+      display: block !important;
+      line-height: 1.25 !important;
+    }
+
+    .local-save-banner.fallback-warning {
+      border-bottom-color: #fecaca;
+      background: #fff1f2;
+      color: #991b1b;
+    }
+
+
   </style>
 </head>
 <body class="left-collapsed">
@@ -8303,6 +8344,7 @@
     </div>
   </div>
   <script>
+
     const STORAGE_KEY = 'seating-chart-bubble-builder-v1';
     const LINKED_SAVE_DB_NAME = 'seating-chart-linked-save-v1';
     const LINKED_SAVE_STORE_NAME = 'handles';
@@ -8323,7 +8365,7 @@
     const WELCOME_SETUP_STORAGE_KEY = 'seating-chart-bubble-builder-secure-welcome-v1';
     const VISIBILITY_CREDENTIAL_KEY = 'seating-chart-bubble-builder-visibility-v1';
     const HINT_DISMISS_STORAGE_KEY = 'seating-chart-bubble-builder-dismissed-hints-v1';
-    const APP_REVISION = '1.18.24';
+    const APP_REVISION = '1.18.26';
     const APP_LAST_UPDATED = 'June 27, 2026';
 
     const APP_LICENSE = {
@@ -8384,6 +8426,8 @@
     ];
 
     const CHANGE_LOG = [
+      { version: '1.18.26', date: 'June 27, 2026', changes: ['Prevented browser refresh/navigation events from triggering auto-lock when focus-loss or tab-hidden lock settings are disabled.', 'Added reload/page-exit guards so blur and visibilitychange handlers do not create a locked-session state during ordinary refreshes.', 'Cleaned stale lock-session markers when the app is not actually locked so refreshes do not incorrectly enter the page-lock recovery flow.'] },
+      { version: '1.18.25', date: 'June 27, 2026', changes: ['Improved Google Drive storage state so connected Drive storage suppresses the browser-only warning banner and disables Connect buttons while connected.', 'Added encrypted browser fallback warnings when Google Drive or linked-file saving fails, with automatic warning removal after the next successful preferred-location save.', 'Persisted Google Drive/preferred-storage settings changes immediately to encrypted browser storage and tightened Settings navigation wrapping to stop labels and descriptions from spilling out.'] },
       { version: '1.18.24', date: 'June 27, 2026', changes: ['Corrected the built-in public Google OAuth Client ID used by Google Drive storage.'] },
       { version: '1.18.23', date: 'June 27, 2026', changes: ['Converted Google Drive storage to use the public app OAuth Client ID internally instead of asking each user to enter a Client ID.', 'Removed user-facing Google OAuth Client ID fields from Settings and Save & Backup Options.', 'Updated Google Drive setup text, status messages, and save/load checks for the public-app Drive workflow.'] },
       { version: '1.18.22', date: 'June 27, 2026', changes: ['Added optional Google Drive as a save/load storage location using Google Identity Services and Drive API from the browser.', 'Google Drive uploads use the existing encrypted full-save payload only; student data is encrypted before it leaves the browser.', 'Added Google Drive folder name, connect, save, load, and disconnect controls in Save & Backup Options and Settings > Saving.', 'Save health now reports Google Drive connection/sync state, and manual Save Now can use Google Drive when selected as the preferred storage location.'] },
@@ -8532,12 +8576,15 @@
       googleDriveBusy: false,
       googleDriveStatus: 'Google Drive is not connected.',
       googleDriveLastSyncAt: '',
+      saveFallbackWarning: '',
+      pageSettingsPersistTimer: null,
       restoreImportDraft: null,
       activeSettingsPage: 'chart',
       appSnapshotsCache: null,
       appSnapshotsLoaded: false,
       snapshotIndexPersistToken: 0,
       hiddenAt: 0,
+      isPageExiting: false,
       autoLockInProgress: false,
       pageLockSecretForSession: ''
     };
@@ -12629,6 +12676,7 @@
       setChecked('visDisableBubbleEditing', cfg.visibility.disableBubbleEditing);
       updateVisibilityCredentialNote();
       updatePinStatus();
+      updateGoogleDriveControls();
     }
 
     function readPageSettingsForm() {
@@ -12697,6 +12745,7 @@
       const accessStatus = el('settingsAccessStatus');
       if (accessStatus) accessStatus.textContent = settingsAccessRequirementText();
       updateSaveHealthPanel();
+      schedulePageSettingsPersistence('settings');
       updateSecurityStatusPanel();
       resetAutoLockTimer();
       scheduleLinkedAutoSave('settings');
@@ -13354,6 +13403,7 @@
       if (settingsEnabled) settingsEnabled.checked = !!uiState.encryptionEnabled;
       updateVisibilityCredentialNote();
       updateSaveHealthPanel();
+      schedulePageSettingsPersistence('settings');
       updateSecurityStatusPanel();
       void ensureAppSnapshotsLoaded({ force: false });
     }
@@ -13367,6 +13417,7 @@
       if (settingsEnabled) settingsEnabled.checked = true;
       updateVisibilityCredentialNote();
       updateSaveHealthPanel();
+      schedulePageSettingsPersistence('settings');
       updateSecurityStatusPanel();
     }
 
@@ -14164,10 +14215,52 @@
       return !!GOOGLE_DRIVE_CLIENT_ID;
     }
 
-    function updateGoogleDriveSettings(updates = {}) {
-      uiState.pageSettings = mergePageSettings({ ...pageSettings(), ...updates });
+    function googleDriveStorageConnected() {
+      const cfg = googleDriveConfig();
+      return googleDriveConfigured() && !!(cfg.folderId || cfg.fileId || hasUsableGoogleDriveToken());
+    }
+
+    function setSaveFallbackWarning(message = '') {
+      uiState.saveFallbackWarning = String(message || '').trim();
+      updateLocalSaveBanner();
+    }
+
+    function clearSaveFallbackWarning() {
+      if (!uiState.saveFallbackWarning) return;
+      uiState.saveFallbackWarning = '';
+      updateLocalSaveBanner();
+    }
+
+    function schedulePageSettingsPersistence(reason = 'settings') {
+      if (!uiState.appReady || uiState.pageLocked) return;
+      clearTimeout(uiState.pageSettingsPersistTimer);
+      uiState.pageSettingsPersistTimer = setTimeout(() => {
+        uiState.pageSettingsPersistTimer = null;
+        void writeLocalBrowserSave({ reason, announce: false, preserveFallbackWarning: true });
+      }, 450);
+    }
+
+    function updateGoogleDriveControls() {
+      const connected = googleDriveStorageConnected();
+      const label = connected ? 'Google Drive Connected' : 'Connect Google Drive';
+      const title = connected
+        ? 'Google Drive is already configured for this browser session. Use Save Encrypted Copy, Load from Google Drive, or Disconnect.'
+        : 'Connect Google Drive so encrypted saves can be stored in the user\'s Drive.';
+      [el('settingsGoogleDriveConnectBtn'), ...document.querySelectorAll('[data-save-menu-action="google-drive-connect"]')].forEach(btn => {
+        if (!btn) return;
+        btn.disabled = connected;
+        btn.textContent = label;
+        btn.title = title;
+        btn.setAttribute('aria-disabled', connected ? 'true' : 'false');
+      });
+    }
+
+    function updateGoogleDriveSettings(updates = {}, options = {}) {
+      uiState.pageSettings = mergePageSettings({ ...pageSettings(), ...updates, googleDriveClientId: GOOGLE_DRIVE_CLIENT_ID });
       updatePageSettingsForm();
+      updateGoogleDriveControls();
       updateSaveHealthPanel();
+      if (options.persist !== false) schedulePageSettingsPersistence('google-drive-settings');
     }
 
     function escapeDriveQueryString(value) {
@@ -14191,6 +14284,7 @@
         const node = el(id);
         if (node) node.textContent = base;
       });
+      updateGoogleDriveControls();
     }
 
     function loadGoogleIdentityServicesScript() {
@@ -14369,6 +14463,7 @@
         updateGoogleDriveSettings({ preferredStorage: 'googleDrive', googleDriveFolderId: folderId });
         updateSaveSetupDismissed(true);
         updateGoogleDriveStatus('Connected to Google Drive. Folder is ready for encrypted saves.');
+        clearSaveFallbackWarning();
         setLiveStatusMessage('Google Drive connected. Encrypted saves can now use Drive storage.');
         await writeLocalBrowserSave({ reason: 'settings', announce: false });
         return true;
@@ -14388,8 +14483,11 @@
         if (!googleDriveConfigured()) throw new Error('Google Drive is not configured for this build.');
         if (!currentSessionEncryptionKey()) throw new Error('A session encryption password is required before saving to Google Drive.');
         if (reason === 'auto' && !hasUsableGoogleDriveToken()) {
-          updateGoogleDriveStatus('Google Drive auto-save is pending. Open Save Options and connect Google Drive to refresh access.');
-          return writeLocalBrowserSave({ reason: 'auto', announce: false });
+          const fallbackMessage = 'Google Drive auto-save needs a fresh sign-in token. Saved an encrypted browser fallback until Google Drive saves successfully again.';
+          updateGoogleDriveStatus('Google Drive auto-save is pending. Use Save to Google Drive or Load from Google Drive to refresh access.');
+          setSaveFallbackWarning(fallbackMessage);
+          await writeLocalBrowserSave({ reason: 'google-drive-fallback', announce: false, preserveFallbackWarning: true });
+          return false;
         }
         uiState.googleDriveBusy = true;
         updateGoogleDriveStatus('Saving encrypted copy to Google Drive...');
@@ -14407,6 +14505,7 @@
         uiState.googleDriveLastSyncAt = now;
         uiState.linkedSaveLastSignature = currentSaveSignature();
         updateSaveMeta({ googleDriveLastSavedAt: now, lastBackupAt: now, localSaveActive: true });
+        clearSaveFallbackWarning();
         updateGoogleDriveStatus(`Saved encrypted copy to Google Drive: ${saved.name || 'current save'}.`);
         if (announce) setLiveStatusMessage(`Saved encrypted copy to Google Drive: ${saved.name || 'current save'}.`);
         updateSaveSetupDismissed(true);
@@ -14414,8 +14513,11 @@
         await writeLocalBrowserSave({ reason: 'google-drive-mirror', announce: false });
         return true;
       } catch (err) {
+        const fallbackMessage = `Google Drive save failed: ${err.message}. Saved an encrypted browser fallback for now. The warning will clear after the next successful Google Drive save.`;
         updateGoogleDriveStatus(`Google Drive save failed: ${err.message}`);
-        if (announce || reason !== 'auto') setLiveStatusMessage(`Google Drive save failed: ${err.message}`);
+        await writeLocalBrowserSave({ reason: 'google-drive-fallback', announce: false, preserveFallbackWarning: true });
+        setSaveFallbackWarning(fallbackMessage);
+        if (announce || reason !== 'auto') setLiveStatusMessage(fallbackMessage);
         updateSaveHealthPanel();
         return false;
       } finally {
@@ -14451,6 +14553,7 @@
           const text = await response.text();
           await importStateFromText(text, 'Google Drive save');
           updateGoogleDriveSettings({ preferredStorage: 'googleDrive', googleDriveFileId: file.id, googleDriveFileName: file.name || '' });
+          clearSaveFallbackWarning();
           updateGoogleDriveStatus(`Restore options opened for Google Drive save: ${file.name || 'current save'}.`);
           setLiveStatusMessage('Google Drive save downloaded. Choose what to restore.');
           updateSaveSetupDismissed(true);
@@ -14482,6 +14585,7 @@
         googleDriveFileName: '',
         googleDriveLastSavedAt: ''
       });
+      clearSaveFallbackWarning();
       updateGoogleDriveStatus('Google Drive disconnected. Existing Drive files were not deleted.');
       setLiveStatusMessage('Google Drive link forgotten. Existing Drive files were not deleted.');
       void writeLocalBrowserSave({ reason: 'settings', announce: false });
@@ -14517,6 +14621,7 @@
         uiState.linkedSaveFileName = uiState.linkedSaveHandle.name || uiState.linkedSaveFileName || 'Linked save file';
         uiState.linkedSaveLastSignature = currentSaveSignature();
         uiState.linkedSaveStatus = reason === 'auto' ? 'Auto-saved to linked file.' : 'Saved to linked file.';
+        clearSaveFallbackWarning();
         updateSaveMeta({ linkedFileName: uiState.linkedSaveFileName, linkedLastSavedAt: now });
         if (announce) setLiveStatusMessage(reason === 'auto' ? 'Auto-saved to linked file.' : `Saved to linked file: ${uiState.linkedSaveFileName}.`);
         updateSaveSetupDismissed(true);
@@ -14524,7 +14629,10 @@
         return true;
       } catch (err) {
         uiState.linkedSaveStatus = `Linked save failed: ${err.message}`;
-        if (announce || reason !== 'auto') setLiveStatusMessage(`Could not save to linked file: ${err.message}`);
+        const fallbackMessage = `Linked save failed: ${err.message}. Saved an encrypted browser fallback for now. The warning will clear after the next successful linked-file save.`;
+        await writeLocalBrowserSave({ reason: 'linked-file-fallback', announce: false, preserveFallbackWarning: true });
+        setSaveFallbackWarning(fallbackMessage);
+        if (announce || reason !== 'auto') setLiveStatusMessage(fallbackMessage);
         updateSaveHealthPanel();
         return false;
       } finally {
@@ -14580,9 +14688,10 @@
         uiState.linkedSaveLastSignature = currentSaveSignature();
         updateSaveMeta({ localLastSavedAt: now, localSaveActive: true, linkedLastSavedAt: saveMeta().linkedLastSavedAt || '' });
         if (reason === 'auto') await createAutosaveSnapshot('Auto snapshot');
+        if (!options.preserveFallbackWarning && !String(reason).includes('fallback')) clearSaveFallbackWarning();
         if (announce) setLiveStatusMessage('Saved to browser local storage. Choose a real save file for safer long-term storage.');
         updateSaveHealthPanel();
-        maybePromptDurableSaveAfterLocalChanges();
+        if (!String(reason).includes('fallback') && reason !== 'google-drive-mirror' && reason !== 'settings' && reason !== 'google-drive-settings') maybePromptDurableSaveAfterLocalChanges();
         return true;
       } catch (err) {
         if (reason !== 'auto' && String(err.message || '').toLowerCase().includes('encryption')) {
@@ -14602,7 +14711,7 @@
     }
 
     function maybePromptDurableSaveAfterLocalChanges() {
-      if (uiState.linkedSaveHandle || (pageSettings().preferredStorage === 'googleDrive' && googleDriveConfigured()) || appIsEmbeddedFrame()) return;
+      if (uiState.linkedSaveHandle || (pageSettings().preferredStorage === 'googleDrive' && googleDriveStorageConnected()) || appIsEmbeddedFrame()) return;
       const meta = saveMeta();
       const count = Number(meta.localOnlyChangeCount || 0);
       const lastPrompt = Number(meta.localSavePromptCount || 0);
@@ -14673,6 +14782,7 @@
       const meta = saveMeta();
       const linked = !!uiState.linkedSaveHandle;
       const googleDrivePreferred = pageSettings().preferredStorage === 'googleDrive' && googleDriveConfigured();
+      const googleDriveConnected = googleDriveStorageConnected();
       const supported = linkedSaveApiSupported();
       const localActive = !!meta.localSaveActive || !!safeStorageGet('localStorage', STORAGE_KEY);
       const methodNode = el('saveHealthMethod');
@@ -14683,8 +14793,8 @@
       const statusNode = el('saveHealthLinkedStatus');
       const googleNode = el('saveHealthGoogleDriveStatus');
       if (methodNode) {
-        const cls = googleDrivePreferred ? 'good' : linked ? 'good' : supported ? 'warn' : 'bad';
-        const text = googleDrivePreferred ? 'Google Drive' : linked ? 'Linked file' : localActive ? 'Browser local autosave' : supported ? 'No linked file yet' : 'Browser local autosave';
+        const cls = googleDrivePreferred ? (googleDriveConnected ? 'good' : 'warn') : linked ? 'good' : supported ? 'warn' : 'bad';
+        const text = googleDrivePreferred ? (googleDriveConnected ? 'Google Drive' : 'Google Drive needs sign-in') : linked ? 'Linked file' : localActive ? 'Browser local autosave' : supported ? 'No linked file yet' : 'Browser local autosave';
         methodNode.innerHTML = `<span class="save-method-badge ${cls}">${escapeHtml(text)}</span>`;
       }
       if (fileNode) fileNode.textContent = googleDrivePreferred ? (pageSettings().googleDriveFileName || pageSettings().googleDriveFolderName || 'Google Drive app folder') : linked ? (uiState.linkedSaveFileName || meta.linkedFileName || 'Linked save file') : 'Browser local save is active by default.';
@@ -14697,7 +14807,7 @@
           : hasSensitiveStudentNotes()
             ? 'Private or Substitute notes exist. Set the session encryption password before saving or downloading.'
             : 'Encryption password is not set. Secure save/export is blocked until a session password is active.';
-      if (googleNode) googleNode.textContent = googleDriveConfigured() ? (uiState.googleDriveStatus || `Configured folder: ${pageSettings().googleDriveFolderName || 'Seating Chart Builder Saves'}.`) : 'Not connected. Use Connect Google Drive to authorize encrypted Drive storage.';
+      if (googleNode) googleNode.textContent = googleDriveConnected ? (uiState.googleDriveStatus || `Connected folder: ${pageSettings().googleDriveFolderName || 'Seating Chart Builder Saves'}.`) : googleDriveConfigured() ? (uiState.googleDriveStatus || 'Not connected. Use Connect Google Drive to authorize encrypted Drive storage.') : 'Google Drive is not configured for this build.';
       if (statusNode) statusNode.textContent = statusOverride || (googleDrivePreferred ? (uiState.googleDriveStatus || 'Google Drive is selected.') : uiState.linkedSaveStatus) || (linked ? 'Ready.' : 'Browser local autosave is active. Choose a save file for safer long-term storage.');
       const auto = el('settingAutoSaveMinutes');
       if (auto && String(auto.value) !== String(pageSettings().autoSaveMinutes || 0)) auto.value = pageSettings().autoSaveMinutes || 0;
@@ -14754,14 +14864,21 @@
       if (!banner) return;
       const meta = saveMeta();
       const linked = !!uiState.linkedSaveHandle || !!meta.linkedFileName;
+      const googleDriveActive = pageSettings().preferredStorage === 'googleDrive' && googleDriveStorageConnected();
       const localActive = !!meta.localSaveActive || !!safeStorageGet('localStorage', STORAGE_KEY);
-      const show = !!localActive && !linked && !document.body.classList.contains('print-preview-active');
+      const hasFallbackWarning = !!uiState.saveFallbackWarning;
+      const show = !document.body.classList.contains('print-preview-active') && (hasFallbackWarning || (!!localActive && !linked && !googleDriveActive));
       document.body.classList.toggle('local-save-warning-visible', show);
+      banner.classList.toggle('fallback-warning', hasFallbackWarning);
       banner.hidden = !show;
       const textNode = el('localSaveBannerText');
       if (textNode) {
-        const last = formatSaveDate(meta.localLastSavedAt);
-        textNode.textContent = `Browser-only autosave is active${last && last !== 'Never' ? ` • last local save: ${last}` : ''}. Choose a real save file or download backups so browser cleanup, profile changes, or another device do not remove your seating chart data.`;
+        if (hasFallbackWarning) {
+          textNode.textContent = uiState.saveFallbackWarning;
+        } else {
+          const last = formatSaveDate(meta.localLastSavedAt);
+          textNode.textContent = `Browser-only autosave is active${last && last !== 'Never' ? ` • last local save: ${last}` : ''}. Choose a real save file, Google Drive storage, or download backups so browser cleanup, profile changes, or another device do not remove your seating chart data.`;
+        }
       }
     }
 
@@ -18304,8 +18421,30 @@ This will replace the current classes, settings, room templates, and active layo
       setLiveStatusMessage('Basic PDF exported.');
     }
 
+    function isAutoLockTriggerEnabled() {
+      const cfg = pageSettings();
+      return Boolean(Number(cfg.autoLockMinutes || 0) > 0 || cfg.autoLockOnBlur || cfg.autoLockOnTabHidden || Number(cfg.autoLockOnReturnMinutes || 0) > 0);
+    }
+
+    function clearUnlockedPageLockSessionMarker(reason = '') {
+      if (uiState.pageLocked) return;
+      const hadMarker = Boolean(safeStorageGet('sessionStorage', PAGE_LOCK_SESSION_KEY));
+      safeStorageRemove('sessionStorage', PAGE_LOCK_SESSION_KEY);
+      safeStorageRemove('sessionStorage', PAGE_LOCK_DATA_SESSION_KEY);
+      safeStorageRemove('sessionStorage', PAGE_LOCK_WRAPPED_KEY_SESSION_KEY);
+      uiState.lockedSnapshotEncrypted = '';
+      if (hadMarker && reason) setLiveStatusMessage(reason);
+    }
+
+    function markPageExitingForNavigation() {
+      uiState.isPageExiting = true;
+      if (!uiState.pageLocked && !isAutoLockTriggerEnabled()) {
+        clearUnlockedPageLockSessionMarker();
+      }
+    }
+
     async function performConfiguredAutoLock(reason = 'inactivity') {
-      if (uiState.pageLocked || uiState.autoLockInProgress) return;
+      if (uiState.isPageExiting || uiState.pageLocked || uiState.autoLockInProgress || !isAutoLockTriggerEnabled()) return;
       uiState.autoLockInProgress = true;
       try {
         const keySecret = lockDataSecretFromSettings();
@@ -18337,10 +18476,12 @@ This will replace the current classes, settings, room templates, and active layo
       document.body.dataset.autoLockInstalled = 'true';
       ['click','keydown','pointerdown','touchstart'].forEach(type => document.addEventListener(type, resetAutoLockTimer, { passive:true }));
       window.addEventListener('blur', () => {
+        if (uiState.isPageExiting) return;
         uiState.hiddenAt = uiState.hiddenAt || Date.now();
         if (pageSettings().autoLockOnBlur) void performConfiguredAutoLock('window focus loss');
       });
       window.addEventListener('focus', () => {
+        uiState.isPageExiting = false;
         const minutes = Number(pageSettings().autoLockOnReturnMinutes || 0);
         const hiddenAt = Number(uiState.hiddenAt || 0);
         uiState.hiddenAt = 0;
@@ -18349,9 +18490,11 @@ This will replace the current classes, settings, room templates, and active layo
       });
       document.addEventListener('visibilitychange', () => {
         if (document.hidden) {
+          if (uiState.isPageExiting) return;
           uiState.hiddenAt = Date.now();
           if (pageSettings().autoLockOnTabHidden) void performConfiguredAutoLock('tab hidden');
         } else {
+          uiState.isPageExiting = false;
           const minutes = Number(pageSettings().autoLockOnReturnMinutes || 0);
           const hiddenAt = Number(uiState.hiddenAt || 0);
           uiState.hiddenAt = 0;
@@ -18359,6 +18502,8 @@ This will replace the current classes, settings, room templates, and active layo
           resetAutoLockTimer();
         }
       });
+      window.addEventListener('beforeunload', markPageExitingForNavigation);
+      window.addEventListener('pagehide', markPageExitingForNavigation);
       resetAutoLockTimer();
     }
 
@@ -20381,6 +20526,10 @@ This will replace the current classes, settings, room templates, and active layo
       installMobileCarrySupport();
       await loadLinkedSaveHandleFromStorage();
 
+      if (safeStorageGet('sessionStorage', PAGE_LOCK_SESSION_KEY) === 'true' && !safeStorageGet('sessionStorage', PAGE_LOCK_DATA_SESSION_KEY)) {
+        clearUnlockedPageLockSessionMarker('Cleared a stale lock marker from the previous browser session.');
+      }
+
       if (safeStorageGet('sessionStorage', PAGE_LOCK_SESSION_KEY) === 'true') {
         if (getLockCredential()) {
           uiState.lockedSnapshotEncrypted = safeStorageGet('sessionStorage', PAGE_LOCK_DATA_SESSION_KEY) || '';
@@ -20414,6 +20563,7 @@ This will replace the current classes, settings, room templates, and active layo
       uiState.appReady = true;
       await ensureAppSnapshotsLoaded();
       updateSaveHealthPanel();
+      schedulePageSettingsPersistence('settings');
       updateSecurityStatusPanel();
       if (shouldShowWelcomeSecuritySetup(loaded, !!saved)) {
         openWelcomeSecurityModal();
