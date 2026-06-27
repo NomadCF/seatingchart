@@ -6908,6 +6908,133 @@
     }
 
 
+
+
+    /* Revision 1.19.0: freeform room layout canvas */
+    .layout-mode-field { min-width: 170px !important; }
+    .freeform-tools {
+      display: none;
+      grid-column: 1 / -1;
+      gap: 8px;
+      align-items: end;
+      flex-wrap: wrap;
+      padding: 8px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #f8fafc;
+    }
+    body.freeform-layout-mode .freeform-tools { display: flex; }
+    body.freeform-layout-mode .grid-only-tool { opacity: .55; }
+    .freeform-tools .field { min-width: 110px; margin-bottom: 0; }
+    .freeform-tools .field.small { min-width: 82px; }
+    .freeform-tools button { flex: 0 0 auto; }
+    .seat-grid.freeform-canvas {
+      position: relative;
+      display: block !important;
+      min-width: 720px;
+      min-height: 520px;
+      margin: 0 auto;
+      background-color: #ffffff;
+      background-image:
+        linear-gradient(to right, rgba(100,116,139,.16) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(100,116,139,.16) 1px, transparent 1px);
+      border: 1px solid rgba(148,163,184,.65);
+      border-radius: 14px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.8), 0 8px 26px rgba(15,23,42,.08);
+      overflow: visible;
+      touch-action: none;
+    }
+    .freeform-object {
+      position: absolute;
+      display: grid;
+      place-items: center;
+      align-content: center;
+      gap: 3px;
+      padding: 7px;
+      border: 1px solid rgba(15,23,42,.24);
+      border-radius: 12px;
+      color: #111827;
+      box-shadow: 0 4px 12px rgba(15,23,42,.12), inset 0 1px 0 rgba(255,255,255,.72);
+      cursor: grab;
+      user-select: none;
+      overflow: visible;
+      transform-origin: center center;
+    }
+    .freeform-object:active { cursor: grabbing; }
+    .freeform-object.selected {
+      outline: 3px solid rgba(37,99,235,.55);
+      outline-offset: 3px;
+      box-shadow: 0 0 0 6px rgba(37,99,235,.12), 0 8px 18px rgba(15,23,42,.16);
+    }
+    .freeform-object.drop-target { outline: 4px solid rgba(37,99,235,.4); }
+    .freeform-object.locked { cursor: not-allowed; border-style: dashed; }
+    .freeform-object.blocked { color: #fff; }
+    .freeform-object.wall { border-radius: 7px; }
+    .freeform-object.walkway { border-style: dashed; }
+    .freeform-object-title {
+      width: 100%;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 900;
+      line-height: 1.18;
+      overflow-wrap: anywhere;
+    }
+    .freeform-object-meta {
+      display: flex;
+      justify-content: center;
+      gap: 4px;
+      font-size: 10px;
+      color: #475569;
+      line-height: 1.1;
+    }
+    .freeform-object-actions {
+      display: flex;
+      gap: 4px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 2px;
+    }
+    .freeform-object-actions button { min-height: 22px; font-size: 9.5px; padding: 3px 5px; }
+    .freeform-resize-handle {
+      position: absolute;
+      right: -7px;
+      bottom: -7px;
+      width: 16px;
+      height: 16px;
+      border-radius: 5px;
+      border: 1px solid rgba(15,23,42,.35);
+      background: #ffffff;
+      box-shadow: 0 2px 8px rgba(15,23,42,.18);
+      cursor: nwse-resize;
+    }
+    .freeform-rotate-handle {
+      position: absolute;
+      top: -13px;
+      right: -13px;
+      width: 24px !important;
+      min-width: 24px !important;
+      height: 24px !important;
+      min-height: 24px !important;
+      padding: 0 !important;
+      border-radius: 999px;
+      font-size: 12px;
+      cursor: pointer;
+      z-index: 2;
+    }
+    body.print-preview-active .seat-grid.freeform-canvas {
+      transform-origin: top center;
+      max-width: 100%;
+    }
+    body.print-clean .freeform-resize-handle,
+    body.print-clean .freeform-rotate-handle,
+    body.print-clean .freeform-object-actions { display: none !important; }
+    @media (max-width: 980px) {
+      .freeform-tools { display: none; max-height: 210px; overflow: auto; }
+      body.freeform-layout-mode #layoutToolsPanel:not([hidden]) .freeform-tools { display: flex; }
+      .seat-grid.freeform-canvas { margin: 0; min-width: 760px; min-height: 560px; }
+      .freeform-object { min-width: 54px; min-height: 42px; }
+    }
+
   </style>
 </head>
 <body class="left-collapsed">
@@ -7330,7 +7457,14 @@
             <label for="colsInput">Columns</label>
             <input id="colsInput" type="number" min="1" max="30" value="6" />
           </div>
-          <div class="field tool">
+          <div class="field layout-mode-field">
+            <label for="layoutModeSelect">Layout Mode</label>
+            <select id="layoutModeSelect" title="Switch between standard row/column grid layout and draggable freeform room layout.">
+              <option value="grid">Standard Grid</option>
+              <option value="freeform">Freeform Room</option>
+            </select>
+          </div>
+          <div class="field tool grid-only-tool">
             <label for="layoutTool">Click Tool</label>
             <select id="layoutTool">
               <option value="seat">Seat</option>
@@ -7359,10 +7493,42 @@
               <span id="designSizeValue" class="pill">28px</span>
             </div>
           </div>
-          <button id="buildGridBtn" class="secondary">Build/Resize Grid</button>
-          <button id="makeAllSeatsBtn" class="secondary">All Seats</button>
-          <button id="emptyGridBtn" class="danger">Empty Grid</button>
-          <div class="hint" style="max-width:460px;">Click cells to place the selected object. Use Select Cells to drag-select cells, or hold Shift to add a range/drag selection; then right-click one selected cell to apply an object to all selected cells. Drop unassigned students onto seats.</div>
+          <button id="buildGridBtn" class="secondary grid-only-tool">Build/Resize Grid</button>
+          <button id="makeAllSeatsBtn" class="secondary grid-only-tool">All Seats</button>
+          <button id="emptyGridBtn" class="danger grid-only-tool">Empty Grid</button>
+          <div id="freeformTools" class="freeform-tools" aria-label="Freeform room layout tools">
+            <div class="field">
+              <label for="freeformObjectTool">Add Object</label>
+              <select id="freeformObjectTool">
+                <option value="seat">Seat</option>
+                <option value="teacher">Teacher Desk</option>
+                <option value="table">Table</option>
+                <option value="door">Door</option>
+                <option value="wall">Wall</option>
+                <option value="walkway">Walkway</option>
+                <option value="window">Window</option>
+                <option value="projector">Projector</option>
+                <option value="board">Board</option>
+                <option value="carpet">Carpet</option>
+                <option value="ada">ADA Space</option>
+                <option value="blocked">Blocked</option>
+              </select>
+            </div>
+            <button id="addFreeformObjectBtn" class="secondary" type="button">Add Object</button>
+            <button id="duplicateFreeformObjectBtn" class="secondary" type="button">Duplicate</button>
+            <button id="lockFreeformObjectBtn" class="secondary" type="button">Lock/Unlock</button>
+            <button id="rotateFreeformObjectBtn" class="secondary" type="button">Rotate</button>
+            <button id="bringFreeformForwardBtn" class="secondary" type="button">Front</button>
+            <button id="sendFreeformBackBtn" class="secondary" type="button">Back</button>
+            <button id="deleteFreeformObjectBtn" class="danger" type="button">Delete</button>
+            <button id="convertGridToFreeformBtn" class="secondary" type="button">Convert Grid</button>
+            <button id="mapFreeformToGridBtn" class="secondary" type="button">Map to Grid</button>
+            <div class="field small"><label for="freeformCanvasWidthInput">Canvas W</label><input id="freeformCanvasWidthInput" type="number" min="400" max="12000" value="1400" /></div>
+            <div class="field small"><label for="freeformCanvasHeightInput">Canvas H</label><input id="freeformCanvasHeightInput" type="number" min="300" max="12000" value="900" /></div>
+            <div class="field small"><label for="freeformGridSizeInput">Snap</label><input id="freeformGridSizeInput" type="number" min="5" max="80" value="20" /></div>
+            <label class="checkline" title="Snap dragged and resized freeform objects to the canvas grid."><input id="freeformSnapToggle" type="checkbox" checked /> <span>Snap to grid</span></label>
+          </div>
+          <div class="hint" style="max-width:620px;">Grid mode uses rows and columns. Freeform mode lets you drag, resize, rotate, lock, and save real room placements. Use Map to Grid before printing a simple row/column version; the app maps freeform seat order back into grid seats.</div>
         </div>
       </div>
 
@@ -8365,7 +8531,7 @@
     const WELCOME_SETUP_STORAGE_KEY = 'seating-chart-bubble-builder-secure-welcome-v1';
     const VISIBILITY_CREDENTIAL_KEY = 'seating-chart-bubble-builder-visibility-v1';
     const HINT_DISMISS_STORAGE_KEY = 'seating-chart-bubble-builder-dismissed-hints-v1';
-    const APP_REVISION = '1.18.26';
+    const APP_REVISION = '1.19.1';
     const APP_LAST_UPDATED = 'June 27, 2026';
 
     const APP_LICENSE = {
@@ -8426,6 +8592,8 @@
     ];
 
     const CHANGE_LOG = [
+      { version: '1.19.1', date: 'June 27, 2026', changes: ['Fixed Freeform Room Layout right-click object conversion so seats and room objects can be changed through the context menu.', 'Fixed encrypted load security so typing an incorrect encryption key no longer stores that bad key or allows the app to proceed as if decrypted.', 'Verified encrypted local-save/import flows only set the active session key after successful AES-GCM decryption.'] },
+      { version: '1.19.0', date: 'June 27, 2026', changes: ['Added Freeform Room Layout mode with draggable, resizable, rotatable saved seats and room objects on a canvas-style workspace.', 'Added grid/freeform synchronization so switching back to Standard Grid maps students by freeform seat position into row/column seats for simplified printing.', 'Added snap-to-grid, canvas sizing, object add/duplicate/delete/lock/arrange controls, freeform student drop assignment, and freeform print-as-seen support while keeping existing grid mode intact.'] },
       { version: '1.18.26', date: 'June 27, 2026', changes: ['Prevented browser refresh/navigation events from triggering auto-lock when focus-loss or tab-hidden lock settings are disabled.', 'Added reload/page-exit guards so blur and visibilitychange handlers do not create a locked-session state during ordinary refreshes.', 'Cleaned stale lock-session markers when the app is not actually locked so refreshes do not incorrectly enter the page-lock recovery flow.'] },
       { version: '1.18.25', date: 'June 27, 2026', changes: ['Improved Google Drive storage state so connected Drive storage suppresses the browser-only warning banner and disables Connect buttons while connected.', 'Added encrypted browser fallback warnings when Google Drive or linked-file saving fails, with automatic warning removal after the next successful preferred-location save.', 'Persisted Google Drive/preferred-storage settings changes immediately to encrypted browser storage and tightened Settings navigation wrapping to stop labels and descriptions from spilling out.'] },
       { version: '1.18.24', date: 'June 27, 2026', changes: ['Corrected the built-in public Google OAuth Client ID used by Google Drive storage.'] },
@@ -8523,6 +8691,8 @@
       rows: 5,
       cols: 6,
       cells: {},
+      layoutMode: 'grid',
+      freeformLayout: null,
       customObjects: [],
       zones: [],
       roomTemplates: [],
@@ -8586,7 +8756,9 @@
       hiddenAt: 0,
       isPageExiting: false,
       autoLockInProgress: false,
-      pageLockSecretForSession: ''
+      pageLockSecretForSession: '',
+      freeformSelectedObjectIds: new Set(),
+      freeformDrag: null
     };
 
     const el = (id) => document.getElementById(id);
@@ -8631,6 +8803,8 @@
       googleDriveLastSavedAt: '',
       defaultSideTab: 'students',
       designCellSize: 28,
+      freeformSnapToGrid: true,
+      freeformGridSize: 20,
       settingsAccessMethod: 'auto',
       autoLockMinutes: 0,
       autoLockOnBlur: false,
@@ -8680,6 +8854,8 @@
         googleDriveLastSavedAt: String(source.googleDriveLastSavedAt || '').trim(),
         defaultSideTab: ['students','bubbles','zones'].includes(source.defaultSideTab) ? source.defaultSideTab : 'students',
         designCellSize: clampNumber(source.designCellSize ?? DEFAULT_PAGE_SETTINGS.designCellSize, 20, 72),
+        freeformSnapToGrid: source.freeformSnapToGrid ?? DEFAULT_PAGE_SETTINGS.freeformSnapToGrid,
+        freeformGridSize: clampNumber(source.freeformGridSize ?? DEFAULT_PAGE_SETTINGS.freeformGridSize, 5, 80),
         settingsAccessMethod: ['auto','lock','eye','encryption','none'].includes(source.settingsAccessMethod) ? source.settingsAccessMethod : DEFAULT_PAGE_SETTINGS.settingsAccessMethod,
         autoLockMinutes: clampNumber(source.autoLockMinutes ?? DEFAULT_PAGE_SETTINGS.autoLockMinutes, 0, 240),
         autoLockOnBlur: source.autoLockOnBlur ?? DEFAULT_PAGE_SETTINGS.autoLockOnBlur,
@@ -9597,6 +9773,7 @@
             }
           }
           const decrypted = await decryptTextEnvelope(envelope, decryptSecret);
+          if (envelope.lockEncryptionSource === 'wrapped-encryption-key' || envelope.lockEncryptionSource === 'encryption-key') setSessionEncryptionKey(decryptSecret);
           deactivatePageLock();
           importState(decrypted);
           setLiveStatusMessage('Page unlocked and encrypted chart data restored.');
@@ -10081,6 +10258,491 @@
       cleanupInvalidAssignmentsAndAnchors();
     }
 
+
+    function defaultFreeformLayout() {
+      return {
+        canvas: { width: 1400, height: 900, gridSize: pageSettings().freeformGridSize || 20, snap: pageSettings().freeformSnapToGrid !== false },
+        objects: [],
+        nextZ: 1
+      };
+    }
+
+    function objectTypeColor(type) {
+      const colors = { seat: '#dbeafe', teacher: '#fff3d6', table: '#e8f7ec', door: '#fce8ee', wall: '#d9dee8', walkway: '#ffffff', window: '#e0f2fe', projector: '#eef2ff', board: '#dcfce7', carpet: '#f5e8d3', ada: '#ecfeff', blocked: '#313846', empty: '#fbfcff' };
+      return colors[type] || '#eef2f7';
+    }
+
+    function normalizeFreeformObject(object, index = 0) {
+      const source = object && typeof object === 'object' ? object : {};
+      const type = source.type || 'seat';
+      const isSeat = type === 'seat';
+      return {
+        id: source.id || uid('freeform-object'),
+        cellKey: source.cellKey ? String(source.cellKey) : '',
+        type,
+        label: String(source.label || '').slice(0, 80),
+        assignedStudentId: source.assignedStudentId ? String(source.assignedStudentId) : null,
+        manual: Boolean(source.manual),
+        anchorBubbleIds: Array.isArray(source.anchorBubbleIds) ? Array.from(new Set(source.anchorBubbleIds.map(String))) : [],
+        zoneIds: Array.isArray(source.zoneIds) ? Array.from(new Set(source.zoneIds.map(String))) : [],
+        x: clampNumber(source.x ?? (40 + index * 18), 0, 10000),
+        y: clampNumber(source.y ?? (40 + index * 18), 0, 10000),
+        width: clampNumber(source.width ?? (isSeat ? 118 : 160), 28, 2000),
+        height: clampNumber(source.height ?? (isSeat ? 72 : 96), 24, 2000),
+        rotation: clampNumber(source.rotation ?? 0, -360, 360),
+        locked: Boolean(source.locked),
+        zIndex: clampNumber(source.zIndex ?? (index + 1), 1, 100000),
+        color: safeColor(source.color, objectTypeColor(type))
+      };
+    }
+
+    function normalizeFreeformLayout(layout) {
+      const source = layout && typeof layout === 'object' ? layout : {};
+      const canvas = source.canvas && typeof source.canvas === 'object' ? source.canvas : {};
+      const objects = Array.isArray(source.objects) ? source.objects.map(normalizeFreeformObject) : [];
+      return {
+        canvas: {
+          width: clampNumber(canvas.width ?? 1400, 400, 12000),
+          height: clampNumber(canvas.height ?? 900, 300, 12000),
+          gridSize: clampNumber(canvas.gridSize ?? DEFAULT_PAGE_SETTINGS.freeformGridSize, 5, 80),
+          snap: canvas.snap ?? DEFAULT_PAGE_SETTINGS.freeformSnapToGrid
+        },
+        objects,
+        nextZ: Math.max(Number(source.nextZ) || 1, objects.reduce((max, obj) => Math.max(max, Number(obj.zIndex) || 1), 1) + 1)
+      };
+    }
+
+    function gridSeatEntriesSorted() {
+      ensureGrid();
+      return Object.entries(state.cells)
+        .filter(([, cell]) => cell.type === 'seat')
+        .sort((a, b) => (Number(a[1].row) - Number(b[1].row)) || (Number(a[1].col) - Number(b[1].col)));
+    }
+
+    function freeformObjectsSorted(objects = state.freeformLayout?.objects || []) {
+      return [...objects].sort((a, b) => (Number(a.y) - Number(b.y)) || (Number(a.x) - Number(b.x)) || String(a.id).localeCompare(String(b.id)));
+    }
+
+    function freeformSeatObjectsSorted() {
+      ensureFreeformLayout({ rebuildMissing: true });
+      return freeformObjectsSorted((state.freeformLayout.objects || []).filter(obj => obj.type === 'seat'));
+    }
+
+    function createFreeformObjectsFromGrid({ keepAssignments = true } = {}) {
+      ensureGrid();
+      const objects = [];
+      const cellWidth = 126;
+      const cellHeight = 92;
+      const gap = 18;
+      Object.entries(state.cells).sort((a, b) => (a[1].row - b[1].row) || (a[1].col - b[1].col)).forEach(([cellKey, cell], index) => {
+        const type = cell.type || 'seat';
+        const width = type === 'seat' ? 116 : (type === 'table' ? 190 : 130);
+        const height = type === 'seat' ? 70 : (type === 'wall' ? 34 : 86);
+        objects.push(normalizeFreeformObject({
+          id: `freeform-${cellKey}`,
+          cellKey,
+          type,
+          label: type === 'seat' ? '' : objectLabel(type),
+          assignedStudentId: keepAssignments && type === 'seat' ? cell.assignedStudentId || null : null,
+          manual: keepAssignments && type === 'seat' ? Boolean(cell.manual) : false,
+          anchorBubbleIds: keepAssignments && type === 'seat' ? deepClone(cell.anchorBubbleIds || []) : [],
+          zoneIds: deepClone(cell.zoneIds || []),
+          x: 40 + (Number(cell.col) - 1) * (cellWidth + gap),
+          y: 40 + (Number(cell.row) - 1) * (cellHeight + gap),
+          width,
+          height,
+          rotation: 0,
+          locked: Boolean(cell.manual),
+          zIndex: index + 1,
+          color: objectTypeColor(type)
+        }, index));
+      });
+      return objects;
+    }
+
+    function ensureFreeformLayout({ rebuildMissing = false } = {}) {
+      state.freeformLayout = normalizeFreeformLayout(state.freeformLayout);
+      const hasObjects = Array.isArray(state.freeformLayout.objects) && state.freeformLayout.objects.length;
+      if (!hasObjects || rebuildMissing) {
+        const existing = new Map((state.freeformLayout.objects || []).map(obj => [String(obj.cellKey || obj.id), obj]));
+        if (!hasObjects) {
+          state.freeformLayout.objects = createFreeformObjectsFromGrid({ keepAssignments: true });
+        } else {
+          const next = createFreeformObjectsFromGrid({ keepAssignments: true });
+          next.forEach(obj => {
+            const old = existing.get(String(obj.cellKey || obj.id));
+            if (old) Object.assign(obj, { x: old.x, y: old.y, width: old.width, height: old.height, rotation: old.rotation, locked: old.locked, zIndex: old.zIndex, color: old.color, label: old.label || obj.label, assignedStudentId: old.assignedStudentId || obj.assignedStudentId, manual: Boolean(old.manual || obj.manual), anchorBubbleIds: deepClone(old.anchorBubbleIds || obj.anchorBubbleIds || []), zoneIds: deepClone(old.zoneIds || obj.zoneIds || []) });
+          });
+          const nextKeys = new Set(next.map(obj => String(obj.cellKey || obj.id)));
+          (state.freeformLayout.objects || []).forEach(oldObj => {
+            const key = String(oldObj.cellKey || oldObj.id);
+            if (!nextKeys.has(key)) next.push(normalizeFreeformObject(oldObj, next.length));
+          });
+          state.freeformLayout.objects = next;
+        }
+      }
+      state.freeformLayout.nextZ = Math.max(Number(state.freeformLayout.nextZ) || 1, ...state.freeformLayout.objects.map(obj => Number(obj.zIndex) || 1)) + 1;
+      return state.freeformLayout;
+    }
+
+    function rebuildFreeformFromGrid({ keepAssignments = true } = {}) {
+      state.freeformLayout = normalizeFreeformLayout(state.freeformLayout);
+      state.freeformLayout.objects = createFreeformObjectsFromGrid({ keepAssignments });
+      state.freeformLayout.nextZ = state.freeformLayout.objects.length + 1;
+    }
+
+    function syncGridAssignmentsToFreeformByPosition() {
+      ensureFreeformLayout({ rebuildMissing: true });
+      const seats = freeformSeatObjectsSorted();
+      const gridSeats = gridSeatEntriesSorted().map(([, cell]) => cell);
+      seats.forEach((obj, index) => {
+        const cell = obj.cellKey && state.cells[obj.cellKey] && state.cells[obj.cellKey].type === 'seat' ? state.cells[obj.cellKey] : gridSeats[index];
+        if (!cell) return;
+        obj.assignedStudentId = cell.assignedStudentId || null;
+        obj.manual = Boolean(cell.manual);
+        obj.locked = Boolean(cell.manual || obj.locked);
+        obj.anchorBubbleIds = deepClone(cell.anchorBubbleIds || []);
+        obj.zoneIds = deepClone(cell.zoneIds || []);
+      });
+    }
+
+    function syncFreeformAssignmentsToGridByPosition() {
+      if (!state.freeformLayout) return;
+      ensureGrid();
+      const seats = freeformSeatObjectsSorted();
+      const gridSeatEntries = gridSeatEntriesSorted();
+      gridSeatEntries.forEach(([, cell]) => { cell.assignedStudentId = null; cell.manual = false; });
+      seats.forEach((obj, index) => {
+        const entry = gridSeatEntries[index];
+        if (!entry) return;
+        const [cellKey, cell] = entry;
+        cell.assignedStudentId = obj.assignedStudentId || null;
+        cell.manual = Boolean(obj.manual || obj.locked);
+        cell.anchorBubbleIds = deepClone(obj.anchorBubbleIds || []);
+        cell.zoneIds = deepClone(obj.zoneIds || []);
+        obj.cellKey = obj.cellKey || cellKey;
+      });
+    }
+
+    function switchLayoutMode(mode) {
+      const nextMode = mode === 'freeform' ? 'freeform' : 'grid';
+      if (nextMode === state.layoutMode) return;
+      if (eyeModeBlocksRoomEditing()) return blockEyeModeAction('room');
+      if (state.layoutMode === 'freeform') syncFreeformAssignmentsToGridByPosition();
+      if (nextMode === 'freeform') {
+        state.layoutMode = 'freeform';
+        ensureFreeformLayout({ rebuildMissing: true });
+        syncGridAssignmentsToFreeformByPosition();
+      } else {
+        syncFreeformAssignmentsToGridByPosition();
+        state.layoutMode = 'grid';
+      }
+      clearCellSelection();
+      renderAll();
+      setLiveStatusMessage(nextMode === 'freeform' ? 'Switched to Freeform Room Layout.' : 'Switched to Standard Grid and mapped freeform seat order into row/column seats.');
+    }
+
+    function syncFreeformControlsFromState() {
+      const mode = el('layoutModeSelect');
+      if (mode && document.activeElement !== mode) mode.value = state.layoutMode === 'freeform' ? 'freeform' : 'grid';
+      const layout = normalizeFreeformLayout(state.freeformLayout);
+      const w = el('freeformCanvasWidthInput');
+      const h = el('freeformCanvasHeightInput');
+      const gridSize = el('freeformGridSizeInput');
+      const snap = el('freeformSnapToggle');
+      if (w && document.activeElement !== w) w.value = layout.canvas.width;
+      if (h && document.activeElement !== h) h.value = layout.canvas.height;
+      if (gridSize && document.activeElement !== gridSize) gridSize.value = layout.canvas.gridSize;
+      if (snap) snap.checked = layout.canvas.snap !== false;
+      document.body.classList.toggle('freeform-layout-mode', state.layoutMode === 'freeform');
+    }
+
+    function freeformSnap(value) {
+      const layout = ensureFreeformLayout();
+      const size = Math.max(5, Number(layout.canvas.gridSize) || 20);
+      return layout.canvas.snap === false ? Number(value) : Math.round(Number(value) / size) * size;
+    }
+
+    function selectedFreeformObject() {
+      const id = Array.from(uiState.freeformSelectedObjectIds || [])[0];
+      return (state.freeformLayout?.objects || []).find(obj => obj.id === id) || null;
+    }
+
+    function selectFreeformObject(id, additive = false) {
+      if (!uiState.freeformSelectedObjectIds) uiState.freeformSelectedObjectIds = new Set();
+      if (!additive) uiState.freeformSelectedObjectIds.clear();
+      if (id) uiState.freeformSelectedObjectIds.add(String(id));
+      updateFreeformSelectionVisuals();
+    }
+
+    function updateFreeformSelectionVisuals() {
+      document.querySelectorAll('.freeform-object').forEach(node => {
+        node.classList.toggle('selected', uiState.freeformSelectedObjectIds?.has(node.dataset.objectId));
+      });
+    }
+
+    function freeformObjectLabel(obj, lookups) {
+      if (!obj) return '';
+      if (obj.type === 'seat') {
+        const student = lookups.students.get(String(obj.assignedStudentId || ''));
+        return student ? studentDisplay(student) : 'Empty Seat';
+      }
+      return obj.label || objectLabel(obj.type);
+    }
+
+    function freeformObjectInnerHtml(obj, lookups) {
+      const student = obj.type === 'seat' ? lookups.students.get(String(obj.assignedStudentId || '')) : null;
+      const locked = obj.locked || obj.manual;
+      if (obj.type === 'seat') {
+        return `
+          <div class="freeform-object-title">${seatStudentHtml(student)}</div>
+          <div class="freeform-object-meta">${locked ? '<span class="pill locked">Locked</span>' : '<span class="pill">Seat</span>'}</div>
+          <div class="freeform-object-actions no-print">
+            ${student ? `<button class="tiny secondary" data-freeform-clear-seat="${escapeHtml(obj.id)}">Clear</button>` : ''}
+            <button class="tiny ${locked ? 'ghost' : 'secondary'}" data-freeform-lock="${escapeHtml(obj.id)}">${locked ? 'Unlock' : 'Lock'}</button>
+          </div>`;
+      }
+      return `
+        <div class="freeform-object-title">${escapeHtml(obj.label || objectLabel(obj.type))}</div>
+        <div class="freeform-object-meta">${escapeHtml(objectLabel(obj.type))}</div>
+        <div class="freeform-object-actions no-print"><button class="tiny secondary" data-freeform-delete="${escapeHtml(obj.id)}">Delete</button></div>`;
+    }
+
+    function renderFreeformLayout() {
+      ensureFreeformLayout({ rebuildMissing: true });
+      syncGridAssignmentsToFreeformByPosition();
+      const grid = el('seatGrid');
+      if (!grid) return;
+      const layout = state.freeformLayout;
+      const lookups = buildLookupMaps();
+      const assignedIds = new Set();
+      const seatCount = layout.objects.filter(obj => obj.type === 'seat').length;
+      layout.objects.forEach(obj => { if (obj.assignedStudentId) assignedIds.add(String(obj.assignedStudentId)); });
+      grid.classList.add('freeform-canvas');
+      grid.style.gridTemplateColumns = '';
+      grid.style.gridAutoRows = '';
+      grid.style.setProperty('--cell-height', 'auto');
+      grid.style.width = `${layout.canvas.width}px`;
+      grid.style.height = `${layout.canvas.height}px`;
+      grid.style.backgroundSize = `${layout.canvas.gridSize}px ${layout.canvas.gridSize}px`;
+      grid.innerHTML = '';
+      layout.objects.sort((a, b) => (Number(a.zIndex) || 1) - (Number(b.zIndex) || 1)).forEach(obj => {
+        const node = document.createElement('div');
+        node.className = `freeform-object ${obj.type}${obj.locked ? ' locked' : ''}`;
+        node.dataset.objectId = obj.id;
+        node.dataset.type = obj.type;
+        node.style.left = `${obj.x}px`;
+        node.style.top = `${obj.y}px`;
+        node.style.width = `${obj.width}px`;
+        node.style.height = `${obj.height}px`;
+        node.style.zIndex = String(obj.zIndex || 1);
+        node.style.background = obj.color || objectTypeColor(obj.type);
+        node.style.transform = `rotate(${Number(obj.rotation) || 0}deg)`;
+        node.title = `${freeformObjectLabel(obj, lookups)} · x ${Math.round(obj.x)}, y ${Math.round(obj.y)}${obj.rotation ? ` · ${obj.rotation}°` : ''}`;
+        node.innerHTML = `${freeformObjectInnerHtml(obj, lookups)}<button class="freeform-rotate-handle no-print" data-freeform-rotate="${escapeHtml(obj.id)}" title="Rotate 15°">⟳</button><span class="freeform-resize-handle no-print" data-freeform-resize="${escapeHtml(obj.id)}" title="Resize"></span>`;
+        node.addEventListener('pointerdown', event => beginFreeformPointerDrag(event, obj.id));
+        node.addEventListener('click', event => { event.stopPropagation(); selectFreeformObject(obj.id, event.shiftKey); });
+        node.addEventListener('contextmenu', event => {
+          event.preventDefault();
+          event.stopPropagation();
+          selectFreeformObject(obj.id, event.shiftKey);
+          if (eyeModeBlocksRoomEditing()) return blockEyeModeAction('room');
+          showFreeformObjectContextMenu(obj.id, event.clientX, event.clientY);
+        });
+        node.addEventListener('dblclick', event => {
+          event.stopPropagation();
+          if (obj.type === 'seat' && obj.cellKey && state.cells[obj.cellKey]) openSeatEditModal(obj.cellKey);
+        });
+        node.addEventListener('dragover', event => {
+          if (obj.type === 'seat' && !eyeModeBlocksSeatEditing()) { event.preventDefault(); node.classList.add('drop-target'); }
+        });
+        node.addEventListener('dragleave', () => node.classList.remove('drop-target'));
+        node.addEventListener('drop', event => {
+          event.preventDefault();
+          node.classList.remove('drop-target');
+          if (obj.type !== 'seat') return;
+          if (eyeModeBlocksSeatEditing()) return blockEyeModeAction('seat');
+          let data;
+          try { data = JSON.parse(event.dataTransfer.getData('application/json')); } catch { return; }
+          if (data.type === 'student') assignStudentToFreeformObject(data.id, obj.id, true);
+        });
+        grid.appendChild(node);
+      });
+      grid.onclick = event => { if (!event.target.closest('.freeform-object')) selectFreeformObject(null); };
+      grid.ondragover = event => { if (state.layoutMode === 'freeform') event.preventDefault(); };
+      grid.ondrop = event => {
+        if (state.layoutMode !== 'freeform') return;
+        event.preventDefault();
+        let data;
+        try { data = JSON.parse(event.dataTransfer.getData('application/json')); } catch { return; }
+        if (data.type === 'student') {
+          const rect = grid.getBoundingClientRect();
+          const seat = addFreeformObject('seat', { x: freeformSnap(event.clientX - rect.left - 58), y: freeformSnap(event.clientY - rect.top - 35), assignedStudentId: data.id, manual: true, locked: true });
+          assignStudentToFreeformObject(data.id, seat.id, false);
+        }
+      };
+      el('printStats').textContent = `${printChartMetaLine() || activeClassName()} · Freeform layout · ${state.students.length} students · ${seatCount} seats · ${assignedIds.size} assigned`;
+      updateFreeformSelectionVisuals();
+    }
+
+    function beginFreeformPointerDrag(event, id) {
+      if (event.button !== 0 || eyeModeBlocksRoomEditing()) return;
+      const obj = (state.freeformLayout?.objects || []).find(item => item.id === id);
+      if (!obj) return;
+      if (event.target.closest('button') && event.target.dataset.freeformRotate !== id) return;
+      if (event.target.dataset.freeformRotate === id) {
+        event.preventDefault();
+        rotateFreeformObject(id, event.shiftKey ? -15 : 15);
+        return;
+      }
+      const resize = event.target.dataset.freeformResize === id;
+      if (obj.locked && !resize) return;
+      event.preventDefault();
+      event.currentTarget.setPointerCapture?.(event.pointerId);
+      selectFreeformObject(id, event.shiftKey);
+      uiState.freeformDrag = { id, resize, startX: event.clientX, startY: event.clientY, original: { x: obj.x, y: obj.y, width: obj.width, height: obj.height } };
+      const move = ev => updateFreeformPointerDrag(ev);
+      const up = ev => {
+        document.removeEventListener('pointermove', move);
+        document.removeEventListener('pointerup', up);
+        finishFreeformPointerDrag(ev);
+      };
+      document.addEventListener('pointermove', move);
+      document.addEventListener('pointerup', up, { once: true });
+    }
+
+    function updateFreeformPointerDrag(event) {
+      const drag = uiState.freeformDrag;
+      if (!drag) return;
+      const obj = (state.freeformLayout?.objects || []).find(item => item.id === drag.id);
+      if (!obj) return;
+      const dx = event.clientX - drag.startX;
+      const dy = event.clientY - drag.startY;
+      if (drag.resize) {
+        obj.width = Math.max(28, freeformSnap(drag.original.width + dx));
+        obj.height = Math.max(24, freeformSnap(drag.original.height + dy));
+      } else {
+        obj.x = Math.max(0, freeformSnap(drag.original.x + dx));
+        obj.y = Math.max(0, freeformSnap(drag.original.y + dy));
+      }
+      const node = document.querySelector(`.freeform-object[data-object-id="${cssEscape(obj.id)}"]`);
+      if (node) {
+        node.style.left = `${obj.x}px`;
+        node.style.top = `${obj.y}px`;
+        node.style.width = `${obj.width}px`;
+        node.style.height = `${obj.height}px`;
+      }
+    }
+
+    function finishFreeformPointerDrag() {
+      uiState.freeformDrag = null;
+      syncFreeformAssignmentsToGridByPosition();
+      persistActiveClass();
+      scheduleLinkedAutoSave('freeform-move');
+      updateSaveHealthPanel();
+    }
+
+    function addFreeformObject(type = null, overrides = {}) {
+      ensureFreeformLayout();
+      const grid = el('seatGrid');
+      const selectedType = type || el('freeformObjectTool')?.value || el('layoutTool')?.value || 'seat';
+      const centerX = 80 + (state.freeformLayout.objects.length % 8) * 28;
+      const centerY = 80 + (state.freeformLayout.objects.length % 6) * 28;
+      const obj = normalizeFreeformObject({
+        type: selectedType,
+        label: selectedType === 'seat' ? '' : objectLabel(selectedType),
+        x: freeformSnap(overrides.x ?? centerX),
+        y: freeformSnap(overrides.y ?? centerY),
+        width: overrides.width ?? (selectedType === 'seat' ? 118 : selectedType === 'table' ? 190 : 140),
+        height: overrides.height ?? (selectedType === 'seat' ? 72 : selectedType === 'wall' ? 36 : 92),
+        assignedStudentId: overrides.assignedStudentId || null,
+        manual: Boolean(overrides.manual),
+        locked: Boolean(overrides.locked),
+        zIndex: state.freeformLayout.nextZ++,
+        color: objectTypeColor(selectedType)
+      }, state.freeformLayout.objects.length);
+      state.freeformLayout.objects.push(obj);
+      selectFreeformObject(obj.id);
+      syncFreeformAssignmentsToGridByPosition();
+      renderAll();
+      return obj;
+    }
+
+    function duplicateSelectedFreeformObject() {
+      const obj = selectedFreeformObject();
+      if (!obj || obj.locked) return;
+      const copy = normalizeFreeformObject({ ...deepClone(obj), id: uid('freeform-object'), cellKey: '', x: obj.x + 24, y: obj.y + 24, zIndex: state.freeformLayout.nextZ++, assignedStudentId: null, manual: false, locked: false }, state.freeformLayout.objects.length);
+      state.freeformLayout.objects.push(copy);
+      selectFreeformObject(copy.id);
+      renderAll();
+    }
+
+    function deleteSelectedFreeformObject() {
+      const ids = uiState.freeformSelectedObjectIds || new Set();
+      if (!ids.size) return;
+      state.freeformLayout.objects = (state.freeformLayout.objects || []).filter(obj => !ids.has(obj.id) || obj.locked);
+      ids.clear();
+      syncFreeformAssignmentsToGridByPosition();
+      renderAll();
+    }
+
+    function rotateFreeformObject(id, degrees = 15) {
+      const obj = (state.freeformLayout?.objects || []).find(item => item.id === id);
+      if (!obj || obj.locked) return;
+      obj.rotation = ((Number(obj.rotation) || 0) + degrees) % 360;
+      renderAll();
+    }
+
+    function arrangeSelectedFreeformObject(direction) {
+      const obj = selectedFreeformObject();
+      if (!obj) return;
+      ensureFreeformLayout();
+      if (direction === 'front') obj.zIndex = state.freeformLayout.nextZ++;
+      if (direction === 'back') obj.zIndex = 1;
+      renderAll();
+    }
+
+    function lockSelectedFreeformObject(toggle = true) {
+      const obj = selectedFreeformObject();
+      if (!obj) return;
+      obj.locked = toggle ? !obj.locked : true;
+      obj.manual = obj.type === 'seat' ? obj.locked : obj.manual;
+      syncFreeformAssignmentsToGridByPosition();
+      renderAll();
+    }
+
+    function assignStudentToFreeformObject(studentId, objectId, render = true) {
+      const student = getStudent(studentId);
+      const target = (state.freeformLayout?.objects || []).find(obj => obj.id === objectId && obj.type === 'seat');
+      if (!student || !target) return false;
+      (state.freeformLayout.objects || []).forEach(obj => {
+        if (obj.type === 'seat' && obj.assignedStudentId === student.id) {
+          obj.assignedStudentId = null;
+          obj.manual = false;
+          obj.locked = false;
+        }
+      });
+      target.assignedStudentId = student.id;
+      target.manual = true;
+      target.locked = true;
+      syncFreeformAssignmentsToGridByPosition();
+      if (render) renderAll();
+      return true;
+    }
+
+    function updateFreeformCanvasSettings() {
+      ensureFreeformLayout();
+      const layout = state.freeformLayout;
+      layout.canvas.width = clampNumber(el('freeformCanvasWidthInput')?.value ?? layout.canvas.width, 400, 12000);
+      layout.canvas.height = clampNumber(el('freeformCanvasHeightInput')?.value ?? layout.canvas.height, 300, 12000);
+      layout.canvas.gridSize = clampNumber(el('freeformGridSizeInput')?.value ?? layout.canvas.gridSize, 5, 80);
+      layout.canvas.snap = Boolean(el('freeformSnapToggle')?.checked);
+      uiState.pageSettings.freeformGridSize = layout.canvas.gridSize;
+      uiState.pageSettings.freeformSnapToGrid = layout.canvas.snap;
+      schedulePageSettingsPersistence('freeform-settings');
+      renderAll();
+    }
+
     function cleanupInvalidAssignmentsAndAnchors() {
       const studentIds = new Set(state.students.map(student => student.id));
       const bubbleIds = new Set(state.bubbles.map(bubble => bubble.id));
@@ -10102,6 +10764,23 @@
         cell.anchorBubbleIds = (cell.anchorBubbleIds || []).filter(id => bubbleIds.has(id));
         cell.zoneIds = (cell.zoneIds || []).filter(id => zoneIds.has(id));
       });
+
+      if (state.freeformLayout && Array.isArray(state.freeformLayout.objects)) {
+        state.freeformLayout.objects = state.freeformLayout.objects.map((obj, index) => normalizeFreeformObject(obj, index)).filter(Boolean);
+        state.freeformLayout.objects.forEach(obj => {
+          obj.color = safeColor(obj.color, objectTypeColor(obj.type));
+          obj.anchorBubbleIds = (obj.anchorBubbleIds || []).filter(id => bubbleIds.has(id));
+          obj.zoneIds = (obj.zoneIds || []).filter(id => zoneIds.has(id));
+          if (obj.type !== 'seat') {
+            obj.assignedStudentId = null;
+            obj.manual = false;
+          } else if (obj.assignedStudentId && !studentIds.has(obj.assignedStudentId)) {
+            obj.assignedStudentId = null;
+            obj.manual = false;
+            obj.locked = false;
+          }
+        });
+      }
 
       state.bubbles.forEach((bubble, index) => {
         bubble.color = safeColor(bubble.color, defaultBubbleColor(index));
@@ -10495,11 +11174,22 @@
           cell.manual = false;
         }
       });
+      if (state.freeformLayout && Array.isArray(state.freeformLayout.objects)) {
+        state.freeformLayout.objects.forEach(obj => {
+          if (obj.type === 'seat' && (!keepManual || !obj.locked)) {
+            obj.assignedStudentId = null;
+            obj.manual = false;
+          }
+        });
+      }
     }
 
     function clearAnchors() {
       if (eyeModeBlocksBubbleEditing() || eyeModeBlocksSeatEditing()) return blockEyeModeAction('bubble');
       Object.values(state.cells).forEach(cell => cell.anchorBubbleIds = []);
+      if (state.freeformLayout && Array.isArray(state.freeformLayout.objects)) {
+        state.freeformLayout.objects.forEach(obj => { if (obj.type === 'seat') obj.anchorBubbleIds = []; });
+      }
       state.bubbles.forEach(b => b.anchorSeats = []);
     }
 
@@ -10576,6 +11266,8 @@
         rows: Math.max(1, Math.min(30, Number(source.rows) || 5)),
         cols: Math.max(1, Math.min(30, Number(source.cols) || 6)),
         cells: normalizeCellsRecord(source.cells),
+        layoutMode: ['grid','freeform'].includes(source.layoutMode) ? source.layoutMode : 'grid',
+        freeformLayout: normalizeFreeformLayout(source.freeformLayout),
         zones: Array.isArray(source.zones) ? source.zones.map(normalizeZoneRecord) : [],
         customObjects: Array.isArray(source.customObjects) ? source.customObjects.map(normalizeCustomObject).filter(Boolean) : [],
         createdAt: source.createdAt || new Date().toISOString()
@@ -10612,6 +11304,8 @@
         rows: 5,
         cols: 6,
         cells: {},
+        layoutMode: 'grid',
+        freeformLayout: null,
         customObjects: [],
         zones: [],
         snapshots: [],
@@ -10632,6 +11326,8 @@
         rows: Math.max(1, Math.min(30, Number(cls.rows) || 5)),
         cols: Math.max(1, Math.min(30, Number(cls.cols) || 6)),
         cells: normalizeCellsRecord(cls.cells),
+        layoutMode: ['grid','freeform'].includes(cls.layoutMode) ? cls.layoutMode : 'grid',
+        freeformLayout: normalizeFreeformLayout(cls.freeformLayout),
         customObjects: Array.isArray(cls.customObjects) ? cls.customObjects.map(normalizeCustomObject).filter(Boolean) : [],
         zones: Array.isArray(cls.zones) ? cls.zones.map(normalizeZoneRecord) : [],
         snapshots: Array.isArray(cls.snapshots) ? cls.snapshots.map(normalizeSnapshotRecord) : [],
@@ -10656,6 +11352,8 @@
         rows: Number(state.rows) || 5,
         cols: Number(state.cols) || 6,
         cells: deepClone(state.cells || {}),
+        layoutMode: state.layoutMode === 'freeform' ? 'freeform' : 'grid',
+        freeformLayout: normalizeFreeformLayout(state.freeformLayout),
         customObjects: deepClone(state.customObjects || []),
         zones: deepClone(state.zones || []),
         snapshots: deepClone(activeClassRecord()?.snapshots || []),
@@ -10684,6 +11382,8 @@
       state.rows = Number(cls.rows) || 5;
       state.cols = Number(cls.cols) || 6;
       state.cells = deepClone(cls.cells || {});
+      state.layoutMode = cls.layoutMode === 'freeform' ? 'freeform' : 'grid';
+      state.freeformLayout = normalizeFreeformLayout(cls.freeformLayout);
       state.customObjects = deepClone(cls.customObjects || []);
       state.zones = deepClone(cls.zones || []);
       state.chartMeta = normalizeChartMeta(cls.chartMeta);
@@ -10706,6 +11406,8 @@
           rows: state.rows,
           cols: state.cols,
           cells: state.cells,
+          layoutMode: state.layoutMode,
+          freeformLayout: state.freeformLayout,
           customObjects: state.customObjects,
           zones: state.zones,
           chartMeta: state.chartMeta
@@ -11500,7 +12202,12 @@
 
     function renderGrid() {
       ensureGrid();
+      if (state.layoutMode === 'freeform') return renderFreeformLayout();
       const grid = el('seatGrid');
+      grid.classList.remove('freeform-canvas');
+      grid.style.width = '';
+      grid.style.height = '';
+      grid.style.backgroundSize = '';
       const lookups = buildLookupMaps();
       let seatCount = 0;
       const assignedIds = new Set();
@@ -12052,6 +12759,7 @@
       const colsInput = el('colsInput');
       if (document.activeElement !== rowsInput) rowsInput.value = state.rows;
       if (document.activeElement !== colsInput) colsInput.value = state.cols;
+      syncFreeformControlsFromState();
       renderClassManager();
       renderBubbleMemberPicker();
       renderStudents();
@@ -12078,6 +12786,7 @@
 
     function generateChart() {
       if (eyeModeBlocksSeatEditing()) return blockEyeModeAction('seat');
+      if (state.layoutMode === 'freeform') syncFreeformAssignmentsToGridByPosition();
       ensureGrid();
       if (!state.students.length || !seatCells().length) {
         renderAll();
@@ -12085,11 +12794,13 @@
       }
       runSeatingPass({ keepManual: true, randomize: false });
       improveBySwapping(260);
+      if (state.layoutMode === 'freeform') syncGridAssignmentsToFreeformByPosition();
       renderAll();
     }
 
     function randomizeAndSeatEveryone() {
       if (eyeModeBlocksSeatEditing()) return blockEyeModeAction('seat');
+      if (state.layoutMode === 'freeform') syncFreeformAssignmentsToGridByPosition();
       ensureGrid();
       const seats = seatCells();
       if (!state.students.length || !seats.length) {
@@ -12111,6 +12822,7 @@
         }
       }
       if (bestSnapshot) restoreAssignments(bestSnapshot);
+      if (state.layoutMode === 'freeform') syncGridAssignmentsToFreeformByPosition();
       renderAll();
       const unassigned = state.students.length - assignedStudentIds().size;
       if (unassigned > 0) {
@@ -12190,6 +12902,7 @@
       Object.entries(state.cells).forEach(([key, cell]) => {
         snapshot[key] = { assignedStudentId: cell.assignedStudentId || null, manual: Boolean(cell.manual) };
       });
+      snapshot.__freeform = (state.freeformLayout?.objects || []).filter(obj => obj.type === 'seat').map(obj => ({ id: obj.id, assignedStudentId: obj.assignedStudentId || null, manual: Boolean(obj.manual), locked: Boolean(obj.locked) }));
       return snapshot;
     }
 
@@ -12198,6 +12911,15 @@
         const saved = snapshot[key] || {};
         cell.assignedStudentId = saved.assignedStudentId || null;
         cell.manual = Boolean(saved.manual);
+      });
+      const freeformById = new Map(Array.isArray(snapshot.__freeform) ? snapshot.__freeform.map(item => [String(item.id), item]) : []);
+      (state.freeformLayout?.objects || []).forEach(obj => {
+        if (obj.type !== 'seat') return;
+        const saved = freeformById.get(String(obj.id));
+        if (!saved) return;
+        obj.assignedStudentId = saved.assignedStudentId || null;
+        obj.manual = Boolean(saved.manual);
+        obj.locked = Boolean(saved.locked);
       });
     }
 
@@ -12445,6 +13167,7 @@
       const cell = state.cells[cellKey];
       if (!menu || !cell) return;
       menu.dataset.cellKey = cellKey;
+      delete menu.dataset.freeformObjectId;
       const batchKeys = contextCellKeys(cellKey);
       const selectedTypes = batchKeys.map(key => state.cells[key]?.type).filter(Boolean);
       const sameSelectedType = selectedTypes.length && selectedTypes.every(type => type === selectedTypes[0]);
@@ -12476,7 +13199,69 @@
 
     function hideCellContextMenu() {
       const menu = el('cellContextMenu');
-      if (menu) menu.classList.remove('show');
+      if (menu) {
+        menu.classList.remove('show');
+        delete menu.dataset.freeformObjectId;
+      }
+    }
+
+    function showFreeformObjectContextMenu(objectId, x, y) {
+      const menu = el('cellContextMenu');
+      const obj = (state.freeformLayout?.objects || []).find(item => item.id === objectId);
+      if (!menu || !obj) return;
+      menu.dataset.freeformObjectId = objectId;
+      menu.dataset.cellKey = '';
+      const title = el('cellContextTitle');
+      if (title) title.textContent = `Freeform ${objectLabel(obj.type)}`;
+      const selectionNote = el('cellContextSelectionNote');
+      if (selectionNote) {
+        selectionNote.style.display = 'block';
+        selectionNote.textContent = obj.type === 'seat' && obj.assignedStudentId
+          ? 'Changing this freeform seat to another object will clear the student assignment for that object.'
+          : 'Chosen object applies to this freeform item.';
+      }
+      renderCustomObjectMenus();
+      menu.querySelectorAll('[data-menu-cell-type]').forEach(button => {
+        const isCurrent = button.dataset.menuCellType === obj.type;
+        button.classList.toggle('current-selection', !!isCurrent);
+        if (isCurrent) button.setAttribute('aria-current', 'true');
+        else button.removeAttribute('aria-current');
+      });
+      applyTooltips(menu);
+      menu.classList.add('show');
+      const menuWidth = 250;
+      const menuHeight = Math.min(menu.scrollHeight || 560, window.innerHeight - 20);
+      const left = Math.min(x, window.innerWidth - menuWidth - 10);
+      const top = Math.min(y, window.innerHeight - menuHeight - 10);
+      menu.style.left = `${Math.max(8, left)}px`;
+      menu.style.top = `${Math.max(8, top)}px`;
+    }
+
+    function setFreeformObjectType(objectId, type) {
+      if (eyeModeBlocksRoomEditing()) return blockEyeModeAction('room');
+      const obj = (state.freeformLayout?.objects || []).find(item => item.id === objectId);
+      if (!obj) return false;
+      const nextType = String(type || 'empty');
+      const wasSeat = obj.type === 'seat';
+      obj.type = nextType;
+      obj.label = nextType === 'seat' ? '' : objectLabel(nextType);
+      obj.color = objectTypeColor(nextType);
+      if (nextType !== 'seat') {
+        obj.assignedStudentId = null;
+        obj.manual = false;
+        obj.anchorBubbleIds = [];
+        obj.locked = false;
+      } else if (!wasSeat) {
+        obj.width = Math.max(Number(obj.width) || 118, 96);
+        obj.height = Math.max(Number(obj.height) || 72, 54);
+        obj.anchorBubbleIds = obj.anchorBubbleIds || [];
+      }
+      state.freeformLayout.objects = state.freeformLayout.objects.map((item, index) => item.id === obj.id ? normalizeFreeformObject(obj, index) : item);
+      syncFreeformAssignmentsToGridByPosition();
+      renderAll();
+      scheduleLinkedAutoSave('freeform-context-type');
+      setLiveStatusMessage(`Changed freeform object to ${objectLabel(nextType)}.`);
+      return true;
     }
 
 
@@ -13348,7 +14133,6 @@
             input.focus();
             return;
           }
-          if (enteredKey) setSessionEncryptionKey(enteredKey);
           close(key);
         };
         cancelBtn.onclick = () => close(null);
@@ -13383,6 +14167,13 @@
       } catch (err) {
         throw new Error('Could not decrypt. Check the encryption key and try again.');
       }
+    }
+
+    async function decryptTextEnvelopeAndTrustKey(parsed, keyOverride = '') {
+      const supplied = String(keyOverride || '').trim();
+      const plainText = await decryptTextEnvelope(parsed, supplied);
+      if (supplied) setSessionEncryptionKey(supplied);
+      return plainText;
     }
 
     function currentSessionEncryptionKey() {
@@ -13581,7 +14372,7 @@
         key = await requestEncryptionKey('This snapshot is encrypted and there is no active session key. Enter the encryption key to restore it.');
       }
       if (!key) throw new Error('Encrypted snapshot restore canceled.');
-      return decryptTextEnvelope(parsed, key);
+      return decryptTextEnvelopeAndTrustKey(parsed, key);
     }
 
     async function exportPayload(scope = 'all') {
@@ -13598,7 +14389,7 @@
       if (parsed && parsed.encrypted) {
         const key = await requestEncryptionKey(`This ${sourceLabel} is encrypted. Enter the encryption key to continue.`);
         if (!key) throw new Error('Encrypted load/import canceled.');
-        const decryptedText = await decryptTextEnvelope(parsed, key);
+        const decryptedText = await decryptTextEnvelopeAndTrustKey(parsed, key);
         parsed = JSON.parse(decryptedText);
         encrypted = true;
       }
@@ -13611,7 +14402,7 @@
       if (parsed && parsed.encrypted) {
         const key = await requestEncryptionKey(`This ${sourceLabel} is encrypted. Enter the encryption key to continue.`);
         if (!key) throw new Error('Encrypted load canceled.');
-        const decryptedText = await decryptTextEnvelope(parsed, key);
+        const decryptedText = await decryptTextEnvelopeAndTrustKey(parsed, key);
         importState(decryptedText);
         return;
       }
@@ -18743,9 +19534,11 @@ This will replace the current classes, settings, room templates, and active layo
 
       const updateGridFromInputs = () => {
         if (eyeModeBlocksRoomEditing()) return blockEyeModeAction('room');
+        if (state.layoutMode === 'freeform') syncFreeformAssignmentsToGridByPosition();
         state.rows = Math.max(1, Math.min(30, Number(el('rowsInput').value) || state.rows || 5));
         state.cols = Math.max(1, Math.min(30, Number(el('colsInput').value) || state.cols || 6));
         ensureGrid();
+        if (state.layoutMode === 'freeform') ensureFreeformLayout({ rebuildMissing: true });
         renderAll();
       };
 
@@ -18759,9 +19552,38 @@ This will replace the current classes, settings, room templates, and active layo
       el('rowsInput').addEventListener('input', queueGridResize);
       el('colsInput').addEventListener('input', queueGridResize);
 
+      el('layoutModeSelect')?.addEventListener('change', event => switchLayoutMode(event.target.value));
+      el('convertGridToFreeformBtn')?.addEventListener('click', () => {
+        if (eyeModeBlocksRoomEditing()) return blockEyeModeAction('room');
+        showInAppConfirm('Convert the current grid into a freeform layout? Existing student assignments will be carried over into draggable seats.', () => {
+          rebuildFreeformFromGrid({ keepAssignments: true });
+          state.layoutMode = 'freeform';
+          renderAll();
+        }, { title: 'Convert Grid to Freeform?', confirmText: 'Convert', cancelText: 'Cancel' });
+      });
+      el('mapFreeformToGridBtn')?.addEventListener('click', () => {
+        if (eyeModeBlocksRoomEditing()) return blockEyeModeAction('room');
+        syncFreeformAssignmentsToGridByPosition();
+        state.layoutMode = 'grid';
+        renderAll();
+        setLiveStatusMessage('Freeform seat order was mapped back into the standard grid.');
+      });
+      el('freeformCanvasWidthInput')?.addEventListener('change', updateFreeformCanvasSettings);
+      el('freeformCanvasHeightInput')?.addEventListener('change', updateFreeformCanvasSettings);
+      el('freeformGridSizeInput')?.addEventListener('change', updateFreeformCanvasSettings);
+      el('freeformSnapToggle')?.addEventListener('change', updateFreeformCanvasSettings);
+      el('addFreeformObjectBtn')?.addEventListener('click', () => { if (eyeModeBlocksRoomEditing()) return blockEyeModeAction('room'); addFreeformObject(); });
+      el('duplicateFreeformObjectBtn')?.addEventListener('click', duplicateSelectedFreeformObject);
+      el('deleteFreeformObjectBtn')?.addEventListener('click', deleteSelectedFreeformObject);
+      el('lockFreeformObjectBtn')?.addEventListener('click', () => lockSelectedFreeformObject(true));
+      el('rotateFreeformObjectBtn')?.addEventListener('click', () => { const obj = selectedFreeformObject(); if (obj) rotateFreeformObject(obj.id, 15); });
+      el('bringFreeformForwardBtn')?.addEventListener('click', () => arrangeSelectedFreeformObject('front'));
+      el('sendFreeformBackBtn')?.addEventListener('click', () => arrangeSelectedFreeformObject('back'));
+
       el('makeAllSeatsBtn').addEventListener('click', () => {
         if (eyeModeBlocksRoomEditing()) return blockEyeModeAction('room');
         Object.values(state.cells).forEach(cell => cell.type = 'seat');
+        if (state.layoutMode === 'freeform') rebuildFreeformFromGrid({ keepAssignments: true });
         renderAll();
       });
 
@@ -18775,6 +19597,7 @@ This will replace the current classes, settings, room templates, and active layo
             cell.anchorBubbleIds = [];
           });
           state.bubbles.forEach(b => b.anchorSeats = []);
+          if (state.layoutMode === 'freeform') rebuildFreeformFromGrid({ keepAssignments: false });
           clearCellSelection();
           renderAll();
           setLiveStatusMessage('Grid emptied.');
@@ -18932,9 +19755,11 @@ This will replace the current classes, settings, room templates, and active layo
         const menuTypeBtn = event.target.closest('[data-menu-cell-type]');
         if (menuTypeBtn) {
           const menu = el('cellContextMenu');
-          const cellKey = menu.dataset.cellKey;
+          const freeformObjectId = menu?.dataset.freeformObjectId || '';
+          const cellKey = menu?.dataset.cellKey || '';
           if (eyeModeBlocksRoomEditing()) { hideCellContextMenu(); return blockEyeModeAction('room'); }
-          if (cellKey) setCellsType(contextCellKeys(cellKey), menuTypeBtn.dataset.menuCellType);
+          if (freeformObjectId) setFreeformObjectType(freeformObjectId, menuTypeBtn.dataset.menuCellType);
+          else if (cellKey) setCellsType(contextCellKeys(cellKey), menuTypeBtn.dataset.menuCellType);
           hideCellContextMenu();
           return;
         }
@@ -18960,6 +19785,43 @@ This will replace the current classes, settings, room templates, and active layo
 
         const deleteBubbleBtn = event.target.closest('[data-delete-bubble]');
         if (deleteBubbleBtn) { if (eyeModeBlocksBubbleEditing()) return blockEyeModeAction('bubble'); deleteBubble(deleteBubbleBtn.dataset.deleteBubble); }
+
+
+        const freeformClearBtn = event.target.closest('[data-freeform-clear-seat]');
+        if (freeformClearBtn) {
+          if (eyeModeBlocksSeatEditing()) return blockEyeModeAction('seat');
+          const obj = (state.freeformLayout?.objects || []).find(item => item.id === freeformClearBtn.dataset.freeformClearSeat);
+          if (obj) {
+            obj.assignedStudentId = null;
+            obj.manual = false;
+            obj.locked = false;
+            syncFreeformAssignmentsToGridByPosition();
+            renderAll();
+          }
+          return;
+        }
+
+        const freeformLockBtn = event.target.closest('[data-freeform-lock]');
+        if (freeformLockBtn) {
+          if (eyeModeBlocksSeatEditing()) return blockEyeModeAction('seat');
+          const obj = (state.freeformLayout?.objects || []).find(item => item.id === freeformLockBtn.dataset.freeformLock);
+          if (obj) {
+            obj.locked = !obj.locked;
+            obj.manual = obj.type === 'seat' ? obj.locked : obj.manual;
+            syncFreeformAssignmentsToGridByPosition();
+            renderAll();
+          }
+          return;
+        }
+
+        const freeformDeleteBtn = event.target.closest('[data-freeform-delete]');
+        if (freeformDeleteBtn) {
+          if (eyeModeBlocksRoomEditing()) return blockEyeModeAction('room');
+          state.freeformLayout.objects = (state.freeformLayout?.objects || []).filter(obj => obj.id !== freeformDeleteBtn.dataset.freeformDelete || obj.locked);
+          syncFreeformAssignmentsToGridByPosition();
+          renderAll();
+          return;
+        }
 
         const toggleSeatLockBtn = event.target.closest('[data-toggle-seat-lock]');
         if (toggleSeatLockBtn) {
@@ -20213,7 +21075,7 @@ This will replace the current classes, settings, room templates, and active layo
         if (parsed && parsed.encrypted) {
           const key = await requestEncryptionKey(`This ${sourceLabel} is encrypted. Enter the encryption key to continue.`);
           if (!key) throw new Error('Encrypted load canceled.');
-          const decryptedText = await decryptTextEnvelope(parsed, key);
+          const decryptedText = await decryptTextEnvelopeAndTrustKey(parsed, key);
           parsed = migratePayloadObject(JSON.parse(decryptedText));
           importState(JSON.stringify(parsed));
           return;
