@@ -6871,6 +6871,7 @@
 
 
     /* Revision 1.19.5: first-run note encryption prompt suppression */
+    /* Revision 1.19.6: freeform assigned-seat details and room orientation markers */
     #securityWizardSteps summary.security-wizard-check-summary {
       touch-action: manipulation;
       user-select: none;
@@ -7025,6 +7026,85 @@
       box-shadow: 0 2px 8px rgba(15,23,42,.18);
       cursor: nwse-resize;
     }
+    .freeform-object.has-bubbles,
+    .freeform-object.has-zones {
+      padding-top: 18px;
+    }
+    .freeform-object .bubble-color-bar {
+      left: 7px;
+      right: 7px;
+      top: 5px;
+    }
+    .freeform-object .bubble-color-bar.reserved {
+      top: 13px;
+    }
+    .freeform-bubble-summary {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 3px;
+      max-width: 100%;
+      font-size: 9px;
+      line-height: 1.05;
+      margin-top: 2px;
+    }
+    .freeform-bubble-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      max-width: 78px;
+      padding: 2px 5px;
+      border-radius: 999px;
+      border: 1px solid rgba(15, 23, 42, 0.14);
+      background: rgba(255,255,255,0.72);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .freeform-bubble-chip.reserved {
+      border-style: dashed;
+      opacity: .9;
+    }
+    .freeform-bubble-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      flex: 0 0 7px;
+    }
+    .freeform-canvas .cell-zone-tags {
+      margin-top: 1px;
+      justify-content: center;
+    }
+    .freeform-room-marker {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 0;
+      pointer-events: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px dashed rgba(15, 23, 42, 0.28);
+      background: rgba(255,255,255,0.72);
+      color: #475569;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      box-shadow: 0 1px 5px rgba(15,23,42,.08);
+    }
+    .freeform-room-marker.front { top: 8px; }
+    .freeform-room-marker.back { bottom: 8px; }
+    .freeform-arrange-note {
+      flex-basis: 100%;
+      font-size: 11px;
+      line-height: 1.25;
+      color: var(--muted);
+      max-width: 520px;
+    }
+
     .freeform-rotate-handle {
       position: absolute;
       top: -13px;
@@ -7558,9 +7638,10 @@
             <button id="duplicateFreeformObjectBtn" class="secondary" type="button">Duplicate</button>
             <button id="lockFreeformObjectBtn" class="secondary" type="button">Lock/Unlock</button>
             <button id="rotateFreeformObjectBtn" class="secondary" type="button">Rotate</button>
-            <button id="bringFreeformForwardBtn" class="secondary" type="button">Front</button>
-            <button id="sendFreeformBackBtn" class="secondary" type="button">Back</button>
+            <button id="bringFreeformForwardBtn" class="secondary" type="button" title="Move the selected object above overlapping objects. This does not mark the front of the room.">Bring Forward</button>
+            <button id="sendFreeformBackBtn" class="secondary" type="button" title="Move the selected object behind overlapping objects. This does not mark the back of the room.">Send Back</button>
             <button id="deleteFreeformObjectBtn" class="danger" type="button">Delete</button>
+            <div class="freeform-arrange-note">Bring Forward and Send Back only control overlapping object stacking. The canvas labels the room orientation: Front of Room is the top edge, Back of Room is the bottom edge.</div>
             <button id="convertGridToFreeformBtn" class="secondary" type="button">Convert Grid</button>
             <button id="mapFreeformToGridBtn" class="secondary" type="button">Map to Grid</button>
             <div class="field small"><label for="freeformCanvasWidthInput">Canvas W</label><input id="freeformCanvasWidthInput" type="number" min="400" max="12000" value="1400" /></div>
@@ -7568,7 +7649,7 @@
             <div class="field small"><label for="freeformGridSizeInput">Snap</label><input id="freeformGridSizeInput" type="number" min="5" max="80" value="20" /></div>
             <label class="checkline" title="Snap dragged and resized freeform objects to the canvas grid."><input id="freeformSnapToggle" type="checkbox" checked /> <span>Snap to grid</span></label>
           </div>
-          <div class="hint" style="max-width:620px;">Grid mode uses rows and columns. Freeform mode lets you drag, resize, rotate, lock, and save real room placements. Use Map to Grid before printing a simple row/column version; the app maps freeform seat order back into grid seats.</div>
+          <div class="hint" style="max-width:620px;">Grid mode uses rows and columns. Freeform mode lets you drag, resize, rotate, lock, and save real room placements. The top of the freeform canvas is labeled Front of Room and the bottom is Back of Room. Use Map to Grid before printing a simple row/column version; the app maps freeform seat order back into grid seats.</div>
         </div>
       </div>
 
@@ -8571,7 +8652,7 @@
     const WELCOME_SETUP_STORAGE_KEY = 'seating-chart-bubble-builder-secure-welcome-v1';
     const VISIBILITY_CREDENTIAL_KEY = 'seating-chart-bubble-builder-visibility-v1';
     const HINT_DISMISS_STORAGE_KEY = 'seating-chart-bubble-builder-dismissed-hints-v1';
-    const APP_REVISION = '1.19.5';
+    const APP_REVISION = '1.19.6';
     const APP_LAST_UPDATED = 'June 27, 2026';
 
     const APP_LICENSE = {
@@ -8632,6 +8713,7 @@
     ];
 
     const CHANGE_LOG = [
+      { version: '1.19.6', date: 'June 27, 2026', changes: ['Fixed Freeform Room Layout seat cards so assigned student names, bubble color bars, reserved bubble anchors, and zone tags display on freeform seats instead of showing Drop student here.', 'Added freeform assignment repair that fills missing freeform seat assignments from matching grid cells without rebuilding the canvas geometry.', 'Renamed Front/Back freeform toolbar controls to Bring Forward/Send Back and added visible Front of Room/Back of Room orientation markers on the freeform canvas.'] },
       { version: '1.19.5', date: 'June 27, 2026', changes: ['Fixed the lingering Encryption Recommended for Notes modal after first-run Welcome setup by making note-warning checks honor the freshly created encryption session, encryption-enabled state, and completed Welcome setup marker.', 'Added a defensive guard so the note-encryption recommendation cannot open while the session is already configured for encrypted saves.'] },
       { version: '1.19.4', date: 'June 27, 2026', changes: ['Stopped stale encryption-key prompts after first-run Welcome setup by keeping the newly created session key trusted through note warnings, first save, snapshot loading, and encrypted local-save paths.', 'Reworked Freeform Room Layout commits so drag, resize, rotate, lock/unlock, arrange, and type changes preserve each object\'s current position, size, rotation, lock state, and z-order without triggering global grid rebuilds.', 'Added a mobile-safe Security Setup accordion click handler so tapping each setup step expands it and collapses the others reliably on touch screens.'] },
       { version: '1.19.2', date: 'June 27, 2026', changes: ['Fixed Freeform Room Layout object conversion so right-click changes preserve the object\'s current canvas position, size, and rotation instead of snapping back to the original grid spot.', 'Added a Welcome-screen Google Drive load option for returning users so encrypted Drive saves can be opened before creating a new local chart.', 'Prevented first-run encrypted setup from immediately triggering redundant save/encryption prompts after the password has just been created.', 'Completed a full code, workflow, usability, and security audit pass with conservative cleanup of duplicate/obsolete helper code and updated audit documentation.'] },
@@ -10555,22 +10637,100 @@
       });
     }
 
+    function freeformSeatFallbackCell(obj) {
+      if (!obj || obj.type !== 'seat' || !obj.cellKey) return null;
+      const cell = state.cells?.[String(obj.cellKey)];
+      return cell && cell.type === 'seat' ? cell : null;
+    }
+
+    function repairFreeformMissingAssignmentDetailsFromGrid() {
+      if (!state.freeformLayout || !Array.isArray(state.freeformLayout.objects)) return;
+      const assignedElsewhere = new Set(state.freeformLayout.objects
+        .filter(obj => obj.type === 'seat' && obj.assignedStudentId)
+        .map(obj => String(obj.assignedStudentId)));
+      state.freeformLayout.objects.forEach(obj => {
+        if (!obj || obj.type !== 'seat') return;
+        const cell = freeformSeatFallbackCell(obj);
+        if (!cell) return;
+        if (!obj.assignedStudentId && cell.assignedStudentId && !assignedElsewhere.has(String(cell.assignedStudentId))) {
+          obj.assignedStudentId = String(cell.assignedStudentId);
+          obj.manual = Boolean(cell.manual);
+          obj.locked = Boolean(obj.locked || cell.manual);
+          assignedElsewhere.add(String(cell.assignedStudentId));
+        }
+        if ((!obj.anchorBubbleIds || !obj.anchorBubbleIds.length) && Array.isArray(cell.anchorBubbleIds) && cell.anchorBubbleIds.length) {
+          obj.anchorBubbleIds = deepClone(cell.anchorBubbleIds);
+        }
+        if ((!obj.zoneIds || !obj.zoneIds.length) && Array.isArray(cell.zoneIds) && cell.zoneIds.length) {
+          obj.zoneIds = deepClone(cell.zoneIds);
+        }
+      });
+    }
+
+    function freeformObjectStudent(obj, lookups) {
+      if (!obj || obj.type !== 'seat') return null;
+      let studentId = obj.assignedStudentId || '';
+      if (!studentId) {
+        const cell = freeformSeatFallbackCell(obj);
+        studentId = cell?.assignedStudentId || '';
+      }
+      return lookups.students.get(String(studentId || '')) || null;
+    }
+
+    function freeformObjectBubbleDisplay(obj, student, lookups) {
+      const cell = freeformSeatFallbackCell(obj);
+      const studentBubbles = student ? (lookups.bubblesByStudent.get(String(student.id)) || []) : [];
+      const anchorIds = Array.from(new Set([...(obj.anchorBubbleIds || []), ...((!obj.anchorBubbleIds || !obj.anchorBubbleIds.length) ? (cell?.anchorBubbleIds || []) : [])].map(String)));
+      const anchors = anchorIds.map(id => lookups.bubbles.get(String(id))).filter(Boolean);
+      const zoneIds = Array.from(new Set([...(obj.zoneIds || []), ...((!obj.zoneIds || !obj.zoneIds.length) ? (cell?.zoneIds || []) : [])].map(String)));
+      const pseudoCell = { zoneIds };
+      const studentBubbleTitle = studentBubbles.length
+        ? `Student bubble colors: ${studentBubbles.map(b => `${b.name} (${typeLabel(b.type)}, priority ${b.priority})`).join(' | ')}`
+        : '';
+      const anchorTitle = anchors.length
+        ? `Seat reserved for: ${anchors.map(b => `${b.name} (${typeLabel(b.type)}, priority ${b.priority})`).join(' | ')}`
+        : '';
+      const studentBubbleBar = studentBubbles.length
+        ? `<div class="bubble-color-bar" title="${escapeHtml(studentBubbleTitle)}">${studentBubbles.map(b => `<span style="background:${escapeHtml(b.color)}"></span>`).join('')}</div>`
+        : '';
+      const anchorBubbleBar = anchors.length
+        ? `<div class="bubble-color-bar reserved" title="${escapeHtml(anchorTitle)}">${anchors.map(b => `<span style="background:${escapeHtml(b.color)}"></span>`).join('')}</div>`
+        : '';
+      const chips = [
+        ...studentBubbles.map(b => `<span class="freeform-bubble-chip" title="Student bubble: ${escapeHtml(b.name)}"><span class="freeform-bubble-dot" style="background:${escapeHtml(b.color)}"></span>${escapeHtml(b.name)}</span>`),
+        ...anchors.filter(anchor => !studentBubbles.some(b => String(b.id) === String(anchor.id))).map(b => `<span class="freeform-bubble-chip reserved" title="Reserved for bubble: ${escapeHtml(b.name)}"><span class="freeform-bubble-dot" style="background:${escapeHtml(b.color)}"></span>${escapeHtml(b.name)}</span>`)
+      ];
+      return {
+        studentBubbles,
+        anchors,
+        zones: zoneIds.map(id => lookups.zones.get(String(id))).filter(Boolean),
+        bars: `${studentBubbleBar}${anchorBubbleBar}`,
+        chipsHtml: chips.length ? `<div class="freeform-bubble-summary">${chips.join('')}</div>` : '',
+        zonesHtml: zoneIds.length ? zoneTagsHtml(pseudoCell, lookups.zones) : '',
+        titleText: [studentBubbleTitle, anchorTitle, zoneIds.length ? `Zones: ${zoneIds.map(id => lookups.zones.get(String(id))?.name || id).join(', ')}` : ''].filter(Boolean).join(' | ')
+      };
+    }
+
     function freeformObjectLabel(obj, lookups) {
       if (!obj) return '';
       if (obj.type === 'seat') {
-        const student = lookups.students.get(String(obj.assignedStudentId || ''));
+        const student = freeformObjectStudent(obj, lookups);
         return student ? studentDisplay(student) : 'Empty Seat';
       }
       return obj.label || objectLabel(obj.type);
     }
 
     function freeformObjectInnerHtml(obj, lookups) {
-      const student = obj.type === 'seat' ? lookups.students.get(String(obj.assignedStudentId || '')) : null;
+      const student = freeformObjectStudent(obj, lookups);
       const locked = obj.locked || obj.manual;
       if (obj.type === 'seat') {
+        const bubbleDisplay = freeformObjectBubbleDisplay(obj, student, lookups);
         return `
+          ${bubbleDisplay.bars}
           <div class="freeform-object-title">${seatStudentHtml(student)}</div>
-          <div class="freeform-object-meta">${locked ? '<span class="pill locked">Locked</span>' : '<span class="pill">Seat</span>'}</div>
+          <div class="freeform-object-meta">${locked ? '<span class="pill locked">Locked</span>' : '<span class="pill">Seat</span>'}${bubbleDisplay.studentBubbles.length ? `<span class="pill" title="${escapeHtml(bubbleDisplay.titleText)}">${bubbleDisplay.studentBubbles.length} bubble${bubbleDisplay.studentBubbles.length === 1 ? '' : 's'}</span>` : ''}${bubbleDisplay.anchors.length ? `<span class="pill" title="${escapeHtml(bubbleDisplay.titleText)}">${bubbleDisplay.anchors.length} reserved</span>` : ''}</div>
+          ${bubbleDisplay.chipsHtml}
+          ${bubbleDisplay.zonesHtml}
           <div class="freeform-object-actions no-print">
             ${student ? `<button class="tiny secondary" data-freeform-clear-seat="${escapeHtml(obj.id)}">Clear</button>` : ''}
             <button class="tiny ${locked ? 'ghost' : 'secondary'}" data-freeform-lock="${escapeHtml(obj.id)}">${locked ? 'Unlock' : 'Lock'}</button>
@@ -10587,13 +10747,17 @@
 
     function renderFreeformLayout() {
       ensureFreeformLayout();
+      repairFreeformMissingAssignmentDetailsFromGrid();
       const grid = el('seatGrid');
       if (!grid) return;
       const layout = state.freeformLayout;
       const lookups = buildLookupMaps();
       const assignedIds = new Set();
       const seatCount = layout.objects.filter(obj => obj.type === 'seat').length;
-      layout.objects.forEach(obj => { if (obj.assignedStudentId) assignedIds.add(String(obj.assignedStudentId)); });
+      layout.objects.forEach(obj => {
+        const student = freeformObjectStudent(obj, lookups);
+        if (student) assignedIds.add(String(student.id));
+      });
       grid.classList.add('freeform-canvas');
       grid.style.gridTemplateColumns = '';
       grid.style.gridAutoRows = '';
@@ -10601,10 +10765,13 @@
       grid.style.width = `${layout.canvas.width}px`;
       grid.style.height = `${layout.canvas.height}px`;
       grid.style.backgroundSize = `${layout.canvas.gridSize}px ${layout.canvas.gridSize}px`;
-      grid.innerHTML = '';
+      grid.innerHTML = '<div class="freeform-room-marker front" aria-hidden="true">Front of Room</div><div class="freeform-room-marker back" aria-hidden="true">Back of Room</div>';
       layout.objects.sort((a, b) => (Number(a.zIndex) || 1) - (Number(b.zIndex) || 1)).forEach(obj => {
         const node = document.createElement('div');
-        node.className = `freeform-object ${obj.type}${obj.locked ? ' locked' : ''}`;
+        const student = freeformObjectStudent(obj, lookups);
+        const bubbleDisplay = obj.type === 'seat' ? freeformObjectBubbleDisplay(obj, student, lookups) : null;
+        const bubbleClasses = bubbleDisplay ? [bubbleDisplay.studentBubbles.length || bubbleDisplay.anchors.length ? 'has-bubbles' : '', bubbleDisplay.zones.length ? 'has-zones' : ''].filter(Boolean).join(' ') : '';
+        node.className = `freeform-object ${obj.type}${obj.locked ? ' locked' : ''}${bubbleClasses ? ' ' + bubbleClasses : ''}`;
         node.dataset.objectId = obj.id;
         node.dataset.type = obj.type;
         node.style.left = `${obj.x}px`;
@@ -10614,7 +10781,7 @@
         node.style.zIndex = String(obj.zIndex || 1);
         node.style.background = obj.color || objectTypeColor(obj.type);
         node.style.transform = `rotate(${Number(obj.rotation) || 0}deg)`;
-        node.title = `${freeformObjectLabel(obj, lookups)} · x ${Math.round(obj.x)}, y ${Math.round(obj.y)}${obj.rotation ? ` · ${obj.rotation}°` : ''}`;
+        node.title = `${freeformObjectLabel(obj, lookups)} · x ${Math.round(obj.x)}, y ${Math.round(obj.y)}${obj.rotation ? ` · ${obj.rotation}°` : ''}${bubbleDisplay?.titleText ? ` · ${bubbleDisplay.titleText}` : ''}`;
         node.innerHTML = `${freeformObjectInnerHtml(obj, lookups)}<button class="freeform-rotate-handle no-print" data-freeform-rotate="${escapeHtml(obj.id)}" title="Rotate 15°">⟳</button><span class="freeform-resize-handle no-print" data-freeform-resize="${escapeHtml(obj.id)}" title="Resize"></span>`;
         node.addEventListener('pointerdown', event => beginFreeformPointerDrag(event, obj.id));
         node.addEventListener('click', event => { event.stopPropagation(); selectFreeformObject(obj.id, event.shiftKey); });
