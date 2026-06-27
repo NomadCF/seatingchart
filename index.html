@@ -7035,6 +7035,28 @@
       .freeform-object { min-width: 54px; min-height: 42px; }
     }
 
+
+    /* Revision 1.19.2: welcome Drive load and audit UI cleanup */
+    .welcome-load-card .button-row {
+      justify-content: flex-start;
+    }
+    .welcome-load-card .button-row button {
+      white-space: normal;
+      text-align: center;
+    }
+    .settings-page-tab {
+      overflow: hidden !important;
+      min-width: 0 !important;
+      align-items: flex-start !important;
+    }
+    .settings-page-tab strong,
+    .settings-page-tab span {
+      max-width: 100% !important;
+      overflow-wrap: anywhere !important;
+      word-break: normal !important;
+      hyphens: auto;
+    }
+
   </style>
 </head>
 <body class="left-collapsed">
@@ -8312,7 +8334,7 @@
         <div class="welcome-load-card">
           <strong>Already used this app?</strong>
           <span>If this browser has a local save, the app tries to load it before this screen appears. You can also load a downloaded save or backup file now and continue working from it.</span>
-          <div class="button-row"><button id="welcomeLoadExistingBtn" class="secondary" type="button">Load Existing Save / Backup</button></div>
+          <div class="button-row"><button id="welcomeLoadExistingBtn" class="secondary" type="button">Load Existing Save / Backup</button><button id="welcomeLoadGoogleDriveBtn" class="secondary" type="button">Load from Google Drive</button></div>
           <input id="welcomeImportJson" type="file" accept="application/json,.json" style="display:none" />
         </div>
         <div class="warningbox">You cannot continue until an encryption password is set or an existing encrypted save is loaded. This keeps student data encrypted from the first local save instead of waiting for someone to remember security later, which history suggests is optimistic.</div>
@@ -8531,7 +8553,7 @@
     const WELCOME_SETUP_STORAGE_KEY = 'seating-chart-bubble-builder-secure-welcome-v1';
     const VISIBILITY_CREDENTIAL_KEY = 'seating-chart-bubble-builder-visibility-v1';
     const HINT_DISMISS_STORAGE_KEY = 'seating-chart-bubble-builder-dismissed-hints-v1';
-    const APP_REVISION = '1.19.1';
+    const APP_REVISION = '1.19.2';
     const APP_LAST_UPDATED = 'June 27, 2026';
 
     const APP_LICENSE = {
@@ -8592,6 +8614,7 @@
     ];
 
     const CHANGE_LOG = [
+      { version: '1.19.2', date: 'June 27, 2026', changes: ['Fixed Freeform Room Layout object conversion so right-click changes preserve the object\'s current canvas position, size, and rotation instead of snapping back to the original grid spot.', 'Added a Welcome-screen Google Drive load option for returning users so encrypted Drive saves can be opened before creating a new local chart.', 'Prevented first-run encrypted setup from immediately triggering redundant save/encryption prompts after the password has just been created.', 'Completed a full code, workflow, usability, and security audit pass with conservative cleanup of duplicate/obsolete helper code and updated audit documentation.'] },
       { version: '1.19.1', date: 'June 27, 2026', changes: ['Fixed Freeform Room Layout right-click object conversion so seats and room objects can be changed through the context menu.', 'Fixed encrypted load security so typing an incorrect encryption key no longer stores that bad key or allows the app to proceed as if decrypted.', 'Verified encrypted local-save/import flows only set the active session key after successful AES-GCM decryption.'] },
       { version: '1.19.0', date: 'June 27, 2026', changes: ['Added Freeform Room Layout mode with draggable, resizable, rotatable saved seats and room objects on a canvas-style workspace.', 'Added grid/freeform synchronization so switching back to Standard Grid maps students by freeform seat position into row/column seats for simplified printing.', 'Added snap-to-grid, canvas sizing, object add/duplicate/delete/lock/arrange controls, freeform student drop assignment, and freeform print-as-seen support while keeping existing grid mode intact.'] },
       { version: '1.18.26', date: 'June 27, 2026', changes: ['Prevented browser refresh/navigation events from triggering auto-lock when focus-loss or tab-hidden lock settings are disabled.', 'Added reload/page-exit guards so blur and visibilitychange handlers do not create a locked-session state during ordinary refreshes.', 'Cleaned stale lock-session markers when the app is not actually locked so refreshes do not incorrectly enter the page-lock recovery flow.'] },
@@ -10259,13 +10282,6 @@
     }
 
 
-    function defaultFreeformLayout() {
-      return {
-        canvas: { width: 1400, height: 900, gridSize: pageSettings().freeformGridSize || 20, snap: pageSettings().freeformSnapToGrid !== false },
-        objects: [],
-        nextZ: 1
-      };
-    }
 
     function objectTypeColor(type) {
       const colors = { seat: '#dbeafe', teacher: '#fff3d6', table: '#e8f7ec', door: '#fce8ee', wall: '#d9dee8', walkway: '#ffffff', window: '#e0f2fe', projector: '#eef2ff', board: '#dcfce7', carpet: '#f5e8d3', ada: '#ecfeff', blocked: '#313846', empty: '#fbfcff' };
@@ -10371,7 +10387,25 @@
           const next = createFreeformObjectsFromGrid({ keepAssignments: true });
           next.forEach(obj => {
             const old = existing.get(String(obj.cellKey || obj.id));
-            if (old) Object.assign(obj, { x: old.x, y: old.y, width: old.width, height: old.height, rotation: old.rotation, locked: old.locked, zIndex: old.zIndex, color: old.color, label: old.label || obj.label, assignedStudentId: old.assignedStudentId || obj.assignedStudentId, manual: Boolean(old.manual || obj.manual), anchorBubbleIds: deepClone(old.anchorBubbleIds || obj.anchorBubbleIds || []), zoneIds: deepClone(old.zoneIds || obj.zoneIds || []) });
+            if (old) {
+              const preservedType = old.type || obj.type;
+              Object.assign(obj, {
+                type: preservedType,
+                x: old.x,
+                y: old.y,
+                width: old.width,
+                height: old.height,
+                rotation: old.rotation,
+                locked: old.locked,
+                zIndex: old.zIndex,
+                color: old.color || objectTypeColor(preservedType),
+                label: old.label || (preservedType === 'seat' ? '' : objectLabel(preservedType)) || obj.label,
+                assignedStudentId: preservedType === 'seat' ? (old.assignedStudentId || obj.assignedStudentId || null) : null,
+                manual: preservedType === 'seat' ? Boolean(old.manual || obj.manual) : false,
+                anchorBubbleIds: preservedType === 'seat' ? deepClone(old.anchorBubbleIds || obj.anchorBubbleIds || []) : [],
+                zoneIds: deepClone(old.zoneIds || obj.zoneIds || [])
+              });
+            }
           });
           const nextKeys = new Set(next.map(obj => String(obj.cellKey || obj.id)));
           (state.freeformLayout.objects || []).forEach(oldObj => {
@@ -14318,7 +14352,28 @@
     }
     function openWelcomeSecurityModal() { const modal = el('welcomeSecurityModal'); const input = el('welcomeEncryptionKeyInput'); const confirm = el('welcomeEncryptionKeyConfirmInput'); if (!modal || !input || !confirm) return; input.value = ''; confirm.value = ''; setWelcomePasswordFieldsHidden(); clearWelcomeSecurityError(); updatePasswordStrengthDisplay('welcomeEncryptionKeyInput', 'welcomePasswordStrength'); document.body.classList.add('welcome-security-active'); modal.classList.add('show'); setTimeout(() => input.focus(), 50); }
     function closeWelcomeSecurityModal() { el('welcomeSecurityModal')?.classList.remove('show'); document.body.classList.remove('welcome-security-active'); clearWelcomeSecurityError(); }
-    async function completeWelcomeSecuritySetup() { const input = el('welcomeEncryptionKeyInput'); const confirmInput = el('welcomeEncryptionKeyConfirmInput'); const password = String(input?.value || ''); const confirm = String(confirmInput?.value || ''); if (!window.crypto || !crypto.subtle) { showWelcomeSecurityError('This browser does not support Web Crypto. Use a modern browser before storing student data.'); return; } const strength = passwordStrengthDetails(password); if (!strength.acceptable) { showWelcomeSecurityError('Use a stronger encryption password. A 4-word passphrase or 16+ mixed characters is recommended.'); updatePasswordStrengthDisplay('welcomeEncryptionKeyInput', 'welcomePasswordStrength'); input?.focus(); return; } if (password !== confirm) { showWelcomeSecurityError('The encryption password entries do not match.'); confirmInput?.select(); confirmInput?.focus(); return; } try { setSessionEncryptionKey(password); safeStorageSet('localStorage', WELCOME_SETUP_STORAGE_KEY, 'true'); await writeLocalBrowserSave({ reason: 'welcome', announce: false }); await ensureAppSnapshotsLoaded({ force: true }); closeWelcomeSecurityModal(); setLiveStatusMessage('Secure setup complete. The encryption password also protects Settings access by default; you can disable that in Settings > Security & Data.'); } catch (err) { showWelcomeSecurityError(err.message || 'Could not complete secure setup.'); } }
+    async function completeWelcomeSecuritySetup() {
+      const input = el('welcomeEncryptionKeyInput');
+      const confirmInput = el('welcomeEncryptionKeyConfirmInput');
+      const password = String(input?.value || '');
+      const confirm = String(confirmInput?.value || '');
+      if (!window.crypto || !crypto.subtle) { showWelcomeSecurityError('This browser does not support Web Crypto. Use a modern browser before storing student data.'); return; }
+      const strength = passwordStrengthDetails(password);
+      if (!strength.acceptable) { showWelcomeSecurityError('Use a stronger encryption password. A 4-word passphrase or 16+ mixed characters is recommended.'); updatePasswordStrengthDisplay('welcomeEncryptionKeyInput', 'welcomePasswordStrength'); input?.focus(); return; }
+      if (password !== confirm) { showWelcomeSecurityError('The encryption password entries do not match.'); confirmInput?.select(); confirmInput?.focus(); return; }
+      try {
+        setSessionEncryptionKey(password);
+        safeStorageSet('localStorage', WELCOME_SETUP_STORAGE_KEY, 'true');
+        updateSaveSetupDismissed(true);
+        updateSaveMeta({ localOnlyChangeCount: 0, localSavePromptCount: 0, localSaveActive: true });
+        await writeLocalBrowserSave({ reason: 'welcome', announce: false, skipDurablePrompt: true });
+        await ensureAppSnapshotsLoaded({ force: true });
+        closeWelcomeSecurityModal();
+        setLiveStatusMessage('Secure setup complete. The encryption password also protects Settings access by default; you can disable that in Settings > Security & Data.');
+      } catch (err) {
+        showWelcomeSecurityError(err.message || 'Could not complete secure setup.');
+      }
+    }
     function chooseExistingSaveFromWelcome() {
       const input = el('welcomeImportJson');
       if (!input) { showWelcomeSecurityError('The file picker is not available in this browser.'); return; }
@@ -14348,6 +14403,24 @@
       } finally {
         if (event?.target) event.target.value = '';
       }
+    }
+
+    async function loadGoogleDriveSaveFromWelcome() {
+      closeWelcomeSecurityModal();
+      const ok = await loadFromGoogleDriveFile({ skipConfirm: true, direct: true });
+      if (ok && currentSessionEncryptionKey()) {
+        safeStorageSet('localStorage', WELCOME_SETUP_STORAGE_KEY, 'true');
+        uiState.appReady = true;
+        uiState.linkedSaveLastSignature = currentSaveSignature();
+        updateSaveHealthPanel();
+        setLiveStatusMessage('Loaded encrypted Google Drive save. Continue working.');
+        return true;
+      }
+      if (!currentSessionEncryptionKey()) {
+        openWelcomeSecurityModal();
+        showWelcomeSecurityError(ok ? 'That Google Drive save loaded, but no active encryption key was established. Enter the password for that save or create a new encrypted chart.' : 'Could not load a Google Drive save. Connect to Google Drive again or load a saved file.');
+      }
+      return false;
     }
 
     function sanitizedStudentForVisibility(student) { const source = normalizeStudent(student); const cfg = pageSettings().visibility || {}; return { ...source, grade: cfg.disableStudentEditing || cfg.hideStudentsPanel ? '' : source.grade, notesPrivate: '', notesSubstitute: '', notesPublic: cfg.disableStudentEditing ? '' : source.notesPublic }; }
@@ -15332,7 +15405,7 @@
       return Array.isArray(data.files) && data.files[0] ? data.files[0] : null;
     }
 
-    async function loadFromGoogleDriveFile() {
+    async function loadFromGoogleDriveFile(options = {}) {
       const load = async () => {
         try {
           syncGoogleDriveInputsToSettings(document.activeElement?.id?.startsWith('saveOption') ? 'saveOptions' : 'settings');
@@ -15342,11 +15415,12 @@
           updateGoogleDriveStatus(`Downloading encrypted save from Google Drive: ${file.name || 'current save'}...`);
           const response = await googleDriveFetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(file.id)}?alt=media`, { method: 'GET' });
           const text = await response.text();
-          await importStateFromText(text, 'Google Drive save');
+          if (options.direct) await importStateDirectFromText(text, 'Google Drive save');
+          else await importStateFromText(text, 'Google Drive save');
           updateGoogleDriveSettings({ preferredStorage: 'googleDrive', googleDriveFileId: file.id, googleDriveFileName: file.name || '' });
           clearSaveFallbackWarning();
-          updateGoogleDriveStatus(`Restore options opened for Google Drive save: ${file.name || 'current save'}.`);
-          setLiveStatusMessage('Google Drive save downloaded. Choose what to restore.');
+          updateGoogleDriveStatus(options.direct ? `Loaded Google Drive save: ${file.name || 'current save'}.` : `Restore options opened for Google Drive save: ${file.name || 'current save'}.`);
+          setLiveStatusMessage(options.direct ? 'Google Drive save loaded.' : 'Google Drive save downloaded. Choose what to restore.');
           updateSaveSetupDismissed(true);
           updateSaveHealthPanel();
           return true;
@@ -15357,6 +15431,7 @@
           return false;
         }
       };
+      if (options.skipConfirm) return load();
       showInAppConfirm('Load the encrypted save from Google Drive? You will choose whether to restore everything or only selected parts after it downloads.', () => { load(); }, {
         title: 'Load from Google Drive?',
         confirmText: 'Download and Review',
@@ -15482,7 +15557,7 @@
         if (!options.preserveFallbackWarning && !String(reason).includes('fallback')) clearSaveFallbackWarning();
         if (announce) setLiveStatusMessage('Saved to browser local storage. Choose a real save file for safer long-term storage.');
         updateSaveHealthPanel();
-        if (!String(reason).includes('fallback') && reason !== 'google-drive-mirror' && reason !== 'settings' && reason !== 'google-drive-settings') maybePromptDurableSaveAfterLocalChanges();
+        if (!options.skipDurablePrompt && !String(reason).includes('fallback') && !['google-drive-mirror','settings','google-drive-settings','welcome','security-wizard','security-setup'].includes(reason)) maybePromptDurableSaveAfterLocalChanges();
         return true;
       } catch (err) {
         if (reason !== 'auto' && String(err.message || '').toLowerCase().includes('encryption')) {
@@ -19415,6 +19490,7 @@ This will replace the current classes, settings, room templates, and active layo
       el('welcomeTogglePasswordBtn')?.addEventListener('click', () => toggleWelcomePasswordVisibility('welcomeEncryptionKeyInput'));
       el('welcomeTogglePasswordConfirmBtn')?.addEventListener('click', () => toggleWelcomePasswordVisibility('welcomeEncryptionKeyConfirmInput'));
       el('welcomeLoadExistingBtn')?.addEventListener('click', chooseExistingSaveFromWelcome);
+      el('welcomeLoadGoogleDriveBtn')?.addEventListener('click', () => { loadGoogleDriveSaveFromWelcome().catch(err => { openWelcomeSecurityModal(); showWelcomeSecurityError(err.message || 'Could not load Google Drive save.'); }); });
       el('welcomeImportJson')?.addEventListener('change', importExistingSaveFromWelcome);
       ['welcomeEncryptionKeyInput','welcomeEncryptionKeyConfirmInput'].forEach(id => {
         el(id)?.addEventListener('keydown', event => { if (event.key === 'Enter') completeWelcomeSecuritySetup(); });
