@@ -6868,6 +6868,23 @@
 
 
 
+
+
+    /* Revision 1.19.4: mobile Security Setup tap target repair and freeform action stability */
+    #securityWizardSteps summary.security-wizard-check-summary {
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    #securityWizardSteps .security-wizard-check[open] > summary.security-wizard-check-summary {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .freeform-object.locked {
+      cursor: pointer;
+    }
+
     /* Revision 1.18.25: Settings nav wrapping and save fallback status polish */
     .settings-modal .settings-page-tab,
     .settings-page-tab {
@@ -8554,7 +8571,7 @@
     const WELCOME_SETUP_STORAGE_KEY = 'seating-chart-bubble-builder-secure-welcome-v1';
     const VISIBILITY_CREDENTIAL_KEY = 'seating-chart-bubble-builder-visibility-v1';
     const HINT_DISMISS_STORAGE_KEY = 'seating-chart-bubble-builder-dismissed-hints-v1';
-    const APP_REVISION = '1.19.3';
+    const APP_REVISION = '1.19.4';
     const APP_LAST_UPDATED = 'June 27, 2026';
 
     const APP_LICENSE = {
@@ -8615,6 +8632,7 @@
     ];
 
     const CHANGE_LOG = [
+      { version: '1.19.4', date: 'June 27, 2026', changes: ['Stopped stale encryption-key prompts after first-run Welcome setup by keeping the newly created session key trusted through note warnings, first save, snapshot loading, and encrypted local-save paths.', 'Reworked Freeform Room Layout commits so drag, resize, rotate, lock/unlock, arrange, and type changes preserve each object\'s current position, size, rotation, lock state, and z-order without triggering global grid rebuilds.', 'Added a mobile-safe Security Setup accordion click handler so tapping each setup step expands it and collapses the others reliably on touch screens.'] },
       { version: '1.19.2', date: 'June 27, 2026', changes: ['Fixed Freeform Room Layout object conversion so right-click changes preserve the object\'s current canvas position, size, and rotation instead of snapping back to the original grid spot.', 'Added a Welcome-screen Google Drive load option for returning users so encrypted Drive saves can be opened before creating a new local chart.', 'Prevented first-run encrypted setup from immediately triggering redundant save/encryption prompts after the password has just been created.', 'Completed a full code, workflow, usability, and security audit pass with conservative cleanup of duplicate/obsolete helper code and updated audit documentation.'] },
       { version: '1.19.1', date: 'June 27, 2026', changes: ['Fixed Freeform Room Layout right-click object conversion so seats and room objects can be changed through the context menu.', 'Fixed encrypted load security so typing an incorrect encryption key no longer stores that bad key or allows the app to proceed as if decrypted.', 'Verified encrypted local-save/import flows only set the active session key after successful AES-GCM decryption.'] },
       { version: '1.19.0', date: 'June 27, 2026', changes: ['Added Freeform Room Layout mode with draggable, resizable, rotatable saved seats and room objects on a canvas-style workspace.', 'Added grid/freeform synchronization so switching back to Standard Grid maps students by freeform seat position into row/column seats for simplified printing.', 'Added snap-to-grid, canvas sizing, object add/duplicate/delete/lock/arrange controls, freeform student drop assignment, and freeform print-as-seen support while keeping existing grid mode intact.'] },
@@ -8782,7 +8800,9 @@
       autoLockInProgress: false,
       pageLockSecretForSession: '',
       freeformSelectedObjectIds: new Set(),
-      freeformDrag: null
+      freeformDrag: null,
+      welcomeSecurityJustCompleted: false,
+      suppressEncryptionPromptUntil: 0
     };
 
     const el = (id) => document.getElementById(id);
@@ -10159,10 +10179,18 @@
       uiState.noteEditorRevealed = {};
     }
 
+    function recentlyCompletedWelcomeSecuritySetup() {
+      return !!uiState.welcomeSecurityJustCompleted || (Number(uiState.suppressEncryptionPromptUntil || 0) > Date.now());
+    }
+
+    function activeEncryptionKeyIsReady() {
+      return !!currentSessionEncryptionKey();
+    }
+
     function sensitiveNotesNeedEncryptionWarning(draft = null) {
       const source = draft || uiState.noteEditorDraft || { private: [], substitute: [] };
       const hasSensitive = (Array.isArray(source.private) && source.private.some(Boolean)) || (Array.isArray(source.substitute) && source.substitute.some(Boolean));
-      return hasSensitive && !currentSessionEncryptionKey();
+      return hasSensitive && !activeEncryptionKeyIsReady() && !recentlyCompletedWelcomeSecuritySetup();
     }
 
     function warnSensitiveNotesNeedEncryption() {
@@ -10185,7 +10213,7 @@
       uiState.noteEditorDraft = uiState.noteEditorDraft || { private: [], substitute: [], public: [] };
       uiState.noteEditorDraft[category] = Array.isArray(uiState.noteEditorDraft[category]) ? uiState.noteEditorDraft[category] : [];
       uiState.noteEditorDraft[category].push(text);
-      if ((category === 'private' || category === 'substitute') && !currentSessionEncryptionKey()) warnSensitiveNotesNeedEncryption();
+      if ((category === 'private' || category === 'substitute') && !activeEncryptionKeyIsReady() && !recentlyCompletedWelcomeSecuritySetup()) warnSensitiveNotesNeedEncryption();
       el('noteEditorText').value = '';
       renderNotesEditor();
     }
@@ -10474,13 +10502,25 @@
     }
 
 
-    function commitFreeformLayoutChange(reason = 'freeform-edit', { render = true, syncToGrid = true } = {}) {
+    function commitFreeformLayoutChange(reason = 'freeform-edit', { render = true, syncToGrid = false, fullRender = false } = {}) {
       ensureFreeformLayout();
+      // Freeform geometry is editor-owned. Do not rebuild or re-map the whole canvas during
+      // normal object actions; grid mapping only belongs to explicit mode switches, Convert,
+      // Map to Grid, or generator actions. Otherwise drag/resize/rotate/lock can snap objects
+      // back to their grid-derived defaults.
       if (syncToGrid) syncFreeformAssignmentsToGridByPosition();
       persistActiveClass();
       scheduleLinkedAutoSave(reason);
       updateSaveHealthPanel();
-      if (render) renderAll();
+      if (render) {
+        if (fullRender) renderAll();
+        else {
+          renderFreeformLayout();
+          renderStatus();
+          updateCellSelectionVisuals();
+          applyTooltips();
+        }
+      }
     }
 
     function selectedFreeformObject() {
@@ -10658,7 +10698,7 @@
 
     function finishFreeformPointerDrag() {
       uiState.freeformDrag = null;
-      commitFreeformLayoutChange('freeform-move', { render: false, syncToGrid: true });
+      commitFreeformLayoutChange('freeform-move', { render: false, syncToGrid: false });
     }
 
     function addFreeformObject(type = null, overrides = {}) {
@@ -10682,7 +10722,7 @@
       }, state.freeformLayout.objects.length);
       state.freeformLayout.objects.push(obj);
       selectFreeformObject(obj.id);
-      commitFreeformLayoutChange('freeform-add-object', { render: true, syncToGrid: true });
+      commitFreeformLayoutChange('freeform-add-object', { render: true, syncToGrid: false });
       return obj;
     }
 
@@ -10692,7 +10732,7 @@
       const copy = normalizeFreeformObject({ ...deepClone(obj), id: uid('freeform-object'), cellKey: '', x: obj.x + 24, y: obj.y + 24, zIndex: state.freeformLayout.nextZ++, assignedStudentId: null, manual: false, locked: false }, state.freeformLayout.objects.length);
       state.freeformLayout.objects.push(copy);
       selectFreeformObject(copy.id);
-      commitFreeformLayoutChange('freeform-duplicate-object', { render: true, syncToGrid: true });
+      commitFreeformLayoutChange('freeform-duplicate-object', { render: true, syncToGrid: false });
     }
 
     function deleteSelectedFreeformObject() {
@@ -10700,7 +10740,7 @@
       if (!ids.size) return;
       state.freeformLayout.objects = (state.freeformLayout.objects || []).filter(obj => !ids.has(obj.id) || obj.locked);
       ids.clear();
-      commitFreeformLayoutChange('freeform-delete-object', { render: true, syncToGrid: true });
+      commitFreeformLayoutChange('freeform-delete-object', { render: true, syncToGrid: false });
     }
 
     function rotateFreeformObject(id, degrees = 15) {
@@ -10724,7 +10764,7 @@
       if (!obj) return;
       obj.locked = toggle ? !obj.locked : true;
       obj.manual = obj.type === 'seat' ? obj.locked : obj.manual;
-      commitFreeformLayoutChange('freeform-lock-object', { render: true, syncToGrid: true });
+      commitFreeformLayoutChange('freeform-lock-object', { render: true, syncToGrid: false });
     }
 
     function assignStudentToFreeformObject(studentId, objectId, render = true) {
@@ -10741,7 +10781,7 @@
       target.assignedStudentId = student.id;
       target.manual = true;
       target.locked = true;
-      commitFreeformLayoutChange('freeform-assign-student', { render, syncToGrid: true });
+      commitFreeformLayoutChange('freeform-assign-student', { render, syncToGrid: false });
       return true;
     }
 
@@ -13272,7 +13312,7 @@
         obj.anchorBubbleIds = obj.anchorBubbleIds || [];
       }
       state.freeformLayout.objects = state.freeformLayout.objects.map((item, index) => item.id === obj.id ? normalizeFreeformObject(obj, index) : item);
-      commitFreeformLayoutChange('freeform-context-type', { render: true, syncToGrid: true });
+      commitFreeformLayoutChange('freeform-context-type', { render: true, syncToGrid: false });
       setLiveStatusMessage(`Changed freeform object to ${objectLabel(nextType)}.`);
       return true;
     }
@@ -14342,11 +14382,15 @@
       if (password !== confirm) { showWelcomeSecurityError('The encryption password entries do not match.'); confirmInput?.select(); confirmInput?.focus(); return; }
       try {
         setSessionEncryptionKey(password);
+        uiState.welcomeSecurityJustCompleted = true;
+        uiState.suppressEncryptionPromptUntil = Date.now() + 30000;
         safeStorageSet('localStorage', WELCOME_SETUP_STORAGE_KEY, 'true');
         updateSaveSetupDismissed(true);
         updateSaveMeta({ localOnlyChangeCount: 0, localSavePromptCount: 0, localSaveActive: true });
         await writeLocalBrowserSave({ reason: 'welcome', announce: false, skipDurablePrompt: true });
         await ensureAppSnapshotsLoaded({ force: true });
+        if (input) input.value = '';
+        if (confirmInput) confirmInput.value = '';
         closeWelcomeSecurityModal();
         setLiveStatusMessage('Secure setup complete. The encryption password also protects Settings access by default; you can disable that in Settings > Security & Data.');
       } catch (err) {
@@ -14435,13 +14479,30 @@
       return encryptText(plain, scope);
     }
 
+    async function decryptEncryptedPayloadUsingActiveKeyFirst(parsed, sourceLabel = 'encrypted data') {
+      let lastError = null;
+      const activeKey = currentSessionEncryptionKey();
+      if (activeKey) {
+        try {
+          return await decryptTextEnvelopeAndTrustKey(parsed, activeKey);
+        } catch (err) {
+          lastError = err;
+        }
+      }
+      const key = await requestEncryptionKey(`This ${sourceLabel} is encrypted. Enter the encryption key to continue.`);
+      if (!key) throw new Error('Encrypted load canceled.');
+      try {
+        return await decryptTextEnvelopeAndTrustKey(parsed, key);
+      } catch (err) {
+        throw err || lastError || new Error('Could not decrypt. Check the encryption key and try again.');
+      }
+    }
+
     async function importStateFromText(text, sourceLabel = 'file/local save') {
       let parsed = JSON.parse(text);
       let encrypted = false;
       if (parsed && parsed.encrypted) {
-        const key = await requestEncryptionKey(`This ${sourceLabel} is encrypted. Enter the encryption key to continue.`);
-        if (!key) throw new Error('Encrypted load/import canceled.');
-        const decryptedText = await decryptTextEnvelopeAndTrustKey(parsed, key);
+        const decryptedText = await decryptEncryptedPayloadUsingActiveKeyFirst(parsed, sourceLabel);
         parsed = JSON.parse(decryptedText);
         encrypted = true;
       }
@@ -14452,9 +14513,7 @@
     async function importStateDirectFromText(text, sourceLabel = 'local save') {
       let parsed = JSON.parse(text);
       if (parsed && parsed.encrypted) {
-        const key = await requestEncryptionKey(`This ${sourceLabel} is encrypted. Enter the encryption key to continue.`);
-        if (!key) throw new Error('Encrypted load canceled.');
-        const decryptedText = await decryptTextEnvelopeAndTrustKey(parsed, key);
+        const decryptedText = await decryptEncryptedPayloadUsingActiveKeyFirst(parsed, sourceLabel);
         importState(decryptedText);
         return;
       }
@@ -15539,7 +15598,7 @@
         if (!options.skipDurablePrompt && !String(reason).includes('fallback') && !['google-drive-mirror','settings','google-drive-settings','welcome','security-wizard','security-setup'].includes(reason)) maybePromptDurableSaveAfterLocalChanges();
         return true;
       } catch (err) {
-        if (reason !== 'auto' && String(err.message || '').toLowerCase().includes('encryption')) {
+        if (reason !== 'auto' && reason !== 'welcome' && !recentlyCompletedWelcomeSecuritySetup() && String(err.message || '').toLowerCase().includes('encryption')) {
           warnSensitiveNotesNeedEncryption();
         }
         if (announce) setLiveStatusMessage(`Local browser save failed: ${err.message}`);
@@ -19850,7 +19909,7 @@ This will replace the current classes, settings, room templates, and active layo
             obj.assignedStudentId = null;
             obj.manual = false;
             obj.locked = false;
-            commitFreeformLayoutChange('freeform-clear-seat', { render: true, syncToGrid: true });
+            commitFreeformLayoutChange('freeform-clear-seat', { render: true, syncToGrid: false });
           }
           return;
         }
@@ -19862,7 +19921,7 @@ This will replace the current classes, settings, room templates, and active layo
           if (obj.type === 'seat' ? eyeModeBlocksSeatEditing() : eyeModeBlocksRoomEditing()) return blockEyeModeAction(obj.type === 'seat' ? 'seat' : 'room');
           obj.locked = !obj.locked;
           obj.manual = obj.type === 'seat' ? obj.locked : obj.manual;
-          commitFreeformLayoutChange('freeform-lock-object', { render: true, syncToGrid: true });
+          commitFreeformLayoutChange('freeform-lock-object', { render: true, syncToGrid: false });
           return;
         }
 
@@ -19870,7 +19929,7 @@ This will replace the current classes, settings, room templates, and active layo
         if (freeformDeleteBtn) {
           if (eyeModeBlocksRoomEditing()) return blockEyeModeAction('room');
           state.freeformLayout.objects = (state.freeformLayout?.objects || []).filter(obj => obj.id !== freeformDeleteBtn.dataset.freeformDelete || obj.locked);
-          commitFreeformLayoutChange('freeform-delete-object', { render: true, syncToGrid: true });
+          commitFreeformLayoutChange('freeform-delete-object', { render: true, syncToGrid: false });
           return;
         }
 
@@ -21403,6 +21462,22 @@ This will replace the current classes, settings, room templates, and active layo
           if (event.target?.id === 'settingPrivacyDisplayMode') applyPrivacyDisplayMode(event.target.value);
           if (event.target?.id === 'csvImportDuplicateMode' || event.target?.id === 'csvImportSnapshotBefore') {
             uiState.pageSettings = mergePageSettings({ ...pageSettings(), csvDuplicateMode: csvDuplicateModeForCurrentImport(), csvSnapshotBeforeImport: !!el('csvImportSnapshotBefore')?.checked });
+          }
+        });
+        document.addEventListener('click', event => {
+          const summary = event.target?.closest?.('#securityWizardSteps summary.security-wizard-check-summary');
+          if (!summary) return;
+          const row = summary.closest('details.security-wizard-check');
+          if (!row) return;
+          event.preventDefault();
+          const shouldOpen = !row.open;
+          row.parentElement?.querySelectorAll('details.security-wizard-check[open]').forEach(other => { if (other !== row) other.open = false; });
+          row.open = shouldOpen;
+          if (row.open) {
+            window.setTimeout(() => {
+              try { row.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' }); }
+              catch (err) { row.scrollIntoView(false); }
+            }, 80);
           }
         });
         document.addEventListener('toggle', event => {
