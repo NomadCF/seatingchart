@@ -6659,6 +6659,217 @@
       .security-wizard-expand { grid-column: 2; justify-self: start; }
     }
 
+
+    /* Revision 1.18.20: mobile Security Setup wizard scroll repair */
+    #securitySetupWizardModal.show {
+      display: flex !important;
+    }
+
+    #securitySetupWizardModal .security-setup-modal {
+      display: flex !important;
+      flex-direction: column !important;
+      width: min(860px, 96vw) !important;
+      max-width: 860px !important;
+      height: min(760px, calc(100dvh - 28px)) !important;
+      max-height: calc(100dvh - 28px) !important;
+      min-height: 0 !important;
+      overflow: hidden !important;
+    }
+
+    #securitySetupWizardModal .security-setup-modal .panel-header {
+      flex: 0 0 auto !important;
+    }
+
+    #securitySetupWizardModal .security-wizard-layout {
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
+      height: auto !important;
+      display: grid !important;
+      grid-template-rows: minmax(0, 1fr) auto !important;
+      gap: 10px !important;
+      overflow: hidden !important;
+    }
+
+    #securityWizardSteps {
+      min-height: 0 !important;
+      height: 100% !important;
+      overflow: hidden !important;
+      display: grid !important;
+      grid-template-rows: auto minmax(0, 1fr) !important;
+      gap: 8px !important;
+    }
+
+    #securityWizardSteps .security-wizard-checklist {
+      min-height: 0 !important;
+      height: auto !important;
+      max-height: none !important;
+      overflow: auto !important;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+      padding-right: 4px;
+      scroll-padding-bottom: 14px;
+    }
+
+    #securitySetupWizardModal .security-wizard-actions {
+      flex: 0 0 auto !important;
+      margin-top: 0 !important;
+      padding-top: 9px !important;
+      border-top: 1px solid var(--border);
+      background: #ffffff;
+      align-items: flex-start !important;
+    }
+
+    #securitySetupWizardModal .security-wizard-actions .button-row {
+      align-items: center;
+    }
+
+    @supports (height: 100svh) {
+      #securitySetupWizardModal .security-setup-modal {
+        height: min(760px, calc(100svh - 28px)) !important;
+        max-height: calc(100svh - 28px) !important;
+      }
+    }
+
+    @media (max-width: 760px) {
+      #securitySetupWizardModal {
+        align-items: flex-start !important;
+        justify-content: center !important;
+        padding: 6px !important;
+        overflow: hidden !important;
+      }
+
+      #securitySetupWizardModal .security-setup-modal {
+        width: calc(100vw - 12px) !important;
+        max-width: calc(100vw - 12px) !important;
+        height: calc(100dvh - 12px) !important;
+        max-height: calc(100dvh - 12px) !important;
+        border-radius: 14px !important;
+      }
+
+      @supports (height: 100svh) {
+        #securitySetupWizardModal .security-setup-modal {
+          height: calc(100svh - 12px) !important;
+          max-height: calc(100svh - 12px) !important;
+        }
+      }
+
+      #securitySetupWizardModal .panel-header {
+        min-height: 42px !important;
+        padding: 8px 9px !important;
+      }
+
+      #securitySetupWizardModal .panel-header h2 {
+        font-size: 14px !important;
+        line-height: 1.15 !important;
+      }
+
+      #securitySetupWizardModal .security-wizard-layout {
+        padding: 8px !important;
+        gap: 8px !important;
+      }
+
+      #securityWizardSteps {
+        gap: 7px !important;
+      }
+
+      #securityWizardSteps .security-wizard-intro {
+        padding: 8px !important;
+        font-size: 11px !important;
+        line-height: 1.3 !important;
+      }
+
+      #securityWizardSteps .security-wizard-checklist {
+        gap: 7px !important;
+        padding-right: 1px !important;
+        scroll-padding-top: 8px;
+        scroll-padding-bottom: 12px;
+      }
+
+      #securityWizardSteps .security-wizard-check-summary {
+        grid-template-columns: 28px minmax(0, 1fr) !important;
+        gap: 7px !important;
+        padding: 8px !important;
+      }
+
+      #securityWizardSteps .security-wizard-expand {
+        grid-column: 2 !important;
+        justify-self: start !important;
+        font-size: 10px !important;
+      }
+
+      #securityWizardSteps .security-wizard-check-title {
+        font-size: 12.5px !important;
+      }
+
+      #securityWizardSteps .security-wizard-check-text {
+        font-size: 11px !important;
+      }
+
+      #securityWizardSteps .security-wizard-check-body {
+        padding: 8px !important;
+        gap: 7px !important;
+      }
+
+      #securityWizardSteps .security-card,
+      #securityWizardSteps .auto-lock-card {
+        padding: 8px !important;
+      }
+
+      #securityWizardSteps .auto-lock-grid,
+      #securityWizardSteps .security-wizard-grid {
+        grid-template-columns: 1fr !important;
+        gap: 7px !important;
+      }
+
+      #securitySetupWizardModal .security-wizard-actions {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 7px !important;
+        padding-top: 7px !important;
+      }
+
+      #securitySetupWizardModal #securityWizardMessage {
+        font-size: 10.5px !important;
+        line-height: 1.25 !important;
+      }
+
+      #securitySetupWizardModal .security-wizard-actions .button-row {
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 6px !important;
+        width: 100% !important;
+        margin-left: 0 !important;
+      }
+
+      #securitySetupWizardModal .security-wizard-actions button {
+        width: 100% !important;
+        min-width: 0 !important;
+        white-space: normal !important;
+        min-height: 34px !important;
+        padding: 5px 6px !important;
+        font-size: 11px !important;
+      }
+
+      #securitySetupWizardModal #securityWizardRefreshBtn {
+        display: none !important;
+      }
+
+      #securitySetupWizardModal #securityWizardDoneBtn {
+        grid-column: 1 / -1 !important;
+      }
+    }
+
+    @media (max-width: 420px) {
+      #securitySetupWizardModal .security-wizard-actions .button-row {
+        grid-template-columns: 1fr !important;
+      }
+
+      #securitySetupWizardModal #securityWizardDoneBtn {
+        grid-column: auto !important;
+      }
+    }
+
+
   </style>
 </head>
 <body class="left-collapsed">
@@ -8080,7 +8291,7 @@
     const WELCOME_SETUP_STORAGE_KEY = 'seating-chart-bubble-builder-secure-welcome-v1';
     const VISIBILITY_CREDENTIAL_KEY = 'seating-chart-bubble-builder-visibility-v1';
     const HINT_DISMISS_STORAGE_KEY = 'seating-chart-bubble-builder-dismissed-hints-v1';
-    const APP_REVISION = '1.18.19';
+    const APP_REVISION = '1.18.20';
     const APP_LAST_UPDATED = 'June 27, 2026';
 
     const APP_LICENSE = {
@@ -8141,6 +8352,7 @@
     ];
 
     const CHANGE_LOG = [
+      { version: '1.18.20', date: 'June 27, 2026', changes: ['Repaired the mobile Security Setup screen so the checklist scrolls inside the modal instead of trapping content off-screen.', 'Made Security Setup actions stay reachable on small screens while the checklist rows scroll independently.', 'Opening a Security Setup row now keeps that row in view on mobile after the accordion collapses the others.'] },
       { version: '1.18.19', date: 'June 27, 2026', changes: ['Removed Settings navigation dot separators so stacked page labels align cleanly.', 'Changed the Security Setup checklist into a one-open-row accordion so opening one setup item collapses the others.', 'Added valid-entry autosave for Security Setup options so Lock PIN, Eye PIN, Settings access, and auto-lock changes persist without requiring the Save Security Setup button before Done.'] },
       { version: '1.18.18', date: 'June 27, 2026', changes: ['Repaired additional Settings modal spacing and alignment so search, page navigation, and content panels keep consistent two-column sizing.', 'Converted the Security Setup Wizard into compact collapsible checklist rows with live completion checks for valid Lock PIN, Eye PIN, Settings access, and auto-lock entries.', 'Fixed Security Setup saving so Settings access choices and PIN/auto-lock configuration are persisted immediately to the encrypted browser save when possible.'] },
       { version: '1.18.17', date: 'June 27, 2026', changes: ['Fixed the Settings modal layout so the Settings search bar spans the full modal width and the left navigation/content columns align correctly again.', 'Removed PBKDF2 iteration controls from the first-run Security Setup Wizard so basic onboarding focuses on Lock PIN, Eye PIN, Settings access, and auto-lock behavior.', 'Kept PBKDF2 iteration control available only in the advanced Security & Data settings page for users who intentionally want to raise encryption work factors.'] },
@@ -18797,7 +19009,7 @@ This will replace the current classes, settings, room templates, and active layo
 
     /* Revision 1.18.14 workflow expansion module */
     (function installWorkflowExpansion11814(){
-      const ADDON_REVISION = '1.18.19';
+      const ADDON_REVISION = '1.18.20';
       const MIGRATION_SCHEMA_VERSION = '2026-06-26.workflow-expansion-v1';
       const oldMergePageSettings = mergePageSettings;
       const oldUpdatePageSettingsForm = updatePageSettingsForm;
@@ -19728,6 +19940,13 @@ This will replace the current classes, settings, room templates, and active layo
           const row = event.target;
           if (!(row instanceof HTMLDetailsElement) || !row.matches('#securityWizardSteps details.security-wizard-check') || !row.open) return;
           row.parentElement?.querySelectorAll('details.security-wizard-check[open]').forEach(other => { if (other !== row) other.open = false; });
+          window.setTimeout(() => {
+            try {
+              row.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
+            } catch (err) {
+              row.scrollIntoView(false);
+            }
+          }, 80);
         }, true);
         window.addEventListener('blur', () => { if (pageSettings().noteRevealHideOnBlur) hideRevealedSensitiveNotes('Revealed private/substitute notes hidden because the window lost focus.'); });
         document.addEventListener('visibilitychange', () => { if (document.hidden && pageSettings().noteRevealHideOnBlur) hideRevealedSensitiveNotes('Revealed private/substitute notes hidden because the tab became inactive.'); });
