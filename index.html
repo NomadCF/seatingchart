@@ -6867,6 +6867,107 @@
     }
 
 
+
+    /* Revision 1.18.22: mobile workflows, compare summaries, templates, and view permissions */
+    .mobile-quick-actions-button {
+      display: none;
+      position: fixed;
+      right: 12px;
+      bottom: calc(var(--mobile-bottom-nav-height, 74px) + 12px + env(safe-area-inset-bottom, 0px));
+      z-index: 10070;
+      width: 48px;
+      min-width: 48px;
+      height: 48px;
+      min-height: 48px;
+      padding: 0 !important;
+      border-radius: 999px;
+      box-shadow: 0 14px 34px rgba(15, 23, 42, .26);
+    }
+    .mobile-quick-sheet {
+      display: none;
+      position: fixed;
+      left: 10px;
+      right: 10px;
+      bottom: calc(var(--mobile-bottom-nav-height, 74px) + 68px + env(safe-area-inset-bottom, 0px));
+      z-index: 10072;
+      max-height: min(62dvh, 460px);
+      overflow: auto;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: rgba(255,255,255,.98);
+      box-shadow: 0 22px 64px rgba(15, 23, 42, .28);
+      padding: 10px;
+    }
+    .mobile-quick-sheet.show { display: block; }
+    .mobile-quick-title { font-weight: 950; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .mobile-quick-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
+    .mobile-quick-grid button { justify-content: flex-start; text-align: left; white-space: normal; min-height: 42px; line-height: 1.15; }
+    .compare-summary-panel,
+    .permissions-role-panel,
+    .interop-template-panel {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: #f8fafc;
+      padding: 10px;
+      display: grid;
+      gap: 8px;
+    }
+    .compare-summary-grid,
+    .permissions-role-grid,
+    .interop-template-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 8px;
+    }
+    .compare-stat,
+    .permission-role-card,
+    .interop-template-card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #fff;
+      padding: 9px;
+      min-width: 0;
+    }
+    .compare-stat strong,
+    .permission-role-card strong,
+    .interop-template-card strong { display: block; margin-bottom: 3px; }
+    .compare-changes-list { margin: 0; padding-left: 18px; color: var(--muted); font-size: 12px; line-height: 1.35; }
+    .permission-role-card.active { border-color: var(--accent); box-shadow: inset 0 0 0 2px rgba(37,99,235,.12); background: #eff6ff; }
+    .permission-role-card button,
+    .interop-template-card button { margin-top: 7px; width: 100%; white-space: normal; }
+    .permission-status-pill { display:inline-flex; align-items:center; justify-content:center; border-radius:999px; padding:3px 7px; font-size:11px; font-weight:900; border:1px solid var(--border); background:#fff; color:var(--muted); }
+    body.permission-no-edit .cell-actions button,
+    body.permission-no-edit button[data-edit-student],
+    body.permission-no-edit button[data-delete-student] { pointer-events: none; opacity: .48; }
+    body.permission-hide-bubbles .bubble-color-bar,
+    body.permission-hide-bubbles .student-bubble-dots,
+    body.permission-hide-bubbles .cell-zone-tags,
+    body.permission-hide-bubbles .anchor-dot,
+    body.permission-hide-bubbles .pill.together,
+    body.permission-hide-bubbles .pill.avoid,
+    body.permission-hide-bubbles .pill.special { display: none !important; }
+    body.permission-hide-side-students .left-panel,
+    body.permission-hide-side-status .right-panel { display: none !important; }
+    body.permission-hide-side-students.permission-hide-side-status .app { grid-template-columns: minmax(0, 1fr) !important; }
+    body.permission-hide-side-students:not(.permission-hide-side-status) .app { grid-template-columns: minmax(0, 1fr) var(--right-col) !important; }
+    body.permission-hide-side-status:not(.permission-hide-side-students) .app { grid-template-columns: var(--left-col) minmax(0, 1fr) !important; }
+    @media (max-width: 980px) {
+      body.permission-hide-side-students #mobilePeopleBtn,
+      body.permission-hide-side-status #mobileStatusBtn { display: none !important; }
+    }
+
+    @media (max-width: 980px) {
+      .mobile-quick-actions-button { display: inline-flex; }
+      body.mobile-carrying .mobile-quick-actions-button,
+      body.print-preview-active .mobile-quick-actions-button { display: none !important; }
+    }
+    @media (max-width: 560px) {
+      .mobile-quick-grid { grid-template-columns: 1fr; }
+      .compare-summary-grid,
+      .permissions-role-grid,
+      .interop-template-grid { grid-template-columns: 1fr; }
+    }
+
   </style>
 </head>
 <body class="left-collapsed">
@@ -8287,7 +8388,7 @@
     const WELCOME_SETUP_STORAGE_KEY = 'seating-chart-bubble-builder-secure-welcome-v1';
     const VISIBILITY_CREDENTIAL_KEY = 'seating-chart-bubble-builder-visibility-v1';
     const HINT_DISMISS_STORAGE_KEY = 'seating-chart-bubble-builder-dismissed-hints-v1';
-    const APP_REVISION = '1.18.21';
+    const APP_REVISION = '1.18.22';
     const APP_LAST_UPDATED = 'June 27, 2026';
 
     const APP_LICENSE = {
@@ -8348,6 +8449,7 @@
     ];
 
     const CHANGE_LOG = [
+      { version: '1.18.22', date: 'June 27, 2026', changes: ['Added a mobile quick-action sheet for common phone/tablet workflows including add student, import CSV, snapshot, print, save, lock, and Settings.', 'Added What Changed compare summaries for snapshot previews and selective file restores so users can see counts and likely changes before replacing data.', 'Expanded import/export interoperability with downloadable roster CSV templates, current roster CSV export with a warning, bubble/zone and room-layout templates, and a template package.', 'Added a real view-permissions model with Teacher, Substitute, Student Display, Admin Review, and Privacy Review roles that drive display names, visible student details, notes access, and edit/privacy behavior.'] },
       { version: '1.18.21', date: 'June 27, 2026', changes: ['Performed a full static security/code audit pass, removed unused workflow-expansion leftovers, tightened snapshot-index encryption status checks, and made empty snapshot indexes encrypt instead of writing plaintext arrays.', 'Consolidated snapshot retention handling so snapshot loading, in-memory access, and encrypted persistence use the same configured retention limit.', 'Added audit notes for remaining browser-only security limitations and verified syntax, duplicate functions, static IDs, and dangerous JavaScript APIs.'] },
       { version: '1.18.20', date: 'June 27, 2026', changes: ['Repaired the mobile Security Setup screen so the checklist scrolls inside the modal instead of trapping content off-screen.', 'Made Security Setup actions stay reachable on small screens while the checklist rows scroll independently.', 'Opening a Security Setup row now keeps that row in view on mobile after the accordion collapses the others.'] },
       { version: '1.18.19', date: 'June 27, 2026', changes: ['Removed Settings navigation dot separators so stacked page labels align cleanly.', 'Changed the Security Setup checklist into a one-open-row accordion so opening one setup item collapses the others.', 'Added valid-entry autosave for Security Setup options so Lock PIN, Eye PIN, Settings access, and auto-lock changes persist without requiring the Save Security Setup button before Done.'] },
@@ -19929,6 +20031,464 @@ This will replace the current classes, settings, room templates, and active layo
       // Initial install before initializeApp wires the built-in events.
       installWorkflowDom();
       installWorkflowEvents();
+    })();
+
+
+    /* Revision 1.18.22 mobile workflows, compare view, import/export interoperability, and permission roles */
+    (function installMobileCompareInteropPermissions11822(){
+      const VIEW_ROLE_DEFINITIONS = Object.freeze({
+        teacher: { label: 'Teacher', desc: 'Full working view with editing, all details, bubbles/zones, and note reveal access.', allowEditing: true, showStudentDetails: true, showBubblesZones: true, allowPrivateNotes: true, allowSubstituteNotes: true, allowPublicNotes: true, initialsOnly: false },
+        substitute: { label: 'Substitute', desc: 'Seating, names, public notes, and substitute notes only. Editing and private notes stay blocked.', allowEditing: false, showStudentDetails: false, showBubblesZones: false, allowPrivateNotes: false, allowSubstituteNotes: true, allowPublicNotes: true, initialsOnly: false },
+        student: { label: 'Student Display', desc: 'Projector-safe classroom display. Names or nicknames only, no notes/details, no editing.', allowEditing: false, showStudentDetails: false, showBubblesZones: false, allowPrivateNotes: false, allowSubstituteNotes: false, allowPublicNotes: false, initialsOnly: false },
+        admin: { label: 'Admin Review', desc: 'Review roster details and layout without private/substitute note reveal by default.', allowEditing: false, showStudentDetails: true, showBubblesZones: true, allowPrivateNotes: false, allowSubstituteNotes: false, allowPublicNotes: true, initialsOnly: false },
+        privacy: { label: 'Privacy Review', desc: 'Initials-only, no notes/details, no bubbles/zones, no editing.', allowEditing: false, showStudentDetails: false, showBubblesZones: false, allowPrivateNotes: false, allowSubstituteNotes: false, allowPublicNotes: false, initialsOnly: true }
+      });
+      const VIEW_ROLE_KEYS = Object.keys(VIEW_ROLE_DEFINITIONS);
+      const oldMergePageSettings22 = mergePageSettings;
+      const oldApplyPageSettings22 = applyPageSettings;
+      const oldRenderNotesEditor22 = renderNotesEditor;
+      const oldStudentDisplay22 = studentDisplay;
+      const oldStudentMetaText22 = studentMetaText;
+      const oldOpenSettingsModal22 = openSettingsModal;
+      const oldReadPageSettingsForm22 = readPageSettingsForm;
+      const oldUpdatePageSettingsForm22 = updatePageSettingsForm;
+      const oldRenderSelectiveRestoreModal22 = renderSelectiveRestoreModal;
+      const oldApplySelectiveRestore22 = applySelectiveRestore;
+
+      PROJECT_FEATURES.unshift({ title: 'Mobile workflows, compare tools, templates, and view permissions', text: 'Use mobile quick actions, role-based view permissions, What Changed compare summaries before restore/preview work, and downloadable import/export templates for easier roster, bubble, zone, and room-layout interoperability.' });
+
+      function normalizeViewRoleKey(value) {
+        const key = String(value || '').trim();
+        return VIEW_ROLE_KEYS.includes(key) ? key : 'teacher';
+      }
+
+      mergePageSettings = function(value) {
+        const base = oldMergePageSettings22(value);
+        const source = value && typeof value === 'object' ? value : {};
+        return {
+          ...base,
+          activePermissionRole: normalizeViewRoleKey(source.activePermissionRole || source.privacyDisplayMode || 'teacher'),
+          enableMobileQuickActions: source.enableMobileQuickActions ?? true,
+          compareBeforeRestore: source.compareBeforeRestore ?? true,
+          interoperabilityWarnings: source.interoperabilityWarnings ?? true
+        };
+      };
+
+      function currentViewRole() { return normalizeViewRoleKey(pageSettings().activePermissionRole || pageSettings().privacyDisplayMode || 'teacher'); }
+      function currentViewPermissions() { return VIEW_ROLE_DEFINITIONS[currentViewRole()] || VIEW_ROLE_DEFINITIONS.teacher; }
+      function roleInitials(student) {
+        const first = String(student?.firstName || '').trim();
+        const last = String(student?.lastName || '').trim();
+        const nick = String(student?.nickName || student?.nickname || student?.nick || '').trim();
+        const parts = (first || last) ? [first, last] : nick.split(/\s+/);
+        const initials = parts.filter(Boolean).slice(0, 2).map(part => part[0]?.toUpperCase() || '').join('');
+        return initials || 'Student';
+      }
+
+      studentDisplay = function(student) {
+        const perms = currentViewPermissions();
+        if (perms.initialsOnly) return roleInitials(student);
+        if (currentViewRole() === 'student') return String(student?.nickName || student?.nickname || student?.nick || student?.firstName || oldStudentDisplay22(student));
+        return oldStudentDisplay22(student);
+      };
+
+      studentMetaText = function(student) {
+        return currentViewPermissions().showStudentDetails ? oldStudentMetaText22(student) : '';
+      };
+
+      function applyPermissionBodyFlags() {
+        const perms = currentViewPermissions();
+        const role = currentViewRole();
+        document.body.classList.toggle('permission-no-edit', !perms.allowEditing);
+        document.body.classList.toggle('permission-hide-bubbles', !perms.showBubblesZones);
+        document.body.classList.toggle('permission-hide-side-students', role === 'student' || role === 'privacy');
+        document.body.classList.toggle('permission-hide-side-status', role === 'student' || role === 'privacy');
+        document.body.dataset.viewRole = role;
+      }
+
+      function permissionVisibilityPatchForRole(role) {
+        const perms = VIEW_ROLE_DEFINITIONS[role] || VIEW_ROLE_DEFINITIONS.teacher;
+        if (role === 'teacher') {
+          return {
+            hideClassActions: false, hideWizard: false, hideSaveLoad: false, hideSettings: false, hidePrint: false,
+            hideLayoutTools: false, hideStudentsPanel: false, hideStatusPanel: false, hideChartActions: false,
+            hideRoomHeaderActions: false, forceNamesOnly: !!perms.initialsOnly, hideBubbleDetails: !perms.showBubblesZones,
+            disableSeatEditing: !perms.allowEditing, disableRoomEditing: !perms.allowEditing, disableStudentEditing: !perms.allowEditing, disableBubbleEditing: !perms.allowEditing
+          };
+        }
+        return {
+          hideClassActions: !perms.allowEditing,
+          hideWizard: true,
+          hideSaveLoad: role !== 'admin',
+          hideSettings: role !== 'admin',
+          hidePrint: false,
+          hideLayoutTools: !perms.allowEditing,
+          hideStudentsPanel: role === 'student' || role === 'privacy',
+          hideStatusPanel: role === 'student' || role === 'privacy',
+          hideChartActions: !perms.allowEditing,
+          hideRoomHeaderActions: !perms.allowEditing,
+          forceNamesOnly: true,
+          hideBubbleDetails: !perms.showBubblesZones,
+          disableSeatEditing: !perms.allowEditing,
+          disableRoomEditing: !perms.allowEditing,
+          disableStudentEditing: !perms.allowEditing,
+          disableBubbleEditing: !perms.allowEditing
+        };
+      }
+
+      function applyViewRole(role, options = {}) {
+        const nextRole = normalizeViewRoleKey(role);
+        const current = pageSettings();
+        uiState.pageSettings = mergePageSettings({
+          ...current,
+          activePermissionRole: nextRole,
+          privacyDisplayMode: nextRole,
+          visibility: { ...current.visibility, ...permissionVisibilityPatchForRole(nextRole) }
+        });
+        applyPageSettings(uiState.pageSettings, { skipRender: !!options.skipRender });
+        renderViewPermissionPanel();
+        updateMobileQuickRoleLabel();
+        if (!options.skipSave) void writeLocalBrowserSave({ reason: 'view-role', announce: false });
+        setLiveStatusMessage(`${VIEW_ROLE_DEFINITIONS[nextRole].label} view permissions applied.`);
+      }
+
+      applyPageSettings = function(settings = pageSettings(), options = {}) {
+        oldApplyPageSettings22(settings, options);
+        applyPermissionBodyFlags();
+        updateMobileQuickRoleLabel();
+      };
+
+      function categoryAllowedByViewRole(category) {
+        const perms = currentViewPermissions();
+        if (category === 'private') return !!perms.allowPrivateNotes;
+        if (category === 'substitute') return !!perms.allowSubstituteNotes;
+        if (category === 'public') return !!perms.allowPublicNotes;
+        return false;
+      }
+
+      renderNotesEditor = function() {
+        oldRenderNotesEditor22();
+        const draft = uiState.noteEditorDraft || { private: [], substitute: [], public: [] };
+        const list = el('notesEditorList');
+        if (!list) return;
+        ['private', 'substitute', 'public'].forEach(category => {
+          if (categoryAllowedByViewRole(category)) return;
+          const meta = NOTE_CATEGORY_META[category];
+          const count = Array.isArray(draft[category]) ? draft[category].length : 0;
+          if (!count) return;
+          Array.from(list.querySelectorAll(`[data-delete-note-category="${category}"]`)).forEach(btn => {
+            const row = btn.closest('.note-editor-row');
+            if (!row) return;
+            row.classList.add('sensitive-note-hidden');
+            const text = row.querySelector('.note-editor-text');
+            if (text) { text.classList.add('hidden-sensitive-note'); text.textContent = `${meta.label} note hidden by current ${VIEW_ROLE_DEFINITIONS[currentViewRole()].label} permissions.`; }
+            const reveal = row.querySelector('[data-reveal-note-key]');
+            if (reveal) reveal.remove();
+          });
+        });
+      };
+
+      function classSummary(cls) {
+        const c = normalizeClassRecord(cls || {});
+        return {
+          name: c.name || 'Unnamed class',
+          students: (c.students || []).length,
+          bubbles: (c.bubbles || []).length,
+          zones: (c.zones || []).length,
+          seats: Object.values(c.cells || {}).filter(cell => cell.type === 'seat').length,
+          assigned: Object.values(c.cells || {}).filter(cell => cell.assignedStudentId).length,
+          privateNotes: (c.students || []).filter(student => String(studentNoteValue(student, 'private') || '').trim()).length,
+          substituteNotes: (c.students || []).filter(student => String(studentNoteValue(student, 'substitute') || '').trim()).length,
+          publicNotes: (c.students || []).filter(student => String(studentNoteValue(student, 'public') || '').trim()).length,
+          layoutKeys: Object.keys(c.cells || {}).length
+        };
+      }
+
+      function compareClassRecords(before, after) {
+        const a = classSummary(before || {});
+        const b = classSummary(after || {});
+        const changes = [];
+        const stat = (label, key) => ({ label, before: a[key], after: b[key], delta: Number(b[key] || 0) - Number(a[key] || 0) });
+        const stats = [stat('Students', 'students'), stat('Bubbles', 'bubbles'), stat('Zones', 'zones'), stat('Seats', 'seats'), stat('Assigned seats', 'assigned'), stat('Private notes', 'privateNotes'), stat('Substitute notes', 'substituteNotes'), stat('Public notes', 'publicNotes')];
+        stats.forEach(s => { if (s.delta) changes.push(`${s.label}: ${s.before} → ${s.after} (${s.delta > 0 ? '+' : ''}${s.delta})`); });
+        const beforeIds = new Set((normalizeClassRecord(before || {}).students || []).map(s => String(s.id || '')));
+        const afterIds = new Set((normalizeClassRecord(after || {}).students || []).map(s => String(s.id || '')));
+        const added = Array.from(afterIds).filter(id => id && !beforeIds.has(id)).slice(0, 8);
+        const removed = Array.from(beforeIds).filter(id => id && !afterIds.has(id)).slice(0, 8);
+        if (added.length) changes.push(`Students added: ${added.join(', ')}${added.length >= 8 ? '…' : ''}`);
+        if (removed.length) changes.push(`Students removed: ${removed.join(', ')}${removed.length >= 8 ? '…' : ''}`);
+        return { before: a, after: b, stats, changes };
+      }
+
+      function compareSummaryHtml(title, beforeClass, afterClass, note = '') {
+        const cmp = compareClassRecords(beforeClass, afterClass);
+        return `<section class="compare-summary-panel"><h3>${escapeHtml(title)}</h3>${note ? `<div class="muted">${escapeHtml(note)}</div>` : ''}<div class="compare-summary-grid">${cmp.stats.map(s => `<div class="compare-stat"><strong>${escapeHtml(s.label)}</strong><span>${escapeHtml(s.before)} → ${escapeHtml(s.after)}${s.delta ? ` (${s.delta > 0 ? '+' : ''}${s.delta})` : ''}</span></div>`).join('')}</div>${cmp.changes.length ? `<ul class="compare-changes-list">${cmp.changes.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul>` : '<div class="successbox">No count-level changes detected. Detailed field changes may still exist.</div>'}</section>`;
+      }
+
+      renderSelectiveRestoreModal = function() {
+        oldRenderSelectiveRestoreModal22();
+        const draft = uiState.restoreImportDraft;
+        if (!draft || !pageSettings().compareBeforeRestore) return;
+        const panel = el('restorePartialPanel') || document.querySelector('#selectiveRestoreModal .modal-body');
+        if (!panel) return;
+        let compare = el('restoreCompareSummary');
+        if (!compare) {
+          compare = document.createElement('div');
+          compare.id = 'restoreCompareSummary';
+          compare.style.display = 'grid';
+          compare.style.gap = '10px';
+          panel.insertAdjacentElement('afterbegin', compare);
+        }
+        const source = restoreSourceClass();
+        const current = activeClassRecord() || normalizeClassRecord({ name: 'Current class' });
+        compare.innerHTML = compareSummaryHtml('What changed if you restore this source class?', current, source, 'This compares the current active class to the selected source class before restore. Full-file restore may also replace other classes, snapshots, templates, and settings.');
+      };
+
+      applySelectiveRestore = async function() {
+        if (pageSettings().compareBeforeRestore && uiState.restoreImportDraft) {
+          const source = restoreSourceClass();
+          const current = activeClassRecord();
+          const text = compareClassRecords(current, source).changes.slice(0, 8).join('\n') || 'No count-level changes detected.';
+          return showInAppConfirm(`Restore selected data?\n\nWhat changed preview:\n${text}\n\nA snapshot/undo point is created before restore.`, () => { void oldApplySelectiveRestore22(); }, { title: 'Confirm Restore', confirmText: 'Restore', cancelText: 'Cancel' });
+        }
+        return oldApplySelectiveRestore22();
+      };
+
+      async function previewSnapshotWithCompare(snapshotId) {
+        await ensureAppSnapshotsLoaded();
+        const snap = appSnapshots().find(item => String(item.id) === String(snapshotId));
+        if (!snap) return;
+        const body = el('snapshotPreviewBody');
+        if (!body) return;
+        body.innerHTML = '<div class="hint">Decrypting snapshot preview...</div>';
+        el('snapshotPreviewModal')?.classList.add('show');
+        try {
+          const text = await snapshotDataForRestore(snap.data);
+          const parsed = JSON.parse(text);
+          const classes = Array.isArray(parsed.classes) ? parsed.classes.map(normalizeClassRecord) : [];
+          const active = classes.find(cls => cls.id === parsed.activeClassId) || classes[0] || normalizeClassRecord({ name: 'Snapshot class' });
+          const current = activeClassRecord() || normalizeClassRecord({ name: 'Current class' });
+          const studentCount = classes.reduce((sum, cls) => sum + (cls.students || []).length, 0);
+          const bubbleCount = classes.reduce((sum, cls) => sum + (cls.bubbles || []).length, 0);
+          const assignedCount = classes.reduce((sum, cls) => sum + Object.values(cls.cells || {}).filter(cell => cell.assignedStudentId).length, 0);
+          body.innerHTML = `<h3>${escapeHtml(snap.name)}</h3><div class="muted">Created ${escapeHtml(new Date(snap.createdAt).toLocaleString())}</div><div class="snapshot-summary-grid"><div><strong>Classes</strong><br>${classes.length}</div><div><strong>Total students</strong><br>${studentCount}</div><div><strong>Total bubbles</strong><br>${bubbleCount}</div><div><strong>Total assigned seats</strong><br>${assignedCount}</div><div><strong>Snapshot active class</strong><br>${escapeHtml(active.name || 'Unknown')}</div><div><strong>Current active class</strong><br>${escapeHtml(current.name || 'Unknown')}</div></div>${compareSummaryHtml('What changed if restored?', current, active, 'This compares the current active class to the snapshot active class. Full snapshot restore may also replace settings, other classes, and app snapshots.')}<div class="warningbox">Restoring will first save a return-point snapshot of the current state.</div><div class="button-row"><button type="button" data-restore-snapshot="${escapeHtml(snap.id)}">Restore This Snapshot</button></div>`;
+        } catch (err) {
+          body.innerHTML = `<div class="warningbox">Could not preview this snapshot: ${escapeHtml(err.message || err)}</div>`;
+        }
+      }
+
+      function csvEscape(value) {
+        const text = String(value ?? '');
+        return /[",\n\r]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
+      }
+      function rowsToCsv(rows) { return rows.map(row => row.map(csvEscape).join(',')).join('\n'); }
+      function downloadBlankStudentCsvTemplate() {
+        const csv = rowsToCsv([
+          ['firstName','lastName','nickname','grade','id','privateNotes','substituteNotes','publicNotes'],
+          ['Ada','Lovelace','Ada','5','10001','','Needs printed instructions.','Likes front-row seat.']
+        ]);
+        downloadText('student-roster-template.csv', csv, 'text/csv');
+        setLiveStatusMessage('Blank roster CSV template downloaded.');
+      }
+      function downloadCurrentRosterCsv() {
+        const run = () => {
+          const rows = [['firstName','lastName','nickname','grade','id','privateNotes','substituteNotes','publicNotes']];
+          (state.students || []).forEach(s => rows.push([s.firstName || '', s.lastName || '', s.nickName || s.nickname || '', s.grade || '', s.id || '', studentNoteValue(s, 'private'), studentNoteValue(s, 'substitute'), studentNoteValue(s, 'public')]));
+          downloadText(`current-roster-import-ready-${new Date().toISOString().slice(0,10)}.csv`, rowsToCsv(rows), 'text/csv');
+          setLiveStatusMessage('Current roster CSV downloaded. Store it carefully; CSV is plaintext.');
+        };
+        if (pageSettings().interoperabilityWarnings) showInAppConfirm('Download a plaintext CSV roster?\n\nThis can include student names, IDs, and notes. Use encrypted JSON exports for protected storage. CSV is for interoperability only.', run, { title: 'Plaintext CSV Warning', confirmText: 'Download CSV', cancelText: 'Cancel' });
+        else run();
+      }
+      function downloadBubbleZoneTemplate() {
+        const payload = { kind: 'seating-chart-bubbles-config', bubbles: [{ id:'bubble-example', name:'Example Group', type:'together', priority:3, color:'#2f6fed', studentIds:['10001','10002'], anchorSeats:[], zoneId:'zone-example' }], zones: [{ id:'zone-example', name:'Front zone', color:'#8b5cf6', studentIds:[], bubbleIds:['bubble-example'] }] };
+        downloadText('bubble-zone-template.json', JSON.stringify(payload, null, 2), 'application/json');
+        setLiveStatusMessage('Bubble/zone JSON template downloaded.');
+      }
+      function downloadRoomLayoutTemplate() {
+        const cells = {};
+        Object.entries(state.cells || {}).forEach(([key, cell]) => { cells[key] = { row: cell.row, col: cell.col, type: cell.type, anchorBubbleIds: [], zoneIds: [...(cell.zoneIds || [])] }; });
+        const payload = { kind:'seating-chart-room-layouts', exportedAt:new Date().toISOString(), currentRoom:{ rows:state.rows, cols:state.cols, cells, zones:deepClone(state.zones || []), customObjects:deepClone(state.customObjects || []) }, roomTemplates:deepClone(state.roomTemplates || []) };
+        downloadText(`room-layout-template-${new Date().toISOString().slice(0,10)}.json`, JSON.stringify(payload, null, 2), 'application/json');
+        setLiveStatusMessage('Room layout template downloaded. Student assignments were not included.');
+      }
+      function downloadInteropTemplatePackage() {
+        const roster = rowsToCsv([['firstName','lastName','nickname','grade','id','privateNotes','substituteNotes','publicNotes'], ['Ada','Lovelace','Ada','5','10001','','Substitute-facing note','Public note']]);
+        const bubble = JSON.stringify({ kind:'seating-chart-bubbles-config', bubbles:[], zones:[] }, null, 2);
+        const room = JSON.stringify({ kind:'seating-chart-room-layouts', currentRoom:{ rows:5, cols:6, cells:{}, zones:[], customObjects:[] }, roomTemplates:[] }, null, 2);
+        const readme = 'Seating Chart Builder Import Templates\n\nUse roster-template.csv for student imports. Use bubble-zone-template.json and room-layout-template.json with Upload Classes File/selective restore. Current student data exports may be plaintext CSV only after an explicit warning.';
+        downloadBlob('seating-chart-import-templates.zip', createZipBlob([{ name:'roster-template.csv', content:roster }, { name:'bubble-zone-template.json', content:bubble }, { name:'room-layout-template.json', content:room }, { name:'README.txt', content:readme }]));
+        setLiveStatusMessage('Import/export template package downloaded.');
+      }
+
+      function renderViewPermissionPanel() {
+        const holder = el('viewPermissionsPanel');
+        if (!holder) return;
+        const active = currentViewRole();
+        holder.innerHTML = `<div class="permissions-role-grid">${VIEW_ROLE_KEYS.map(role => {
+          const def = VIEW_ROLE_DEFINITIONS[role];
+          const bits = [def.allowEditing ? 'Editing' : 'Read-only', def.showStudentDetails ? 'Details' : 'No details', def.showBubblesZones ? 'Bubbles/zones' : 'No bubbles/zones', def.allowPrivateNotes ? 'Private notes' : 'Private hidden', def.allowSubstituteNotes ? 'Sub notes' : 'Sub hidden'];
+          return `<div class="permission-role-card ${role === active ? 'active' : ''}"><strong>${escapeHtml(def.label)}</strong><div class="muted">${escapeHtml(def.desc)}</div><div>${bits.map(bit => `<span class="permission-status-pill">${escapeHtml(bit)}</span>`).join(' ')}</div><button type="button" class="secondary" data-apply-view-role="${escapeHtml(role)}">${role === active ? 'Applied' : 'Apply Role'}</button></div>`;
+        }).join('')}</div>`;
+        const select = el('settingPrivacyDisplayMode');
+        if (select && select.value !== active) select.value = active;
+      }
+
+      function renderInteropPanel() {
+        const holder = el('interopTemplatesPanel');
+        if (!holder) return;
+        holder.innerHTML = `<div class="interop-template-grid"><div class="interop-template-card"><strong>Blank roster CSV</strong><div class="muted">Header template for SIS/spreadsheet imports.</div><button type="button" data-interop-action="blank-roster">Download Template</button></div><div class="interop-template-card"><strong>Current roster CSV</strong><div class="muted">Plaintext interoperability export with warning.</div><button type="button" class="secondary" data-interop-action="current-roster">Download Current CSV</button></div><div class="interop-template-card"><strong>Bubble/Zone JSON</strong><div class="muted">Template for group and zone configuration.</div><button type="button" class="secondary" data-interop-action="bubble-template">Download Template</button></div><div class="interop-template-card"><strong>Room layout JSON</strong><div class="muted">Exports/imports room structure without student assignments.</div><button type="button" class="secondary" data-interop-action="room-template">Download Room Layout</button></div><div class="interop-template-card"><strong>Template package</strong><div class="muted">ZIP with roster, bubble/zone, room, and README templates.</div><button type="button" class="secondary" data-interop-action="template-package">Download Package</button></div></div>`;
+      }
+
+      function installPermissionsAndInteropDom() {
+        const privacyPage = el('settingsPagePrivacy');
+        if (privacyPage && !el('viewPermissionsPanel')) {
+          privacyPage.insertAdjacentHTML('afterbegin', `<section class="section settings-section"><h3>View Permission Roles</h3><div class="hint">Roles control visible details, note access, and editing behavior. They are display/permission guardrails, not separate user accounts.</div><div id="viewPermissionsPanel" class="permissions-role-panel"></div></section>`);
+        }
+        const importPage = el('settingsPageImport');
+        if (importPage && !el('interopTemplatesPanel')) {
+          importPage.insertAdjacentHTML('beforeend', `<section class="section settings-section"><h3>Import / Export Templates</h3><div class="hint">Use these for SIS/spreadsheet workflows and reusable room or group templates. Full protected saves should still use encrypted JSON/backup exports.</div><label class="checkline"><input id="settingInteropWarnings" type="checkbox" /> <span>Warn before plaintext interoperability exports</span></label><div id="interopTemplatesPanel" class="interop-template-panel"></div></section>`);
+        }
+      }
+
+      openSettingsModal = function(page = null) {
+        oldOpenSettingsModal22(page);
+        installPermissionsAndInteropDom();
+        renderViewPermissionPanel();
+        renderInteropPanel();
+        const warn = el('settingInteropWarnings');
+        if (warn) warn.checked = pageSettings().interoperabilityWarnings !== false;
+      };
+      updatePageSettingsForm = function() {
+        oldUpdatePageSettingsForm22();
+        const warn = el('settingInteropWarnings');
+        if (warn) warn.checked = pageSettings().interoperabilityWarnings !== false;
+        renderViewPermissionPanel();
+        renderInteropPanel();
+      };
+      readPageSettingsForm = function() {
+        oldReadPageSettingsForm22();
+        const current = pageSettings();
+        uiState.pageSettings = mergePageSettings({ ...current, activePermissionRole: normalizeViewRoleKey(current.privacyDisplayMode || current.activePermissionRole), interoperabilityWarnings: el('settingInteropWarnings') ? !!el('settingInteropWarnings').checked : current.interoperabilityWarnings });
+      };
+
+      function ensureMobileQuickDom() {
+        if (el('mobileQuickActionsBtn')) return;
+        document.body.insertAdjacentHTML('beforeend', `<button id="mobileQuickActionsBtn" class="mobile-quick-actions-button secondary no-print" type="button" aria-label="Mobile quick actions" title="Open mobile quick actions">☰</button><div id="mobileQuickSheet" class="mobile-quick-sheet no-print" role="dialog" aria-modal="false" aria-labelledby="mobileQuickTitle"><div class="mobile-quick-title"><span id="mobileQuickTitle">Quick Actions</span><button id="closeMobileQuickSheetBtn" class="tiny secondary" type="button">Close</button></div><div class="mobile-quick-grid"><button type="button" data-mobile-quick="add-student">Add Student</button><button type="button" data-mobile-quick="import-csv" class="secondary">Import CSV</button><button type="button" data-mobile-quick="snapshot" class="secondary">Snapshot</button><button type="button" data-mobile-quick="print" class="secondary">Print</button><button type="button" data-mobile-quick="save" class="secondary">Save / Load</button><button type="button" data-mobile-quick="settings" class="secondary">Settings</button><button type="button" data-mobile-quick="lock" class="secondary">Lock</button><button type="button" data-mobile-quick="view-role" id="mobileQuickRoleBtn" class="secondary">View: Teacher</button></div></div>`);
+      }
+      function updateMobileQuickRoleLabel() {
+        const btn = el('mobileQuickRoleBtn');
+        if (btn) btn.textContent = `View: ${VIEW_ROLE_DEFINITIONS[currentViewRole()].label}`;
+      }
+      function toggleMobileQuickSheet(force) {
+        const sheet = el('mobileQuickSheet');
+        if (!sheet) return;
+        const show = typeof force === 'boolean' ? force : !sheet.classList.contains('show');
+        sheet.classList.toggle('show', show);
+      }
+      function openAddStudentMobile() {
+        setMobilePanel('people');
+        uiState.addStudentCollapsed = false; refreshAddStudentCollapse();
+        setSideTab('students');
+        setTimeout(() => el('firstName')?.focus(), 120);
+      }
+      function openCsvMobile() {
+        setMobilePanel('people');
+        setSideTab('students');
+        uiState.csvImportCollapsed = false;
+        const body = el('csvImportBody');
+        if (body) body.classList.remove('collapsed');
+        el('toggleCsvImportBtn')?.setAttribute('aria-expanded', 'true');
+        setTimeout(() => el('csvFile')?.click(), 120);
+      }
+      function cycleMobileViewRole() {
+        const keys = VIEW_ROLE_KEYS;
+        const next = keys[(keys.indexOf(currentViewRole()) + 1) % keys.length];
+        applyViewRole(next);
+      }
+
+      function permissionEditBlockedTarget(target) {
+        if (currentViewPermissions().allowEditing) return null;
+        const selector = [
+          '#generateBtn','#randomizeAllBtn','#clearAssignmentsBtn','#clearAnchorsBtn','#addStudentBtn','#updateStudentBtn','#saveStudentNotesBtn','#importMappedCsvBtn',
+          '#applySeatEditBtn','#applyCustomObjectBtn','#addBubbleBtn','#updateBubbleBtn','#addZoneBtn','#updateZoneBtn','#newClassBtn','#renameClassBtn','#duplicateClassBtn','#deleteClassBtn',
+          '[data-delete-student]','[data-edit-student]','[data-delete-bubble]','[data-delete-zone]','[data-delete-note-category]','[data-cell-action]','[data-seat-action]'
+        ].join(',');
+        return target.closest?.(selector) || null;
+      }
+      function blockPermissionEditAction() {
+        setLiveStatusMessage(`${VIEW_ROLE_DEFINITIONS[currentViewRole()].label} view is read-only. Switch back to Teacher view to edit.`);
+      }
+
+      function installMobileQuickEvents() {
+        ensureMobileQuickDom();
+        document.addEventListener('dragstart', event => {
+          if (currentViewPermissions().allowEditing) return;
+          if (event.target?.closest?.('.student-card,.bubble-card,.cell,[draggable="true"]')) {
+            event.preventDefault();
+            blockPermissionEditAction();
+          }
+        }, true);
+        document.addEventListener('dblclick', event => {
+          if (currentViewPermissions().allowEditing) return;
+          if (event.target?.closest?.('.cell,.student-card,.bubble-card')) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            blockPermissionEditAction();
+          }
+        }, true);
+        document.addEventListener('click', event => {
+          const blocked = permissionEditBlockedTarget(event.target);
+          if (blocked) { event.preventDefault(); event.stopImmediatePropagation(); blockPermissionEditAction(); return; }
+          const target = event.target;
+          if (target.closest?.('#mobileQuickActionsBtn')) { event.preventDefault(); toggleMobileQuickSheet(); return; }
+          if (target.closest?.('#closeMobileQuickSheetBtn')) { event.preventDefault(); toggleMobileQuickSheet(false); return; }
+          const action = target.closest?.('[data-mobile-quick]')?.getAttribute('data-mobile-quick');
+          if (action) {
+            event.preventDefault();
+            toggleMobileQuickSheet(false);
+            if (action === 'add-student') openAddStudentMobile();
+            if (action === 'import-csv') openCsvMobile();
+            if (action === 'snapshot') void quickSnapshotAndOpenList();
+            if (action === 'print') el('printBtn')?.click();
+            if (action === 'save') el('saveLoadMenuBtn')?.click();
+            if (action === 'settings') openSettingsModal();
+            if (action === 'lock') el('pageLockBtn')?.click();
+            if (action === 'view-role') cycleMobileViewRole();
+            return;
+          }
+          const applyRole = target.closest?.('[data-apply-view-role]')?.getAttribute('data-apply-view-role');
+          if (applyRole) { event.preventDefault(); applyViewRole(applyRole); return; }
+          const interop = target.closest?.('[data-interop-action]')?.getAttribute('data-interop-action');
+          if (interop) {
+            event.preventDefault();
+            if (interop === 'blank-roster') downloadBlankStudentCsvTemplate();
+            if (interop === 'current-roster') downloadCurrentRosterCsv();
+            if (interop === 'bubble-template') downloadBubbleZoneTemplate();
+            if (interop === 'room-template') downloadRoomLayoutTemplate();
+            if (interop === 'template-package') downloadInteropTemplatePackage();
+            return;
+          }
+          const preview = target.closest?.('[data-preview-snapshot]');
+          if (preview && pageSettings().compareBeforeRestore) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            void previewSnapshotWithCompare(preview.getAttribute('data-preview-snapshot'));
+          }
+        }, true);
+      }
+
+      function install11822() {
+        installPermissionsAndInteropDom();
+        renderViewPermissionPanel();
+        renderInteropPanel();
+        ensureMobileQuickDom();
+        installMobileQuickEvents();
+        applyPermissionBodyFlags();
+        updateMobileQuickRoleLabel();
+      }
+
+      install11822();
     })();
 
 
