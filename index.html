@@ -7708,7 +7708,7 @@
     const WELCOME_SETUP_STORAGE_KEY = 'seating-chart-bubble-builder-secure-welcome-v1';
     const VISIBILITY_CREDENTIAL_KEY = 'seating-chart-bubble-builder-visibility-v1';
     const HINT_DISMISS_STORAGE_KEY = 'seating-chart-bubble-builder-dismissed-hints-v1';
-    const APP_REVISION = '1.18.12';
+    const APP_REVISION = '1.18.13';
     const APP_LAST_UPDATED = 'June 26, 2026';
 
     const APP_LICENSE = {
@@ -7769,6 +7769,7 @@
     ];
 
     const CHANGE_LOG = [
+      { version: '1.18.13', date: 'June 26, 2026', changes: ['Fixed PIN-based auto-lock so loss-of-focus, tab-hidden, and inactivity locks wrap the active encryption key with the Lock PIN/password entered this session instead of forcing the full encryption password after unlock.', 'Cached the Lock PIN/password only in volatile page memory after the user sets or successfully enters it, then clears that cache on local-data clear, factory reset, or reload.', 'Changed the first lock after creating a Lock PIN/password to use that PIN/password for wrapping the active session key instead of falling back to the full encryption key.'] },
       { version: '1.18.12', date: 'June 26, 2026', changes: ['Encrypted the entire local snapshot index, including snapshot names and timestamps, instead of leaving snapshot metadata visible beside encrypted payloads.', 'Added password-strength meters and passphrase recommendations to Welcome and Settings encryption password changes.', 'Added a Settings workflow for changing the active encryption password with a warning that only new saves/backups/snapshots use the new password.', 'Added a configurable PBKDF2 iteration setting for future encryption operations.', 'Expanded auto-lock with inactivity timeout, lock on window focus loss, lock on tab hidden, and lock when returning after the tab was inactive too long.', 'Added a Security Status panel showing active key presence, encrypted local storage, Settings protection, Lock PIN, and Eye PIN status.'] },
       { version: '1.18.11', date: 'June 26, 2026', changes: ['Moved Welcome password reveal controls into the right side of each password input.', 'Ran a security and structure audit focused on encryption workflow, locked/Eye Mode behavior, storage paths, duplicate handlers, static ID references, and syntax.', 'Stopped pre-filling active encryption keys into Settings or encryption prompts so unlocked-session keys are not unnecessarily written into input elements.', 'Tightened export paths so full saves, student exports, bubble/zone exports, and room-layout exports require encrypted output instead of warning-and-plaintext fallbacks.'] },
       { version: '1.18.10', date: 'June 26, 2026', changes: ['Updated the Welcome and Security screen to explain that the first-run encryption password also protects Settings access by default and can be disabled later from Security & Data.', 'Added a Show/Hide password control to the Welcome encryption password fields.', 'Added a Welcome option to load an existing save or backup file before creating a new encrypted local save.', 'Added a No prompt / unlocked Settings access option with a warning confirmation before Settings protection can be disabled.', 'Kept local browser save auto-continue ahead of the Welcome screen so existing local data is loaded or prompts for its encryption key first.'] },
@@ -7905,7 +7906,8 @@
       appSnapshotsLoaded: false,
       snapshotIndexPersistToken: 0,
       hiddenAt: 0,
-      autoLockInProgress: false
+      autoLockInProgress: false,
+      pageLockSecretForSession: ''
     };
 
     const el = (id) => document.getElementById(id);
@@ -8733,6 +8735,19 @@
       error.style.display = 'none';
     }
 
+    function cachePageLockSecretForSession(secret) {
+      const value = String(secret || '');
+      uiState.pageLockSecretForSession = value;
+    }
+
+    function clearCachedPageLockSecretForSession() {
+      uiState.pageLockSecretForSession = '';
+    }
+
+    function cachedPageLockSecretForAutoLock() {
+      return String(uiState.pageLockSecretForSession || '');
+    }
+
     function lockDataSecretFromSettings() {
       const key = currentSessionEncryptionKey();
       return key ? { secret: key, source: 'encryption-key' } : null;
@@ -8867,6 +8882,7 @@
           }
           return;
         }
+        cachePageLockSecretForSession(secret);
         const lockedText = uiState.lockedSnapshotEncrypted || safeStorageGet('sessionStorage', PAGE_LOCK_DATA_SESSION_KEY) || '';
         if (lockedText) {
           const envelope = JSON.parse(lockedText);
@@ -8943,6 +8959,7 @@
           }
           return;
         }
+        cachePageLockSecretForSession(secret);
         closePageLockNowModal();
         await secureLockWithSecret(secret, 'page-pin');
       } catch (err) {
@@ -8998,10 +9015,10 @@
       }
       try {
         await savePageLockCredential(secret);
+        cachePageLockSecretForSession(secret);
         closePageLockSetupModal();
         setLiveStatusMessage('Page lock PIN/password saved as a salted hash. Page locked.');
-        const keySecret = lockDataSecretFromSettings();
-        await secureLockWithSecret(keySecret ? keySecret.secret : secret, keySecret ? keySecret.source : 'page-pin');
+        await secureLockWithSecret(secret, 'page-pin');
       } catch (err) {
         showPageLockSetupError(err.message || 'Could not set page lock.');
       }
@@ -12042,6 +12059,7 @@
       if (pin !== confirm) { updatePinStatus('Lock PIN/password entries do not match.'); return; }
       try {
         await savePageLockCredential(pin);
+        cachePageLockSecretForSession(pin);
         el('settingsLockPin').value = '';
         el('settingsLockPinConfirm').value = '';
         updatePinStatus('Lock PIN/password saved.');
@@ -17272,11 +17290,16 @@ This will replace the current classes, settings, room templates, and active layo
       uiState.autoLockInProgress = true;
       try {
         const keySecret = lockDataSecretFromSettings();
-        if (keySecret && getLockCredential()) {
+        const lockCredential = getLockCredential();
+        const lockPinSecret = cachedPageLockSecretForAutoLock();
+        if (keySecret && lockCredential && lockPinSecret) {
           await createAutoLockSnapshot(`Auto-lock before ${reason}`);
-          await secureLockWithSecret(keySecret.secret, `auto-${keySecret.source}-${reason}`);
+          await secureLockWithSecret(lockPinSecret, `auto-page-pin-${reason}`);
         }
-        else if (keySecret && !getLockCredential()) setLiveStatusMessage('Auto-lock skipped because no Lock PIN/password is set. Set a Lock PIN/password so the encrypted screen can be unlocked later.');
+        else if (keySecret && lockCredential && !lockPinSecret) {
+          setLiveStatusMessage('Auto-lock skipped because the Lock PIN/password has not been entered in this page session. Enter it once by locking/unlocking manually or updating the Lock PIN in Settings; after that, auto-lock can unlock with the PIN without asking for the encryption key.');
+        }
+        else if (keySecret && !lockCredential) setLiveStatusMessage('Auto-lock skipped because no Lock PIN/password is set. Set a Lock PIN/password so the encrypted screen can be unlocked later.');
         else setLiveStatusMessage('Auto-lock skipped because no encryption key is available.');
       } finally {
         uiState.autoLockInProgress = false;
@@ -17335,6 +17358,7 @@ This will replace the current classes, settings, room templates, and active layo
         safeStorageRemove('sessionStorage', PAGE_LOCK_SESSION_KEY);
         safeStorageRemove('sessionStorage', PAGE_LOCK_DATA_SESSION_KEY);
         clearWrappedSessionEncryptionKeys();
+        clearCachedPageLockSecretForSession();
         uiState.encryptionKey = '';
         uiState.encryptionEnabled = false;
         uiState.linkedSaveStatus = uiState.linkedSaveHandle ? uiState.linkedSaveStatus : 'No linked file selected.';
@@ -17386,6 +17410,7 @@ This will replace the current classes, settings, room templates, and active layo
       uiState.encryptionEnabled = false;
       uiState.encryptionKey = '';
       clearWrappedSessionEncryptionKeys();
+      clearCachedPageLockSecretForSession();
       uiState.undoStack = [];
       uiState.redoStack = [];
       uiState.selectedCellKeys.clear();
