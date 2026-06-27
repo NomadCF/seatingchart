@@ -6290,7 +6290,7 @@
 
   
 
-    /* Revision 1.18.14: workflow expansion, settings search, timeline, repair, and safer print/export */
+    /* Revision 1.18.15: welcome flow cleanup and post-password security setup */
     .settings-search-shell {
       display: grid;
       gap: 6px;
@@ -7577,6 +7577,7 @@
           <div class="welcome-card"><strong>Browser-only</strong><span>The app stores and loads data from this browser, downloaded files, or an optional linked save file supported by the browser.</span></div>
           <div class="welcome-card"><strong>Encrypted by default</strong><span>Your first action is creating the encryption password used for full-save encryption, local autosaves, linked saves, snapshots, and backups.</span></div>
           <div class="welcome-card"><strong>Settings protected first</strong><span>The same encryption password is required the first time Settings opens. You can disable that Settings prompt later from Settings &gt; Security &amp; Data after a warning confirmation.</span></div>
+          <div class="welcome-card"><strong>Security steps next</strong><span>After you create the encryption password, a second Security Setup page opens so Lock PIN, Eye PIN, auto-lock, and status checks can be configured without fighting this Welcome screen.</span></div>
           <div class="welcome-card"><strong>No password recovery</strong><span>The password is not stored as plain text and cannot be recovered from this file. Save it somewhere appropriate for your district workflow.</span></div>
         </div>
         <div class="welcome-load-card">
@@ -7797,7 +7798,7 @@
     const WELCOME_SETUP_STORAGE_KEY = 'seating-chart-bubble-builder-secure-welcome-v1';
     const VISIBILITY_CREDENTIAL_KEY = 'seating-chart-bubble-builder-visibility-v1';
     const HINT_DISMISS_STORAGE_KEY = 'seating-chart-bubble-builder-dismissed-hints-v1';
-    const APP_REVISION = '1.18.14';
+    const APP_REVISION = '1.18.15';
     const APP_LAST_UPDATED = 'June 26, 2026';
 
     const APP_LICENSE = {
@@ -7858,6 +7859,7 @@
     ];
 
     const CHANGE_LOG = [
+      { version: '1.18.15', date: 'June 27, 2026', changes: ['Cleaned up the first-run Welcome flow so demo-data and security-step actions no longer run under the Welcome modal.', 'Changed Security Setup into the second step after the encryption password is created, avoiding overlapping setup popups.', 'Removed the Try Demo Data button from Welcome; demo/sample data remains available from existing Settings/help workflows instead of first-run security onboarding.'] },
       { version: '1.18.14', date: 'June 26, 2026', changes: ['Added a guided Security Setup Wizard, privacy display modes, Settings search, snapshot timeline/preview/retention controls, reveal timeouts for private/substitute notes, print/export safety warnings, import duplicate workflow options, undo/redo history panel, versioned migration hooks, save-health checks, automatic data repair, and a dedicated maintenance/danger-zone page.', 'Expanded password-change handling so the current browser save and encrypted snapshot index are re-encrypted with the new password, with an optional full local-snapshot re-encryption pass.', 'Added conservative data integrity checks and repair for orphaned seat assignments, stale bubble/zone references, invalid anchors, and duplicate/suspicious student references without adding the excluded recovery workflow, security presets, or emergency lock button.'] },
       { version: '1.18.13', date: 'June 26, 2026', changes: ['Fixed PIN-based auto-lock so loss-of-focus, tab-hidden, and inactivity locks wrap the active encryption key with the Lock PIN/password entered this session instead of forcing the full encryption password after unlock.', 'Cached the Lock PIN/password only in volatile page memory after the user sets or successfully enters it, then clears that cache on local-data clear, factory reset, or reload.', 'Changed the first lock after creating a Lock PIN/password to use that PIN/password for wrapping the active session key instead of falling back to the full encryption key.'] },
       { version: '1.18.12', date: 'June 26, 2026', changes: ['Encrypted the entire local snapshot index, including snapshot names and timestamps, instead of leaving snapshot metadata visible beside encrypted payloads.', 'Added password-strength meters and passphrase recommendations to Welcome and Settings encryption password changes.', 'Added a Settings workflow for changing the active encryption password with a warning that only new saves/backups/snapshots use the new password.', 'Added a configurable PBKDF2 iteration setting for future encryption operations.', 'Expanded auto-lock with inactivity timeout, lock on window focus loss, lock on tab hidden, and lock when returning after the tab was inactive too long.', 'Added a Security Status panel showing active key presence, encrypted local storage, Settings protection, Lock PIN, and Eye PIN status.'] },
@@ -18509,7 +18511,7 @@ This will replace the current classes, settings, room templates, and active layo
 
     /* Revision 1.18.14 workflow expansion module */
     (function installWorkflowExpansion11814(){
-      const ADDON_REVISION = '1.18.14';
+      const ADDON_REVISION = '1.18.15';
       const MIGRATION_SCHEMA_VERSION = '2026-06-26.workflow-expansion-v1';
       const oldMergePageSettings = mergePageSettings;
       const oldUpdatePageSettingsForm = updatePageSettingsForm;
@@ -18699,11 +18701,6 @@ This will replace the current classes, settings, room templates, and active layo
       }
 
       function installWelcomeAndHeaderExtras() {
-        const startBtn = el('welcomeSecurityStartBtn');
-        const row = startBtn?.closest('.button-row');
-        if (row && !el('welcomeDemoDataBtn')) {
-          startBtn.insertAdjacentHTML('afterend', `<button id="welcomeDemoDataBtn" class="secondary" type="button">Try Demo Data</button><button id="welcomeSecurityWizardBtn" class="secondary" type="button">View Security Steps</button>`);
-        }
         const redo = el('redoBtn');
         if (redo && !el('undoHistoryBtn')) redo.insertAdjacentHTML('afterend', `<button id="undoHistoryBtn" class="secondary icon-button" type="button" aria-label="Undo history" title="Open Undo / Redo history">↕</button>`);
       }
@@ -19216,18 +19213,13 @@ This will replace the current classes, settings, room templates, and active layo
       closeWelcomeSecurityModal = function() { oldCloseWelcomeSecurityModal(); };
       completeWelcomeSecuritySetup = async function() { await oldCompleteWelcomeSecuritySetup(); if (!el('welcomeSecurityModal')?.classList.contains('show') && currentSessionEncryptionKey()) openSecuritySetupWizard(); };
 
-      function tryDemoDataFromWelcome() {
-        const load = () => { loadSample(); renderAll(); setLiveStatusMessage('Demo data loaded. Create an encryption password to continue into the app.'); const input = el('welcomeEncryptionKeyInput'); input?.focus(); };
-        if (state.students.length || state.bubbles.length) showInAppConfirm('Load demo data? This replaces the current starter data behind the Welcome screen.', load, { title:'Load Demo Data?', confirmText:'Load Demo', cancelText:'Cancel' });
-        else load();
-      }
 
       function installWorkflowEvents() {
         if (document.body.dataset.workflowExpansion11814 === 'true') return;
         document.body.dataset.workflowExpansion11814 = 'true';
         document.addEventListener('click', event => {
           const target = event.target;
-          if (target.closest?.('#securitySetupWizardOpenBtn,#welcomeSecurityWizardBtn')) { event.preventDefault(); openSecuritySetupWizard(); return; }
+          if (target.closest?.('#securitySetupWizardOpenBtn')) { event.preventDefault(); openSecuritySetupWizard(); return; }
           if (target.closest?.('#closeSecuritySetupWizardBtn,#securityWizardDoneBtn')) { event.preventDefault(); closeSecuritySetupWizard(); return; }
           if (target.closest?.('#securityWizardRefreshBtn')) { event.preventDefault(); renderSecuritySetupWizard(); return; }
           if (target.closest?.('#securityWizardOpenSettingsBtn')) { event.preventDefault(); closeSecuritySetupWizard(); requestOpenSettingsModal(); setSettingsPage('security'); return; }
@@ -19244,7 +19236,6 @@ This will replace the current classes, settings, room templates, and active layo
           if (target.closest?.('#undoHistoryRedoBtn')) { event.preventDefault(); redoLastChange(); return; }
           if (target.closest?.('#runSaveHealthCheckBtn')) { event.preventDefault(); renderSaveHealthReport(true); return; }
           if (target.closest?.('#repairDataIntegrityBtn')) { event.preventDefault(); repairDataIntegrity(); return; }
-          if (target.closest?.('#welcomeDemoDataBtn')) { event.preventDefault(); tryDemoDataFromWelcome(); return; }
         });
         document.addEventListener('input', event => {
           if (event.target?.id === 'settingsSearchInput') settingsSearchFilter();
