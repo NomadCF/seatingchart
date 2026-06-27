@@ -8311,7 +8311,7 @@
     const SAVE_SETUP_STORAGE_KEY = 'seating-chart-save-setup-v1';
     const LOCAL_AUTOSAVE_SNAPSHOT_KEY = 'seating-chart-bubble-builder-app-snapshots-v1';
     const GOOGLE_DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.file';
-    const GOOGLE_DRIVE_CLIENT_ID = '288395515246-c1gk2vvpf5b63jlgv367vm26k81ofqdv.apps.googleusercontent.com';
+    const GOOGLE_DRIVE_CLIENT_ID = '288395515246-7u19cjdqqqfmlp8bjs92c9tl6jvd8usk.apps.googleusercontent.com';
     const GOOGLE_DRIVE_APP_PROPERTY = 'seating-chart-builder';
 
     const PAGE_LOCK_CREDENTIAL_KEY = 'seating-chart-bubble-builder-lock-v1';
@@ -8323,7 +8323,7 @@
     const WELCOME_SETUP_STORAGE_KEY = 'seating-chart-bubble-builder-secure-welcome-v1';
     const VISIBILITY_CREDENTIAL_KEY = 'seating-chart-bubble-builder-visibility-v1';
     const HINT_DISMISS_STORAGE_KEY = 'seating-chart-bubble-builder-dismissed-hints-v1';
-    const APP_REVISION = '1.18.23';
+    const APP_REVISION = '1.18.24';
     const APP_LAST_UPDATED = 'June 27, 2026';
 
     const APP_LICENSE = {
@@ -8384,6 +8384,7 @@
     ];
 
     const CHANGE_LOG = [
+      { version: '1.18.24', date: 'June 27, 2026', changes: ['Corrected the built-in public Google OAuth Client ID used by Google Drive storage.'] },
       { version: '1.18.23', date: 'June 27, 2026', changes: ['Converted Google Drive storage to use the public app OAuth Client ID internally instead of asking each user to enter a Client ID.', 'Removed user-facing Google OAuth Client ID fields from Settings and Save & Backup Options.', 'Updated Google Drive setup text, status messages, and save/load checks for the public-app Drive workflow.'] },
       { version: '1.18.22', date: 'June 27, 2026', changes: ['Added optional Google Drive as a save/load storage location using Google Identity Services and Drive API from the browser.', 'Google Drive uploads use the existing encrypted full-save payload only; student data is encrypted before it leaves the browser.', 'Added Google Drive folder name, connect, save, load, and disconnect controls in Save & Backup Options and Settings > Saving.', 'Save health now reports Google Drive connection/sync state, and manual Save Now can use Google Drive when selected as the preferred storage location.'] },
       { version: '1.18.21', date: 'June 27, 2026', changes: ['Performed a full static security/code audit pass, removed unused workflow-expansion leftovers, tightened snapshot-index encryption status checks, and made empty snapshot indexes encrypt instead of writing plaintext arrays.', 'Consolidated snapshot retention handling so snapshot loading, in-memory access, and encrypted persistence use the same configured retention limit.', 'Added audit notes for remaining browser-only security limitations and verified syntax, duplicate functions, static IDs, and dangerous JavaScript APIs.'] },
