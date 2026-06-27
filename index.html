@@ -5109,7 +5109,6 @@
     }
 
 
-
     /* Revision 1.16.7: embedded file-picker fallback and save/load messaging */
     .save-options-actions {
       display: grid;
@@ -5663,7 +5662,6 @@
     }
 
 
-
     /* Revision 1.18.0: save warning banner, disabled buttons, modal precedence, and themes */
     button:disabled,
     button[disabled] {
@@ -5858,7 +5856,6 @@
       color: #d1fae5 !important;
       border-color: #166534 !important;
     }
-
 
 
     /* Revision 1.18.7: Eye Mode edit locks and note reveal controls */
@@ -8057,7 +8054,6 @@
   </div>
 
 
-
   <div id="welcomeSecurityModal" class="modal-backdrop welcome-security-backdrop" role="dialog" aria-modal="true" aria-labelledby="welcomeSecurityTitle">
     <div class="modal welcome-security-modal">
       <div class="panel-header"><h2 id="welcomeSecurityTitle">Welcome to Seating Chart Bubble Builder</h2></div>
@@ -8291,7 +8287,7 @@
     const WELCOME_SETUP_STORAGE_KEY = 'seating-chart-bubble-builder-secure-welcome-v1';
     const VISIBILITY_CREDENTIAL_KEY = 'seating-chart-bubble-builder-visibility-v1';
     const HINT_DISMISS_STORAGE_KEY = 'seating-chart-bubble-builder-dismissed-hints-v1';
-    const APP_REVISION = '1.18.20';
+    const APP_REVISION = '1.18.21';
     const APP_LAST_UPDATED = 'June 27, 2026';
 
     const APP_LICENSE = {
@@ -8352,6 +8348,7 @@
     ];
 
     const CHANGE_LOG = [
+      { version: '1.18.21', date: 'June 27, 2026', changes: ['Performed a full static security/code audit pass, removed unused workflow-expansion leftovers, tightened snapshot-index encryption status checks, and made empty snapshot indexes encrypt instead of writing plaintext arrays.', 'Consolidated snapshot retention handling so snapshot loading, in-memory access, and encrypted persistence use the same configured retention limit.', 'Added audit notes for remaining browser-only security limitations and verified syntax, duplicate functions, static IDs, and dangerous JavaScript APIs.'] },
       { version: '1.18.20', date: 'June 27, 2026', changes: ['Repaired the mobile Security Setup screen so the checklist scrolls inside the modal instead of trapping content off-screen.', 'Made Security Setup actions stay reachable on small screens while the checklist rows scroll independently.', 'Opening a Security Setup row now keeps that row in view on mobile after the accordion collapses the others.'] },
       { version: '1.18.19', date: 'June 27, 2026', changes: ['Removed Settings navigation dot separators so stacked page labels align cleanly.', 'Changed the Security Setup checklist into a one-open-row accordion so opening one setup item collapses the others.', 'Added valid-entry autosave for Security Setup options so Lock PIN, Eye PIN, Settings access, and auto-lock changes persist without requiring the Save Security Setup button before Done.'] },
       { version: '1.18.18', date: 'June 27, 2026', changes: ['Repaired additional Settings modal spacing and alignment so search, page navigation, and content panels keep consistent two-column sizing.', 'Converted the Security Setup Wizard into compact collapsible checklist rows with live completion checks for valid Lock PIN, Eye PIN, Settings access, and auto-lock entries.', 'Fixed Security Setup saving so Settings access choices and PIN/auto-lock configuration are persisted immediately to the encrypted browser save when possible.'] },
@@ -8514,7 +8511,7 @@
       catch (err) { return false; }
     }
     const keyOf = (row, col) => `${row}-${col}`;
-    const uid = (prefix) => `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+    const uid = (prefix) => `${prefix}-${(crypto.randomUUID ? crypto.randomUUID() : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`)}`;
     const escapeHtml = (value) => String(value ?? '').replace(/[&<>'"]/g, ch => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#039;', '"':'&quot;' }[ch]));
     const cssEscape = (value) => (window.CSS && typeof window.CSS.escape === 'function') ? window.CSS.escape(String(value)) : String(value ?? '').replace(/[^a-zA-Z0-9_-]/g, '\$&');
     const BUBBLE_COLORS = ['#2f6fed', '#e11d48', '#16a34a', '#f59e0b', '#7c3aed', '#0891b2', '#db2777', '#65a30d', '#ea580c', '#475569'];
@@ -13492,7 +13489,6 @@
     }
 
 
-
     function classFromLoosePayload(parsed) {
       const source = parsed && typeof parsed === 'object' ? parsed : {};
       const incoming = source.state && typeof source.state === 'object' ? source.state : source;
@@ -16995,6 +16991,10 @@
       }
     }
 
+    function snapshotRetentionStorageLimit() {
+      return clampNumber(pageSettings().snapshotRetention || 50, 5, 200);
+    }
+
     async function ensureAppSnapshotsLoaded(options = {}) {
       const force = !!options.force;
       if (uiState.appSnapshotsLoaded && !force) return uiState.appSnapshotsCache || [];
@@ -17021,7 +17021,7 @@
         } else if (parsed && Array.isArray(parsed.snapshots)) {
           items = parsed.snapshots;
         }
-        uiState.appSnapshotsCache = items.map(normalizeAppSnapshotRecord).filter(Boolean).slice(0, 50);
+        uiState.appSnapshotsCache = items.map(normalizeAppSnapshotRecord).filter(Boolean).slice(0, snapshotRetentionStorageLimit());
         uiState.appSnapshotsLoaded = true;
         if (!snapshotIndexStorageIsEncrypted() && currentSessionEncryptionKey()) await persistAppSnapshotsIndexEncrypted();
       } catch (err) {
@@ -17037,7 +17037,7 @@
       try {
         const parsed = JSON.parse(safeStorageGet('localStorage', LOCAL_AUTOSAVE_SNAPSHOT_KEY) || '[]');
         if (Array.isArray(parsed)) {
-          uiState.appSnapshotsCache = parsed.map(normalizeAppSnapshotRecord).filter(Boolean).slice(0, 50);
+          uiState.appSnapshotsCache = parsed.map(normalizeAppSnapshotRecord).filter(Boolean).slice(0, snapshotRetentionStorageLimit());
           uiState.appSnapshotsLoaded = true;
           return uiState.appSnapshotsCache;
         }
@@ -17047,15 +17047,14 @@
 
     async function persistAppSnapshotsIndexEncrypted() {
       const token = ++uiState.snapshotIndexPersistToken;
-      const items = (uiState.appSnapshotsCache || []).map(normalizeAppSnapshotRecord).filter(Boolean).slice(0, 50);
-      if (!items.length) {
-        safeStorageSet('localStorage', LOCAL_AUTOSAVE_SNAPSHOT_KEY, '[]');
-        updateSecurityStatusPanel();
-        return;
-      }
+      const items = (uiState.appSnapshotsCache || []).map(normalizeAppSnapshotRecord).filter(Boolean).slice(0, snapshotRetentionStorageLimit());
       const key = currentSessionEncryptionKey();
       if (!key) {
-        setLiveStatusMessage('Snapshot index was updated in memory but cannot be written until the session encryption password is active.');
+        if (!items.length) {
+          safeStorageRemove('localStorage', LOCAL_AUTOSAVE_SNAPSHOT_KEY);
+        } else {
+          setLiveStatusMessage('Snapshot index was updated in memory but cannot be written until the session encryption password is active.');
+        }
         updateSecurityStatusPanel();
         return;
       }
@@ -17066,7 +17065,7 @@
     }
 
     function saveAppSnapshots(items) {
-      uiState.appSnapshotsCache = (items || []).map(normalizeAppSnapshotRecord).filter(Boolean).slice(0, 50);
+      uiState.appSnapshotsCache = (items || []).map(normalizeAppSnapshotRecord).filter(Boolean).slice(0, snapshotRetentionStorageLimit());
       uiState.appSnapshotsLoaded = true;
       void persistAppSnapshotsIndexEncrypted();
     }
@@ -19006,29 +19005,22 @@ This will replace the current classes, settings, room templates, and active layo
     }
 
 
-
     /* Revision 1.18.14 workflow expansion module */
     (function installWorkflowExpansion11814(){
-      const ADDON_REVISION = '1.18.20';
       const MIGRATION_SCHEMA_VERSION = '2026-06-26.workflow-expansion-v1';
       const oldMergePageSettings = mergePageSettings;
       const oldUpdatePageSettingsForm = updatePageSettingsForm;
       const oldReadPageSettingsForm = readPageSettingsForm;
       const oldOpenSettingsModal = openSettingsModal;
       const oldCloseSettingsModal = closeSettingsModal;
-      const oldRenderSnapshotList = renderSnapshotList;
-      const oldSaveAppSnapshots = saveAppSnapshots;
       const oldRenderCsvMappingWizard = renderCsvMappingWizard;
-      const oldImportMappedCsvStudents = importMappedCsvStudents;
       const oldPushUndoSnapshot = pushUndoSnapshot;
       const oldUndoLastChange = undoLastChange;
       const oldRedoLastChange = redoLastChange;
       const oldStartPrintPreviewFromOptions = startPrintPreviewFromOptions;
       const oldExportChartPdf = exportChartPdf;
       const oldExportChartSvg = exportChartSvg;
-      const oldApplySettingsEncryptionKeyChange = applySettingsEncryptionKeyChange;
       const oldImportState = importState;
-      const oldImportStateDirectFromText = importStateDirectFromText;
       const oldOpenWelcomeSecurityModal = openWelcomeSecurityModal;
       const oldCloseWelcomeSecurityModal = closeWelcomeSecurityModal;
       const oldCompleteWelcomeSecuritySetup = completeWelcomeSecuritySetup;
@@ -19217,24 +19209,6 @@ This will replace the current classes, settings, room templates, and active layo
         installCsvWizardExtras();
       }
 
-      function setupWizardSteps() {
-        const cfg = pageSettings();
-        const activeKey = !!currentSessionEncryptionKey();
-        const lock = !!getLockCredential();
-        const eye = !!getVisibilityCredential();
-        const settingsProtected = settingsAccessRequirementText() !== 'Settings opens without a prompt.';
-        const autoLock = Number(cfg.autoLockMinutes || 0) > 0 || !!cfg.autoLockOnBlur || !!cfg.autoLockOnTabHidden || Number(cfg.autoLockOnReturnMinutes || 0) > 0;
-        const storageEncrypted = (() => { try { const local = JSON.parse(safeStorageGet('localStorage', STORAGE_KEY) || 'null'); const snaps = JSON.parse(safeStorageGet('localStorage', LOCAL_AUTOSAVE_SNAPSHOT_KEY) || 'null'); return !!(local?.encrypted && (!snaps || Array.isArray(snaps) || snaps?.encrypted)); } catch (err) { return false; } })();
-        return [
-          { title:'Encryption password', done:activeKey, text: activeKey ? 'Active session key is present.' : 'Enter the encryption password from Welcome or Settings > Saving.' },
-          { title:'Settings protection', done:settingsProtected, warn:!settingsProtected, text: settingsProtected ? settingsAccessRequirementText() : 'Settings opens without a prompt. Re-enable protection in Settings > Security & Data.' },
-          { title:'Lock PIN/password', done:lock, warn:!lock, text: lock ? 'Lock PIN/password is set. Auto-lock can use it after it has been entered this session.' : 'Set a Lock PIN/password to avoid using the full encryption password for normal locks.' },
-          { title:'Eye PIN/password', done:eye, warn:!eye, text: eye ? 'Eye Mode exit PIN/password is set.' : 'Set an Eye PIN/password if student-facing visibility mode will be used.' },
-          { title:'Auto-lock rules', done:autoLock, warn:!autoLock, text: autoLock ? 'Auto-lock has at least one trigger enabled.' : 'Auto-lock is optional, but recommended on shared or mobile devices.' },
-          { title:'Storage encryption', done:storageEncrypted, warn:!storageEncrypted, text: storageEncrypted ? 'Local browser save and snapshot index are encrypted or empty.' : 'Run a manual save after setting the encryption password.' }
-        ];
-      }
-
       function securityWizardMessage(message = '') {
         const node = el('securityWizardMessage');
         if (node) node.textContent = message || 'Valid security options auto-save. The Save button is still available for a manual save.';
@@ -19276,7 +19250,7 @@ This will replace the current classes, settings, room templates, and active layo
           none: 'No prompt / unlocked Settings'
         };
         const activeKey = !!currentSessionEncryptionKey();
-        const storageEncrypted = (() => { try { const local = JSON.parse(safeStorageGet('localStorage', STORAGE_KEY) || 'null'); const snaps = JSON.parse(safeStorageGet('localStorage', LOCAL_AUTOSAVE_SNAPSHOT_KEY) || 'null'); return !!(local?.encrypted && (!snaps || Array.isArray(snaps) || snaps?.encrypted)); } catch (err) { return false; } })();
+        const storageEncrypted = (() => { try { const local = JSON.parse(safeStorageGet('localStorage', STORAGE_KEY) || 'null'); const snaps = JSON.parse(safeStorageGet('localStorage', LOCAL_AUTOSAVE_SNAPSHOT_KEY) || 'null'); return !!(local?.encrypted && (!snaps || snaps?.encrypted)); } catch (err) { return false; } })();
         const autoLock = autoMinutes > 0 || onBlur || onHidden || returnMinutes > 0;
         return [
           { key:'encryption', title:'Encryption password', done:activeKey, warn:!activeKey, text: activeKey ? 'Active session encryption key is present.' : 'Create or enter the encryption password before continuing.', staticOnly:true },
