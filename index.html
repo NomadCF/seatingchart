@@ -5,7 +5,7 @@
   <meta name="license" content="MIT License" />
   <meta name="spdx-license-identifier" content="MIT" />
   <meta name="copyright" content="Copyright (c) 2026 Chris L. Franklin" />
-  <meta name="app-version" content="1.19.15" />
+  <meta name="app-version" content="1.19.16" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Seating Chart Bubble Builder</title>
   <style>
@@ -8654,6 +8654,8 @@
     const LINKED_SAVE_HANDLE_KEY = 'primary-save-file';
     const SAVE_META_STORAGE_KEY = 'seating-chart-save-meta-v1';
     const SAVE_SETUP_STORAGE_KEY = 'seating-chart-save-setup-v1';
+    const LOCAL_DURABLE_SAVE_PROMPT_SESSION_KEY = 'seating-chart-durable-save-prompt-last-v1';
+    const LOCAL_DURABLE_SAVE_PROMPT_MIN_MS = 60000;
     const LOCAL_AUTOSAVE_SNAPSHOT_KEY = 'seating-chart-bubble-builder-app-snapshots-v1';
     const GOOGLE_DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.file';
     const GOOGLE_DRIVE_CLIENT_ID = '288395515246-7u19cjdqqqfmlp8bjs92c9tl6jvd8usk.apps.googleusercontent.com';
@@ -8678,7 +8680,7 @@
     const WELCOME_SETUP_STORAGE_KEY = 'seating-chart-bubble-builder-secure-welcome-v1';
     const VISIBILITY_CREDENTIAL_KEY = 'seating-chart-bubble-builder-visibility-v1';
     const HINT_DISMISS_STORAGE_KEY = 'seating-chart-bubble-builder-dismissed-hints-v1';
-    const APP_REVISION = '1.19.15';
+    const APP_REVISION = '1.19.16';
     const APP_LAST_UPDATED = 'June 27, 2026';
 
     const APP_LICENSE = {
@@ -8739,6 +8741,7 @@
     ];
 
     const CHANGE_LOG = [
+      { version: '1.19.16', date: 'June 29, 2026', changes: ['Throttled the automatic Create a Safer Save File prompt so it can appear no more than once per minute.', 'Added an active-prompt guard so browser-only-save reminders cannot stack or reopen while another confirmation modal is already visible.', 'Stored the last safer-save prompt time in save metadata and sessionStorage so rapid autosaves do not keep nagging the user after dismissal.'] },
       { version: '1.19.15', date: 'June 29, 2026', changes: ['Added a Freeform zoom slider so teachers can shrink or enlarge the room canvas without changing saved seat geometry.', 'Expanded default Freeform seat sizing/spacing and added a default-layout overlap repair so old compact converted seats no longer load stacked on top of each other.', 'Changed Freeform bubble display from fragile color bars to seat-edge border colors and added Freeform physical-distance bubble warnings for avoid/spread rules.', 'Fixed Freeform assignment cleanup so changing a seat into a non-seat object removes the assigned student and linked grid-seat assignment.'] },
       { version: '1.19.14', date: 'June 29, 2026', changes: ['Corrected Freeform lock icons so locked objects show a locked icon and unlocked objects show an unlocked icon, while removing the extra locked/unlocked text badge inside seats.', 'Doubled the default Freeform working grid/canvas size and snap spacing for new Freeform layouts so teachers have room to actually lay out a classroom instead of decorating a postage stamp.', 'Added same-tab Freeform geometry session persistence so recently moved/resized/rotated objects keep their canvas positions after a browser refresh even before the next scheduled encrypted autosave runs.'] },
       { version: '1.19.13', date: 'June 29, 2026', changes: ['Expanded Freeform seat cards so assigned students, bubble chips, zone tags, and controls fit without tiny unusable seats.', 'Fixed Freeform seat Lock/Unlock and Clear controls by letting their delegated click handlers receive the click instead of being stopped by the object card.', 'Added icon-only Freeform lock/unlock buttons and a Front of Room side selector so teachers can choose top, right, bottom, or left room orientation.', 'Improved Freeform auto-assignment by mirroring real freeform seat positions into the seating engine so bubble rules score physical freeform distance instead of a fake row/column order.'] },
@@ -8922,6 +8925,8 @@
       freeformDrag: null,
       freeformGeometryCache: new Map(),
       freeformGeometryCacheReady: false,
+      durableSavePromptActive: false,
+      lastDurableSavePromptAt: 0,
       welcomeSecurityJustCompleted: false,
       suppressEncryptionPromptUntil: 0
     };
@@ -16483,20 +16488,55 @@
       return nextCount;
     }
 
+    function lastDurableSavePromptTime(meta = saveMeta()) {
+      const storedMs = Number(meta.localSavePromptLastAtMs || 0);
+      const storedIsoMs = Date.parse(meta.localSavePromptLastAt || '');
+      const sessionMs = Number(safeStorageGet('sessionStorage', LOCAL_DURABLE_SAVE_PROMPT_SESSION_KEY) || 0);
+      return Math.max(
+        Number.isFinite(storedMs) ? storedMs : 0,
+        Number.isFinite(storedIsoMs) ? storedIsoMs : 0,
+        Number.isFinite(sessionMs) ? sessionMs : 0,
+        Number(uiState.lastDurableSavePromptAt || 0)
+      );
+    }
+
+    function durableSavePromptIsThrottled(meta = saveMeta(), now = Date.now()) {
+      const lastShownAt = lastDurableSavePromptTime(meta);
+      return lastShownAt > 0 && (now - lastShownAt) < LOCAL_DURABLE_SAVE_PROMPT_MIN_MS;
+    }
+
+    function markDurableSavePromptShown(count, now = Date.now()) {
+      uiState.lastDurableSavePromptAt = now;
+      safeStorageSet('sessionStorage', LOCAL_DURABLE_SAVE_PROMPT_SESSION_KEY, String(now));
+      updateSaveMeta({
+        localSavePromptCount: count,
+        localSavePromptLastAt: new Date(now).toISOString(),
+        localSavePromptLastAtMs: now
+      });
+    }
+
     function maybePromptDurableSaveAfterLocalChanges() {
       if (uiState.linkedSaveHandle || (pageSettings().preferredStorage === 'googleDrive' && googleDriveStorageConnected()) || appIsEmbeddedFrame()) return;
+      if (uiState.durableSavePromptActive) return;
+      const confirmModal = el('confirmModal');
+      if (confirmModal?.classList.contains('show')) return;
       const meta = saveMeta();
       const count = Number(meta.localOnlyChangeCount || 0);
       const lastPrompt = Number(meta.localSavePromptCount || 0);
       if (count < 8 || count === lastPrompt) return;
-      updateSaveMeta({ localSavePromptCount: count });
+      const now = Date.now();
+      if (durableSavePromptIsThrottled(meta, now)) return;
+      uiState.durableSavePromptActive = true;
+      markDurableSavePromptShown(count, now);
       showInAppConfirm('You have made several changes that are only being auto-saved inside this browser. Browser local storage can be cleared by browser settings, device cleanup, profile changes, or using another device. Choose a real save file for safer storage, and set an encryption key if you use Private or Substitute notes.', async () => {
+        uiState.durableSavePromptActive = false;
         const proceed = await offerEncryptionBeforeFirstSave();
         if (proceed) await chooseLinkedSaveFile();
       }, {
         title: 'Create a Safer Save File?',
         confirmText: 'Choose Save File',
-        cancelText: 'Keep Browser Save'
+        cancelText: 'Keep Browser Save',
+        onCancel: () => { uiState.durableSavePromptActive = false; }
       });
     }
 
