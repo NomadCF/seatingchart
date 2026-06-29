@@ -5,7 +5,7 @@
   <meta name="license" content="MIT License" />
   <meta name="spdx-license-identifier" content="MIT" />
   <meta name="copyright" content="Copyright (c) 2026 Chris L. Franklin" />
-  <meta name="app-version" content="1.19.16" />
+  <meta name="app-version" content="1.19.17" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Seating Chart Bubble Builder</title>
   <style>
@@ -8680,7 +8680,7 @@
     const WELCOME_SETUP_STORAGE_KEY = 'seating-chart-bubble-builder-secure-welcome-v1';
     const VISIBILITY_CREDENTIAL_KEY = 'seating-chart-bubble-builder-visibility-v1';
     const HINT_DISMISS_STORAGE_KEY = 'seating-chart-bubble-builder-dismissed-hints-v1';
-    const APP_REVISION = '1.19.16';
+    const APP_REVISION = '1.19.17';
     const APP_LAST_UPDATED = 'June 27, 2026';
 
     const APP_LICENSE = {
@@ -8741,6 +8741,7 @@
     ];
 
     const CHANGE_LOG = [
+      { version: '1.19.17', date: 'June 29, 2026', changes: ['Ran a full static code audit for syntax, duplicate declarations, duplicate static IDs, risky dynamic evaluation, DOM wiring, and obvious unused symbols.', 'Removed duplicated snapshot retention helper logic and routed snapshot trimming through the shared retention helper.', 'Connected Freeform geometry session cleanup to local-data clear and in-memory factory reset paths so stale same-tab Freeform geometry cannot survive cleanup workflows.'] },
       { version: '1.19.16', date: 'June 29, 2026', changes: ['Throttled the automatic Create a Safer Save File prompt so it can appear no more than once per minute.', 'Added an active-prompt guard so browser-only-save reminders cannot stack or reopen while another confirmation modal is already visible.', 'Stored the last safer-save prompt time in save metadata and sessionStorage so rapid autosaves do not keep nagging the user after dismissal.'] },
       { version: '1.19.15', date: 'June 29, 2026', changes: ['Added a Freeform zoom slider so teachers can shrink or enlarge the room canvas without changing saved seat geometry.', 'Expanded default Freeform seat sizing/spacing and added a default-layout overlap repair so old compact converted seats no longer load stacked on top of each other.', 'Changed Freeform bubble display from fragile color bars to seat-edge border colors and added Freeform physical-distance bubble warnings for avoid/spread rules.', 'Fixed Freeform assignment cleanup so changing a seat into a non-seat object removes the assigned student and linked grid-seat assignment.'] },
       { version: '1.19.14', date: 'June 29, 2026', changes: ['Corrected Freeform lock icons so locked objects show a locked icon and unlocked objects show an unlocked icon, while removing the extra locked/unlocked text badge inside seats.', 'Doubled the default Freeform working grid/canvas size and snap spacing for new Freeform layouts so teachers have room to actually lay out a classroom instead of decorating a postage stamp.', 'Added same-tab Freeform geometry session persistence so recently moved/resized/rotated objects keep their canvas positions after a browser refresh even before the next scheduled encrypted autosave runs.'] },
@@ -20422,6 +20423,7 @@ This will replace the current classes, settings, room templates, and active layo
         uiState.appSnapshotsLoaded = true;
         safeStorageRemove('sessionStorage', PAGE_LOCK_SESSION_KEY);
         safeStorageRemove('sessionStorage', PAGE_LOCK_DATA_SESSION_KEY);
+        clearFreeformGeometrySession();
         clearWrappedSessionEncryptionKeys();
         clearCachedPageLockSecretForSession();
         uiState.encryptionKey = '';
@@ -20476,6 +20478,7 @@ This will replace the current classes, settings, room templates, and active layo
       uiState.encryptionKey = '';
       clearWrappedSessionEncryptionKeys();
       clearCachedPageLockSecretForSession();
+      clearFreeformGeometrySession();
       uiState.undoStack = [];
       uiState.redoStack = [];
       uiState.selectedCellKeys.clear();
@@ -22059,10 +22062,9 @@ This will replace the current classes, settings, room templates, and active layo
         if (reason) setLiveStatusMessage(reason);
       }
 
-      function snapshotRetentionLimit() { return clampNumber(pageSettings().snapshotRetention || 50, 5, 200); }
       function trimSnapshotsToRetention() {
         if (!Array.isArray(uiState.appSnapshotsCache)) return;
-        const limit = snapshotRetentionLimit();
+        const limit = snapshotRetentionStorageLimit();
         if (uiState.appSnapshotsCache.length > limit) {
           uiState.appSnapshotsCache = uiState.appSnapshotsCache.slice(0, limit);
           uiState.appSnapshotsLoaded = true;
@@ -22071,7 +22073,7 @@ This will replace the current classes, settings, room templates, and active layo
       }
 
       saveAppSnapshots = function(items) {
-        const limit = snapshotRetentionLimit();
+        const limit = snapshotRetentionStorageLimit();
         uiState.appSnapshotsCache = (items || []).map(normalizeAppSnapshotRecord).filter(Boolean).slice(0, limit);
         uiState.appSnapshotsLoaded = true;
         void persistAppSnapshotsIndexEncrypted();
@@ -22349,7 +22351,7 @@ This will replace the current classes, settings, room templates, and active layo
                 if (item.plain) { next.push({ ...item.snap, data: await snapshotDataForStorage(item.plain), signature: hashString(item.plain) }); converted++; }
                 else next.push(item.snap);
               }
-              uiState.appSnapshotsCache = next.map(normalizeAppSnapshotRecord).filter(Boolean).slice(0, snapshotRetentionLimit());
+              uiState.appSnapshotsCache = next.map(normalizeAppSnapshotRecord).filter(Boolean).slice(0, snapshotRetentionStorageLimit());
               uiState.appSnapshotsLoaded = true;
             }
             if (input) input.value = '';
