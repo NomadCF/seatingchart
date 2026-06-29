@@ -5,6 +5,7 @@
   <meta name="license" content="MIT License" />
   <meta name="spdx-license-identifier" content="MIT" />
   <meta name="copyright" content="Copyright (c) 2026 Chris L. Franklin" />
+  <meta name="app-version" content="1.19.11" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Seating Chart Bubble Builder</title>
   <style>
@@ -6871,7 +6872,7 @@
 
 
     /* Revision 1.19.5: first-run note encryption prompt suppression */
-    /* Revision 1.19.8: freeform lock workflow cleanup and removed unused arrange controls */
+    /* Revision 1.19.10: freeform geometry guard prevents grid-derived snapback during object edits */
     #securityWizardSteps summary.security-wizard-check-summary {
       touch-action: manipulation;
       user-select: none;
@@ -8641,11 +8642,13 @@
     const PAGE_LOCK_DATA_SESSION_KEY = 'seating-chart-bubble-builder-locked-data-v1';
     const PAGE_LOCK_WRAPPED_KEY_SESSION_KEY = 'seating-chart-bubble-builder-lock-wrapped-encryption-key-v1';
     const VISIBILITY_WRAPPED_KEY_SESSION_KEY = 'seating-chart-bubble-builder-visibility-wrapped-encryption-key-v1';
+    const SAME_TAB_RELOAD_WRAPPED_KEY_SESSION_KEY = 'seating-chart-bubble-builder-same-tab-reload-wrapped-encryption-key-v1';
+    const SAME_TAB_RELOAD_SECRET_SESSION_KEY = 'seating-chart-bubble-builder-same-tab-reload-secret-v1';
     const VISIBILITY_DATA_SESSION_KEY = 'seating-chart-bubble-builder-visibility-data-v1';
     const WELCOME_SETUP_STORAGE_KEY = 'seating-chart-bubble-builder-secure-welcome-v1';
     const VISIBILITY_CREDENTIAL_KEY = 'seating-chart-bubble-builder-visibility-v1';
     const HINT_DISMISS_STORAGE_KEY = 'seating-chart-bubble-builder-dismissed-hints-v1';
-    const APP_REVISION = '1.19.9';
+    const APP_REVISION = '1.19.11';
     const APP_LAST_UPDATED = 'June 27, 2026';
 
     const APP_LICENSE = {
@@ -8706,6 +8709,8 @@
     ];
 
     const CHANGE_LOG = [
+      { version: '1.19.11', date: 'June 29, 2026', changes: ['Added app-version metadata in the HTML head so the build version is visible to scanners, GitHub, and browser inspection without opening the app.', 'Restored the active encryption password across same-tab browser refreshes when auto-lock triggers are disabled, avoiding needless encrypted-local-save prompts on refresh while keeping the cache in sessionStorage only.', 'Cleared the same-tab reload key whenever auto-lock triggers are enabled or the page is actively locked so refresh convenience does not bypass configured lock workflows.'] },
+      { version: '1.19.10', date: 'June 29, 2026', changes: ['Added a freeform object-state guard so drag, resize, rotate, lock/unlock, duplicate, delete, and type edits preserve the current canvas geometry even if a broader render path runs afterward.', 'Prevented grid-derived row/column defaults from overwriting freeform x/y position, width, height, rotation, object type, color, z-index, or lock state during object edits.', 'Updated the freeform rotation path to apply the selected object rotation immediately and then re-render from the preserved object state.'] },
       { version: '1.19.9', date: 'June 27, 2026', changes: ['Made Layout Tools mode-aware so grid-only controls hide in Freeform mode and freeform-only controls hide in Standard Grid mode.', 'Changed Freeform student drag/drop behavior so dropping onto an existing seat assigns the student there, while dropping on blank canvas no longer creates mystery seats.', 'Updated Generate Chart and Randomize + Seat Everyone to prepare a grid mirror from the current freeform seats, run the existing bubble-rule seating engine, then write assignments back to freeform seats without changing object geometry.'] },
       { version: '1.19.8', date: 'June 27, 2026', changes: ['Removed the misleading Freeform Bring Forward and Send Back toolbar buttons and their unused arrange code so room Front/Back only means actual room orientation markers.', 'Made Freeform seat lock state authoritative for Freeform editing: locked seats can be selected and unlocked but cannot be reassigned, cleared, retagged, or converted until unlocked.', 'Synced Freeform lock/unlock changes with the linked Standard Grid seat without resetting freeform position, size, rotation, object type, or bubble display.'] },
       { version: '1.19.7', date: 'June 27, 2026', changes: ['Linked freeform seat lock/unlock state with the matching Standard Grid cell so both views agree before editing, printing, generating, or switching modes.', 'Made the freeform double-click seat editor open with the selected freeform seat state, including assigned student, bubbles, zones, and lock status.', 'Updated freeform assign, clear, lock, unlock, and object-type actions so they preserve canvas geometry while syncing only the matching grid seat state.'] },
@@ -9256,6 +9261,7 @@
       setSideTab(uiState.activeSideTab);
       applyVisibilityClasses();
       resetAutoLockTimer();
+      syncSameTabReloadKeyForSettings(cfg);
       if (!options.skipRender && el('seatGrid')) renderGrid();
     }
 
@@ -10632,20 +10638,83 @@
       return layout.canvas.snap === false ? Number(value) : Math.round(Number(value) / size) * size;
     }
 
+    function captureFreeformObjectStateSnapshot() {
+      const objects = Array.isArray(state.freeformLayout?.objects) ? state.freeformLayout.objects : [];
+      const snapshot = { byId: new Map(), byCellKey: new Map() };
+      objects.forEach(obj => {
+        if (!obj || typeof obj !== 'object') return;
+        const item = {
+          id: String(obj.id || ''),
+          cellKey: obj.cellKey ? String(obj.cellKey) : '',
+          type: String(obj.type || 'seat'),
+          label: String(obj.label || ''),
+          color: obj.color || objectTypeColor(obj.type || 'seat'),
+          x: Number(obj.x) || 0,
+          y: Number(obj.y) || 0,
+          width: Number(obj.width) || (obj.type === 'seat' ? 118 : 160),
+          height: Number(obj.height) || (obj.type === 'seat' ? 72 : 96),
+          rotation: Number(obj.rotation) || 0,
+          locked: Boolean(obj.locked),
+          zIndex: Number(obj.zIndex) || 1,
+          manual: Boolean(obj.manual),
+          assignedStudentId: obj.assignedStudentId ? String(obj.assignedStudentId) : null,
+          anchorBubbleIds: deepClone(obj.anchorBubbleIds || []),
+          zoneIds: deepClone(obj.zoneIds || [])
+        };
+        if (item.id) snapshot.byId.set(item.id, item);
+        if (item.cellKey) snapshot.byCellKey.set(item.cellKey, item);
+      });
+      return snapshot;
+    }
+
+    function restoreFreeformObjectStateSnapshot(snapshot, { includeAssignments = false } = {}) {
+      if (!snapshot || !Array.isArray(state.freeformLayout?.objects)) return false;
+      let restored = false;
+      state.freeformLayout.objects.forEach(obj => {
+        if (!obj || typeof obj !== 'object') return;
+        const item = snapshot.byId?.get(String(obj.id || '')) || (obj.cellKey ? snapshot.byCellKey?.get(String(obj.cellKey)) : null);
+        if (!item) return;
+        obj.x = item.x;
+        obj.y = item.y;
+        obj.width = item.width;
+        obj.height = item.height;
+        obj.rotation = item.rotation;
+        obj.type = item.type;
+        obj.label = item.label;
+        obj.color = safeColor(item.color, objectTypeColor(item.type));
+        obj.locked = item.locked;
+        obj.zIndex = item.zIndex;
+        obj.manual = item.manual;
+        if (includeAssignments) {
+          obj.assignedStudentId = item.assignedStudentId;
+          obj.anchorBubbleIds = deepClone(item.anchorBubbleIds || []);
+          obj.zoneIds = deepClone(item.zoneIds || []);
+        }
+        restored = true;
+      });
+      return restored;
+    }
 
     function commitFreeformLayoutChange(reason = 'freeform-edit', { render = true, syncToGrid = false, fullRender = false } = {}) {
+      const editedSnapshot = captureFreeformObjectStateSnapshot();
       ensureFreeformLayout();
-      // Freeform geometry is editor-owned. Do not rebuild or re-map the whole canvas during
-      // normal object actions; grid mapping only belongs to explicit mode switches, Convert,
-      // Map to Grid, or generator actions. Otherwise drag/resize/rotate/lock can snap objects
-      // back to their grid-derived defaults.
+      // Freeform geometry and object definition are editor-owned. Do not rebuild or re-map the
+      // canvas during normal object actions; grid mapping only belongs to explicit mode switches,
+      // Convert, Map to Grid, or generator actions. The snapshot guard below also protects against
+      // indirect render/persist paths that try to reapply row/column defaults after a drag, resize,
+      // rotate, lock/unlock, duplicate, delete, or type edit.
+      restoreFreeformObjectStateSnapshot(editedSnapshot, { includeAssignments: true });
       if (syncToGrid) syncFreeformAssignmentsToGridByPosition();
+      restoreFreeformObjectStateSnapshot(editedSnapshot, { includeAssignments: true });
       persistActiveClass();
+      restoreFreeformObjectStateSnapshot(editedSnapshot, { includeAssignments: true });
       scheduleLinkedAutoSave(reason);
       updateSaveHealthPanel();
       if (render) {
-        if (fullRender) renderAll();
-        else {
+        if (fullRender) {
+          renderAll();
+          restoreFreeformObjectStateSnapshot(editedSnapshot, { includeAssignments: true });
+        } else {
           renderFreeformLayout();
           renderStatus();
           updateCellSelectionVisuals();
@@ -10901,8 +10970,11 @@
     }
 
     function renderFreeformLayout() {
+      const freeformRenderSnapshot = captureFreeformObjectStateSnapshot();
       ensureFreeformLayout();
+      restoreFreeformObjectStateSnapshot(freeformRenderSnapshot, { includeAssignments: false });
       repairFreeformMissingAssignmentDetailsFromGrid();
+      restoreFreeformObjectStateSnapshot(freeformRenderSnapshot, { includeAssignments: false });
       const grid = el('seatGrid');
       if (!grid) return;
       const layout = state.freeformLayout;
@@ -11033,6 +11105,7 @@
         node.style.top = `${obj.y}px`;
         node.style.width = `${obj.width}px`;
         node.style.height = `${obj.height}px`;
+        node.style.transform = `rotate(${Number(obj.rotation) || 0}deg)`;
       }
     }
 
@@ -11087,6 +11160,8 @@
       const obj = (state.freeformLayout?.objects || []).find(item => item.id === id);
       if (!obj || obj.locked) return;
       obj.rotation = ((Number(obj.rotation) || 0) + degrees) % 360;
+      const node = document.querySelector(`.freeform-object[data-object-id="${cssEscape(obj.id)}"]`);
+      if (node) node.style.transform = `rotate(${Number(obj.rotation) || 0}deg)`;
       commitFreeformLayoutChange('freeform-rotate-object', { render: true, syncToGrid: false });
     }
 
@@ -13159,8 +13234,11 @@
     }
 
     function renderAll() {
+      const freeformRenderSnapshot = state.layoutMode === 'freeform' ? captureFreeformObjectStateSnapshot() : null;
       cleanupInvalidAssignmentsAndAnchors();
+      if (freeformRenderSnapshot) restoreFreeformObjectStateSnapshot(freeformRenderSnapshot, { includeAssignments: true });
       persistActiveClass();
+      if (freeformRenderSnapshot) restoreFreeformObjectStateSnapshot(freeformRenderSnapshot, { includeAssignments: true });
       const rowsInput = el('rowsInput');
       const colsInput = el('colsInput');
       if (document.activeElement !== rowsInput) rowsInput.value = state.rows;
@@ -13180,9 +13258,11 @@
       refreshNamesOnlyToggle();
       applyDesignModeUi();
       applyVisibilityClasses();
+      if (freeformRenderSnapshot) restoreFreeformObjectStateSnapshot(freeformRenderSnapshot, { includeAssignments: true });
       renderGrid();
       renderStatus();
       updateCellSelectionVisuals();
+      if (freeformRenderSnapshot) restoreFreeformObjectStateSnapshot(freeformRenderSnapshot, { includeAssignments: true });
       persistActiveClass();
       applyTooltips();
       queueEnhanceHints();
@@ -13962,6 +14042,7 @@
       schedulePageSettingsPersistence('settings');
       updateSecurityStatusPanel();
       resetAutoLockTimer();
+      syncSameTabReloadKeyForSettings(pageSettings());
       scheduleLinkedAutoSave('settings');
       setLiveStatusMessage('Page settings updated. Save to the selected storage location or download a backup copy to keep these defaults with the file.');
     }
@@ -14625,6 +14706,7 @@
       updateSaveHealthPanel();
       schedulePageSettingsPersistence('settings');
       updateSecurityStatusPanel();
+      syncSameTabReloadKeyForSettings(pageSettings());
       void ensureAppSnapshotsLoaded({ force: false });
     }
 
@@ -14639,6 +14721,7 @@
       updateSaveHealthPanel();
       schedulePageSettingsPersistence('settings');
       updateSecurityStatusPanel();
+      clearSameTabReloadSessionKey();
     }
 
     function wrappedKeyStorageForMode(mode) {
@@ -14684,6 +14767,7 @@
       safeStorageRemove('sessionStorage', PAGE_LOCK_WRAPPED_KEY_SESSION_KEY);
       safeStorageRemove('sessionStorage', VISIBILITY_WRAPPED_KEY_SESSION_KEY);
       safeStorageRemove('sessionStorage', VISIBILITY_DATA_SESSION_KEY);
+      clearSameTabReloadSessionKey();
     }
 
 
@@ -19717,9 +19801,82 @@ This will replace the current classes, settings, room templates, and active layo
       setLiveStatusMessage('Basic PDF exported.');
     }
 
-    function isAutoLockTriggerEnabled() {
-      const cfg = pageSettings();
+    function autoLockTriggerEnabledForSettings(settings = pageSettings()) {
+      const cfg = settings && typeof settings === 'object' ? settings : pageSettings();
       return Boolean(Number(cfg.autoLockMinutes || 0) > 0 || cfg.autoLockOnBlur || cfg.autoLockOnTabHidden || Number(cfg.autoLockOnReturnMinutes || 0) > 0);
+    }
+
+    function isAutoLockTriggerEnabled() {
+      return autoLockTriggerEnabledForSettings(pageSettings());
+    }
+
+    function sameTabReloadKeyAllowed(settings = pageSettings()) {
+      return !uiState.pageLocked && !uiState.visibilityMode && !autoLockTriggerEnabledForSettings(settings);
+    }
+
+    function clearSameTabReloadSessionKey() {
+      safeStorageRemove('sessionStorage', SAME_TAB_RELOAD_WRAPPED_KEY_SESSION_KEY);
+      safeStorageRemove('sessionStorage', SAME_TAB_RELOAD_SECRET_SESSION_KEY);
+    }
+
+    function sameTabReloadSecret() {
+      let secret = safeStorageGet('sessionStorage', SAME_TAB_RELOAD_SECRET_SESSION_KEY);
+      if (!secret && window.crypto?.getRandomValues) {
+        const bytes = crypto.getRandomValues(new Uint8Array(24));
+        secret = bytesToBase64(bytes);
+        safeStorageSet('sessionStorage', SAME_TAB_RELOAD_SECRET_SESSION_KEY, secret);
+      }
+      return String(secret || '');
+    }
+
+    async function cacheSameTabReloadSessionEncryptionKey() {
+      const key = currentSessionEncryptionKey();
+      if (!key || !sameTabReloadKeyAllowed()) {
+        clearSameTabReloadSessionKey();
+        return false;
+      }
+      try {
+        const secret = sameTabReloadSecret();
+        if (!secret) return false;
+        const wrapped = await encryptTextWithSecret(key, secret, 'same-tab-reload-session-key', {
+          wrappedKind: 'same-tab-reload-session-key',
+          wrappedFor: 'browser-refresh',
+          storageScope: 'sessionStorage',
+          warning: 'Convenience cache for same-tab refresh only. Cleared when auto-lock triggers are enabled, the page is locked, or the tab session ends.'
+        });
+        safeStorageSet('sessionStorage', SAME_TAB_RELOAD_WRAPPED_KEY_SESSION_KEY, wrapped);
+        return true;
+      } catch (err) {
+        clearSameTabReloadSessionKey();
+        return false;
+      }
+    }
+
+    async function restoreSameTabReloadSessionEncryptionKey() {
+      if (currentSessionEncryptionKey()) return true;
+      const wrapped = safeStorageGet('sessionStorage', SAME_TAB_RELOAD_WRAPPED_KEY_SESSION_KEY);
+      const secret = safeStorageGet('sessionStorage', SAME_TAB_RELOAD_SECRET_SESSION_KEY);
+      if (!wrapped || !secret) return false;
+      try {
+        const parsed = JSON.parse(wrapped);
+        if (!parsed || parsed.wrappedKind !== 'same-tab-reload-session-key') throw new Error('Reload key cache is not valid.');
+        const restored = await decryptTextEnvelope(parsed, secret);
+        if (!restored) throw new Error('Reload key cache is empty.');
+        uiState.encryptionKey = restored;
+        uiState.encryptionEnabled = true;
+        return true;
+      } catch (err) {
+        clearSameTabReloadSessionKey();
+        return false;
+      }
+    }
+
+    function syncSameTabReloadKeyForSettings(settings = pageSettings()) {
+      if (!sameTabReloadKeyAllowed(settings)) {
+        clearSameTabReloadSessionKey();
+        return;
+      }
+      if (currentSessionEncryptionKey()) void cacheSameTabReloadSessionEncryptionKey();
     }
 
     function clearUnlockedPageLockSessionMarker(reason = '') {
@@ -19736,11 +19893,15 @@ This will replace the current classes, settings, room templates, and active layo
       uiState.isPageExiting = true;
       if (!uiState.pageLocked && !isAutoLockTriggerEnabled()) {
         clearUnlockedPageLockSessionMarker();
+        syncSameTabReloadKeyForSettings(pageSettings());
+      } else {
+        clearSameTabReloadSessionKey();
       }
     }
 
     async function performConfiguredAutoLock(reason = 'inactivity') {
       if (uiState.isPageExiting || uiState.pageLocked || uiState.autoLockInProgress || !isAutoLockTriggerEnabled()) return;
+      clearSameTabReloadSessionKey();
       uiState.autoLockInProgress = true;
       try {
         const keySecret = lockDataSecretFromSettings();
@@ -21602,9 +21763,7 @@ This will replace the current classes, settings, room templates, and active layo
       importStateDirectFromText = async function(text, sourceLabel = 'local save') {
         let parsed = JSON.parse(text);
         if (parsed && parsed.encrypted) {
-          const key = await requestEncryptionKey(`This ${sourceLabel} is encrypted. Enter the encryption key to continue.`);
-          if (!key) throw new Error('Encrypted load canceled.');
-          const decryptedText = await decryptTextEnvelopeAndTrustKey(parsed, key);
+          const decryptedText = await decryptEncryptedPayloadUsingActiveKeyFirst(parsed, sourceLabel);
           parsed = migratePayloadObject(JSON.parse(decryptedText));
           importState(JSON.stringify(parsed));
           return;
@@ -21932,6 +22091,7 @@ This will replace the current classes, settings, room templates, and active layo
       installMobileTouchSupport();
       installMobileCarrySupport();
       await loadLinkedSaveHandleFromStorage();
+      await restoreSameTabReloadSessionEncryptionKey();
 
       if (safeStorageGet('sessionStorage', PAGE_LOCK_SESSION_KEY) === 'true' && !safeStorageGet('sessionStorage', PAGE_LOCK_DATA_SESSION_KEY)) {
         clearUnlockedPageLockSessionMarker('Cleared a stale lock marker from the previous browser session.');
