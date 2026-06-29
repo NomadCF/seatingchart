@@ -6942,7 +6942,10 @@
       background: #f8fafc;
     }
     body.freeform-layout-mode .freeform-tools { display: flex; }
-    body.freeform-layout-mode .grid-only-tool { opacity: .55; }
+    body:not(.freeform-layout-mode) .freeform-only-tool { display: none !important; }
+    body.freeform-layout-mode .grid-only-tool { display: none !important; }
+    body.freeform-layout-mode .standard-only-tool { display: none !important; }
+    body.freeform-layout-mode .toolbar-subtitle::after { content: ' · Freeform tools active'; font-weight: 700; color: #2563eb; }
     .freeform-tools .field { min-width: 110px; margin-bottom: 0; }
     .freeform-tools .field.small { min-width: 82px; }
     .freeform-tools button { flex: 0 0 auto; }
@@ -7562,11 +7565,11 @@
 
         </div>
         <div class="toolbar-body">
-          <div class="field">
+          <div class="field grid-only-tool">
             <label for="rowsInput">Rows</label>
             <input id="rowsInput" type="number" min="1" max="30" value="5" />
           </div>
-          <div class="field">
+          <div class="field grid-only-tool">
             <label for="colsInput">Columns</label>
             <input id="colsInput" type="number" min="1" max="30" value="6" />
           </div>
@@ -7595,7 +7598,7 @@
               <option value="ada">ADA Space</option>
             </select>
           </div>
-          <div class="multi-select-controls">
+          <div class="multi-select-controls grid-only-tool">
             <button id="selectCellsBtn" class="secondary" type="button" aria-pressed="false">Select Cells</button>
             <button id="clearCellSelectionBtn" class="secondary" type="button">Clear Selection</button>
             <span id="selectedCellCount" class="pill selection-count">0 selected</span>
@@ -7609,7 +7612,7 @@
           <button id="buildGridBtn" class="secondary grid-only-tool">Build/Resize Grid</button>
           <button id="makeAllSeatsBtn" class="secondary grid-only-tool">All Seats</button>
           <button id="emptyGridBtn" class="danger grid-only-tool">Empty Grid</button>
-          <div id="freeformTools" class="freeform-tools" aria-label="Freeform room layout tools">
+          <div id="freeformTools" class="freeform-tools freeform-only-tool" aria-label="Freeform room layout tools">
             <div class="field">
               <label for="freeformObjectTool">Add Object</label>
               <select id="freeformObjectTool">
@@ -7639,7 +7642,7 @@
             <div class="field small"><label for="freeformGridSizeInput">Snap</label><input id="freeformGridSizeInput" type="number" min="5" max="80" value="20" /></div>
             <label class="checkline" title="Snap dragged and resized freeform objects to the canvas grid."><input id="freeformSnapToggle" type="checkbox" checked /> <span>Snap to grid</span></label>
           </div>
-          <div class="hint" style="max-width:620px;">Grid mode uses rows and columns. Freeform mode lets you drag, resize, rotate, lock, and save real room placements. The top of the freeform canvas is labeled Front of Room and the bottom is Back of Room. Lock a freeform object to prevent movement and seat edits until it is unlocked. Use Map to Grid before printing a simple row/column version; the app maps freeform seat order back into grid seats.</div>
+          <div class="hint" style="max-width:620px;">Grid mode uses rows and columns. Freeform mode uses draggable seats and room objects. Drag a student onto an existing freeform seat to assign that student there; dropping on blank canvas does not create a seat. Use Add Object to create more seats. Generate and Randomize in Freeform mode fill the existing freeform seats using bubble rules, then mirror the results back to the simple grid for printing.</div>
         </div>
       </div>
 
@@ -8642,7 +8645,7 @@
     const WELCOME_SETUP_STORAGE_KEY = 'seating-chart-bubble-builder-secure-welcome-v1';
     const VISIBILITY_CREDENTIAL_KEY = 'seating-chart-bubble-builder-visibility-v1';
     const HINT_DISMISS_STORAGE_KEY = 'seating-chart-bubble-builder-dismissed-hints-v1';
-    const APP_REVISION = '1.19.8';
+    const APP_REVISION = '1.19.9';
     const APP_LAST_UPDATED = 'June 27, 2026';
 
     const APP_LICENSE = {
@@ -8703,6 +8706,7 @@
     ];
 
     const CHANGE_LOG = [
+      { version: '1.19.9', date: 'June 27, 2026', changes: ['Made Layout Tools mode-aware so grid-only controls hide in Freeform mode and freeform-only controls hide in Standard Grid mode.', 'Changed Freeform student drag/drop behavior so dropping onto an existing seat assigns the student there, while dropping on blank canvas no longer creates mystery seats.', 'Updated Generate Chart and Randomize + Seat Everyone to prepare a grid mirror from the current freeform seats, run the existing bubble-rule seating engine, then write assignments back to freeform seats without changing object geometry.'] },
       { version: '1.19.8', date: 'June 27, 2026', changes: ['Removed the misleading Freeform Bring Forward and Send Back toolbar buttons and their unused arrange code so room Front/Back only means actual room orientation markers.', 'Made Freeform seat lock state authoritative for Freeform editing: locked seats can be selected and unlocked but cannot be reassigned, cleared, retagged, or converted until unlocked.', 'Synced Freeform lock/unlock changes with the linked Standard Grid seat without resetting freeform position, size, rotation, object type, or bubble display.'] },
       { version: '1.19.7', date: 'June 27, 2026', changes: ['Linked freeform seat lock/unlock state with the matching Standard Grid cell so both views agree before editing, printing, generating, or switching modes.', 'Made the freeform double-click seat editor open with the selected freeform seat state, including assigned student, bubbles, zones, and lock status.', 'Updated freeform assign, clear, lock, unlock, and object-type actions so they preserve canvas geometry while syncing only the matching grid seat state.'] },
       { version: '1.19.6', date: 'June 27, 2026', changes: ['Fixed Freeform Room Layout seat cards so assigned student names, bubble color bars, reserved bubble anchors, and zone tags display on freeform seats instead of showing Drop student here.', 'Added freeform assignment repair that fills missing freeform seat assignments from matching grid cells without rebuilding the canvas geometry.', 'Renamed Front/Back freeform toolbar controls to Bring Forward/Send Back and added visible Front of Room/Back of Room orientation markers on the freeform canvas.'] },
@@ -10462,6 +10466,44 @@
       return freeformObjectsSorted((state.freeformLayout.objects || []).filter(obj => obj.type === 'seat'));
     }
 
+    function prepareGridMirrorFromFreeformSeats({ clearUnlockedAssignments = false } = {}) {
+      ensureFreeformLayout();
+      const seats = freeformSeatObjectsSorted();
+      if (!seats.length) return false;
+      const seatCount = seats.length;
+      const currentCols = Math.max(1, Math.min(30, Number(state.cols) || Math.ceil(Math.sqrt(seatCount)) || 1));
+      let cols = currentCols;
+      let rows = Math.ceil(seatCount / cols);
+      if (rows > 30) {
+        cols = Math.min(30, Math.max(cols, Math.ceil(seatCount / 30)));
+        rows = Math.ceil(seatCount / cols);
+      }
+      state.cols = Math.max(1, Math.min(30, cols));
+      state.rows = Math.max(1, Math.min(30, rows));
+      ensureGrid();
+      const entries = Object.entries(state.cells).sort((a, b) => (Number(a[1].row) - Number(b[1].row)) || (Number(a[1].col) - Number(b[1].col)));
+      entries.forEach(([, cell]) => {
+        cell.type = 'empty';
+        cell.assignedStudentId = null;
+        cell.manual = false;
+        cell.anchorBubbleIds = [];
+        cell.zoneIds = [];
+      });
+      seats.forEach((obj, index) => {
+        const entry = entries[index];
+        if (!entry) return;
+        const [cellKey, cell] = entry;
+        obj.cellKey = cellKey;
+        cell.type = 'seat';
+        const keepAssignment = !clearUnlockedAssignments || Boolean(obj.locked || obj.manual);
+        cell.assignedStudentId = keepAssignment ? (obj.assignedStudentId || null) : null;
+        cell.manual = Boolean(cell.assignedStudentId && (obj.locked || obj.manual));
+        cell.anchorBubbleIds = deepClone(obj.anchorBubbleIds || []);
+        cell.zoneIds = deepClone(obj.zoneIds || []);
+      });
+      return true;
+    }
+
     function createFreeformObjectsFromGrid({ keepAssignments = true } = {}) {
       ensureGrid();
       const objects = [];
@@ -10828,7 +10870,7 @@
       if (!obj) return '';
       if (obj.type === 'seat') {
         const student = freeformObjectStudent(obj, lookups);
-        return student ? studentDisplay(student) : 'Empty Seat';
+        return student ? studentDisplay(student) : 'Drop Student Here';
       }
       return obj.label || objectLabel(obj.type);
     }
@@ -10914,11 +10956,12 @@
           openSeatEditModal(cellKey, { freeformObjectId: obj.id });
         });
         node.addEventListener('dragover', event => {
-          if (obj.type === 'seat' && !obj.locked && !eyeModeBlocksSeatEditing()) { event.preventDefault(); node.classList.add('drop-target'); }
+          if (obj.type === 'seat' && !obj.locked && !eyeModeBlocksSeatEditing()) { event.preventDefault(); event.stopPropagation(); node.classList.add('drop-target'); }
         });
         node.addEventListener('dragleave', () => node.classList.remove('drop-target'));
         node.addEventListener('drop', event => {
           event.preventDefault();
+          event.stopPropagation();
           node.classList.remove('drop-target');
           if (obj.type !== 'seat') return;
           if (obj.locked) return blockLockedSeatEditAction();
@@ -10937,9 +10980,7 @@
         let data;
         try { data = JSON.parse(event.dataTransfer.getData('application/json')); } catch { return; }
         if (data.type === 'student') {
-          const rect = grid.getBoundingClientRect();
-          const seat = addFreeformObject('seat', { x: freeformSnap(event.clientX - rect.left - 58), y: freeformSnap(event.clientY - rect.top - 35), assignedStudentId: data.id, manual: true, locked: true });
-          assignStudentToFreeformObject(data.id, seat.id, false);
+          setLiveStatusMessage('Drop students directly onto an existing freeform seat. Blank canvas drops do not create seats; use Add Object > Seat when you need another seat.');
         }
       };
       el('printStats').textContent = `${printChartMetaLine() || activeClassName()} · Freeform layout · ${state.students.length} students · ${seatCount} seats · ${assignedIds.size} assigned`;
@@ -11075,6 +11116,7 @@
       target.locked = true;
       mirrorFreeformSeatToGrid(target);
       commitFreeformLayoutChange('freeform-assign-student', { render, syncToGrid: false });
+      setLiveStatusMessage(`${studentDisplay(student)} assigned to the selected freeform seat.`);
       return true;
     }
 
@@ -12954,8 +12996,8 @@
       clearStudentsBtn: 'Remove every student, clear their bubble memberships, and clear all seat assignments.',
       addBubbleBtn: 'Create a bubble/rule using the selected rule type, priority, and checked students.',
       clearBubblesBtn: 'Remove all bubbles and all bubble anchors from the seating chart.',
-      generateBtn: 'Generate a seating chart using bubble rules while keeping locked seats in place.',
-      randomizeAllBtn: 'Clear unlocked assignments, keep locked seats fixed, try many randomized seating charts, score them against bubble rules, and keep the best one.',
+      generateBtn: 'Generate a seating chart using bubble rules while keeping locked seats in place. In Freeform mode, this fills the existing freeform seats and mirrors the result to the grid.',
+      randomizeAllBtn: 'Clear unlocked assignments, keep locked seats fixed, try many randomized seating charts, score them against bubble rules, and keep the best one. In Freeform mode, this fills existing freeform seats only.',
       clearAssignmentsBtn: 'Clear all seat assignments, including locked seats. Bubbles, anchors, and layout objects stay in place.',
       clearAnchorsBtn: 'Remove all bubble anchors from seats without deleting the bubbles themselves.',
       toggleLayoutToolsBtn: 'Show or hide the full Layout Tools section for rows, columns, click tools, and multi-cell selection.',
@@ -13150,22 +13192,40 @@
 
     function generateChart() {
       if (eyeModeBlocksSeatEditing()) return blockEyeModeAction('seat');
-      if (state.layoutMode === 'freeform') syncFreeformAssignmentsToGridByPosition();
-      ensureGrid();
+      const usingFreeform = state.layoutMode === 'freeform';
+      if (usingFreeform) {
+        if (!prepareGridMirrorFromFreeformSeats()) {
+          renderAll();
+          setLiveStatusMessage('Add at least one freeform seat before generating a freeform chart.');
+          return;
+        }
+      } else {
+        ensureGrid();
+      }
       if (!state.students.length || !seatCells().length) {
         renderAll();
+        setLiveStatusMessage('Add students and usable seats first.');
         return;
       }
       runSeatingPass({ keepManual: true, randomize: false });
       improveBySwapping(260);
-      if (state.layoutMode === 'freeform') syncGridAssignmentsToFreeformByPosition();
+      if (usingFreeform) syncGridAssignmentsToFreeformByPosition();
       renderAll();
+      if (usingFreeform) setLiveStatusMessage('Generated seating into the existing freeform seats and mirrored the result to the standard grid.');
     }
 
     function randomizeAndSeatEveryone() {
       if (eyeModeBlocksSeatEditing()) return blockEyeModeAction('seat');
-      if (state.layoutMode === 'freeform') syncFreeformAssignmentsToGridByPosition();
-      ensureGrid();
+      const usingFreeform = state.layoutMode === 'freeform';
+      if (usingFreeform) {
+        if (!prepareGridMirrorFromFreeformSeats()) {
+          renderAll();
+          setLiveStatusMessage('Add at least one freeform seat before randomizing a freeform chart.');
+          return;
+        }
+      } else {
+        ensureGrid();
+      }
       const seats = seatCells();
       if (!state.students.length || !seats.length) {
         renderAll();
@@ -13186,11 +13246,13 @@
         }
       }
       if (bestSnapshot) restoreAssignments(bestSnapshot);
-      if (state.layoutMode === 'freeform') syncGridAssignmentsToFreeformByPosition();
+      if (usingFreeform) syncGridAssignmentsToFreeformByPosition();
       renderAll();
       const unassigned = state.students.length - assignedStudentIds().size;
       if (unassigned > 0) {
-        setLiveStatusMessage(`${unassigned} student(s) could not be seated because there are not enough usable seat cells.`);
+        setLiveStatusMessage(`${unassigned} student(s) could not be seated because there are not enough usable ${usingFreeform ? 'freeform seats' : 'seat cells'}.`);
+      } else if (usingFreeform) {
+        setLiveStatusMessage('Randomized students into the existing freeform seats and mirrored the best result to the standard grid.');
       }
     }
 
@@ -19977,8 +20039,8 @@ This will replace the current classes, settings, room templates, and active layo
       document.addEventListener('mouseup', endCellSelection);
 
       const updateGridFromInputs = () => {
+        if (state.layoutMode === 'freeform') return setLiveStatusMessage('Switch to Standard Grid before changing rows, columns, or rebuilding the row/column grid.');
         if (eyeModeBlocksRoomEditing()) return blockEyeModeAction('room');
-        if (state.layoutMode === 'freeform') syncFreeformAssignmentsToGridByPosition();
         state.rows = Math.max(1, Math.min(30, Number(el('rowsInput').value) || state.rows || 5));
         state.cols = Math.max(1, Math.min(30, Number(el('colsInput').value) || state.cols || 6));
         ensureGrid();
@@ -20023,6 +20085,7 @@ This will replace the current classes, settings, room templates, and active layo
       el('rotateFreeformObjectBtn')?.addEventListener('click', () => { const obj = selectedFreeformObject(); if (obj) rotateFreeformObject(obj.id, 15); });
 
       el('makeAllSeatsBtn').addEventListener('click', () => {
+        if (state.layoutMode === 'freeform') return setLiveStatusMessage('Switch to Standard Grid to use All Seats. Use Freeform Add Object to add seats.');
         if (eyeModeBlocksRoomEditing()) return blockEyeModeAction('room');
         Object.values(state.cells).forEach(cell => cell.type = 'seat');
         if (state.layoutMode === 'freeform') rebuildFreeformFromGrid({ keepAssignments: true });
@@ -20030,6 +20093,7 @@ This will replace the current classes, settings, room templates, and active layo
       });
 
       el('emptyGridBtn').addEventListener('click', () => {
+        if (state.layoutMode === 'freeform') return setLiveStatusMessage('Switch to Standard Grid to empty the row/column grid. Delete freeform objects directly in Freeform mode.');
         if (eyeModeBlocksRoomEditing()) return blockEyeModeAction('room');
         showInAppConfirm('Set every grid cell to empty and clear assignments and anchors?', () => {
           Object.values(state.cells).forEach(cell => {
