@@ -5,7 +5,7 @@
   <meta name="license" content="MIT License" />
   <meta name="spdx-license-identifier" content="MIT" />
   <meta name="copyright" content="Copyright (c) 2026 Chris L. Franklin" />
-  <meta name="app-version" content="1.19.12" />
+  <meta name="app-version" content="1.19.13" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Seating Chart Bubble Builder</title>
   <style>
@@ -6982,6 +6982,12 @@
       overflow: visible;
       transform-origin: center center;
     }
+    .freeform-object.seat {
+      min-width: 170px;
+      min-height: 112px;
+      align-content: start;
+      padding: 18px 9px 8px;
+    }
     .freeform-object:active { cursor: grabbing; }
     .freeform-object.selected {
       outline: 3px solid rgba(37,99,235,.55);
@@ -7002,6 +7008,7 @@
       line-height: 1.18;
       overflow-wrap: anywhere;
     }
+    .freeform-object.seat .freeform-object-title { font-size: 13px; }
     .freeform-object-meta {
       display: flex;
       justify-content: center;
@@ -7009,6 +7016,7 @@
       font-size: 10px;
       color: #475569;
       line-height: 1.1;
+      flex-wrap: wrap;
     }
     .freeform-object-actions {
       display: flex;
@@ -7017,7 +7025,17 @@
       flex-wrap: wrap;
       margin-top: 2px;
     }
-    .freeform-object-actions button { min-height: 22px; font-size: 9.5px; padding: 3px 5px; }
+    .freeform-object-actions button { min-height: 24px; font-size: 10px; padding: 3px 6px; }
+    .freeform-object-actions .icon-btn {
+      min-width: 28px;
+      width: 28px;
+      height: 24px;
+      padding: 0 !important;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
     .freeform-resize-handle {
       position: absolute;
       right: -7px;
@@ -7056,7 +7074,7 @@
       display: inline-flex;
       align-items: center;
       gap: 3px;
-      max-width: 78px;
+      max-width: 120px;
       padding: 2px 5px;
       border-radius: 999px;
       border: 1px solid rgba(15, 23, 42, 0.14);
@@ -7099,8 +7117,10 @@
       text-transform: uppercase;
       box-shadow: 0 1px 5px rgba(15,23,42,.08);
     }
-    .freeform-room-marker.front { top: 8px; }
-    .freeform-room-marker.back { bottom: 8px; }
+    .freeform-room-marker.front.side-top, .freeform-room-marker.back.side-top { top: 8px; bottom: auto; left: 50%; right: auto; transform: translateX(-50%); }
+    .freeform-room-marker.front.side-bottom, .freeform-room-marker.back.side-bottom { bottom: 8px; top: auto; left: 50%; right: auto; transform: translateX(-50%); }
+    .freeform-room-marker.front.side-left, .freeform-room-marker.back.side-left { left: 8px; right: auto; top: 50%; bottom: auto; transform: translateY(-50%) rotate(-90deg); }
+    .freeform-room-marker.front.side-right, .freeform-room-marker.back.side-right { right: 8px; left: auto; top: 50%; bottom: auto; transform: translateY(-50%) rotate(90deg); }
 
     .freeform-rotate-handle {
       position: absolute;
@@ -7128,6 +7148,7 @@
       body.freeform-layout-mode #layoutToolsPanel:not([hidden]) .freeform-tools { display: flex; }
       .seat-grid.freeform-canvas { margin: 0; min-width: 760px; min-height: 560px; }
       .freeform-object { min-width: 54px; min-height: 42px; }
+      .freeform-object.seat { min-width: 170px; min-height: 112px; }
     }
 
 
@@ -7641,9 +7662,10 @@
             <div class="field small"><label for="freeformCanvasWidthInput">Canvas W</label><input id="freeformCanvasWidthInput" type="number" min="400" max="12000" value="1400" /></div>
             <div class="field small"><label for="freeformCanvasHeightInput">Canvas H</label><input id="freeformCanvasHeightInput" type="number" min="300" max="12000" value="900" /></div>
             <div class="field small"><label for="freeformGridSizeInput">Snap</label><input id="freeformGridSizeInput" type="number" min="5" max="80" value="20" /></div>
+            <div class="field small"><label for="freeformFrontSideSelect">Front</label><select id="freeformFrontSideSelect" title="Choose which side of the freeform room is the front for room orientation and seating-rule distance mapping."><option value="top">Top</option><option value="right">Right</option><option value="bottom">Bottom</option><option value="left">Left</option></select></div>
             <label class="checkline" title="Snap dragged and resized freeform objects to the canvas grid."><input id="freeformSnapToggle" type="checkbox" checked /> <span>Snap to grid</span></label>
           </div>
-          <div class="hint" style="max-width:620px;">Grid mode uses rows and columns. Freeform mode uses draggable seats and room objects. Drag a student onto an existing freeform seat to assign that student there; dropping on blank canvas does not create a seat. Use Add Object to create more seats. Generate and Randomize in Freeform mode fill the existing freeform seats using bubble rules, then mirror the results back to the simple grid for printing.</div>
+          <div class="hint" style="max-width:620px;">Grid mode uses rows and columns. Freeform mode uses draggable seats and room objects. Drag a student onto an existing freeform seat to assign that student there; dropping on blank canvas does not create a seat. Use Add Object to create more seats. Generate and Randomize in Freeform mode fill the existing freeform seats using bubble rules and the seats' actual freeform positions, then mirror the results back to the simple grid for printing.</div>
         </div>
       </div>
 
@@ -8648,7 +8670,7 @@
     const WELCOME_SETUP_STORAGE_KEY = 'seating-chart-bubble-builder-secure-welcome-v1';
     const VISIBILITY_CREDENTIAL_KEY = 'seating-chart-bubble-builder-visibility-v1';
     const HINT_DISMISS_STORAGE_KEY = 'seating-chart-bubble-builder-dismissed-hints-v1';
-    const APP_REVISION = '1.19.12';
+    const APP_REVISION = '1.19.13';
     const APP_LAST_UPDATED = 'June 27, 2026';
 
     const APP_LICENSE = {
@@ -8709,6 +8731,7 @@
     ];
 
     const CHANGE_LOG = [
+      { version: '1.19.13', date: 'June 29, 2026', changes: ['Expanded Freeform seat cards so assigned students, bubble chips, zone tags, and controls fit without tiny unusable seats.', 'Fixed Freeform seat Lock/Unlock and Clear controls by letting their delegated click handlers receive the click instead of being stopped by the object card.', 'Added icon-only Freeform lock/unlock buttons and a Front of Room side selector so teachers can choose top, right, bottom, or left room orientation.', 'Improved Freeform auto-assignment by mirroring real freeform seat positions into the seating engine so bubble rules score physical freeform distance instead of a fake row/column order.'] },
       { version: '1.19.12', date: 'June 29, 2026', changes: ['Added a persistent freeform geometry cache so the last edited x/y position, size, rotation, object type, label, color, z-index, and lock state survive later render, save, and toolbar paths.', 'Made snap-to-grid math side-effect free so calculating x/y or width/height during a drag no longer restores stale cached geometry between those calculations.', 'Separated geometry persistence from assignment repair so grid/freeform mapping can still keep students aligned without rebuilding the teacher-edited room layout.'] },
       { version: '1.19.11', date: 'June 29, 2026', changes: ['Added app-version metadata in the HTML head so the build version is visible to scanners, GitHub, and browser inspection without opening the app.', 'Restored the active encryption password across same-tab browser refreshes when auto-lock triggers are disabled, avoiding needless encrypted-local-save prompts on refresh while keeping the cache in sessionStorage only.', 'Cleared the same-tab reload key whenever auto-lock triggers are enabled or the page is actively locked so refresh convenience does not bypass configured lock workflows.'] },
       { version: '1.19.10', date: 'June 29, 2026', changes: ['Added a freeform object-state guard so drag, resize, rotate, lock/unlock, duplicate, delete, and type edits preserve the current canvas geometry even if a broader render path runs afterward.', 'Prevented grid-derived row/column defaults from overwriting freeform x/y position, width, height, rotation, object type, color, z-index, or lock state during object edits.', 'Updated the freeform rotation path to apply the selected object rotation immediately and then re-render from the preserved object state.'] },
@@ -10434,8 +10457,8 @@
         zoneIds: Array.isArray(source.zoneIds) ? Array.from(new Set(source.zoneIds.map(String))) : [],
         x: clampNumber(source.x ?? (40 + index * 18), 0, 10000),
         y: clampNumber(source.y ?? (40 + index * 18), 0, 10000),
-        width: clampNumber(source.width ?? (isSeat ? 118 : 160), 28, 2000),
-        height: clampNumber(source.height ?? (isSeat ? 72 : 96), 24, 2000),
+        width: clampNumber(source.width ?? (isSeat ? 180 : 160), isSeat ? 170 : 28, 2000),
+        height: clampNumber(source.height ?? (isSeat ? 120 : 96), isSeat ? 112 : 24, 2000),
         rotation: clampNumber(source.rotation ?? 0, -360, 360),
         locked: Boolean(source.locked),
         zIndex: clampNumber(source.zIndex ?? (index + 1), 1, 100000),
@@ -10452,7 +10475,8 @@
           width: clampNumber(canvas.width ?? 1400, 400, 12000),
           height: clampNumber(canvas.height ?? 900, 300, 12000),
           gridSize: clampNumber(canvas.gridSize ?? DEFAULT_PAGE_SETTINGS.freeformGridSize, 5, 80),
-          snap: canvas.snap ?? DEFAULT_PAGE_SETTINGS.freeformSnapToGrid
+          snap: canvas.snap ?? DEFAULT_PAGE_SETTINGS.freeformSnapToGrid,
+          frontSide: ['top','right','bottom','left'].includes(String(canvas.frontSide || '').toLowerCase()) ? String(canvas.frontSide).toLowerCase() : 'top'
         },
         objects,
         nextZ: Math.max(Number(source.nextZ) || 1, objects.reduce((max, obj) => Math.max(max, Number(obj.zIndex) || 1), 1) + 1)
@@ -10474,10 +10498,28 @@
       ensureFreeformLayout();
       return freeformObjectsSorted((state.freeformLayout.objects || []).filter(obj => obj.type === 'seat'));
     }
+    function freeformRoomFrontSide() {
+      const side = String(state.freeformLayout?.canvas?.frontSide || 'top').toLowerCase();
+      return ['top','right','bottom','left'].includes(side) ? side : 'top';
+    }
+
+    function freeformSeatRuleCoordinates(obj, layout = state.freeformLayout) {
+      const canvas = layout?.canvas || {};
+      const side = String(canvas.frontSide || 'top').toLowerCase();
+      const centerX = (Number(obj.x) || 0) + (Number(obj.width) || 0) / 2;
+      const centerY = (Number(obj.y) || 0) + (Number(obj.height) || 0) / 2;
+      const scale = Math.max(40, Number(canvas.gridSize) || 20, ((Number(obj.width) || 180) + (Number(obj.height) || 120)) / 2);
+      if (side === 'bottom') return { row: Math.max(1, ((Number(canvas.height) || 900) - centerY) / scale + 1), col: Math.max(1, centerX / scale + 1) };
+      if (side === 'left') return { row: Math.max(1, centerX / scale + 1), col: Math.max(1, centerY / scale + 1) };
+      if (side === 'right') return { row: Math.max(1, ((Number(canvas.width) || 1400) - centerX) / scale + 1), col: Math.max(1, centerY / scale + 1) };
+      return { row: Math.max(1, centerY / scale + 1), col: Math.max(1, centerX / scale + 1) };
+    }
+
 
     function prepareGridMirrorFromFreeformSeats({ clearUnlockedAssignments = false } = {}) {
       ensureFreeformLayout();
       const seats = freeformSeatObjectsSorted();
+      const layout = state.freeformLayout;
       if (!seats.length) return false;
       const seatCount = seats.length;
       const currentCols = Math.max(1, Math.min(30, Number(state.cols) || Math.ceil(Math.sqrt(seatCount)) || 1));
@@ -10502,8 +10544,11 @@
         const entry = entries[index];
         if (!entry) return;
         const [cellKey, cell] = entry;
+        const ruleCoords = freeformSeatRuleCoordinates(obj, layout);
         obj.cellKey = cellKey;
         cell.type = 'seat';
+        cell.row = ruleCoords.row;
+        cell.col = ruleCoords.col;
         const keepAssignment = !clearUnlockedAssignments || Boolean(obj.locked || obj.manual);
         cell.assignedStudentId = keepAssignment ? (obj.assignedStudentId || null) : null;
         cell.manual = Boolean(cell.assignedStudentId && (obj.locked || obj.manual));
@@ -10521,8 +10566,8 @@
       const gap = 18;
       Object.entries(state.cells).sort((a, b) => (a[1].row - b[1].row) || (a[1].col - b[1].col)).forEach(([cellKey, cell], index) => {
         const type = cell.type || 'seat';
-        const width = type === 'seat' ? 116 : (type === 'table' ? 190 : 130);
-        const height = type === 'seat' ? 70 : (type === 'wall' ? 34 : 86);
+        const width = type === 'seat' ? 180 : (type === 'table' ? 190 : 130);
+        const height = type === 'seat' ? 120 : (type === 'wall' ? 34 : 86);
         objects.push(normalizeFreeformObject({
           id: `freeform-${cellKey}`,
           cellKey,
@@ -10630,10 +10675,12 @@
       const w = el('freeformCanvasWidthInput');
       const h = el('freeformCanvasHeightInput');
       const gridSize = el('freeformGridSizeInput');
+      const frontSide = el('freeformFrontSideSelect');
       const snap = el('freeformSnapToggle');
       if (w && document.activeElement !== w) w.value = layout.canvas.width;
       if (h && document.activeElement !== h) h.value = layout.canvas.height;
       if (gridSize && document.activeElement !== gridSize) gridSize.value = layout.canvas.gridSize;
+      if (frontSide && document.activeElement !== frontSide) frontSide.value = layout.canvas.frontSide || 'top';
       if (snap) snap.checked = layout.canvas.snap !== false;
       document.body.classList.toggle('freeform-layout-mode', state.layoutMode === 'freeform');
     }
@@ -10658,8 +10705,8 @@
         color: obj.color || objectTypeColor(obj.type || 'seat'),
         x: Number.isFinite(Number(obj.x)) ? Number(obj.x) : 0,
         y: Number.isFinite(Number(obj.y)) ? Number(obj.y) : 0,
-        width: Number.isFinite(Number(obj.width)) ? Number(obj.width) : (obj.type === 'seat' ? 118 : 160),
-        height: Number.isFinite(Number(obj.height)) ? Number(obj.height) : (obj.type === 'seat' ? 72 : 96),
+        width: Number.isFinite(Number(obj.width)) ? Math.max(obj.type === 'seat' ? 170 : 28, Number(obj.width)) : (obj.type === 'seat' ? 180 : 160),
+        height: Number.isFinite(Number(obj.height)) ? Math.max(obj.type === 'seat' ? 112 : 24, Number(obj.height)) : (obj.type === 'seat' ? 120 : 96),
         rotation: Number.isFinite(Number(obj.rotation)) ? Number(obj.rotation) : 0,
         locked: Boolean(obj.locked),
         zIndex: Number.isFinite(Number(obj.zIndex)) ? Number(obj.zIndex) : 1
@@ -10743,8 +10790,8 @@
           color: obj.color || objectTypeColor(obj.type || 'seat'),
           x: Number(obj.x) || 0,
           y: Number(obj.y) || 0,
-          width: Number(obj.width) || (obj.type === 'seat' ? 118 : 160),
-          height: Number(obj.height) || (obj.type === 'seat' ? 72 : 96),
+          width: Math.max(obj.type === 'seat' ? 170 : 28, Number(obj.width) || (obj.type === 'seat' ? 180 : 160)),
+          height: Math.max(obj.type === 'seat' ? 112 : 24, Number(obj.height) || (obj.type === 'seat' ? 120 : 96)),
           rotation: Number(obj.rotation) || 0,
           locked: Boolean(obj.locked),
           zIndex: Number(obj.zIndex) || 1,
@@ -11054,15 +11101,15 @@
           ${bubbleDisplay.chipsHtml}
           ${bubbleDisplay.zonesHtml}
           <div class="freeform-object-actions no-print">
-            ${student ? `<button class="tiny secondary" data-freeform-clear-seat="${escapeHtml(obj.id)}" ${locked ? 'disabled title="Unlock this seat before clearing the student."' : ''}>Clear</button>` : ''}
-            <button class="tiny ${locked ? 'ghost' : 'secondary'}" data-freeform-lock="${escapeHtml(obj.id)}">${locked ? 'Unlock' : 'Lock'}</button>
+            ${student ? `<button class="tiny secondary" data-freeform-clear-seat="${escapeHtml(obj.id)}" title="Clear this student from the freeform seat." aria-label="Clear student from this freeform seat">Clear</button>` : ''}
+            <button class="tiny icon-btn ${locked ? 'ghost' : 'secondary'}" data-freeform-lock="${escapeHtml(obj.id)}" title="${locked ? 'Unlock this freeform seat' : 'Lock this freeform seat'}" aria-label="${locked ? 'Unlock this freeform seat' : 'Lock this freeform seat'}">${locked ? '🔓' : '🔒'}</button>
           </div>`;
       }
       return `
         <div class="freeform-object-title">${escapeHtml(obj.label || objectLabel(obj.type))}</div>
         <div class="freeform-object-meta">${locked ? '<span class="pill locked">Locked</span>' : escapeHtml(objectLabel(obj.type))}</div>
         <div class="freeform-object-actions no-print">
-          <button class="tiny ${locked ? 'ghost' : 'secondary'}" data-freeform-lock="${escapeHtml(obj.id)}">${locked ? 'Unlock' : 'Lock'}</button>
+          <button class="tiny icon-btn ${locked ? 'ghost' : 'secondary'}" data-freeform-lock="${escapeHtml(obj.id)}" title="${locked ? 'Unlock this freeform object' : 'Lock this freeform object'}" aria-label="${locked ? 'Unlock this freeform object' : 'Lock this freeform object'}">${locked ? '🔓' : '🔒'}</button>
           <button class="tiny secondary" data-freeform-delete="${escapeHtml(obj.id)}">Delete</button>
         </div>`;
     }
@@ -11093,7 +11140,9 @@
       grid.style.width = `${layout.canvas.width}px`;
       grid.style.height = `${layout.canvas.height}px`;
       grid.style.backgroundSize = `${layout.canvas.gridSize}px ${layout.canvas.gridSize}px`;
-      grid.innerHTML = '<div class="freeform-room-marker front" aria-hidden="true">Front of Room</div><div class="freeform-room-marker back" aria-hidden="true">Back of Room</div>';
+      const frontSide = freeformRoomFrontSide();
+      const oppositeSide = { top: 'bottom', bottom: 'top', left: 'right', right: 'left' }[frontSide] || 'bottom';
+      grid.innerHTML = `<div class="freeform-room-marker front side-${frontSide}" aria-hidden="true">Front of Room</div><div class="freeform-room-marker back side-${oppositeSide}" aria-hidden="true">Back of Room</div>`;
       [...layout.objects].sort((a, b) => (Number(a.zIndex) || 1) - (Number(b.zIndex) || 1)).forEach(obj => {
         const node = document.createElement('div');
         const student = freeformObjectStudent(obj, lookups);
@@ -11112,7 +11161,11 @@
         node.title = `${freeformObjectLabel(obj, lookups)} · x ${Math.round(obj.x)}, y ${Math.round(obj.y)}${obj.rotation ? ` · ${obj.rotation}°` : ''}${bubbleDisplay?.titleText ? ` · ${bubbleDisplay.titleText}` : ''}`;
         node.innerHTML = `${freeformObjectInnerHtml(obj, lookups)}<button class="freeform-rotate-handle no-print" data-freeform-rotate="${escapeHtml(obj.id)}" title="Rotate 15°">⟳</button><span class="freeform-resize-handle no-print" data-freeform-resize="${escapeHtml(obj.id)}" title="Resize"></span>`;
         node.addEventListener('pointerdown', event => beginFreeformPointerDrag(event, obj.id));
-        node.addEventListener('click', event => { event.stopPropagation(); selectFreeformObject(obj.id, event.shiftKey); });
+        node.addEventListener('click', event => {
+          if (event.target.closest('[data-freeform-clear-seat], [data-freeform-lock], [data-freeform-delete], [data-freeform-rotate]')) return;
+          event.stopPropagation();
+          selectFreeformObject(obj.id, event.shiftKey);
+        });
         node.addEventListener('contextmenu', event => {
           event.preventDefault();
           event.stopPropagation();
@@ -11229,8 +11282,8 @@
         label: selectedType === 'seat' ? '' : objectLabel(selectedType),
         x: freeformSnap(overrides.x ?? centerX),
         y: freeformSnap(overrides.y ?? centerY),
-        width: overrides.width ?? (selectedType === 'seat' ? 118 : selectedType === 'table' ? 190 : 140),
-        height: overrides.height ?? (selectedType === 'seat' ? 72 : selectedType === 'wall' ? 36 : 92),
+        width: overrides.width ?? (selectedType === 'seat' ? 180 : selectedType === 'table' ? 190 : 140),
+        height: overrides.height ?? (selectedType === 'seat' ? 120 : selectedType === 'wall' ? 36 : 92),
         assignedStudentId: overrides.assignedStudentId || null,
         manual: Boolean(overrides.manual),
         locked: Boolean(overrides.locked),
@@ -11314,6 +11367,8 @@
       layout.canvas.width = clampNumber(el('freeformCanvasWidthInput')?.value ?? layout.canvas.width, 400, 12000);
       layout.canvas.height = clampNumber(el('freeformCanvasHeightInput')?.value ?? layout.canvas.height, 300, 12000);
       layout.canvas.gridSize = clampNumber(el('freeformGridSizeInput')?.value ?? layout.canvas.gridSize, 5, 80);
+      const frontSide = String(el('freeformFrontSideSelect')?.value || layout.canvas.frontSide || 'top').toLowerCase();
+      layout.canvas.frontSide = ['top','right','bottom','left'].includes(frontSide) ? frontSide : 'top';
       layout.canvas.snap = Boolean(el('freeformSnapToggle')?.checked);
       uiState.pageSettings.freeformGridSize = layout.canvas.gridSize;
       uiState.pageSettings.freeformSnapToGrid = layout.canvas.snap;
@@ -20355,6 +20410,7 @@ This will replace the current classes, settings, room templates, and active layo
       el('freeformCanvasWidthInput')?.addEventListener('change', updateFreeformCanvasSettings);
       el('freeformCanvasHeightInput')?.addEventListener('change', updateFreeformCanvasSettings);
       el('freeformGridSizeInput')?.addEventListener('change', updateFreeformCanvasSettings);
+      el('freeformFrontSideSelect')?.addEventListener('change', updateFreeformCanvasSettings);
       el('freeformSnapToggle')?.addEventListener('change', updateFreeformCanvasSettings);
       el('addFreeformObjectBtn')?.addEventListener('click', () => { if (eyeModeBlocksRoomEditing()) return blockEyeModeAction('room'); addFreeformObject(); });
       el('duplicateFreeformObjectBtn')?.addEventListener('click', duplicateSelectedFreeformObject);
@@ -20573,9 +20629,10 @@ This will replace the current classes, settings, room templates, and active layo
 
         const freeformClearBtn = event.target.closest('[data-freeform-clear-seat]');
         if (freeformClearBtn) {
+          event.preventDefault();
+          event.stopPropagation();
           if (eyeModeBlocksSeatEditing()) return blockEyeModeAction('seat');
           const obj = (state.freeformLayout?.objects || []).find(item => item.id === freeformClearBtn.dataset.freeformClearSeat);
-          if (obj?.locked) return blockLockedSeatEditAction();
           if (obj) {
             obj.assignedStudentId = null;
             obj.manual = false;
@@ -20589,6 +20646,8 @@ This will replace the current classes, settings, room templates, and active layo
 
         const freeformLockBtn = event.target.closest('[data-freeform-lock]');
         if (freeformLockBtn) {
+          event.preventDefault();
+          event.stopPropagation();
           const obj = (state.freeformLayout?.objects || []).find(item => item.id === freeformLockBtn.dataset.freeformLock);
           if (!obj) return;
           if (obj.type === 'seat' ? eyeModeBlocksSeatEditing() : eyeModeBlocksRoomEditing()) return blockEyeModeAction(obj.type === 'seat' ? 'seat' : 'room');
