@@ -5,7 +5,7 @@
   <meta name="license" content="MIT License" />
   <meta name="spdx-license-identifier" content="MIT" />
   <meta name="copyright" content="Copyright (c) 2026 Chris L. Franklin" />
-  <meta name="app-version" content="1.19.17" />
+  <meta name="app-version" content="1.19.18" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Seating Chart Bubble Builder</title>
   <style>
@@ -8673,15 +8673,15 @@
     const DEFAULT_FREEFORM_SEAT_HEIGHT = 150;
     const MIN_FREEFORM_SEAT_WIDTH = 210;
     const MIN_FREEFORM_SEAT_HEIGHT = 138;
-    const DEFAULT_FREEFORM_GRID_CELL_WIDTH = 360;
-    const DEFAULT_FREEFORM_GRID_CELL_HEIGHT = 260;
-    const DEFAULT_FREEFORM_GRID_GAP = 72;
+    const DEFAULT_FREEFORM_GRID_CELL_WIDTH = 250;
+    const DEFAULT_FREEFORM_GRID_CELL_HEIGHT = 175;
+    const DEFAULT_FREEFORM_GRID_GAP = 32;
     const VISIBILITY_DATA_SESSION_KEY = 'seating-chart-bubble-builder-visibility-data-v1';
     const WELCOME_SETUP_STORAGE_KEY = 'seating-chart-bubble-builder-secure-welcome-v1';
     const VISIBILITY_CREDENTIAL_KEY = 'seating-chart-bubble-builder-visibility-v1';
     const HINT_DISMISS_STORAGE_KEY = 'seating-chart-bubble-builder-dismissed-hints-v1';
-    const APP_REVISION = '1.19.17';
-    const APP_LAST_UPDATED = 'June 27, 2026';
+    const APP_REVISION = '1.19.18';
+    const APP_LAST_UPDATED = 'June 30, 2026';
 
     const APP_LICENSE = {
       name: 'MIT License',
@@ -10617,6 +10617,77 @@
       return !(Number(a.x) + Number(a.width) + pad <= Number(b.x) || Number(b.x) + Number(b.width) + pad <= Number(a.x) || Number(a.y) + Number(a.height) + pad <= Number(b.y) || Number(b.y) + Number(b.height) + pad <= Number(a.y));
     }
 
+    function freeformObjectBounds(obj) {
+      return {
+        x: Number(obj?.x) || 0,
+        y: Number(obj?.y) || 0,
+        width: Math.max(1, Number(obj?.width) || (obj?.type === 'seat' ? DEFAULT_FREEFORM_SEAT_WIDTH : 160)),
+        height: Math.max(1, Number(obj?.height) || (obj?.type === 'seat' ? DEFAULT_FREEFORM_SEAT_HEIGHT : 96))
+      };
+    }
+
+    function freeformRectGapPx(a, b) {
+      if (!a || !b) return Number.POSITIVE_INFINITY;
+      const ar = freeformObjectBounds(a);
+      const br = freeformObjectBounds(b);
+      const dx = Math.max(0, Math.max(br.x - (ar.x + ar.width), ar.x - (br.x + br.width)));
+      const dy = Math.max(0, Math.max(br.y - (ar.y + ar.height), ar.y - (br.y + br.height)));
+      return Math.hypot(dx, dy);
+    }
+
+    function findFreeformOverlap(obj, candidate = null, objects = state.freeformLayout?.objects || []) {
+      const test = candidate ? { ...obj, ...candidate } : obj;
+      if (!test) return null;
+      return (objects || []).find(other => other && other.id !== obj.id && freeformRectOverlaps(test, other)) || null;
+    }
+
+    function positionFreeformObjectWithoutOverlap(obj, { startX = null, startY = null, maxAttempts = 240 } = {}) {
+      if (!obj) return obj;
+      const layout = state.freeformLayout?.canvas || {};
+      const stepX = Math.max(DEFAULT_FREEFORM_GRID_GAP, Number(layout.gridSize) || DEFAULT_FREEFORM_GRID_GAP, Math.round((Number(obj.width) || DEFAULT_FREEFORM_SEAT_WIDTH) * 0.32));
+      const stepY = Math.max(DEFAULT_FREEFORM_GRID_GAP, Number(layout.gridSize) || DEFAULT_FREEFORM_GRID_GAP, Math.round((Number(obj.height) || DEFAULT_FREEFORM_SEAT_HEIGHT) * 0.32));
+      let x = freeformSnap(startX ?? obj.x ?? 80);
+      let y = freeformSnap(startY ?? obj.y ?? 80);
+      const maxX = Math.max(0, (Number(layout.width) || 2800) - (Number(obj.width) || DEFAULT_FREEFORM_SEAT_WIDTH));
+      const maxY = Math.max(0, (Number(layout.height) || 1800) - (Number(obj.height) || DEFAULT_FREEFORM_SEAT_HEIGHT));
+      for (let attempt = 0; attempt < maxAttempts; attempt++) {
+        const candidate = { x: clampNumber(x, 0, maxX), y: clampNumber(y, 0, maxY) };
+        if (!findFreeformOverlap(obj, candidate)) {
+          obj.x = candidate.x;
+          obj.y = candidate.y;
+          return obj;
+        }
+        x += stepX;
+        if (x > maxX) {
+          x = 80;
+          y += stepY;
+        }
+        if (y > maxY) {
+          x = 80 + (attempt % 7) * stepX;
+          y = 80 + Math.floor(attempt / 7) * stepY;
+        }
+      }
+      return obj;
+    }
+
+    function resolveDefaultFreeformObjectOverlaps() {
+      if (!Array.isArray(state.freeformLayout?.objects)) return false;
+      const objects = [...state.freeformLayout.objects].sort((a, b) => (Number(a.y) - Number(b.y)) || (Number(a.x) - Number(b.x)) || String(a.id).localeCompare(String(b.id)));
+      let changed = false;
+      objects.forEach(obj => {
+        if (!findFreeformOverlap(obj)) return;
+        const oldX = obj.x;
+        const oldY = obj.y;
+        positionFreeformObjectWithoutOverlap(obj, { startX: obj.x, startY: obj.y });
+        if (obj.x !== oldX || obj.y !== oldY) changed = true;
+      });
+      if (changed) {
+        resetFreeformGeometryCache();
+        persistFreeformGeometrySession('freeform-object-overlap-repair');
+      }
+      return changed;
+    }
+
     function repairOverlappingDefaultFreeformSeats() {
       if (!Array.isArray(state.freeformLayout?.objects)) return false;
       const seats = state.freeformLayout.objects.filter(obj => obj.type === 'seat');
@@ -10639,6 +10710,7 @@
         obj.width = Math.max(Number(obj.width) || 0, DEFAULT_FREEFORM_SEAT_WIDTH);
         obj.height = Math.max(Number(obj.height) || 0, DEFAULT_FREEFORM_SEAT_HEIGHT);
       });
+      resolveDefaultFreeformObjectOverlaps();
       resetFreeformGeometryCache();
       persistFreeformGeometrySession('freeform-overlap-repair');
       return true;
@@ -10659,7 +10731,8 @@
         if (additions.length) state.freeformLayout.objects.push(...additions.map((obj, index) => normalizeFreeformObject(obj, objects.length + index)));
       }
       restoreFreeformGeometryFromCache({ seedIfEmpty: true });
-      repairOverlappingDefaultFreeformSeats();
+      const repairedDefaultOverlaps = repairOverlappingDefaultFreeformSeats();
+      if (repairedDefaultOverlaps) resolveDefaultFreeformObjectOverlaps();
       state.freeformLayout.nextZ = Math.max(Number(state.freeformLayout.nextZ) || 1, ...state.freeformLayout.objects.map(obj => Number(obj.zIndex) || 1)) + 1;
       return state.freeformLayout;
     }
@@ -11367,7 +11440,7 @@
       if (obj.locked) return;
       event.preventDefault();
       event.currentTarget.setPointerCapture?.(event.pointerId);
-      uiState.freeformDrag = { id, resize, startX: event.clientX, startY: event.clientY, original: { x: obj.x, y: obj.y, width: obj.width, height: obj.height } };
+      uiState.freeformDrag = { id, resize, startX: event.clientX, startY: event.clientY, original: { x: obj.x, y: obj.y, width: obj.width, height: obj.height }, lastValid: { x: obj.x, y: obj.y, width: obj.width, height: obj.height }, blocked: false };
       const move = ev => updateFreeformPointerDrag(ev);
       const up = ev => {
         document.removeEventListener('pointermove', move);
@@ -11386,13 +11459,30 @@
       const zoom = freeformCanvasZoom();
       const dx = (event.clientX - drag.startX) / zoom;
       const dy = (event.clientY - drag.startY) / zoom;
-      if (drag.resize) {
-        obj.width = Math.max(28, freeformSnap(drag.original.width + dx));
-        obj.height = Math.max(24, freeformSnap(drag.original.height + dy));
-      } else {
-        obj.x = Math.max(0, freeformSnap(drag.original.x + dx));
-        obj.y = Math.max(0, freeformSnap(drag.original.y + dy));
+      const layout = state.freeformLayout?.canvas || {};
+      const maxX = Math.max(0, (Number(layout.width) || 2800) - (Number(obj.width) || DEFAULT_FREEFORM_SEAT_WIDTH));
+      const maxY = Math.max(0, (Number(layout.height) || 1800) - (Number(obj.height) || DEFAULT_FREEFORM_SEAT_HEIGHT));
+      const candidate = drag.resize
+        ? {
+            width: Math.max(obj.type === 'seat' ? MIN_FREEFORM_SEAT_WIDTH : 28, freeformSnap(drag.original.width + dx)),
+            height: Math.max(obj.type === 'seat' ? MIN_FREEFORM_SEAT_HEIGHT : 24, freeformSnap(drag.original.height + dy))
+          }
+        : {
+            x: clampNumber(freeformSnap(drag.original.x + dx), 0, maxX),
+            y: clampNumber(freeformSnap(drag.original.y + dy), 0, maxY)
+          };
+      const overlap = findFreeformOverlap(obj, candidate);
+      if (overlap) {
+        drag.blocked = true;
+        if (!drag.lastOverlapMessageAt || Date.now() - drag.lastOverlapMessageAt > 1000) {
+          drag.lastOverlapMessageAt = Date.now();
+          setLiveStatusMessage(`Freeform objects cannot overlap. Move away from ${freeformObjectLabel(overlap, buildLookupMaps())}.`);
+        }
+        return;
       }
+      Object.assign(obj, candidate);
+      drag.lastValid = { x: obj.x, y: obj.y, width: obj.width, height: obj.height };
+      drag.blocked = false;
       const node = document.querySelector(`.freeform-object[data-object-id="${cssEscape(obj.id)}"]`);
       rememberFreeformGeometry([obj]);
       persistFreeformGeometrySession('freeform-drag-live');
@@ -11406,18 +11496,26 @@
     }
 
     function finishFreeformPointerDrag() {
+      const drag = uiState.freeformDrag;
+      if (drag) {
+        const obj = (state.freeformLayout?.objects || []).find(item => item.id === drag.id);
+        if (obj && findFreeformOverlap(obj)) {
+          Object.assign(obj, drag.lastValid || drag.original || {});
+          setLiveStatusMessage('Freeform objects cannot overlap. The object was kept at the last valid position.');
+        }
+      }
       rememberFreeformGeometry(state.freeformLayout?.objects || []);
       persistFreeformGeometrySession('freeform-drag-finish');
       uiState.freeformDrag = null;
-      commitFreeformLayoutChange('freeform-move', { render: false, syncToGrid: false });
+      commitFreeformLayoutChange('freeform-move', { render: true, syncToGrid: false });
     }
 
     function addFreeformObject(type = null, overrides = {}) {
       ensureFreeformLayout();
       const grid = el('seatGrid');
       const selectedType = type || el('freeformObjectTool')?.value || el('layoutTool')?.value || 'seat';
-      const centerX = 120 + (state.freeformLayout.objects.length % 8) * (DEFAULT_FREEFORM_SEAT_WIDTH + DEFAULT_FREEFORM_GRID_GAP);
-      const centerY = 120 + Math.floor(state.freeformLayout.objects.length / 8) * (DEFAULT_FREEFORM_SEAT_HEIGHT + DEFAULT_FREEFORM_GRID_GAP);
+      const centerX = 80 + (state.freeformLayout.objects.length % 8) * (DEFAULT_FREEFORM_GRID_CELL_WIDTH + DEFAULT_FREEFORM_GRID_GAP);
+      const centerY = 80 + Math.floor(state.freeformLayout.objects.length / 8) * (DEFAULT_FREEFORM_GRID_CELL_HEIGHT + DEFAULT_FREEFORM_GRID_GAP);
       const obj = normalizeFreeformObject({
         type: selectedType,
         label: selectedType === 'seat' ? '' : objectLabel(selectedType),
@@ -11431,6 +11529,7 @@
         zIndex: state.freeformLayout.nextZ++,
         color: objectTypeColor(selectedType)
       }, state.freeformLayout.objects.length);
+      positionFreeformObjectWithoutOverlap(obj, { startX: obj.x, startY: obj.y });
       state.freeformLayout.objects.push(obj);
       selectFreeformObject(obj.id);
       rememberFreeformGeometry([obj]);
@@ -11441,7 +11540,8 @@
     function duplicateSelectedFreeformObject() {
       const obj = selectedFreeformObject();
       if (!obj || obj.locked) return;
-      const copy = normalizeFreeformObject({ ...deepClone(obj), id: uid('freeform-object'), cellKey: '', x: obj.x + 24, y: obj.y + 24, zIndex: state.freeformLayout.nextZ++, assignedStudentId: null, manual: false, locked: false }, state.freeformLayout.objects.length);
+      const copy = normalizeFreeformObject({ ...deepClone(obj), id: uid('freeform-object'), cellKey: '', x: obj.x + DEFAULT_FREEFORM_GRID_GAP, y: obj.y + DEFAULT_FREEFORM_GRID_GAP, zIndex: state.freeformLayout.nextZ++, assignedStudentId: null, manual: false, locked: false }, state.freeformLayout.objects.length);
+      positionFreeformObjectWithoutOverlap(copy, { startX: copy.x, startY: copy.y });
       state.freeformLayout.objects.push(copy);
       selectFreeformObject(copy.id);
       rememberFreeformGeometry([copy]);
@@ -11517,10 +11617,18 @@
         restoreAssignments(snapshot);
         const warning = buildCollisionWarning(beforeMessages, afterMessages, `Assigning ${studentDisplay(student)} to this freeform seat`);
         if (warning) {
-          showInAppConfirm(warning, () => assignStudentToFreeformObject(student.id, objectId, render, false), {
+          showInAppConfirm(`${warning}
+
+Choose Override Placement to keep this assignment anyway, or Move Back to leave the student where they started.`, () => assignStudentToFreeformObject(student.id, objectId, render, false), {
             title: 'Freeform Bubble Rule Warning',
-            confirmText: 'Assign Anyway',
-            cancelText: 'Cancel'
+            confirmText: 'Override Placement',
+            cancelText: 'Move Back',
+            onCancel: () => {
+              restoreAssignments(snapshot);
+              rememberFreeformGeometry(state.freeformLayout?.objects || []);
+              renderFreeformLayout();
+              setLiveStatusMessage('Freeform placement was moved back because of the bubble-rule warning.');
+            }
           });
           renderFreeformLayout();
           return false;
@@ -11690,6 +11798,15 @@
       return Math.hypot(ac.x - bc.x, ac.y - bc.y);
     }
 
+    function freeformSeatEdgeGapPx(a, b) {
+      return freeformRectGapPx(a, b);
+    }
+
+    function freeformConflictThresholdPx(seatsByStudent) {
+      const widths = Array.from(seatsByStudent.values()).map(obj => Number(obj.width) || DEFAULT_FREEFORM_SEAT_WIDTH).filter(Number.isFinite);
+      return Math.max(DEFAULT_FREEFORM_SEAT_WIDTH, ...widths);
+    }
+
     function freeformCollisionMessagesForStudents(studentIds) {
       if (!Array.isArray(state.freeformLayout?.objects)) return [];
       const watched = new Set((studentIds || []).map(String).filter(Boolean));
@@ -11698,7 +11815,7 @@
       state.freeformLayout.objects.forEach(obj => {
         if (obj.type === 'seat' && obj.assignedStudentId) seatsByStudent.set(String(obj.assignedStudentId), obj);
       });
-      const defaultSeatWidth = Math.max(DEFAULT_FREEFORM_SEAT_WIDTH, ...Array.from(seatsByStudent.values()).map(obj => Number(obj.width) || DEFAULT_FREEFORM_SEAT_WIDTH));
+      const defaultSeatWidth = freeformConflictThresholdPx(seatsByStudent);
       state.bubbles.forEach(bubble => {
         const members = bubble.studentIds.map(getStudent).filter(Boolean);
         const placedMembers = members.map(student => ({ student, seat: seatsByStudent.get(String(student.id)) })).filter(item => item.seat);
@@ -11708,9 +11825,9 @@
               const a = placedMembers[i];
               const b = placedMembers[j];
               if (!watched.has(String(a.student.id)) && !watched.has(String(b.student.id))) continue;
-              const d = freeformSeatDistancePx(a.seat, b.seat);
-              if (d <= defaultSeatWidth) messages.push(`bad:${bubble.name}: ${studentDisplay(a.student)} and ${studentDisplay(b.student)} are within one default seat width in Freeform mode, but this is a ${bubble.type} bubble.`);
-              else if (d <= defaultSeatWidth * 1.5 && bubble.priority >= 8) messages.push(`warn:${bubble.name}: ${studentDisplay(a.student)} and ${studentDisplay(b.student)} are still very close for a high-priority ${bubble.type} bubble.`);
+              const gap = freeformSeatEdgeGapPx(a.seat, b.seat);
+              if (gap < defaultSeatWidth) messages.push(`bad:${bubble.name}: ${studentDisplay(a.student)} and ${studentDisplay(b.student)} are closer than one default seat width in Freeform mode, but this is a ${bubble.type} bubble.`);
+              else if (gap < defaultSeatWidth * 1.5 && bubble.priority >= 8) messages.push(`warn:${bubble.name}: ${studentDisplay(a.student)} and ${studentDisplay(b.student)} are still very close for a high-priority ${bubble.type} bubble.`);
             }
           }
         }
@@ -14172,6 +14289,7 @@
         obj.width = Math.max(Number(obj.width) || DEFAULT_FREEFORM_SEAT_WIDTH, DEFAULT_FREEFORM_SEAT_WIDTH);
         obj.height = Math.max(Number(obj.height) || DEFAULT_FREEFORM_SEAT_HEIGHT, DEFAULT_FREEFORM_SEAT_HEIGHT);
         obj.anchorBubbleIds = obj.anchorBubbleIds || [];
+        positionFreeformObjectWithoutOverlap(obj, { startX: obj.x, startY: obj.y });
         mirrorFreeformSeatToGrid(obj, { clearStudentDuplicates: false });
       } else {
         mirrorFreeformSeatToGrid(obj, { clearStudentDuplicates: false });
