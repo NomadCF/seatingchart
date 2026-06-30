@@ -5,7 +5,7 @@
   <meta name="license" content="MIT License" />
   <meta name="spdx-license-identifier" content="MIT" />
   <meta name="copyright" content="Copyright (c) 2026 Chris L. Franklin" />
-  <meta name="app-version" content="1.19.18" />
+  <meta name="app-version" content="1.19.19" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Seating Chart Bubble Builder</title>
   <style>
@@ -1052,7 +1052,8 @@
       line-height: 1.35;
     }
 
-    .warningbox {
+    .warningbox,
+      .warning {
       border: 1px solid #fedf89;
       background: #fffbeb;
       color: #92400e;
@@ -1651,6 +1652,7 @@
       .live-note,
       .successbox,
       .warningbox,
+      .warning,
       .violation {
       border-radius: 11px;
       font-size: 12px;
@@ -8680,7 +8682,7 @@
     const WELCOME_SETUP_STORAGE_KEY = 'seating-chart-bubble-builder-secure-welcome-v1';
     const VISIBILITY_CREDENTIAL_KEY = 'seating-chart-bubble-builder-visibility-v1';
     const HINT_DISMISS_STORAGE_KEY = 'seating-chart-bubble-builder-dismissed-hints-v1';
-    const APP_REVISION = '1.19.18';
+    const APP_REVISION = '1.19.19';
     const APP_LAST_UPDATED = 'June 30, 2026';
 
     const APP_LICENSE = {
@@ -8741,6 +8743,7 @@
     ];
 
     const CHANGE_LOG = [
+      { version: '1.19.19', date: 'June 30, 2026', changes: ['Completed a conservative code review and static cleanup pass covering syntax, DOM wiring, import validation, save/load safety, warning styling, version metadata, and obvious dead-reference checks.', 'Fixed Reset Closed Hints so it no longer clears the first-run Welcome/Security completion marker.', 'Added supported-payload validation before local, linked, Drive, or uploaded saves are restored so random or incomplete JSON cannot silently replace the chart with an empty import.', 'Fixed the CSS.escape fallback for older browsers and added missing base styling for warning message boxes.'] },
       { version: '1.19.17', date: 'June 29, 2026', changes: ['Ran a full static code audit for syntax, duplicate declarations, duplicate static IDs, risky dynamic evaluation, DOM wiring, and obvious unused symbols.', 'Removed duplicated snapshot retention helper logic and routed snapshot trimming through the shared retention helper.', 'Connected Freeform geometry session cleanup to local-data clear and in-memory factory reset paths so stale same-tab Freeform geometry cannot survive cleanup workflows.'] },
       { version: '1.19.16', date: 'June 29, 2026', changes: ['Throttled the automatic Create a Safer Save File prompt so it can appear no more than once per minute.', 'Added an active-prompt guard so browser-only-save reminders cannot stack or reopen while another confirmation modal is already visible.', 'Stored the last safer-save prompt time in save metadata and sessionStorage so rapid autosaves do not keep nagging the user after dismissal.'] },
       { version: '1.19.15', date: 'June 29, 2026', changes: ['Added a Freeform zoom slider so teachers can shrink or enlarge the room canvas without changing saved seat geometry.', 'Expanded default Freeform seat sizing/spacing and added a default-layout overlap repair so old compact converted seats no longer load stacked on top of each other.', 'Changed Freeform bubble display from fragile color bars to seat-edge border colors and added Freeform physical-distance bubble warnings for avoid/spread rules.', 'Fixed Freeform assignment cleanup so changing a seat into a non-seat object removes the assigned student and linked grid-seat assignment.'] },
@@ -8948,7 +8951,7 @@
     const keyOf = (row, col) => `${row}-${col}`;
     const uid = (prefix) => `${prefix}-${(crypto.randomUUID ? crypto.randomUUID() : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`)}`;
     const escapeHtml = (value) => String(value ?? '').replace(/[&<>'"]/g, ch => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#039;', '"':'&quot;' }[ch]));
-    const cssEscape = (value) => (window.CSS && typeof window.CSS.escape === 'function') ? window.CSS.escape(String(value)) : String(value ?? '').replace(/[^a-zA-Z0-9_-]/g, '\$&');
+    const cssEscape = (value) => (window.CSS && typeof window.CSS.escape === 'function') ? window.CSS.escape(String(value)) : String(value ?? '').replace(/[^a-zA-Z0-9_-]/g, '\\$&');
     const BUBBLE_COLORS = ['#2f6fed', '#e11d48', '#16a34a', '#f59e0b', '#7c3aed', '#0891b2', '#db2777', '#65a30d', '#ea580c', '#475569'];
     const THEME_OPTIONS = ['default','gradient','shimmer','highContrast','windowsXp','windows11','macos','linux'];
     const defaultBubbleColor = (index = 0) => BUBBLE_COLORS[Math.abs(index) % BUBBLE_COLORS.length];
@@ -9142,7 +9145,6 @@
 
     function resetDismissedHints() {
       safeStorageRemove('localStorage', HINT_DISMISS_STORAGE_KEY);
-        safeStorageRemove('localStorage', WELCOME_SETUP_STORAGE_KEY);
       document.querySelectorAll('.hint.hint-dismissed').forEach(hint => hint.classList.remove('hint-dismissed'));
       queueEnhanceHints();
       setLiveStatusMessage('Closed text hints reset. Tiny educational popups are once again permitted to exist.');
@@ -15491,6 +15493,27 @@ Choose Override Placement to keep this assignment anyway, or Move Back to leave 
       }
     }
 
+    function payloadHasImportableData(parsed) {
+      const root = parsed && typeof parsed === 'object' ? parsed : null;
+      if (!root) return false;
+      const incoming = root.state && typeof root.state === 'object' ? root.state : root;
+      const knownKinds = new Set(['seating-chart-student-data', 'seating-chart-bubbles-config', 'seating-chart-room-layouts']);
+      const hasObjectKeys = value => value && typeof value === 'object' && Object.keys(value).length > 0;
+      if (knownKinds.has(root.kind)) return true;
+      if ((Array.isArray(root.classes) && root.classes.length) || (Array.isArray(incoming.classes) && incoming.classes.length)) return true;
+      if ((Array.isArray(incoming.students) && incoming.students.length) || (Array.isArray(incoming.bubbles) && incoming.bubbles.length) || (Array.isArray(incoming.zones) && incoming.zones.length) || (Array.isArray(incoming.customObjects) && incoming.customObjects.length)) return true;
+      if (hasObjectKeys(incoming.cells)) return true;
+      if (Number.isFinite(Number(incoming.rows)) || Number.isFinite(Number(incoming.cols))) return true;
+      if ((Array.isArray(root.roomTemplates) && root.roomTemplates.length) || (Array.isArray(incoming.roomTemplates) && incoming.roomTemplates.length) || (Array.isArray(root.appSnapshots) && root.appSnapshots.length) || (Array.isArray(incoming.appSnapshots) && incoming.appSnapshots.length)) return true;
+      if (hasObjectKeys(root.pageSettings) || hasObjectKeys(incoming.pageSettings)) return true;
+      return false;
+    }
+
+    function assertImportablePayload(parsed, sourceLabel = 'file/local save') {
+      if (payloadHasImportableData(parsed)) return;
+      throw new Error(`The selected ${sourceLabel} does not look like a Seating Chart Builder save, backup, or supported export. Nothing was imported.`);
+    }
+
     async function importStateFromText(text, sourceLabel = 'file/local save') {
       let parsed = JSON.parse(text);
       let encrypted = false;
@@ -15499,6 +15522,7 @@ Choose Override Placement to keep this assignment anyway, or Move Back to leave 
         parsed = JSON.parse(decryptedText);
         encrypted = true;
       }
+      assertImportablePayload(parsed, sourceLabel);
       const draft = buildSelectiveRestoreDraft(parsed, sourceLabel, encrypted);
       openSelectiveRestoreModal(draft);
       setLiveStatusMessage('File loaded. Choose what to restore.');
@@ -15507,9 +15531,12 @@ Choose Override Placement to keep this assignment anyway, or Move Back to leave 
       let parsed = JSON.parse(text);
       if (parsed && parsed.encrypted) {
         const decryptedText = await decryptEncryptedPayloadUsingActiveKeyFirst(parsed, sourceLabel);
-        importState(decryptedText);
+        const decryptedParsed = JSON.parse(decryptedText);
+        assertImportablePayload(decryptedParsed, sourceLabel);
+        importState(JSON.stringify(decryptedParsed));
         return;
       }
+      assertImportablePayload(parsed, sourceLabel);
       importState(text);
     }
 
