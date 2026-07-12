@@ -5,11 +5,11 @@
   <meta name="license" content="MIT License" />
   <meta name="spdx-license-identifier" content="MIT" />
   <meta name="copyright" content="Copyright (c) 2026 Chris L. Franklin" />
-  <meta name="app-version" content="5.6.0" />
+  <meta name="app-version" content="5.7.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline' https://accounts.google.com blob:; style-src 'self' 'unsafe-inline'; connect-src 'self' https://www.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com; img-src 'self' data: blob:; worker-src blob:; object-src 'none'; base-uri 'none'; form-action 'self'" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com blob:; style-src 'self' 'unsafe-inline'; connect-src 'self' https://www.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com; img-src 'self' data: blob:; worker-src blob:; object-src 'none'; base-uri 'none'; form-action 'self'" />
   <meta name="application-name" content="Classroom Seating Planner" />
-  <meta name="build-date" content="2026-07-12T17:24:11Z" />
+  <meta name="build-date" content="2026-07-13T00:30:00Z" />
   <title>Classroom Seating Planner</title>
   <style>/* Cascade architecture: app-base contains ordinary component rules; app-priority contains state and responsive rules that intentionally outrank the base layer. Keep release history in JavaScript, not in CSS patch comments. */
 @layer app-base, app-priority;
@@ -14390,6 +14390,147 @@ body.freeform-marquee-mode .freeform-object {
     margin-top: 8px;
   }
 }
+
+
+@layer app-base {
+  .district-form-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px 12px; }
+  .district-form-grid .district-wide { grid-column:1 / -1; }
+  .drive-manager-modal { width:min(1080px,96vw); max-width:1080px; }
+  .drive-manager-list,.drive-revision-list { display:grid; gap:8px; margin-top:10px; max-height:58vh; overflow:auto; }
+  .drive-manager-row,.drive-revision-row { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:10px; align-items:center; padding:10px; border:1px solid var(--border); border-radius:12px; background:#fff; }
+  .drive-manager-row > div:first-child,.drive-revision-row > div:first-child { display:grid; gap:3px; min-width:0; }
+  .drive-manager-row strong,.drive-revision-row strong { overflow-wrap:anywhere; }
+  .drive-manager-row span,.drive-revision-row span { color:var(--muted); font-size:11.5px; line-height:1.35; }
+  .drive-manager-actions { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:5px; }
+  .district-roster-modal { width:min(1040px,96vw); max-width:1040px; }
+  #districtRosterPreview { margin:10px 0; max-height:320px; }
+  @media (max-width:760px) {
+    .district-form-grid { grid-template-columns:1fr; }
+    .district-form-grid .district-wide { grid-column:auto; }
+    .drive-manager-row,.drive-revision-row { grid-template-columns:1fr; }
+    .drive-manager-actions { justify-content:flex-start; }
+  }
+}
+
+@layer app-priority {
+  /* Settings fit repair: allow navigation and district controls to size to their content. */
+  .settings-modal .modal-body.settings-body {
+    grid-template-columns: minmax(214px, 238px) minmax(0, 1fr);
+  }
+
+  .settings-modal .settings-page-nav {
+    grid-auto-rows: max-content;
+    scrollbar-gutter: stable;
+  }
+
+  body.interface-v51 .settings-modal .settings-page-tab {
+    height: auto;
+    min-height: 72px;
+    overflow: visible;
+    grid-template-columns: 34px minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    align-content: center;
+    padding: 9px;
+  }
+
+  body.interface-v51 .settings-modal .settings-page-tab .settings-page-title,
+  body.interface-v51 .settings-modal .settings-page-tab .settings-page-desc {
+    max-width: 100%;
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  body.interface-v51 .settings-modal .settings-page-tab .settings-page-title {
+    align-self: end;
+    line-height: 1.2;
+  }
+
+  body.interface-v51 .settings-modal .settings-page-tab .settings-page-desc {
+    align-self: start;
+    line-height: 1.3;
+  }
+
+  .settings-modal .settings-page-content {
+    scrollbar-gutter: stable;
+  }
+
+  .hint.dismissible-hint {
+    min-height: 46px;
+    padding-right: 52px;
+  }
+
+  .district-integrations-page .district-form-grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
+    align-items: end;
+  }
+
+  .district-integrations-page .district-form-grid .district-wide {
+    grid-column: 1 / -1;
+  }
+
+  .district-integrations-page .field,
+  .district-integrations-page input,
+  .district-integrations-page select {
+    min-width: 0;
+  }
+
+  .district-integrations-page label {
+    white-space: normal;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+  }
+
+  .district-integrations-page .district-action-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(210px, 100%), 1fr));
+    gap: 8px;
+    width: 100%;
+  }
+
+  .district-integrations-page .district-action-row button {
+    width: 100%;
+    min-width: 0;
+    min-height: 40px;
+    padding: 8px 10px;
+    white-space: normal;
+    text-align: center;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+  }
+
+  .district-integrations-page .district-status-hint {
+    min-height: 46px;
+    padding-right: 52px;
+    overflow-wrap: anywhere;
+  }
+
+  @media (max-width: 860px) {
+    .settings-modal .modal-body.settings-body {
+      grid-template-columns: 1fr;
+    }
+
+    body.interface-v51 .settings-modal .settings-page-tab {
+      min-height: 68px;
+    }
+  }
+
+  @media (max-width: 560px) {
+    body.interface-v51 .settings-modal .settings-page-tab {
+      min-height: 48px;
+      grid-template-columns: 32px minmax(0, 1fr);
+    }
+
+    body.interface-v51 .settings-modal .settings-page-tab .settings-page-desc {
+      display: none;
+    }
+
+    .district-integrations-page .district-action-row {
+      grid-template-columns: 1fr;
+    }
+  }
+}
 </style>
 </head>
 <body class="left-collapsed">
@@ -16161,12 +16302,12 @@ body.freeform-marquee-mode .freeform-object {
 const APP_CONFIG = Object.freeze({
   name: 'Classroom Seating Planner',
   shortName: 'Seating Planner',
-  version: '5.6.0',
+  version: '5.7.1',
   copyrightHolder: 'Chris L. Franklin',
   copyrightYear: '2026',
   releaseDate: '2026-07-12',
   releaseDateDisplay: 'July 12, 2026',
-  buildDate: '2026-07-12T17:24:11Z',
+  buildDate: '2026-07-13T00:30:00Z',
   commit: 'local',
   environment: 'production',
   dataSchemaVersion: 11,
@@ -16191,6 +16332,25 @@ const APP_CONFIG = Object.freeze({
     const LOCAL_DURABLE_SAVE_PROMPT_MIN_MS = 60000;
     const LOCAL_AUTOSAVE_SNAPSHOT_KEY = 'seating-chart-bubble-builder-app-snapshots-v1';
     const GOOGLE_DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.file';
+    const GOOGLE_CLASSROOM_SCOPES = [
+      'https://www.googleapis.com/auth/classroom.courses.readonly',
+      'https://www.googleapis.com/auth/classroom.rosters.readonly'
+    ].join(' ');
+    const IMPORT_LIMITS = Object.freeze({
+      saveBytes: 64 * 1024 * 1024,
+      csvBytes: 10 * 1024 * 1024,
+      maxDepth: 72,
+      maxNodes: 500000,
+      maxStringLength: 2 * 1024 * 1024,
+      maxClasses: 500,
+      maxStudentsPerClass: 10000,
+      maxCellsPerClass: 100000,
+      maxFreeformObjectsPerClass: 100000,
+      maxSnapshots: 500,
+      maxCsvRows: 50000,
+      maxCsvColumns: 150,
+      maxCsvCellLength: 32768
+    });
     const APP_NAME = APP_CONFIG.name;
     const LEGACY_APP_NAMES = new Set(['Seating Chart Bubble Builder', 'Seating Chart Builder', APP_NAME]);
     const GOOGLE_DRIVE_CLIENT_ID = APP_CONFIG.googleDriveClientId;
@@ -16281,10 +16441,34 @@ const APP_CONFIG = Object.freeze({
 
     const RELEASE_HISTORY = [
       {
+        version: '5.7.1',
+        date: 'July 12, 2026',
+        title: 'Settings layout and integration-control fit repair',
+        current: true,
+        changes: [
+          'Expanded Settings navigation rows so longer titles and descriptions wrap without being clipped.',
+          'Made District Integrations forms and action rows adapt to the available content width instead of forcing cramped fixed columns.',
+          'Corrected dismissible status-message spacing for the enlarged close controls and improved narrow-window scrolling.'
+        ]
+      },
+      {
+        version: '5.7.0',
+        date: 'July 12, 2026',
+        title: 'District integrations, verified backups, and Drive lifecycle management',
+        current: false,
+        changes: [
+          'Added deployment-level district settings, Google Classroom and SIS roster reconciliation, and read-only classroom packages that contain only explicitly selected share data.',
+          'Added Google Picker support, Drive file management, revision browsing, and version/head-revision/checksum-aware conflict detection.',
+          'Added SHA-256 backup manifests plus import size, structure, depth, and record-count validation.',
+          'Added targeted rendering for roster, room, status, rules, saving, and settings updates, reducing unnecessary full-workspace rendering.',
+          'Changed first-run Settings protection so disabling the credential requirement is saved immediately without a second Save click.'
+        ]
+      },
+      {
         version: '5.6.0',
         date: 'July 12, 2026',
         title: 'Cascade architecture and history consolidation',
-        current: true,
+        current: false,
         changes: [
           'Replaced 1,969 forced-priority declarations with ordered app-base and app-priority cascade layers, preserving intentional state and responsive precedence without specificity escalation.',
           'Removed version-by-version CSS patch comments and moved historical context into this milestone history.',
@@ -16479,7 +16663,8 @@ const APP_CONFIG = Object.freeze({
       pendingSaveConflict: null,
       lastBackupVerification: null,
       appDatabaseReady: false,
-      browserStorageStatus: 'unknown'
+      browserStorageStatus: 'unknown',
+      onboardingSecuritySavePromise: null
     };
 
     const el = (id) => document.getElementById(id);
@@ -16522,6 +16707,15 @@ const APP_CONFIG = Object.freeze({
       googleDriveFileId: '',
       googleDriveFileName: '',
       googleDriveLastSavedAt: '',
+      googleDriveFileVersion: '',
+      googleDriveHeadRevisionId: '',
+      googleDriveRemoteMd5: '',
+      googlePickerApiKey: '',
+      googlePickerAppId: '',
+      districtName: '',
+      districtDomain: '',
+      districtSupportUrl: '',
+      googleClassroomEnabled: false,
       defaultSideTab: 'students',
       designCellSize: 28,
       freeformSnapToGrid: true,
@@ -16585,6 +16779,15 @@ const APP_CONFIG = Object.freeze({
         googleDriveFileId: String(source.googleDriveFileId || '').trim(),
         googleDriveFileName: String(source.googleDriveFileName || '').trim(),
         googleDriveLastSavedAt: String(source.googleDriveLastSavedAt || '').trim(),
+        googleDriveFileVersion: String(source.googleDriveFileVersion || '').trim(),
+        googleDriveHeadRevisionId: String(source.googleDriveHeadRevisionId || '').trim(),
+        googleDriveRemoteMd5: String(source.googleDriveRemoteMd5 || '').trim(),
+        googlePickerApiKey: String(source.googlePickerApiKey || '').trim().slice(0, 300),
+        googlePickerAppId: String(source.googlePickerAppId || '').trim().slice(0, 80),
+        districtName: String(source.districtName || '').trim().slice(0, 160),
+        districtDomain: String(source.districtDomain || '').trim().slice(0, 160),
+        districtSupportUrl: String(source.districtSupportUrl || '').trim().slice(0, 500),
+        googleClassroomEnabled: source.googleClassroomEnabled ?? false,
         defaultSideTab: ['students','bubbles','zones'].includes(source.defaultSideTab) ? source.defaultSideTab : 'students',
         designCellSize: clampNumber(source.designCellSize ?? DEFAULT_PAGE_SETTINGS.designCellSize, 20, 72),
         freeformSnapToGrid: source.freeformSnapToGrid ?? DEFAULT_PAGE_SETTINGS.freeformSnapToGrid,
@@ -16644,7 +16847,15 @@ const APP_CONFIG = Object.freeze({
         googleDriveFolderId: current.googleDriveFolderId || '',
         googleDriveFileId: current.googleDriveFileId || '',
         googleDriveFileName: current.googleDriveFileName || '',
-        googleDriveLastSavedAt: current.googleDriveLastSavedAt || ''
+        googleDriveLastSavedAt: current.googleDriveLastSavedAt || '',
+        googleDriveFileVersion: current.googleDriveFileVersion || '',
+        googleDriveHeadRevisionId: current.googleDriveHeadRevisionId || '',
+        googleDriveRemoteMd5: current.googleDriveRemoteMd5 || '',
+        googlePickerApiKey: current.googlePickerApiKey || '',
+        googlePickerAppId: current.googlePickerAppId || '',
+        districtName: current.districtName || imported.districtName || '',
+        districtDomain: current.districtDomain || imported.districtDomain || '',
+        districtSupportUrl: current.districtSupportUrl || imported.districtSupportUrl || ''
       };
     }
 
@@ -16654,6 +16865,105 @@ const APP_CONFIG = Object.freeze({
       const text = String(value || '');
       for (let i = 0; i < text.length; i += 1) hash = ((hash << 5) - hash + text.charCodeAt(i)) | 0;
       return Math.abs(hash).toString(36);
+    }
+
+
+    function utf8ByteLength(value) {
+      return new TextEncoder().encode(String(value || '')).byteLength;
+    }
+
+    async function sha256Hex(value) {
+      if (!window.crypto?.subtle) throw new Error('SHA-256 verification requires Web Crypto support.');
+      const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(String(value || '')));
+      return Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, '0')).join('');
+    }
+
+    function stableJsonStringify(value) {
+      if (value === null || typeof value !== 'object') return JSON.stringify(value);
+      if (Array.isArray(value)) return `[${value.map(item => stableJsonStringify(item)).join(',')}]`;
+      return `{${Object.keys(value).sort().map(key => `${JSON.stringify(key)}:${stableJsonStringify(value[key])}`).join(',')}}`;
+    }
+
+    async function addBackupManifest(jsonText, scope = 'all') {
+      const document = JSON.parse(String(jsonText || ''));
+      if (!document || typeof document !== 'object' || Array.isArray(document)) throw new Error('Backup manifest creation requires an object-based save document.');
+      delete document.backupManifest;
+      const canonical = stableJsonStringify(document);
+      document.backupManifest = {
+        format: 'classroom-seating-planner-backup',
+        algorithm: 'SHA-256',
+        contentHash: await sha256Hex(canonical),
+        canonicalBytes: utf8ByteLength(canonical),
+        createdAt: new Date().toISOString(),
+        appVersion: APP_REVISION,
+        dataSchemaVersion: DATA_SCHEMA_VERSION,
+        scope: scope === 'current' ? 'current-class' : String(scope || 'all-classes')
+      };
+      return JSON.stringify(document, null, 2);
+    }
+
+    async function verifyBackupManifest(document, sourceLabel = 'save or backup') {
+      const manifest = document?.backupManifest;
+      if (!manifest) return { present: false, verified: false, legacy: true, algorithm: 'legacy' };
+      if (manifest.format !== 'classroom-seating-planner-backup' || manifest.algorithm !== 'SHA-256' || !manifest.contentHash) {
+        throw new Error(`The ${sourceLabel} contains an unsupported or incomplete backup manifest.`);
+      }
+      const copy = JSON.parse(JSON.stringify(document));
+      delete copy.backupManifest;
+      const canonical = stableJsonStringify(copy);
+      const actual = await sha256Hex(canonical);
+      if (actual !== String(manifest.contentHash)) throw new Error(`The ${sourceLabel} failed SHA-256 integrity verification. It may be incomplete, damaged, or modified.`);
+      if (Number(manifest.canonicalBytes || 0) && Number(manifest.canonicalBytes) !== utf8ByteLength(canonical)) throw new Error(`The ${sourceLabel} byte-length manifest does not match its contents.`);
+      return { present: true, verified: true, legacy: false, algorithm: 'SHA-256', contentHash: actual, canonicalBytes: utf8ByteLength(canonical) };
+    }
+
+    function assertImportTextWithinLimits(text, sourceLabel = 'file/local save', limit = IMPORT_LIMITS.saveBytes) {
+      const bytes = utf8ByteLength(text);
+      if (bytes > limit) throw new Error(`The selected ${sourceLabel} is ${Math.ceil(bytes / 1048576)} MB. The safety limit is ${Math.floor(limit / 1048576)} MB.`);
+      return bytes;
+    }
+
+    function validateImportStructure(root, sourceLabel = 'file/local save') {
+      const forbidden = new Set(['__proto__', 'prototype', 'constructor']);
+      let nodes = 0;
+      const stack = [{ value: root, depth: 0, path: '$' }];
+      while (stack.length) {
+        const current = stack.pop();
+        nodes += 1;
+        if (nodes > IMPORT_LIMITS.maxNodes) throw new Error(`The selected ${sourceLabel} contains too many nested values to import safely.`);
+        if (current.depth > IMPORT_LIMITS.maxDepth) throw new Error(`The selected ${sourceLabel} is nested too deeply to import safely.`);
+        if (typeof current.value === 'string') {
+          if (current.value.length > IMPORT_LIMITS.maxStringLength) throw new Error(`The selected ${sourceLabel} contains an unexpectedly large text value at ${current.path}.`);
+          continue;
+        }
+        if (!current.value || typeof current.value !== 'object') continue;
+        for (const key of Object.keys(current.value)) {
+          if (forbidden.has(key)) throw new Error(`The selected ${sourceLabel} contains a prohibited property (${key}).`);
+          stack.push({ value: current.value[key], depth: current.depth + 1, path: `${current.path}.${key}` });
+        }
+      }
+      return nodes;
+    }
+
+    function validateImportRecordLimits(document, sourceLabel = 'file/local save') {
+      const incoming = document?.state && typeof document.state === 'object' ? document.state : document;
+      const classes = Array.isArray(incoming?.classes) ? incoming.classes : (Array.isArray(document?.classes) ? document.classes : (document?.class ? [document.class] : []));
+      if (classes.length > IMPORT_LIMITS.maxClasses) throw new Error(`The selected ${sourceLabel} contains ${classes.length} classes; the safety limit is ${IMPORT_LIMITS.maxClasses}.`);
+      classes.forEach((cls, index) => {
+        const label = String(cls?.name || `Class ${index + 1}`);
+        if ((cls?.students || []).length > IMPORT_LIMITS.maxStudentsPerClass) throw new Error(`${label} contains more than ${IMPORT_LIMITS.maxStudentsPerClass} students.`);
+        if (Object.keys(cls?.cells || {}).length > IMPORT_LIMITS.maxCellsPerClass) throw new Error(`${label} contains more than ${IMPORT_LIMITS.maxCellsPerClass} room cells.`);
+        if ((cls?.freeformLayout?.objects || []).length > IMPORT_LIMITS.maxFreeformObjectsPerClass) throw new Error(`${label} contains more than ${IMPORT_LIMITS.maxFreeformObjectsPerClass} Freeform objects.`);
+      });
+      const snapshots = document?.appSnapshots || incoming?.appSnapshots || [];
+      if (Array.isArray(snapshots) && snapshots.length > IMPORT_LIMITS.maxSnapshots) throw new Error(`The selected ${sourceLabel} contains more than ${IMPORT_LIMITS.maxSnapshots} snapshots.`);
+      return true;
+    }
+
+    function validateImportDocument(document, sourceLabel = 'file/local save') {
+      validateImportStructure(document, sourceLabel);
+      validateImportRecordLimits(document, sourceLabel);
+      return document;
     }
 
     function loadDismissedHintKeys() {
@@ -20339,7 +20649,7 @@ Choose Override Placement to keep this assignment anyway, or Move Back to leave 
         excludedZoneIds: Array.isArray(requirementsSource.excludedZoneIds) ? Array.from(new Set(requirementsSource.excludedZoneIds.map(String))) : [],
         minDistanceStudentIds: Array.isArray(requirementsSource.minDistanceStudentIds) ? Array.from(new Set(requirementsSource.minDistanceStudentIds.map(String))).filter(value => value !== id) : []
       };
-      return { id, firstName, lastName, nickName, grade, notesPrivate, notesSubstitute, notesPublic, noteCategories: { private: notesPrivate, substitute: notesSubstitute, public: notesPublic }, requirements, archived: Boolean(raw.archived), todayGuest: Boolean(raw.todayGuest) };
+      return { id, firstName, lastName, nickName, grade, notesPrivate, notesSubstitute, notesPublic, noteCategories: { private: notesPrivate, substitute: notesSubstitute, public: notesPublic }, requirements, archived: Boolean(raw.archived), todayGuest: Boolean(raw.todayGuest), sourceSystem: String(raw.sourceSystem || '').slice(0, 80), sourceCourseId: String(raw.sourceCourseId || '').slice(0, 160), sourceUserId: String(raw.sourceUserId || '').slice(0, 160), sourceIdentifiers: raw.sourceIdentifiers && typeof raw.sourceIdentifiers === 'object' ? Object.fromEntries(Object.entries(raw.sourceIdentifiers).slice(0, 20).map(([key,value]) => [String(key).slice(0,80), String(value).slice(0,240)])) : {} };
     }
 
 
@@ -22234,6 +22544,28 @@ Choose Override Placement to keep this assignment anyway, or Move Back to leave 
       ClassroomWorkflowV53?.enhanceRenderedWorkspace?.();
     }
 
+
+    function renderTargeted(targets = ['all'], options = {}) {
+      const requested = new Set(Array.isArray(targets) ? targets : [targets]);
+      if (requested.has('all')) { renderAll(); return; }
+      cleanupInvalidAssignmentsAndAnchors();
+      persistActiveClass();
+      if (requested.has('class-manager')) renderClassManager();
+      if (requested.has('roster')) { renderBubbleMemberPicker(); renderStudents(); refreshAddStudentCollapse(); }
+      if (requested.has('rules')) { renderBubbles(); renderZones(); renderBubbleManager(); renderZoneControls(); }
+      if (requested.has('room')) { syncFreeformControlsFromState(); renderCustomObjectMenus(); renderCustomObjectManager(); applyDesignModeUi(); renderGrid(); updateCellSelectionVisuals(); }
+      if (requested.has('status')) renderStatus();
+      if (requested.has('settings')) { updatePageSettingsForm(); applyVisibilityClasses(); }
+      if (requested.has('saving')) updateSaveHealthPanel();
+      setSideTab(uiState.activeSideTab);
+      persistActiveClass();
+      applyTooltips();
+      queueEnhanceHints();
+      if (options.autosave !== false) scheduleLinkedAutoSave(options.reason || 'targeted-render');
+      ModernizationSuite.enhanceRenderedWorkspace();
+      ClassroomWorkflowV53?.enhanceRenderedWorkspace?.();
+    }
+
     function generateChart() {
       if (eyeModeBlocksSeatEditing()) return blockEyeModeAction('seat');
       const usingFreeform = state.layoutMode === 'freeform';
@@ -23974,7 +24306,7 @@ Choose Override Placement to keep this assignment anyway, or Move Back to leave 
     }
 
     async function exportPayload(scope = 'all') {
-      const plain = exportState(scope);
+      const plain = await addBackupManifest(exportState(scope), scope);
       if (!currentSessionEncryptionKey()) {
         throw new Error('A session encryption password is required before saving or exporting app data. Use the Welcome screen or Settings > Saving to set it.');
       }
@@ -24034,19 +24366,23 @@ Choose Override Placement to keep this assignment anyway, or Move Back to leave 
     }
 
     function assertImportablePayload(parsed, sourceLabel = 'file/local save') {
+      validateImportDocument(parsed, sourceLabel);
       if (payloadHasImportableData(parsed)) return;
       throw new Error(`The selected ${sourceLabel} does not look like a Classroom Seating Planner save, backup, or supported export. Nothing was imported.`);
     }
 
     async function importStateFromText(text, sourceLabel = 'file/local save') {
+      assertImportTextWithinLimits(text, sourceLabel);
       let parsed = JSON.parse(text);
       let encrypted = false;
       if (parsed && parsed.encrypted) {
         const decryptedText = await decryptEncryptedPayloadUsingActiveKeyFirst(parsed, sourceLabel);
+        assertImportTextWithinLimits(decryptedText, `${sourceLabel} after decryption`);
         parsed = JSON.parse(decryptedText);
         encrypted = true;
       }
       assertImportablePayload(parsed, sourceLabel);
+      await verifyBackupManifest(parsed, sourceLabel);
       const draft = buildSelectiveRestoreDraft(parsed, sourceLabel, encrypted);
       openSelectiveRestoreModal(draft);
       setLiveStatusMessage('File loaded. Choose what to restore.');
@@ -24688,7 +25024,12 @@ Choose Override Placement to keep this assignment anyway, or Move Back to leave 
         folderId: String(cfg.googleDriveFolderId || '').trim(),
         fileId: String(cfg.googleDriveFileId || '').trim(),
         fileName: String(cfg.googleDriveFileName || '').trim(),
-        lastSavedAt: String(cfg.googleDriveLastSavedAt || '').trim()
+        lastSavedAt: String(cfg.googleDriveLastSavedAt || '').trim(),
+        fileVersion: String(cfg.googleDriveFileVersion || '').trim(),
+        headRevisionId: String(cfg.googleDriveHeadRevisionId || '').trim(),
+        remoteMd5: String(cfg.googleDriveRemoteMd5 || '').trim(),
+        pickerApiKey: String(cfg.googlePickerApiKey || '').trim(),
+        pickerAppId: String(cfg.googlePickerAppId || '').trim()
       };
     }
 
@@ -24928,8 +25269,8 @@ Choose Override Placement to keep this assignment anyway, or Move Back to leave 
       const { boundary, body } = googleDriveMultipartBody(metadata, payload, 'application/json');
       const isUpdate = !!cfg.fileId;
       const url = isUpdate
-        ? `https://www.googleapis.com/upload/drive/v3/files/${encodeURIComponent(cfg.fileId)}?uploadType=multipart&fields=id,name,modifiedTime,webViewLink`
-        : 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,modifiedTime,webViewLink';
+        ? `https://www.googleapis.com/upload/drive/v3/files/${encodeURIComponent(cfg.fileId)}?uploadType=multipart&fields=id,name,modifiedTime,webViewLink,version,md5Checksum,headRevisionId`
+        : 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,modifiedTime,webViewLink,version,md5Checksum,headRevisionId';
       const response = await googleDriveFetch(url, {
         method: isUpdate ? 'PATCH' : 'POST',
         headers: { 'Content-Type': `multipart/related; boundary=${boundary}` },
@@ -24977,13 +25318,13 @@ Choose Override Placement to keep this assignment anyway, or Move Back to leave 
         const folderId = await ensureGoogleDriveAppFolder();
         const cfg = googleDriveConfig();
         if (!options.forceOverwrite && cfg.fileId && pageSettings().googleDriveConflictPolicy !== 'overwrite') {
-          const conflict = await ModernizationSuite.googleDriveConflict(cfg.fileId, cfg.lastSavedAt);
+          const conflict = await ModernizationSuite.googleDriveConflict(cfg.fileId, cfg);
           if (conflict) {
             uiState.googleDriveBusy = false;
             if (pageSettings().googleDriveConflictPolicy === 'copy') {
               updateGoogleDriveSettings({ googleDriveFileId: '', googleDriveFileName: '' }, { persist: false });
             } else {
-              return ModernizationSuite.saveConflict(`The Google Drive copy was modified at ${new Date(conflict.modifiedTime).toLocaleString()}, after this tab's last confirmed save.`, {
+              return ModernizationSuite.saveConflict(`The Google Drive copy changed after this tab's last confirmed save. ${conflict.reasons?.join(' ') || `Remote modified time: ${new Date(conflict.modifiedTime).toLocaleString()}.`}`, {
                 overwrite: () => writeGoogleDriveSaveFile({ ...options, forceOverwrite: true, announce: true }),
                 copy: () => { updateGoogleDriveSettings({ googleDriveFileId: '', googleDriveFileName: '' }, { persist: false }); return writeGoogleDriveSaveFile({ ...options, forceOverwrite: true, announce: true }); },
                 cancel: () => setLiveStatusMessage('Google Drive save canceled. The newer remote copy was preserved.')
@@ -24999,7 +25340,10 @@ Choose Override Placement to keep this assignment anyway, or Move Back to leave 
           googleDriveFolderId: folderId,
           googleDriveFileId: saved.id || pageSettings().googleDriveFileId || '',
           googleDriveFileName: saved.name || googleDriveCurrentSaveFileName(),
-          googleDriveLastSavedAt: now
+          googleDriveLastSavedAt: now,
+          googleDriveFileVersion: String(saved.version || ''),
+          googleDriveHeadRevisionId: String(saved.headRevisionId || ''),
+          googleDriveRemoteMd5: String(saved.md5Checksum || '')
         });
         uiState.googleDriveLastSyncAt = now;
         uiState.linkedSaveLastSignature = currentSaveSignature();
@@ -25039,7 +25383,7 @@ Choose Override Placement to keep this assignment anyway, or Move Back to leave 
       do {
         const params = new URLSearchParams({
           q,
-          fields: 'nextPageToken,files(id,name,modifiedTime,createdTime,size,mimeType,parents,appProperties,webViewLink)',
+          fields: 'nextPageToken,files(id,name,modifiedTime,createdTime,size,mimeType,parents,appProperties,webViewLink,version,md5Checksum,headRevisionId,ownedByMe,capabilities(canEdit,canTrash,canRename,canCopy))',
           spaces: 'drive',
           pageSize: '100',
           orderBy: 'modifiedTime desc'
@@ -25170,6 +25514,12 @@ Choose Override Placement to keep this assignment anyway, or Move Back to leave 
 
     async function loadGoogleDriveFileById(file, options = {}) {
       if (!file?.id) throw new Error('Choose a Google Drive save first.');
+      if (!file.version || !file.modifiedTime || !file.headRevisionId) {
+        try {
+          const metadataResponse = await googleDriveFetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(file.id)}?fields=id,name,modifiedTime,size,mimeType,webViewLink,version,md5Checksum,headRevisionId`, { method: 'GET' });
+          file = { ...file, ...(await metadataResponse.json()) };
+        } catch (_) { /* The file content may still be readable even if metadata is limited. */ }
+      }
       updateGoogleDriveStatus(`Downloading encrypted save from Google Drive: ${file.name || 'selected save'}...`);
       const response = await googleDriveFetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(file.id)}?alt=media`, { method: 'GET' });
       const text = await response.text();
@@ -25183,7 +25533,10 @@ Choose Override Placement to keep this assignment anyway, or Move Back to leave 
         preferredStorage: 'googleDrive',
         googleDriveFileId: file.id,
         googleDriveFileName: file.name || '',
-        googleDriveLastSavedAt: file.modifiedTime || pageSettings().googleDriveLastSavedAt || ''
+        googleDriveLastSavedAt: file.modifiedTime || pageSettings().googleDriveLastSavedAt || '',
+        googleDriveFileVersion: String(file.version || ''),
+        googleDriveHeadRevisionId: String(file.headRevisionId || ''),
+        googleDriveRemoteMd5: String(file.md5Checksum || '')
       });
       clearSaveFallbackWarning();
       updateGoogleDriveStatus(options.direct ? `Loaded Google Drive save: ${file.name || 'selected save'}.` : `Restore options opened for Google Drive save: ${file.name || 'selected save'}.`);
@@ -27413,7 +27766,10 @@ Choose Override Placement to keep this assignment anyway, or Move Back to leave 
     }
 
     function importStateCore(json) {
-      const parsed = migrateSaveDocument(JSON.parse(json));
+      assertImportTextWithinLimits(json, 'save data');
+      const rawDocument = JSON.parse(json);
+      validateImportDocument(rawDocument, 'save data');
+      const parsed = migrateSaveDocument(rawDocument);
       const incoming = parsed.state || parsed;
       uiState.saveIdentity = parsed.saveIdentity || incoming.saveIdentity || null;
       state.roomTemplates = Array.isArray(parsed.roomTemplates) ? parsed.roomTemplates.map(normalizeRoomTemplateRecord) : (Array.isArray(incoming.roomTemplates) ? incoming.roomTemplates.map(normalizeRoomTemplateRecord) : (state.roomTemplates || []));
@@ -28316,21 +28672,40 @@ This will replace the current classes, settings, room templates, and active layo
     }
 
     function parseCsvMatrix(text) {
+      const sourceText = String(text || '');
+      assertImportTextWithinLimits(sourceText, 'CSV roster', IMPORT_LIMITS.csvBytes);
       const rows = [];
       let current = [];
       let value = '';
       let inQuotes = false;
-      for (let i = 0; i < String(text || '').length; i++) {
-        const ch = text[i];
-        const next = text[i + 1];
+      for (let i = 0; i < sourceText.length; i++) {
+        const ch = sourceText[i];
+        const next = sourceText[i + 1];
         if (ch === '"' && inQuotes && next === '"') { value += '"'; i++; }
         else if (ch === '"') inQuotes = !inQuotes;
-        else if (ch === ',' && !inQuotes) { current.push(value.trim()); value = ''; }
-        else if ((ch === '\n' || ch === '\r') && !inQuotes) { if (ch === '\r' && next === '\n') i++; current.push(value.trim()); if (current.some(v => v !== '')) rows.push(current); current = []; value = ''; }
-        else value += ch;
+        else if (ch === ',' && !inQuotes) {
+          if (value.length > IMPORT_LIMITS.maxCsvCellLength) throw new Error(`A CSV cell exceeds the ${IMPORT_LIMITS.maxCsvCellLength.toLocaleString()} character safety limit.`);
+          current.push(value.trim()); value = '';
+          if (current.length > IMPORT_LIMITS.maxCsvColumns) throw new Error(`The CSV contains more than ${IMPORT_LIMITS.maxCsvColumns} columns.`);
+        }
+        else if ((ch === '\n' || ch === '\r') && !inQuotes) {
+          if (ch === '\r' && next === '\n') i++;
+          if (value.length > IMPORT_LIMITS.maxCsvCellLength) throw new Error(`A CSV cell exceeds the ${IMPORT_LIMITS.maxCsvCellLength.toLocaleString()} character safety limit.`);
+          current.push(value.trim());
+          if (current.length > IMPORT_LIMITS.maxCsvColumns) throw new Error(`The CSV contains more than ${IMPORT_LIMITS.maxCsvColumns} columns.`);
+          if (current.some(v => v !== '')) rows.push(current);
+          if (rows.length > IMPORT_LIMITS.maxCsvRows) throw new Error(`The CSV contains more than ${IMPORT_LIMITS.maxCsvRows.toLocaleString()} rows.`);
+          current = []; value = '';
+        }
+        else {
+          value += ch;
+          if (value.length > IMPORT_LIMITS.maxCsvCellLength) throw new Error(`A CSV cell exceeds the ${IMPORT_LIMITS.maxCsvCellLength.toLocaleString()} character safety limit.`);
+        }
       }
       current.push(value.trim());
+      if (current.length > IMPORT_LIMITS.maxCsvColumns) throw new Error(`The CSV contains more than ${IMPORT_LIMITS.maxCsvColumns} columns.`);
       if (current.some(v => v !== '')) rows.push(current);
+      if (rows.length > IMPORT_LIMITS.maxCsvRows) throw new Error(`The CSV contains more than ${IMPORT_LIMITS.maxCsvRows.toLocaleString()} rows.`);
       return rows;
     }
 
@@ -30592,16 +30967,20 @@ This will replace the current classes, settings, room templates, and active layo
       }
 
       async function importStateDirectFromText(text, sourceLabel = 'local save') {
+        assertImportTextWithinLimits(text, sourceLabel);
         let parsed = JSON.parse(text);
         if (parsed && parsed.encrypted) {
           const decryptedText = await decryptEncryptedPayloadUsingActiveKeyFirst(parsed, sourceLabel);
+          assertImportTextWithinLimits(decryptedText, `${sourceLabel} after decryption`);
           parsed = JSON.parse(decryptedText);
           assertImportablePayload(parsed, sourceLabel);
+          await verifyBackupManifest(parsed, sourceLabel);
           parsed = migratePayloadObject(parsed);
           importState(JSON.stringify(parsed));
           return;
         }
         assertImportablePayload(parsed, sourceLabel);
+        await verifyBackupManifest(parsed, sourceLabel);
         parsed = migratePayloadObject(parsed);
         importState(JSON.stringify(parsed));
       }
@@ -32643,10 +33022,10 @@ This will replace the current classes, settings, room templates, and active layo
             if (!key) throw new Error('The backup is encrypted, but the current session password is unavailable for verification.');
             text = await decryptTextEnvelope(parsed,key);
           }
-          const document = JSON.parse(text); const incoming=document.state||document; const classes=Array.isArray(incoming.classes)?incoming.classes:(Array.isArray(document.classes)?document.classes:(document.class?[document.class]:[]));
-          const students=classes.reduce((sum,cls)=>sum+(cls.students?.length||0),0); const snapshots=(document.appSnapshots||incoming.appSnapshots||[]).length;
-          uiState.lastBackupVerification={label,verifiedAt:new Date().toISOString(),encrypted,classes:classes.length,students,snapshots,dataSchemaVersion:document.dataSchemaVersion||incoming.dataSchemaVersion||'legacy',hash:hashString(text)};
-          if (el('backupVerificationBody')) el('backupVerificationBody').textContent = `${label}\nVerified: ${new Date(uiState.lastBackupVerification.verifiedAt).toLocaleString()}\nEncrypted payload: ${encrypted?'yes':'no'}\nClasses: ${classes.length}\nStudents: ${students}\nSnapshots: ${snapshots}\nData schema: ${uiState.lastBackupVerification.dataSchemaVersion}\nContent hash: ${uiState.lastBackupVerification.hash}\n\nThe payload parsed successfully${encrypted?' and decrypted with the active session password':''}.`;
+          const document = JSON.parse(text); validateImportDocument(document, label); const integrity = await verifyBackupManifest(document, label); const incoming=document.state||document; const classes=Array.isArray(incoming.classes)?incoming.classes:(Array.isArray(document.classes)?document.classes:(document.class?[document.class]:[]));
+          const students=classes.reduce((sum,cls)=>sum+(cls.students?.length||0),0); const snapshots=(document.appSnapshots||incoming.appSnapshots||[]).length; const fallbackHash = integrity.contentHash || await sha256Hex(JSON.stringify(document));
+          uiState.lastBackupVerification={label,verifiedAt:new Date().toISOString(),encrypted,classes:classes.length,students,snapshots,dataSchemaVersion:document.dataSchemaVersion||incoming.dataSchemaVersion||'legacy',hash:fallbackHash,manifestVerified:integrity.verified};
+          if (el('backupVerificationBody')) el('backupVerificationBody').textContent = `${label}\nVerified: ${new Date(uiState.lastBackupVerification.verifiedAt).toLocaleString()}\nEncrypted payload: ${encrypted?'yes':'no'}\nClasses: ${classes.length}\nStudents: ${students}\nSnapshots: ${snapshots}\nData schema: ${uiState.lastBackupVerification.dataSchemaVersion}\nSHA-256: ${uiState.lastBackupVerification.hash}\nManifest: ${integrity.verified?'verified':'legacy file without manifest'}\n\nThe payload parsed successfully${encrypted?' and decrypted with the active session password':''}.`;
           el('backupVerificationModal')?.classList.add('show'); return uiState.lastBackupVerification;
         } catch (err) {
           if (el('backupVerificationBody')) el('backupVerificationBody').textContent = `Verification failed: ${err.message}`;
@@ -32667,10 +33046,25 @@ This will replace the current classes, settings, room templates, and active layo
         catch (err) { return false; }
       }
 
-      async function googleDriveConflict(fileId, lastSavedAt) {
-        if (!fileId || !lastSavedAt || !hasUsableGoogleDriveToken()) return null;
-        try { const response=await googleDriveFetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(fileId)}?fields=id,name,modifiedTime,size,version`,{method:'GET'},false); const meta=await response.json(); return Date.parse(meta.modifiedTime||'')>Date.parse(lastSavedAt||'')+1000?meta:null; }
-        catch (err) { return null; }
+      async function googleDriveConflict(fileId, baseline = {}) {
+        if (!fileId || !hasUsableGoogleDriveToken()) return null;
+        const known = typeof baseline === 'string' ? { lastSavedAt: baseline } : (baseline || {});
+        try {
+          const response = await googleDriveFetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(fileId)}?fields=id,name,modifiedTime,size,version,md5Checksum,headRevisionId`, { method:'GET' }, false);
+          const meta = await response.json();
+          const reasons = [];
+          if (known.fileVersion && meta.version && String(meta.version) !== String(known.fileVersion)) reasons.push(`Remote version changed from ${known.fileVersion} to ${meta.version}.`);
+          if (known.headRevisionId && meta.headRevisionId && String(meta.headRevisionId) !== String(known.headRevisionId)) reasons.push('The remote head revision changed.');
+          if (known.remoteMd5 && meta.md5Checksum && String(meta.md5Checksum) !== String(known.remoteMd5)) reasons.push('The remote content checksum changed.');
+          if (known.lastSavedAt && Date.parse(meta.modifiedTime || '') > Date.parse(known.lastSavedAt || '') + 1000) reasons.push(`Remote modified time is ${new Date(meta.modifiedTime).toLocaleString()}.`);
+          return reasons.length ? { ...meta, reasons } : null;
+        } catch (err) {
+          return {
+            id: fileId,
+            unverified: true,
+            reasons: [`The remote Drive file could not be verified before saving: ${err?.message || 'unknown metadata error'}.`]
+          };
+        }
       }
 
       async function renderDeploymentDiagnostics() {
@@ -34522,7 +34916,7 @@ This will replace the current classes, settings, room templates, and active layo
                     <div class="muted">Use at least four characters. This PIN can unlock the page and can be selected as the Settings credential.</div>
                   </details>
                 </div>
-                <div class="button-row v44-security-choice-actions"><button id="v44SaveSecurityChoiceBtn" class="secondary" type="button">Save protection choice</button></div>
+                <div class="v44-security-choice-actions"><span class="muted">Protection choices save automatically.</span></div>
                 <div id="v44OnboardingSecurityStatus" class="v44-inline-status" aria-live="polite"></div>
               </section>
               <div class="v44-next-step-grid">
@@ -34562,8 +34956,29 @@ This will replace the current classes, settings, room templates, and active layo
             setTimeout(() => el('v44ProtectSettingsToggle')?.focus({ preventScroll: true }), 40);
           }
         }).observe(modal, { attributes: true, attributeFilter: ['class'] });
-        el('v44ProtectSettingsToggle')?.addEventListener('change', syncOnboardingProtectionVisibility);
-        el('v44SettingsAccessMethod')?.addEventListener('change', syncOnboardingProtectionVisibility);
+        el('v44ProtectSettingsToggle')?.addEventListener('change', event => {
+          syncOnboardingProtectionVisibility();
+          const saveTask = async () => {
+            if (!event.target.checked) {
+              setAccessMethod('none', false);
+              onboardingStatus('Settings access is unlocked and the choice was saved automatically. You can turn protection back on from Settings → Security.', 'warn');
+              await writeLocalBrowserSave({ reason: 'onboarding-settings-access', announce: false });
+              return true;
+            }
+            return saveOnboardingSecurityChoice();
+          };
+          uiState.onboardingSecuritySavePromise = saveTask().catch(error => {
+            onboardingStatus(error?.message || 'The Settings access choice could not be saved.', 'bad');
+            return false;
+          });
+        });
+        el('v44SettingsAccessMethod')?.addEventListener('change', () => {
+          syncOnboardingProtectionVisibility();
+          uiState.onboardingSecuritySavePromise = saveOnboardingSecurityChoice().catch(error => {
+            onboardingStatus(error?.message || 'The Settings access choice could not be saved.', 'bad');
+            return false;
+          });
+        });
         syncOnboardingControls();
       }
 
@@ -36853,6 +37268,313 @@ const ProductionReadinessV50 = (() => {
       return Object.freeze({ install, afterReady, setSection, onWorkflowChange, updateSummary });
     })();
 
+
+    const DistrictIntegrationsV57 = (() => {
+      let installed = false;
+      let classroomToken = '';
+      let classroomTokenExpiresAt = 0;
+      let rosterDraft = null;
+      let revisionContext = null;
+
+      const node = id => document.getElementById(id);
+      const districtSettings = () => ({
+        districtName: pageSettings().districtName || '',
+        districtDomain: pageSettings().districtDomain || '',
+        districtSupportUrl: pageSettings().districtSupportUrl || '',
+        googlePickerApiKey: pageSettings().googlePickerApiKey || '',
+        googlePickerAppId: pageSettings().googlePickerAppId || '',
+        googleClassroomEnabled: !!pageSettings().googleClassroomEnabled
+      });
+
+      function injectSettingsPage() {
+        if (node('settingsPageDistrict')) return;
+        const aboutButton = node('settingsPageAboutBtn');
+        const button = document.createElement('button');
+        button.id = 'settingsPageDistrictBtn';
+        button.className = 'settings-page-tab';
+        button.type = 'button';
+        button.setAttribute('role','tab');
+        button.setAttribute('aria-selected','false');
+        button.setAttribute('aria-controls','settingsPageDistrict');
+        button.dataset.settingsNav = 'district';
+        button.innerHTML = '<span class="settings-page-title">District Integrations</span><span class="settings-page-desc">Google Classroom, SIS rosters, Picker, and deployment identity.</span>';
+        aboutButton?.before(button);
+        const about = node('settingsPageAbout');
+        const panel = document.createElement('div');
+        panel.id = 'settingsPageDistrict';
+        panel.className = 'settings-page district-integrations-page';
+        panel.setAttribute('role','tabpanel');
+        panel.dataset.settingsPanel = 'district';
+        panel.setAttribute('aria-label','District integrations');
+        panel.innerHTML = `
+          <div class="settings-page-header"><strong>District integrations</strong>Configure deployment identity and import rosters without weakening local encryption or silently replacing existing student records.</div>
+          <section class="section settings-section"><h3>District deployment profile</h3>
+            <div class="district-form-grid">
+              <div class="field"><label for="districtNameInput">District / organization name</label><input id="districtNameInput" maxlength="160" /></div>
+              <div class="field"><label for="districtDomainInput">Approved domain</label><input id="districtDomainInput" maxlength="160" placeholder="example.org" /></div>
+              <div class="field district-wide"><label for="districtSupportUrlInput">Support URL</label><input id="districtSupportUrlInput" maxlength="500" placeholder="https://support.example.org" /></div>
+            </div>
+            <div class="button-row district-action-row"><button id="saveDistrictProfileBtn" class="secondary" type="button">Save District Profile</button></div>
+          </section>
+          <section class="section settings-section"><h3>Google Picker</h3><div class="hint">Picker can browse Drive files explicitly selected by the signed-in user. A hosted deployment must provide its Google API key, Cloud project app ID, OAuth client ID, and authorized HTTPS origin.</div>
+            <div class="district-form-grid"><div class="field"><label for="googlePickerApiKeyInput">Google API key</label><input id="googlePickerApiKeyInput" autocomplete="off" /></div><div class="field"><label for="googlePickerAppIdInput">Cloud project app ID / project number</label><input id="googlePickerAppIdInput" autocomplete="off" /></div></div>
+            <div class="button-row district-action-row"><button id="saveGooglePickerConfigBtn" class="secondary" type="button">Save Picker Configuration</button><button id="openGooglePickerSettingsBtn" type="button">Choose Drive File with Picker</button></div>
+            <div id="googlePickerConfigStatus" class="hint district-status-hint"></div>
+          </section>
+          <section class="section settings-section"><h3>Google Classroom roster import</h3><div class="hint">Read-only course and roster access is requested separately from Drive access. Imported rosters are reconciled so matched students retain notes, requirements, memberships, and seating references.</div>
+            <div class="button-row district-action-row"><button id="connectGoogleClassroomBtn" class="secondary" type="button">Connect Google Classroom</button><button id="refreshGoogleClassroomCoursesBtn" class="secondary" type="button">Refresh Courses</button></div>
+            <div class="field"><label for="googleClassroomCourseSelect">Course</label><select id="googleClassroomCourseSelect"><option value="">Connect to load courses</option></select></div>
+            <div class="button-row district-action-row"><button id="importGoogleClassroomRosterBtn" type="button">Review Classroom Roster</button></div><div id="googleClassroomStatus" class="hint district-status-hint">Not connected.</div>
+          </section>
+          <section class="section settings-section"><h3>SIS / OneRoster-style CSV</h3><div class="hint">Accepts common columns such as first name, last name, preferred name, grade, student ID, local ID, SIS ID, and sourcedId. Imports are limited to ${IMPORT_LIMITS.maxCsvRows.toLocaleString()} rows and ${Math.floor(IMPORT_LIMITS.csvBytes/1048576)} MB.</div>
+            <input id="districtSisCsvInput" type="file" accept=".csv,text/csv" hidden />
+            <div class="button-row district-action-row"><button id="chooseDistrictSisCsvBtn" class="secondary" type="button">Choose SIS CSV</button></div><div id="districtSisStatus" class="hint district-status-hint">No SIS file selected.</div>
+          </section>`;
+        about?.before(panel);
+        if (!SETTINGS_PAGE_IDS.includes('district')) SETTINGS_PAGE_IDS.splice(Math.max(0, SETTINGS_PAGE_IDS.indexOf('about')), 0, 'district');
+        const mobileSelect = node('settingsMobilePageSelect');
+        if (mobileSelect && !Array.from(mobileSelect.options).some(option => option.value === 'district')) {
+          const option = document.createElement('option'); option.value = 'district'; option.textContent = 'District Integrations';
+          const aboutOption = Array.from(mobileSelect.options).find(item => item.value === 'about');
+          mobileSelect.insertBefore(option, aboutOption || null);
+        }
+      }
+
+      function injectCloudModals() {
+        if (!node('driveManagerModal')) {
+          const shell = document.createElement('div');
+          shell.innerHTML = `
+            <div id="driveManagerModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="driveManagerTitle"><div class="modal modern-modal drive-manager-modal"><div class="panel-header"><h2 id="driveManagerTitle">Google Drive Save Manager</h2><button id="closeDriveManagerBtn" class="tiny secondary" type="button">Close</button></div><div class="modal-body"><div id="driveManagerStatus" class="hint">Connect to list planner saves.</div><div class="button-row"><button id="driveManagerRefreshBtn" class="secondary" type="button">Refresh</button><button id="driveManagerPickerBtn" class="secondary" type="button">Google Picker</button></div><div id="driveManagerList" class="drive-manager-list"></div></div></div></div>
+            <div id="driveRevisionModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="driveRevisionTitle"><div class="modal modern-modal drive-revision-modal"><div class="panel-header"><h2 id="driveRevisionTitle">Drive Revision Browser</h2><button id="closeDriveRevisionBtn" class="tiny secondary" type="button">Close</button></div><div class="modal-body"><div id="driveRevisionStatus" class="hint"></div><div id="driveRevisionList" class="drive-revision-list"></div></div></div></div>
+            <div id="districtRosterModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="districtRosterTitle"><div class="modal modern-modal district-roster-modal"><div class="panel-header"><h2 id="districtRosterTitle">Review District Roster</h2><button id="closeDistrictRosterBtn" class="tiny secondary" type="button">Close</button></div><div class="modal-body"><div id="districtRosterSummary" class="reconcile-summary-grid"></div><div id="districtRosterPreview" class="csv-preview-table"></div><section class="section"><h3>Apply changes</h3><label class="checkline"><input id="districtRosterUpdateMatched" type="checkbox" checked /> Update names, grade, nickname, and source identifiers for matched students</label><label class="checkline"><input id="districtRosterAddNew" type="checkbox" checked /> Add new students</label><label class="checkline"><input id="districtRosterArchiveMissing" type="checkbox" /> Archive students missing from this roster</label><label class="checkline"><input id="districtRosterPreserveDetails" type="checkbox" checked /> Preserve notes, seating requirements, groups, zones, and assignments for matched students</label></section><div class="button-row"><button id="applyDistrictRosterBtn" type="button">Apply Reconciliation</button><button id="cancelDistrictRosterBtn" class="secondary" type="button">Cancel</button></div></div></div></div>`;
+          while (shell.firstElementChild) document.body.appendChild(shell.firstElementChild);
+        }
+      }
+
+      function injectDriveControls() {
+        const driveButtons = node('settingsGoogleDriveForgetBtn')?.closest('.button-row');
+        if (driveButtons && !node('settingsGoogleDriveManageBtn')) {
+          driveButtons.insertAdjacentHTML('beforeend','<button id="settingsGoogleDriveManageBtn" class="secondary" type="button">Manage Drive Saves</button><button id="settingsGoogleDrivePickerBtn" class="secondary" type="button">Google Picker</button>');
+        }
+        const chooserButtons = node('openGoogleDriveFileBtn')?.closest('.button-row');
+        if (chooserButtons && !node('googleDrivePickerBtn')) chooserButtons.insertAdjacentHTML('afterbegin','<button id="googleDrivePickerBtn" class="secondary" type="button">Choose with Google Picker</button>');
+        const safeBody = node('safeSharePreview')?.parentElement;
+        if (safeBody && !node('downloadReadOnlyClassroomBtn')) {
+          const section = document.createElement('section');
+          section.className='section';
+          section.innerHTML='<h3>Read-only classroom package</h3><div class="hint">Creates a standalone HTML file with only the selected privacy profile. It contains no editing controls, passwords, Settings, save credentials, or hidden source data.</div><div class="field"><label for="readOnlyPackagePreset">Package profile</label><select id="readOnlyPackagePreset"><option value="student">Student-facing names only</option><option value="substitute">Substitute chart and approved notes</option><option value="anonymous">Anonymous numbered chart</option><option value="room">Room layout only</option></select></div><button id="downloadReadOnlyClassroomBtn" type="button">Download Read-only Classroom HTML</button>';
+          safeBody.insertBefore(section,node('safeSharePreview'));
+        }
+      }
+
+      function saveDistrictProfile() {
+        updateGoogleDriveSettings({
+          districtName: String(node('districtNameInput')?.value || '').trim(),
+          districtDomain: String(node('districtDomainInput')?.value || '').trim(),
+          districtSupportUrl: String(node('districtSupportUrlInput')?.value || '').trim()
+        });
+        setLiveStatusMessage('District deployment profile saved.');
+      }
+
+      function savePickerConfig() {
+        updateGoogleDriveSettings({ googlePickerApiKey:String(node('googlePickerApiKeyInput')?.value||'').trim(), googlePickerAppId:String(node('googlePickerAppIdInput')?.value||'').trim() });
+        updatePickerStatus();
+        setLiveStatusMessage('Google Picker configuration saved.');
+      }
+
+      function updateDistrictForm() {
+        const cfg=districtSettings();
+        if(node('districtNameInput'))node('districtNameInput').value=cfg.districtName;
+        if(node('districtDomainInput'))node('districtDomainInput').value=cfg.districtDomain;
+        if(node('districtSupportUrlInput'))node('districtSupportUrlInput').value=cfg.districtSupportUrl;
+        if(node('googlePickerApiKeyInput'))node('googlePickerApiKeyInput').value=cfg.googlePickerApiKey;
+        if(node('googlePickerAppIdInput'))node('googlePickerAppIdInput').value=cfg.googlePickerAppId;
+        updatePickerStatus();
+      }
+
+      function updatePickerStatus(message='') {
+        const cfg=districtSettings(); const ready=!!(cfg.googlePickerApiKey&&cfg.googlePickerAppId&&googleDriveConfigured());
+        if(node('googlePickerConfigStatus'))node('googlePickerConfigStatus').textContent=message||(ready?'Picker configuration is complete for this deployment.':'Add the API key and Cloud project app ID. The OAuth Client ID remains configured under Saving.');
+      }
+
+      function loadGooglePickerScript() {
+        if (window.gapi?.load) return Promise.resolve(true);
+        return new Promise((resolve,reject)=>{
+          const existing=document.querySelector('script[data-google-picker-api]');
+          if(existing){existing.addEventListener('load',()=>resolve(true),{once:true});existing.addEventListener('error',()=>reject(new Error('Could not load Google Picker.')),{once:true});return;}
+          const script=document.createElement('script');script.src='https://apis.google.com/js/api.js';script.async=true;script.dataset.googlePickerApi='true';script.onload=()=>resolve(true);script.onerror=()=>reject(new Error('Could not load Google Picker. Check the network and content security policy.'));document.head.appendChild(script);
+        });
+      }
+
+      async function openGooglePicker(options = {}) {
+        const cfg = googleDriveConfig();
+        if (!cfg.pickerApiKey || !cfg.pickerAppId) {
+          updatePickerStatus('Google Picker needs an API key and Cloud project app ID.');
+          if (!options.silent) setLiveStatusMessage('Configure Google Picker in Settings → District Integrations.');
+          return false;
+        }
+        const token = await ensureGoogleDriveToken(true);
+        await loadGooglePickerScript();
+        await new Promise((resolve, reject) => window.gapi.load('picker', {
+          callback: resolve,
+          onerror: () => reject(new Error('Google Picker library did not initialize.'))
+        }));
+        return new Promise(resolve => {
+          const view = new google.picker.DocsView(google.picker.ViewId.DOCS)
+            .setMimeTypes('application/json')
+            .setIncludeFolders(false)
+            .setSelectFolderEnabled(false);
+          const builder = new google.picker.PickerBuilder()
+            .setOAuthToken(token)
+            .setDeveloperKey(cfg.pickerApiKey)
+            .setAppId(cfg.pickerAppId)
+            .setTitle('Choose a Classroom Seating Planner save')
+            .addView(view)
+            .setCallback(async data => {
+              if (data.action === google.picker.Action.PICKED) {
+                const doc = data.docs?.[0];
+                if (!doc?.id) { resolve(false); return; }
+                try {
+                  await loadGoogleDriveFileById({ id: doc.id, name: doc.name || 'Selected Drive file' }, options);
+                  resolve(true);
+                } catch (err) {
+                  setLiveStatusMessage(`Picker load failed: ${err.message}`);
+                  resolve(false);
+                }
+              } else if (data.action === google.picker.Action.CANCEL) {
+                resolve(false);
+              }
+            });
+          if (location.protocol === 'https:' && typeof builder.setOrigin === 'function') builder.setOrigin(location.origin);
+          if (google.picker.Feature?.SUPPORT_DRIVES && typeof builder.enableFeature === 'function') builder.enableFeature(google.picker.Feature.SUPPORT_DRIVES);
+          builder.build().setVisible(true);
+        });
+      }
+
+
+      async function fetchDriveFileMetadata(fileId) {
+        const response=await googleDriveFetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(fileId)}?fields=id,name,modifiedTime,createdTime,size,mimeType,appProperties,webViewLink,version,md5Checksum,headRevisionId,ownedByMe,capabilities(canEdit,canTrash,canRename,canCopy)`,{method:'GET'});
+        return response.json();
+      }
+
+      async function openDriveManager() { injectCloudModals(); node('driveManagerModal')?.classList.add('show'); await refreshDriveManager(); }
+      function closeDriveManager(){node('driveManagerModal')?.classList.remove('show');}
+      async function refreshDriveManager(){
+        const status=node('driveManagerStatus'), list=node('driveManagerList'); if(status)status.textContent='Loading Drive saves…'; if(list)list.innerHTML='';
+        try{const files=await listGoogleDriveSaveFiles(); uiState.googleDriveFiles=files; if(status)status.textContent=`${files.length} planner save${files.length===1?'':'s'} available.`; if(list)list.innerHTML=files.length?files.map(file=>`<article class="drive-manager-row" data-drive-file-id="${escapeHtml(file.id)}"><div><strong>${escapeHtml(file.name||'Unnamed save')}</strong><span>Modified ${escapeHtml(file.modifiedTime?new Date(file.modifiedTime).toLocaleString():'unknown')} · version ${escapeHtml(file.version||'unknown')}</span></div><div class="drive-manager-actions"><button class="tiny secondary" data-drive-action="active" type="button">Use</button><button class="tiny secondary" data-drive-action="revisions" type="button">Revisions</button><button class="tiny secondary" data-drive-action="rename" type="button">Rename</button><button class="tiny secondary" data-drive-action="copy" type="button">Duplicate</button><button class="tiny secondary" data-drive-action="open" type="button">Drive</button><button class="tiny danger" data-drive-action="trash" type="button">Trash</button></div></article>`).join(''):'<div class="restore-empty">No planner saves are currently visible to this app.</div>';}
+        catch(err){if(status)status.textContent=`Drive manager failed: ${err.message}`;}
+      }
+
+      async function handleDriveManagerAction(button){
+        const row=button.closest('[data-drive-file-id]'), id=row?.dataset.driveFileId, action=button.dataset.driveAction; if(!id)return;
+        const file=(uiState.googleDriveFiles||[]).find(item=>item.id===id)||await fetchDriveFileMetadata(id);
+        if(action==='active'){const meta=await fetchDriveFileMetadata(id);updateGoogleDriveSettings({preferredStorage:'googleDrive',googleDriveFileId:id,googleDriveFileName:meta.name||'',googleDriveLastSavedAt:meta.modifiedTime||'',googleDriveFileVersion:String(meta.version||''),googleDriveHeadRevisionId:String(meta.headRevisionId||''),googleDriveRemoteMd5:String(meta.md5Checksum||'')});setLiveStatusMessage(`${meta.name||'Drive save'} is now the active Drive save.`);return;}
+        if(action==='open'){if(file.webViewLink)window.open(file.webViewLink,'_blank','noopener');return;}
+        if(action==='revisions'){await openRevisionBrowser(file);return;}
+        if(action==='rename'){const name=window.prompt('New Google Drive filename',file.name||'seating-chart-save.json');if(!name)return;await googleDriveFetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(id)}?fields=id,name,modifiedTime,version,headRevisionId,md5Checksum`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:String(name).trim().slice(0,180)})});await refreshDriveManager();return;}
+        if(action==='copy'){await googleDriveFetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(id)}/copy?fields=id,name,modifiedTime,version,headRevisionId,md5Checksum`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:`Copy of ${file.name||'planner save'}`})});await refreshDriveManager();return;}
+        if(action==='trash'){showInAppConfirm(`Move ${file.name||'this Drive save'} to Google Drive Trash?`,()=>void(async()=>{await googleDriveFetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(id)}?fields=id,trashed`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({trashed:true})});if(pageSettings().googleDriveFileId===id)updateGoogleDriveSettings({googleDriveFileId:'',googleDriveFileName:'',googleDriveLastSavedAt:'',googleDriveFileVersion:'',googleDriveHeadRevisionId:'',googleDriveRemoteMd5:''});await refreshDriveManager();})(),{title:'Trash Drive Save?',confirmText:'Move to Trash',cancelText:'Cancel'});}
+      }
+
+      async function openRevisionBrowser(file){revisionContext=file;node('driveRevisionModal')?.classList.add('show');const status=node('driveRevisionStatus'),list=node('driveRevisionList');if(status)status.textContent=`Loading revisions for ${file.name||'Drive save'}…`;if(list)list.innerHTML='';try{const response=await googleDriveFetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(file.id)}/revisions?pageSize=100&fields=nextPageToken,revisions(id,modifiedTime,size,originalFilename,md5Checksum,keepForever,published)`,{method:'GET'});const data=await response.json();const revisions=data.revisions||[];if(status)status.textContent=`${revisions.length} revision${revisions.length===1?'':'s'} available. Google may return only the accessible portion of very large histories.`;if(list)list.innerHTML=revisions.length?revisions.slice().reverse().map(rev=>`<article class="drive-revision-row" data-revision-id="${escapeHtml(rev.id)}"><div><strong>${escapeHtml(rev.originalFilename||file.name||'Revision')}</strong><span>${escapeHtml(rev.modifiedTime?new Date(rev.modifiedTime).toLocaleString():'Unknown date')} · ${escapeHtml(googleDriveFileSizeLabel(rev.size))}${rev.keepForever?' · kept forever':''}</span></div><div class="button-row"><button class="tiny secondary" data-revision-action="restore" type="button">Open Restore</button><button class="tiny secondary" data-revision-action="download" type="button">Download</button></div></article>`).join(''):'<div class="restore-empty">No downloadable revisions were returned.</div>'; }catch(err){if(status)status.textContent=`Could not load revisions: ${err.message}`;}}
+      async function fetchRevisionText(revisionId){if(!revisionContext?.id)throw new Error('No Drive file is selected.');const response=await googleDriveFetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(revisionContext.id)}/revisions/${encodeURIComponent(revisionId)}?alt=media`,{method:'GET'});return response.text();}
+      async function handleRevisionAction(button){const revisionId=button.closest('[data-revision-id]')?.dataset.revisionId;if(!revisionId)return;const text=await fetchRevisionText(revisionId);if(button.dataset.revisionAction==='download'){downloadText(backupFilename('drive-revision','json'),text,'application/json');return;}await importStateFromText(text,`Google Drive revision ${revisionId}`);}
+
+      async function ensureClassroomToken(interactive=true){
+        if(classroomToken&&Date.now()<classroomTokenExpiresAt-60000)return classroomToken;
+        if(!interactive)throw new Error('Google Classroom needs a fresh sign-in.');
+        await loadGoogleIdentityServicesScript(); const clientId=googleDriveConfig().clientId; if(!clientId)throw new Error('Configure a Google OAuth Client ID under Saving first.');
+        return new Promise((resolve,reject)=>{const client=google.accounts.oauth2.initTokenClient({client_id:clientId,scope:GOOGLE_CLASSROOM_SCOPES,prompt:'',callback:response=>{if(response?.error){reject(new Error(response.error_description||response.error));return;}classroomToken=response.access_token||'';classroomTokenExpiresAt=Date.now()+Number(response.expires_in||3600)*1000;updateGoogleDriveSettings({googleClassroomEnabled:true});resolve(classroomToken);}});client.requestAccessToken({prompt:'consent'});});
+      }
+      async function classroomFetch(url){const token=await ensureClassroomToken(true);const response=await fetch(url,{headers:{Authorization:`Bearer ${token}`}});if(!response.ok){let detail='';try{detail=(await response.json())?.error?.message||'';}catch{}throw new Error(detail||`Google Classroom request failed (${response.status}).`);}return response;}
+      async function refreshClassroomCourses(){const status=node('googleClassroomStatus'),select=node('googleClassroomCourseSelect');if(status)status.textContent='Loading active Google Classroom courses…';try{let token='',courses=[];do{const params=new URLSearchParams({teacherId:'me',courseStates:'ACTIVE',pageSize:'100'});if(token)params.set('pageToken',token);const response=await classroomFetch(`https://classroom.googleapis.com/v1/courses?${params}`);const data=await response.json();courses.push(...(data.courses||[]));token=data.nextPageToken||'';}while(token);if(select)select.innerHTML='<option value="">Choose a course</option>'+courses.map(course=>`<option value="${escapeHtml(course.id)}">${escapeHtml(course.name||course.section||course.id)}</option>`).join('');if(status)status.textContent=`${courses.length} active course${courses.length===1?'':'s'} available.`;return courses;}catch(err){if(status)status.textContent=`Classroom connection failed: ${err.message}`;return[];}}
+      async function loadClassroomRoster(){const courseId=node('googleClassroomCourseSelect')?.value;if(!courseId){setLiveStatusMessage('Choose a Google Classroom course first.');return;}const status=node('googleClassroomStatus');if(status)status.textContent='Loading course roster…';let token='',records=[];do{const params=new URLSearchParams({pageSize:'100'});if(token)params.set('pageToken',token);const response=await classroomFetch(`https://classroom.googleapis.com/v1/courses/${encodeURIComponent(courseId)}/students?${params}`);const data=await response.json();records.push(...(data.students||[]).map(item=>normalizeStudent({id:item.userId||item.profile?.id||undefined,firstName:item.profile?.name?.givenName||'',lastName:item.profile?.name?.familyName||'',nickName:item.profile?.name?.fullName&&!item.profile?.name?.familyName?item.profile.name.fullName:'',grade:'',sourceSystem:'google-classroom',sourceCourseId:courseId,sourceUserId:item.userId||item.profile?.id||''})));token=data.nextPageToken||'';}while(token);openRosterDraft(records,'Google Classroom');if(status)status.textContent=`Loaded ${records.length} students for reconciliation.`;}
+
+      function studentMatchKey(student){return `${String(student.firstName||'').trim().toLowerCase()}|${String(student.lastName||'').trim().toLowerCase()}`;}
+      function buildRosterDraft(records,source){const existingById=new Map(state.students.map(student=>[String(student.id),student]));const existingByName=new Map(state.students.map(student=>[studentMatchKey(student),student]));const matched=[],added=[],duplicates=[],seen=new Set();records.forEach(incoming=>{const key=incoming.id&&existingById.has(String(incoming.id))?`id:${incoming.id}`:`name:${studentMatchKey(incoming)}`;if(seen.has(key)){duplicates.push(incoming);return;}seen.add(key);const existing=existingById.get(String(incoming.id))||existingByName.get(studentMatchKey(incoming));if(existing)matched.push({existing,incoming,changed:['firstName','lastName','nickName','grade'].some(field=>String(existing[field]||'')!==String(incoming[field]||''))});else added.push(incoming);});const matchedIds=new Set(matched.map(item=>String(item.existing.id)));const missing=state.students.filter(student=>!matchedIds.has(String(student.id)));return{source,matched,added,missing,duplicates};}
+      function openRosterDraft(records,source){rosterDraft=buildRosterDraft(records,source);injectCloudModals();renderRosterDraft();node('districtRosterModal')?.classList.add('show');}
+      function renderRosterDraft(){if(!rosterDraft)return;const cards=[['Matched',rosterDraft.matched.length],['New',rosterDraft.added.length],['Missing',rosterDraft.missing.length],['Duplicates',rosterDraft.duplicates.length]];if(node('districtRosterSummary'))node('districtRosterSummary').innerHTML=cards.map(([label,count])=>`<div class="workflow-card"><strong>${count}</strong><span>${escapeHtml(label)}</span></div>`).join('');const rows=[...rosterDraft.matched.map(item=>['Matched',studentDisplay(item.existing),studentDisplay(item.incoming)]),...rosterDraft.added.map(item=>['New','',studentDisplay(item)]),...rosterDraft.missing.map(item=>['Missing',studentDisplay(item),'']),...rosterDraft.duplicates.map(item=>['Duplicate','',studentDisplay(item)])].slice(0,250);if(node('districtRosterPreview'))node('districtRosterPreview').innerHTML=`<table><thead><tr><th>Status</th><th>Current</th><th>${escapeHtml(rosterDraft.source)}</th></tr></thead><tbody>${rows.map(row=>`<tr><td>${escapeHtml(row[0])}</td><td>${escapeHtml(row[1])}</td><td>${escapeHtml(row[2])}</td></tr>`).join('')}</tbody></table>`;}
+      function applyRosterDraft(){if(!rosterDraft)return;pushUndoSnapshot('district roster reconciliation');const update=node('districtRosterUpdateMatched')?.checked,add=node('districtRosterAddNew')?.checked,archive=node('districtRosterArchiveMissing')?.checked,preserve=node('districtRosterPreserveDetails')?.checked;if(update)rosterDraft.matched.forEach(({existing,incoming})=>{const kept=preserve?{notesPrivate:existing.notesPrivate,notesSubstitute:existing.notesSubstitute,notesPublic:existing.notesPublic,noteCategories:existing.noteCategories,requirements:existing.requirements}:{};Object.assign(existing,incoming,kept,{id:existing.id});});if(add)state.students.push(...rosterDraft.added.map(normalizeStudent));if(archive){state.rosterArchive=state.rosterArchive||[];const ids=new Set(rosterDraft.missing.map(item=>String(item.id)));state.rosterArchive.push(...state.students.filter(item=>ids.has(String(item.id))).map(normalizeStudent));state.students=state.students.filter(item=>!ids.has(String(item.id)));}persistActiveClass();renderTargeted(['class-manager','roster','rules','room','status'],{reason:'district-roster'});node('districtRosterModal')?.classList.remove('show');setLiveStatusMessage(`${rosterDraft.source} roster reconciliation applied.`);rosterDraft=null;}
+
+      function parseSisCsvText(text) {
+        assertImportTextWithinLimits(text, 'SIS CSV', IMPORT_LIMITS.csvBytes);
+        const matrix = parseCsvMatrix(text);
+        if (matrix.length < 2) throw new Error('The SIS CSV needs a header row and at least one student.');
+        const headers = matrix[0].map(value => String(value || '').trim());
+        const toIndex = value => value === '' ? -1 : Number(value);
+        const index = {
+          firstName: toIndex(guessCsvColumn(headers, ['first name', 'firstname', 'given name', 'givenname'])),
+          lastName: toIndex(guessCsvColumn(headers, ['last name', 'lastname', 'family name', 'familyname', 'surname'])),
+          nickName: toIndex(guessCsvColumn(headers, ['preferred name', 'nickname', 'display name'])),
+          grade: toIndex(guessCsvColumn(headers, ['grade', 'grade level', 'level'])),
+          id: toIndex(guessCsvColumn(headers, ['sourcedid', 'sis id', 'student id', 'local id', 'student number', 'identifier']))
+        };
+        if (index.firstName < 0 && index.lastName < 0) throw new Error('No recognized first-name or last-name column was found.');
+        const value = (row, key) => Number.isInteger(index[key]) && index[key] >= 0 ? String(row[index[key]] || '').trim() : '';
+        const records = matrix.slice(1)
+          .filter(row => row.some(cell => String(cell || '').trim()))
+          .map(row => normalizeStudent({
+            firstName: value(row, 'firstName'),
+            lastName: value(row, 'lastName'),
+            nickName: value(row, 'nickName'),
+            grade: value(row, 'grade'),
+            id: value(row, 'id') || undefined,
+            sourceSystem: 'sis-csv'
+          }))
+          .filter(student => student.firstName || student.lastName);
+        if (!records.length) throw new Error('No student rows with recognized names were found.');
+        return records;
+      }
+
+      async function importSisCsv(file) {
+        if (!file) return;
+        const status = node('districtSisStatus');
+        try {
+          const records = parseSisCsvText(await file.text());
+          openRosterDraft(records, 'SIS CSV');
+          if (status) status.textContent = `Loaded ${records.length} SIS records for reconciliation.`;
+        } catch (err) {
+          if (status) status.textContent = `SIS import failed: ${err.message}`;
+        } finally {
+          if (node('districtSisCsvInput')) node('districtSisCsvInput').value = '';
+        }
+      }
+
+
+      function safeStudentPackage(preset){persistActiveClass();const source=deepClone(activeClassRecord()||{});const idMap=new Map();const includeSub=preset==='substitute';source.students=(source.students||[]).map((student,index)=>{const nextId=preset==='anonymous'?`student-${index+1}`:`shared-${index+1}`;idMap.set(String(student.id),nextId);return{id:nextId,firstName:preset==='anonymous'?'Student':student.firstName,lastName:preset==='anonymous'?String(index+1):student.lastName,nickName:preset==='anonymous'?'':student.nickName,grade:'',notesPublic:'',notesSubstitute:includeSub?student.notesSubstitute||'':'',notesPrivate:''};});Object.values(source.cells||{}).forEach(cell=>{if(cell.assignedStudentId)cell.assignedStudentId=idMap.get(String(cell.assignedStudentId))||null;cell.anchorBubbleIds=[];cell.zoneIds=[];});(source.freeformLayout?.objects||[]).forEach(obj=>{if(obj.assignedStudentId)obj.assignedStudentId=idMap.get(String(obj.assignedStudentId))||null;obj.anchorBubbleIds=[];obj.zoneIds=[];});source.bubbles=[];source.zones=[];source.rosterArchive=[];source.seatingPlans=[];source.importProfiles=[];source.snapshots=[];if(preset==='room'){source.students=[];Object.values(source.cells||{}).forEach(cell=>{cell.assignedStudentId=null;});(source.freeformLayout?.objects||[]).forEach(obj=>{obj.assignedStudentId=null;});}return source;}
+      function readOnlyHtml(preset){const cls=safeStudentPackage(preset);const studentMap=new Map((cls.students||[]).map(student=>[String(student.id),student]));const title=`${cls.name||'Classroom'} · Read-only`;let room='';if(cls.layoutMode==='freeform'){const canvas=cls.freeformLayout?.canvas||{width:1200,height:760};room=`<div class="freeform" style="--canvas-w:${Number(canvas.width)||1200}px;--canvas-h:${Number(canvas.height)||760}px">${(cls.freeformLayout?.objects||[]).map(obj=>{const student=studentMap.get(String(obj.assignedStudentId||''));const label=student?studentDisplay(student):(obj.label||objectLabel(obj.type));return`<div class="object ${escapeHtml(obj.type||'custom')}" style="left:${Number(obj.x)||0}px;top:${Number(obj.y)||0}px;width:${Number(obj.width)||120}px;height:${Number(obj.height)||80}px;transform:rotate(${Number(obj.rotation)||0}deg)">${escapeHtml(label)}</div>`;}).join('')}</div>`;}else{const cells=[];for(let r=0;r<(cls.rows||1);r++)for(let c=0;c<(cls.cols||1);c++){const cell=cls.cells?.[`${r}-${c}`]||{};const student=studentMap.get(String(cell.assignedStudentId||''));cells.push(`<div class="cell ${escapeHtml(cell.type||'empty')}">${escapeHtml(student?studentDisplay(student):(cell.label||objectLabel(cell.type||'empty')))}</div>`);}room=`<div class="grid" style="--cols:${cls.cols||1}">${cells.join('')}</div>`;}const notes=preset==='substitute'?(cls.students||[]).filter(student=>student.notesSubstitute).map(student=>`<li><strong>${escapeHtml(studentDisplay(student))}</strong><span>${escapeHtml(student.notesSubstitute)}</span></li>`).join(''):'';return`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(title)}</title><style>body{font-family:system-ui,sans-serif;margin:0;padding:24px;background:#f8fafc;color:#172033}header{margin-bottom:18px}h1{margin:0}.notice{padding:10px;border:1px solid #bfdbfe;background:#eff6ff;border-radius:10px;margin:10px 0}.grid{display:grid;grid-template-columns:repeat(var(--cols),minmax(92px,1fr));gap:8px}.cell,.object{border:1px solid #94a3b8;border-radius:10px;background:#fff;padding:8px;display:grid;place-items:center;text-align:center;min-height:76px;overflow-wrap:anywhere}.cell.seat{background:#dbeafe}.freeform{position:relative;width:min(100%,var(--canvas-w));height:var(--canvas-h);background:#fff;border:1px solid #cbd5e1;overflow:auto}.object{position:absolute;box-sizing:border-box}.notes{margin-top:18px;padding:12px;background:#fff;border:1px solid #cbd5e1;border-radius:12px}.notes ul{display:grid;gap:8px;padding:0;list-style:none}.notes li{display:grid;grid-template-columns:minmax(120px,.6fr) 1fr;gap:8px;padding:8px;border:1px solid #e2e8f0;border-radius:8px}@media print{body{padding:0}.notice{display:none}} </style></head><body><header><h1>${escapeHtml(title)}</h1><div class="notice">Read-only classroom package generated ${escapeHtml(new Date().toLocaleString())}. It contains no editing controls, passwords, Settings, cloud credentials, or hidden source records.</div></header>${room}${notes?`<section class="notes"><h2>Substitute notes</h2><ul>${notes}</ul></section>`:''}</body></html>`;}
+      function downloadReadOnlyPackage(){const preset=node('readOnlyPackagePreset')?.value||'student';downloadText(`${String(activeClassName()||'class').replace(/[^a-z0-9]+/gi,'-').toLowerCase()}-read-only-${preset}.html`,readOnlyHtml(preset),'text/html');setLiveStatusMessage('Read-only classroom HTML package downloaded.');}
+
+      function installEvents(){
+        document.addEventListener('click',event=>{const driveAction=event.target.closest('[data-drive-action]');if(driveAction){void handleDriveManagerAction(driveAction);return;}const revisionAction=event.target.closest('[data-revision-action]');if(revisionAction){void handleRevisionAction(revisionAction);return;}if(event.target.closest('[data-settings-nav="district"]'))setTimeout(updateDistrictForm,0);});
+        node('saveDistrictProfileBtn')?.addEventListener('click',saveDistrictProfile);node('saveGooglePickerConfigBtn')?.addEventListener('click',savePickerConfig);
+        node('openGooglePickerSettingsBtn')?.addEventListener('click',()=>void openGooglePicker({direct:false}));node('settingsGoogleDrivePickerBtn')?.addEventListener('click',()=>void openGooglePicker({direct:false}));node('googleDrivePickerBtn')?.addEventListener('click',()=>void openGooglePicker(uiState.googleDriveChooserContext||{}));
+        node('settingsGoogleDriveManageBtn')?.addEventListener('click',()=>void openDriveManager());node('closeDriveManagerBtn')?.addEventListener('click',closeDriveManager);node('driveManagerRefreshBtn')?.addEventListener('click',()=>void refreshDriveManager());node('driveManagerPickerBtn')?.addEventListener('click',()=>void openGooglePicker({direct:false}));
+        node('closeDriveRevisionBtn')?.addEventListener('click',()=>node('driveRevisionModal')?.classList.remove('show'));
+        node('connectGoogleClassroomBtn')?.addEventListener('click',()=>void refreshClassroomCourses());node('refreshGoogleClassroomCoursesBtn')?.addEventListener('click',()=>void refreshClassroomCourses());node('importGoogleClassroomRosterBtn')?.addEventListener('click',()=>void loadClassroomRoster());
+        node('chooseDistrictSisCsvBtn')?.addEventListener('click',()=>node('districtSisCsvInput')?.click());node('districtSisCsvInput')?.addEventListener('change',event=>void importSisCsv(event.target.files?.[0]));
+        node('closeDistrictRosterBtn')?.addEventListener('click',()=>node('districtRosterModal')?.classList.remove('show'));node('cancelDistrictRosterBtn')?.addEventListener('click',()=>node('districtRosterModal')?.classList.remove('show'));node('applyDistrictRosterBtn')?.addEventListener('click',applyRosterDraft);
+        node('downloadReadOnlyClassroomBtn')?.addEventListener('click',downloadReadOnlyPackage);
+      }
+
+      function install(){if(installed)return;installed=true;injectSettingsPage();injectCloudModals();injectDriveControls();installEvents();updateDistrictForm();document.body.dataset.districtIntegrations=APP_REVISION;}
+      function afterReady(){updateDistrictForm();}
+      return Object.freeze({
+        install,
+        afterReady,
+        openGooglePicker,
+        openDriveManager,
+        refreshDriveManager,
+        openRevisionBrowser,
+        refreshClassroomCourses,
+        loadClassroomRoster,
+        downloadReadOnlyPackage,
+        buildReadOnlyHtml: readOnlyHtml,
+        buildRosterDraft,
+        parseSisCsvText
+      });
+    })();
+
     async function initializeApp() {
       WorkflowExpansion.install();
       ModernizationSuite.install();
@@ -36866,6 +37588,7 @@ const ProductionReadinessV50 = (() => {
       InterfaceSystemV51.install();
       ClassroomWorkflowV53.install();
       ClassSetupWorkspaceV54.install();
+      DistrictIntegrationsV57.install();
       await BrowserDataStore.initialize();
       uiState.appDatabaseReady = true;
       uiState.pageSettings = mergePageSettings(null);
@@ -36939,6 +37662,7 @@ const ProductionReadinessV50 = (() => {
       InterfaceSystemV51.afterReady();
       ClassroomWorkflowV53.afterReady();
       ClassSetupWorkspaceV54.afterReady();
+      DistrictIntegrationsV57.afterReady();
     }
 
     initializeApp();
