@@ -5,11 +5,11 @@
   <meta name="license" content="MIT License" />
   <meta name="spdx-license-identifier" content="MIT" />
   <meta name="copyright" content="Copyright (c) 2026 Chris L. Franklin" />
-  <meta name="app-version" content="5.4.1" />
+  <meta name="app-version" content="5.4.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline' https://accounts.google.com blob:; style-src 'self' 'unsafe-inline'; connect-src 'self' https://www.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com; img-src 'self' data: blob:; worker-src blob:; object-src 'none'; base-uri 'none'; form-action 'self'" />
   <meta name="application-name" content="Classroom Seating Planner" />
-  <meta name="build-date" content="2026-07-12T04:45:15Z" />
+  <meta name="build-date" content="2026-07-12T13:35:54Z" />
   <title>Classroom Seating Planner</title>
   <style>
     :root {
@@ -14697,6 +14697,74 @@ body:not([data-workflow="setup"]) .class-setup-zone-create-only {
   border: 0;
   box-shadow: none !important;
 }
+
+
+/* Version 5.4.2: centered Freeform zoom, box selection, and quick group controls. */
+.freeform-canvas-stage {
+  position: relative;
+  display: block;
+  flex: 0 0 auto;
+  margin: 0 auto;
+  min-width: 1px;
+  min-height: 1px;
+}
+.freeform-canvas-stage > .seat-grid.freeform-canvas {
+  position: absolute;
+  inset: 0 auto auto 0;
+  margin: 0 !important;
+  transform-origin: top left !important;
+}
+body.freeform-marquee-mode .seat-grid.freeform-canvas,
+body.freeform-marquee-mode .freeform-object {
+  cursor: crosshair !important;
+}
+body.freeform-marquee-mode .freeform-object {
+  pointer-events: auto;
+}
+body.freeform-marquee-mode #toggleFreeformMarqueeBtn {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.freeform-marquee {
+  border: 2px solid #2563eb;
+  border-radius: 6px;
+  background: rgba(37, 99, 235, .14);
+  box-shadow: 0 0 0 1px rgba(255,255,255,.8), 0 6px 18px rgba(37,99,235,.18);
+}
+#groupFreeformSelectionBtn,
+#ungroupFreeformSelectionInlineBtn,
+#lockFreeformGroupBtn,
+#toggleFreeformMarqueeBtn {
+  white-space: nowrap;
+}
+.freeform-object.grouped {
+  box-shadow: 0 0 0 2px rgba(124,58,237,.12), 0 8px 20px rgba(15,23,42,.08), inset 0 1px 0 rgba(255,255,255,.84);
+}
+.freeform-object.grouped.selected {
+  outline-color: rgba(124,58,237,.78);
+  box-shadow: 0 0 0 5px rgba(124,58,237,.14), 0 10px 22px rgba(15,23,42,.16);
+}
+@media (min-width: 981px) and (max-width: 1500px) {
+  body.freeform-layout-mode .freeform-selection-group {
+    flex-wrap: wrap;
+    max-width: 470px;
+  }
+}
+@media (max-width: 980px) {
+  .freeform-canvas-stage { margin-inline: 0; }
+  body.freeform-layout-mode .freeform-selection-group {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: 100%;
+  }
+  body.freeform-layout-mode .freeform-selection-group .freeform-group-label {
+    grid-column: 1 / -1;
+  }
+  body.freeform-layout-mode .freeform-selection-group button {
+    width: 100%;
+  }
+}
   </style>
 </head>
 <body class="left-collapsed">
@@ -15202,7 +15270,10 @@ body:not([data-workflow="setup"]) .class-setup-zone-create-only {
               <div class="freeform-command-group freeform-selection-group" aria-label="Selected object actions">
                 <span class="freeform-group-label">Selection</span>
                 <button id="duplicateFreeformObjectBtn" class="secondary" type="button">Duplicate</button>
-                <button id="lockFreeformObjectBtn" class="secondary" type="button" title="Lock or unlock the selected freeform object" aria-label="Lock or unlock selected freeform object">Lock</button>
+                <button id="lockFreeformObjectBtn" class="secondary" type="button" title="Lock or unlock the selected freeform objects" aria-label="Lock or unlock selected freeform objects">Lock</button>
+                <button id="groupFreeformSelectionBtn" class="secondary" type="button" disabled title="Group selected seats and room objects so they move together">Group</button>
+                <button id="ungroupFreeformSelectionInlineBtn" class="secondary" type="button" disabled title="Remove selected objects from their named group">Ungroup</button>
+                <button id="lockFreeformGroupBtn" class="secondary" type="button" disabled title="Lock or unlock every object in the selected group">Lock group</button>
                 <button id="rotateFreeformObjectBtn" class="secondary" type="button">Rotate</button>
                 <button id="deleteFreeformObjectBtn" class="danger" type="button">Delete</button>
               </div>
@@ -15212,6 +15283,7 @@ body:not([data-workflow="setup"]) .class-setup-zone-create-only {
                   <span class="freeform-group-label">Canvas</span>
                   <button id="fitFreeformRoomInlineBtn" class="secondary" type="button">Fit room</button>
                   <button id="fitFreeformSelectionInlineBtn" class="secondary" type="button">Fit selected</button>
+                  <button id="toggleFreeformMarqueeBtn" class="secondary" type="button" aria-pressed="false" title="Drag a box across multiple seats and room objects">Box select</button>
                   <button id="toggleFreeformPanBtn" class="secondary" type="button" aria-pressed="false">Pan</button>
                   <button id="openFreeformPresetsBtn" class="secondary" type="button">Presets</button>
                 </div>
@@ -15296,7 +15368,7 @@ body:not([data-workflow="setup"]) .class-setup-zone-create-only {
             <div class="field small"><label for="generatorAttemptsInput">Attempts</label><input id="generatorAttemptsInput" type="number" min="20" max="1200" step="20" value="180" title="More attempts can improve seating options but take longer." /></div>
             <span class="muted">Generate and Randomize now compare seating options before changing the chart.</span>
           </div>
-          <div class="hint" style="max-width:720px;">Use this stage to build the room: choose Grid or Freeform, add seats and room objects, then arrange and audit the layout. Student placement happens in <strong>Seat Students</strong>, where the chart and unassigned roster are visible together. Generate and Randomize preserve locked placements and use the actual Freeform seat positions.</div>
+          <div class="hint" style="max-width:720px;">Use this stage to build the room: choose Grid or Freeform, add seats and room objects, then use Box Select, Group, Lock Group, alignment, and audit tools to organize the layout. Student placement happens in <strong>Seat Students</strong>, where the chart and unassigned roster are visible together. Generate and Randomize preserve locked placements and use the actual Freeform seat positions.</div>
         </div>
       </div>
 
@@ -16442,12 +16514,12 @@ body:not([data-workflow="setup"]) .class-setup-zone-create-only {
 const APP_CONFIG = Object.freeze({
   name: 'Classroom Seating Planner',
   shortName: 'Seating Planner',
-  version: '5.4.1',
+  version: '5.4.2',
   copyrightHolder: 'Chris L. Franklin',
   copyrightYear: '2026',
   releaseDate: '2026-07-12',
   releaseDateDisplay: 'July 12, 2026',
-  buildDate: '2026-07-12T04:45:15Z',
+  buildDate: '2026-07-12T13:35:54Z',
   commit: 'local',
   environment: 'production',
   dataSchemaVersion: 11,
@@ -18548,6 +18620,81 @@ const APP_CONFIG = Object.freeze({
       return clampNumber(layout?.canvas?.zoom ?? 1, 0.35, 1.75);
     }
 
+
+    function freeformScroller() {
+      return el('seatGrid')?.closest('.grid-wrap') || null;
+    }
+
+    function freeformCanvasStageElement() {
+      return el('seatGrid')?.closest('.freeform-canvas-stage') || null;
+    }
+
+    function ensureFreeformCanvasStage() {
+      const grid = el('seatGrid');
+      const scroller = freeformScroller();
+      if (!grid || !scroller) return null;
+      let stage = freeformCanvasStageElement();
+      if (!stage) {
+        stage = document.createElement('div');
+        stage.className = 'freeform-canvas-stage';
+        grid.parentNode.insertBefore(stage, grid);
+        stage.appendChild(grid);
+      }
+      return stage;
+    }
+
+    function releaseFreeformCanvasStage() {
+      const grid = el('seatGrid');
+      const stage = freeformCanvasStageElement();
+      if (!grid || !stage || !stage.parentNode) return;
+      stage.parentNode.insertBefore(grid, stage);
+      stage.remove();
+    }
+
+    function syncFreeformCanvasStage(layout = state.freeformLayout) {
+      const stage = ensureFreeformCanvasStage();
+      if (!stage) return;
+      const zoom = freeformCanvasZoom(layout);
+      stage.style.width = `${Math.max(1, Number(layout?.canvas?.width) || 2800) * zoom}px`;
+      stage.style.height = `${Math.max(1, Number(layout?.canvas?.height) || 1800) * zoom}px`;
+    }
+
+    function captureFreeformViewportAnchor() {
+      const grid = el('seatGrid');
+      const scroller = freeformScroller();
+      if (!grid || !scroller || state.layoutMode !== 'freeform') return null;
+      const zoom = freeformCanvasZoom();
+      const gridRect = grid.getBoundingClientRect();
+      const scrollerRect = scroller.getBoundingClientRect();
+      return {
+        x: (scrollerRect.left + scroller.clientWidth / 2 - gridRect.left) / zoom,
+        y: (scrollerRect.top + scroller.clientHeight / 2 - gridRect.top) / zoom
+      };
+    }
+
+    function centerFreeformCanvasPoint(x, y, behavior = 'auto') {
+      const grid = el('seatGrid');
+      const scroller = freeformScroller();
+      if (!grid || !scroller) return;
+      const zoom = freeformCanvasZoom();
+      const gridRect = grid.getBoundingClientRect();
+      const scrollerRect = scroller.getBoundingClientRect();
+      const targetClientX = gridRect.left + Number(x || 0) * zoom;
+      const targetClientY = gridRect.top + Number(y || 0) * zoom;
+      const deltaX = targetClientX - (scrollerRect.left + scroller.clientWidth / 2);
+      const deltaY = targetClientY - (scrollerRect.top + scroller.clientHeight / 2);
+      scroller.scrollTo({
+        left: Math.max(0, scroller.scrollLeft + deltaX),
+        top: Math.max(0, scroller.scrollTop + deltaY),
+        behavior
+      });
+    }
+
+    function restoreFreeformViewportAnchor(anchor, behavior = 'auto') {
+      if (!anchor) return;
+      requestAnimationFrame(() => centerFreeformCanvasPoint(anchor.x, anchor.y, behavior));
+    }
+
     function freeformSeatRuleCoordinates(obj, layout = state.freeformLayout) {
       const canvas = layout?.canvas || {};
       const side = String(canvas.frontSide || 'top').toLowerCase();
@@ -19436,7 +19583,7 @@ const APP_CONFIG = Object.freeze({
       if (selectionStatus) {
         if (!count) selectionStatus.textContent = 'No object selected';
         else if (count === 1) selectionStatus.textContent = `${freeformObjectLabel(primary, buildLookupMaps())} selected`;
-        else selectionStatus.textContent = `${count} objects selected`;
+        else selectionStatus.textContent = `${count} selected`;
       }
       const lockBtn = el('lockFreeformObjectBtn');
       if (lockBtn) {
@@ -19495,6 +19642,7 @@ const APP_CONFIG = Object.freeze({
       grid.style.backgroundSize = `${layout.canvas.gridSize}px ${layout.canvas.gridSize}px`;
       grid.style.transform = `scale(${freeformCanvasZoom(layout)})`;
       grid.style.transformOrigin = 'top left';
+      syncFreeformCanvasStage(layout);
       const frontSide = freeformRoomFrontSide();
       grid.innerHTML = `<div class="freeform-room-marker front side-${frontSide}" aria-hidden="true">Front of Room</div>`;
       [...layout.objects].sort((a, b) => (Number(a.zIndex) || 1) - (Number(b.zIndex) || 1)).forEach(obj => {
@@ -19565,7 +19713,7 @@ const APP_CONFIG = Object.freeze({
         });
         grid.appendChild(node);
       });
-      grid.onclick = event => { if (!event.target.closest('.freeform-object')) selectFreeformObject(null); };
+      grid.onclick = event => { if (uiState.suppressFreeformCanvasClick) { uiState.suppressFreeformCanvasClick = false; return; } if (!event.target.closest('.freeform-object')) selectFreeformObject(null); };
       grid.ondragover = event => { if (state.layoutMode === 'freeform') event.preventDefault(); };
       grid.ondrop = event => {
         if (state.layoutMode !== 'freeform') return;
@@ -19872,11 +20020,19 @@ const APP_CONFIG = Object.freeze({
 
     function lockSelectedFreeformObject(toggle = true) {
       restoreFreeformGeometryFromCache();
-      const selected = (state.freeformLayout?.objects || []).filter(obj => uiState.freeformSelectedObjectIds?.has(obj.id));
+      const selectedIds = new Set(uiState.freeformSelectedObjectIds || []);
+      const selected = (state.freeformLayout?.objects || []).filter(obj => selectedIds.has(obj.id));
       if (!selected.length) return;
       pushUndoSnapshot('Before freeform lock change');
       const shouldLock = toggle ? !selected.every(obj => obj.locked) : true;
-      selected.forEach(obj => setFreeformObjectLocked(obj, shouldLock));
+      selected.forEach(obj => {
+        obj.locked = shouldLock;
+        if (obj.type === 'seat') {
+          obj.manual = Boolean(obj.assignedStudentId && shouldLock);
+          const cell = obj.cellKey ? state.cells?.[obj.cellKey] : null;
+          if (cell && cell.type === 'seat') cell.manual = obj.manual;
+        }
+      });
       rememberFreeformGeometry(selected);
       commitFreeformLayoutChange('freeform-lock-object', { render: true, syncToGrid: false });
     }
@@ -19960,6 +20116,7 @@ Choose Override Placement to keep this assignment anyway, or Move Back to leave 
 
     function updateFreeformCanvasSettings() {
       ensureFreeformLayout();
+      const viewportAnchor = captureFreeformViewportAnchor();
       const layout = state.freeformLayout;
       layout.canvas.width = clampNumber(el('freeformCanvasWidthInput')?.value ?? layout.canvas.width, 400, 12000);
       layout.canvas.height = clampNumber(el('freeformCanvasHeightInput')?.value ?? layout.canvas.height, 300, 12000);
@@ -19985,6 +20142,7 @@ Choose Override Placement to keep this assignment anyway, or Move Back to leave 
       persistActiveClass();
       scheduleLinkedAutoSave('freeform-canvas-settings');
       renderAll();
+      restoreFreeformViewportAnchor(viewportAnchor);
     }
 
     function cleanupInvalidAssignmentsAndAnchors() {
@@ -21768,6 +21926,7 @@ Choose Override Placement to keep this assignment anyway, or Move Back to leave 
     function renderGrid() {
       ensureGrid();
       if (state.layoutMode === 'freeform') return renderFreeformLayout();
+      releaseFreeformCanvasStage();
       const grid = el('seatGrid');
       grid.classList.remove('freeform-canvas');
       grid.style.width = '';
@@ -26572,10 +26731,10 @@ Choose Override Placement to keep this assignment anyway, or Move Back to leave 
             "keywords": "freeform keyboard arrows shift alt option drag snap magnetic guides align distribute marquee pan fit room fit selected presets inspector collision overlap group layer",
             "intro": "Freeform Room is a visual editor for irregular rooms, pods, tables, pathways, and precisely positioned seats. Primary tools share the Layout Mode row; More tools opens over the canvas without taking workspace away.",
             "items": [
-                  { "title": "Move and select", "text": "Drag objects, shift-click to extend a selection, or drag a marquee across blank canvas to select several objects." },
+                  { "title": "Move and select", "text": "Drag objects, shift-click to extend a selection, drag across blank canvas, or turn on Box Select to sweep across several seats and room objects." },
                   { "title": "Keyboard movement", "text": "Use Arrow keys to move selected objects by the grid step, Shift+Arrow for a larger step, and Alt/Option+Arrow for one-pixel movement." },
                   { "title": "Drag modifiers", "text": "Hold Shift while dragging to lock movement to one axis. Hold Alt/Option while dragging to temporarily bypass grid snapping." },
-                  { "title": "Snap and guides", "text": "Grid snap keeps coordinates consistent. Magnetic guides align edges and centers. A grouped or multi-selected set moves as one unit so internal spacing is preserved." },
+                  { "title": "Snap and guides", "text": "Grid snap keeps coordinates consistent. Magnetic guides align edges and centers. Use Group to make selected seats and room objects move as one unit; Lock Group freezes the entire group until it is unlocked." },
                   { "title": "Fit, pan, and presets", "text": "Fit Room shows the whole canvas, Fit Selected centers the current selection, Pan moves the viewport, and Presets inserts reusable room groups." },
                   { "title": "More tools", "text": "Canvas size, zoom, movement rules, view controls, alignment, distribution, object dimensions, conversion, Room tools, and Audit room are available in the More tools overlay." }
             ],
@@ -26859,8 +27018,8 @@ Choose Override Placement to keep this assignment anyway, or Move Back to leave 
         workflow: 'setup',
         title: 'Use the Class Setup workspace',
         label: 'Class Setup',
-        body: 'Class Setup uses the center workspace. Move between Overview, Students, Import Roster, Groups & Rules, Student Needs, Zones, and Review Setup without squeezing full editors into the side rail.',
-        click: 'Open Students to add or edit the roster. Use Import Roster for CSV updates, then finish with Review Setup before Room Design.'
+        body: 'Class Setup uses the center workspace. Move from Overview to Import Roster, Students, Groups & Rules, Student Needs, Zones, and Review Setup without squeezing full editors into the side rail.',
+        click: 'Start with Import Roster when you have a CSV. Use Students for manual entry and corrections, then finish with Review Setup before Room Design.'
       },
       {
         selector: '#layoutModeSelect',
@@ -27288,7 +27447,7 @@ Choose Override Placement to keep this assignment anyway, or Move Back to leave 
         html: () => state.layoutMode === 'freeform' ? `
           <div class="wizard-card">
             <h3>2. Build the Freeform room</h3>
-            <ul><li>Add individual seats and room objects from Layout Tools.</li><li>Use Presets for pods, testing rows, lab stations, meeting areas, and accessible pathways.</li><li>Use marquee selection, Align, Distribute, keyboard arrows, Shift-drag axis lock, and Alt/Option to temporarily disable snapping.</li></ul>
+            <ul><li>Add individual seats and room objects from Layout Tools.</li><li>Use Presets for pods, testing rows, lab stations, meeting areas, and accessible pathways.</li><li>Use Box Select or blank-canvas drag selection, Group, Lock Group, Align, Distribute, keyboard arrows, Shift-drag axis lock, and Alt/Option to temporarily disable snapping.</li></ul>
             <div class="button-row"><button type="button" data-wizard-action="open-presets">Open Freeform Presets</button><button type="button" data-wizard-action="close-to-layout" class="secondary">Edit Room</button></div>
           </div>` : `
           <div class="wizard-card">
@@ -32609,6 +32768,20 @@ This will replace the current classes, settings, room templates, and active layo
         }
         const disabled = count === 0;
         document.querySelectorAll('[data-requires-freeform-selection]').forEach(button => { button.disabled=disabled; });
+        const selected=freeformSelectedObjects({includeLocked:true});
+        const selectedGroupIds=new Set(selected.map(obj=>String(obj.groupId||'')).filter(Boolean));
+        const groupButton=el('groupFreeformSelectionBtn');
+        if(groupButton)groupButton.disabled=count<2;
+        const ungroupButton=el('ungroupFreeformSelectionInlineBtn');
+        if(ungroupButton)ungroupButton.disabled=!selectedGroupIds.size;
+        const lockGroupButton=el('lockFreeformGroupBtn');
+        if(lockGroupButton){
+          const groupObjects=(state.freeformLayout?.objects||[]).filter(obj=>selectedGroupIds.has(String(obj.groupId||'')));
+          const groupsLocked=groupObjects.length>0&&groupObjects.every(obj=>obj.locked);
+          lockGroupButton.disabled=!selectedGroupIds.size;
+          lockGroupButton.textContent=groupsLocked?'Unlock group':'Lock group';
+          lockGroupButton.setAttribute('aria-label',groupsLocked?'Unlock all objects in the selected group':'Lock all objects in the selected group');
+        }
         updateFreeformMinimap();
       }
 
@@ -32622,17 +32795,55 @@ This will replace the current classes, settings, room templates, and active layo
         el('freeformWorkspaceModal')?.classList.add('show');
       }
 
-      function createFreeformGroup() {
+      function createFreeformGroup(nameOverride = '') {
         const selected=freeformSelectedObjects({includeLocked:true});
         if(selected.length<2){setLiveStatusMessage('Select at least two objects to create a named group.');return;}
         pushUndoSnapshot('Before creating freeform group');
-        const name=String(el('freeformGroupNameInput')?.value||'').trim().slice(0,60)||`Group ${(state.freeformLayout.groups||[]).length+1}`;
+        const defaultName=`Group ${(state.freeformLayout.groups||[]).length+1}`;
+        const name=String(nameOverride||el('freeformGroupNameInput')?.value||'').trim().slice(0,60)||defaultName;
+        const oldGroupIds=new Set(selected.map(obj=>String(obj.groupId||'')).filter(Boolean));
         const group={id:uid('freeform-group'),name,color:defaultBubbleColor((state.freeformLayout.groups||[]).length+5),locked:false};
         state.freeformLayout.groups.push(group);
         selected.forEach(obj=>{obj.groupId=group.id;});
+        if(oldGroupIds.size){
+          const used=new Set((state.freeformLayout.objects||[]).map(obj=>String(obj.groupId||'')).filter(Boolean));
+          state.freeformLayout.groups=(state.freeformLayout.groups||[]).filter(item=>used.has(String(item.id)));
+        }
         commitFreeformLayoutChange('freeform-create-group',{render:true});
         populateFreeformGroupControls();
-        setLiveStatusMessage(`${name} created with ${selected.length} objects. Alt-click a grouped object to select only that object.`);
+        setLiveStatusMessage(`${name} created with ${selected.length} objects. Drag any member to move the full group. Alt-click selects only one member.`);
+      }
+
+      function quickCreateFreeformGroup() {
+        const selected=freeformSelectedObjects({includeLocked:true});
+        if(selected.length<2){setLiveStatusMessage('Box-select or Shift-click at least two seats or room objects first.');return;}
+        const suggested=`Group ${(state.freeformLayout.groups||[]).length+1}`;
+        if(typeof openTextInputModal==='function'){
+          openTextInputModal({title:'Group Selected Objects',label:'Group name',value:suggested,confirmText:'Create Group',onConfirm:name=>createFreeformGroup(name)});
+        } else createFreeformGroup(suggested);
+      }
+
+      function toggleSelectedFreeformGroupLock() {
+        const selected=freeformSelectedObjects({includeLocked:true});
+        const groupIds=new Set(selected.map(obj=>String(obj.groupId||'')).filter(Boolean));
+        if(!groupIds.size){setLiveStatusMessage('Group the selected objects before locking the group.');return;}
+        const targets=(state.freeformLayout.objects||[]).filter(obj=>groupIds.has(String(obj.groupId||'')));
+        if(!targets.length)return;
+        pushUndoSnapshot('Before changing Freeform group lock');
+        const shouldLock=!targets.every(obj=>obj.locked);
+        targets.forEach(obj=>{
+          obj.locked=shouldLock;
+          if(obj.type==='seat'){
+            obj.manual=Boolean(obj.assignedStudentId&&shouldLock);
+            const cell=obj.cellKey?state.cells?.[obj.cellKey]:null;
+            if(cell&&cell.type==='seat')cell.manual=obj.manual;
+          }
+        });
+        (state.freeformLayout.groups||[]).forEach(group=>{if(groupIds.has(String(group.id)))group.locked=shouldLock;});
+        rememberFreeformGeometry(targets);
+        commitFreeformLayoutChange('freeform-lock-group',{render:true});
+        populateFreeformGroupControls();
+        setLiveStatusMessage(`${groupIds.size===1?'Group':'Groups'} ${shouldLock?'locked':'unlocked'}.`);
       }
 
       function ungroupFreeformSelection() {
@@ -32785,21 +32996,21 @@ This will replace the current classes, settings, room templates, and active layo
       }
 
       function fitFreeformRoom() {
-        const wrap=el('seatGrid')?.parentElement;if(!wrap)return;const canvas=state.freeformLayout.canvas;const zoom=Math.min((wrap.clientWidth-32)/canvas.width,(wrap.clientHeight-32)/canvas.height);canvas.zoom=clampNumber(zoom,0.2,2.5);wrap.scrollTo({left:0,top:0,behavior:'smooth'});commitFreeformLayoutChange('freeform-fit-room',{render:true});
+        const wrap=freeformScroller();if(!wrap)return;const canvas=state.freeformLayout.canvas;const zoom=Math.min((wrap.clientWidth-32)/canvas.width,(wrap.clientHeight-32)/canvas.height);canvas.zoom=clampNumber(zoom,0.2,2.5);wrap.scrollTo({left:0,top:0,behavior:'smooth'});commitFreeformLayoutChange('freeform-fit-room',{render:true});
       }
       function fitFreeformSelection() {
-        const bounds=selectedFreeformBounds();const wrap=el('seatGrid')?.parentElement;if(!bounds||!wrap){setLiveStatusMessage('Select one or more Freeform objects first.');return;}const zoom=Math.min((wrap.clientWidth-60)/Math.max(1,bounds.width),(wrap.clientHeight-60)/Math.max(1,bounds.height));state.freeformLayout.canvas.zoom=clampNumber(zoom,0.2,2.5);renderFreeformLayout();const z=freeformCanvasZoom();wrap.scrollTo({left:Math.max(0,bounds.x*z-30),top:Math.max(0,bounds.y*z-30),behavior:'smooth'});updateFreeformMinimap();
+        const bounds=selectedFreeformBounds();const wrap=freeformScroller();if(!bounds||!wrap){setLiveStatusMessage('Select one or more Freeform objects first.');return;}const zoom=Math.min((wrap.clientWidth-60)/Math.max(1,bounds.width),(wrap.clientHeight-60)/Math.max(1,bounds.height));state.freeformLayout.canvas.zoom=clampNumber(zoom,0.2,2.5);renderFreeformLayout();const z=freeformCanvasZoom();wrap.scrollTo({left:Math.max(0,bounds.x*z-30),top:Math.max(0,bounds.y*z-30),behavior:'smooth'});updateFreeformMinimap();
       }
-      function resetFreeformView(){state.freeformLayout.canvas.zoom=1;renderFreeformLayout();el('seatGrid')?.parentElement?.scrollTo({left:0,top:0,behavior:'smooth'});updateFreeformMinimap();}
-      function centerFreeformObject(id){const obj=(state.freeformLayout?.objects||[]).find(item=>item.id===id);const wrap=el('seatGrid')?.parentElement;if(!obj||!wrap)return;const b=freeformObjectBounds(obj),z=freeformCanvasZoom();wrap.scrollTo({left:Math.max(0,(b.x+b.width/2)*z-wrap.clientWidth/2),top:Math.max(0,(b.y+b.height/2)*z-wrap.clientHeight/2),behavior:'smooth'});selectFreeformObject(obj.id,false,true);}
+      function resetFreeformView(){state.freeformLayout.canvas.zoom=1;renderFreeformLayout();const canvas=state.freeformLayout.canvas;requestAnimationFrame(()=>centerFreeformCanvasPoint(canvas.width/2,canvas.height/2,'smooth'));updateFreeformMinimap();}
+      function centerFreeformObject(id){const obj=(state.freeformLayout?.objects||[]).find(item=>item.id===id);const wrap=freeformScroller();if(!obj||!wrap)return;const b=freeformObjectBounds(obj);centerFreeformCanvasPoint(b.x+b.width/2,b.y+b.height/2,'smooth');selectFreeformObject(obj.id,false,true);}
       function findFreeformStudent(){const studentId=String(el('freeformFindStudentSelect')?.value||'');const seat=(state.freeformLayout?.objects||[]).find(obj=>obj.type==='seat'&&String(obj.assignedStudentId||'')===studentId);if(seat)centerFreeformObject(seat.id);else setLiveStatusMessage('That student is not assigned to a Freeform seat.');}
       function populateFreeformFindStudent(){const select=el('freeformFindStudentSelect');if(!select)return;select.innerHTML='<option value="">Find assigned student…</option>'+[...(state.students||[])].sort((a,b)=>studentDisplay(a).localeCompare(studentDisplay(b))).map(student=>`<option value="${escapeHtml(student.id)}">${escapeHtml(studentDisplay(student))}</option>`).join('');}
 
       function ensureFreeformMinimap() {
-        const wrap=el('seatGrid')?.parentElement;if(!wrap||state.layoutMode!=='freeform')return null;let map=wrap.querySelector('#freeformMinimap');if(!map){map=document.createElement('div');map.id='freeformMinimap';map.className='freeform-minimap no-print';map.innerHTML='<div class="freeform-minimap-objects"></div><div class="freeform-minimap-viewport"></div>';map.addEventListener('pointerdown',event=>{const rect=map.getBoundingClientRect();const canvas=state.freeformLayout.canvas;const wrap=el('seatGrid').parentElement;const x=(event.clientX-rect.left)/rect.width*canvas.width;const y=(event.clientY-rect.top)/rect.height*canvas.height;const z=freeformCanvasZoom();wrap.scrollTo({left:Math.max(0,x*z-wrap.clientWidth/2),top:Math.max(0,y*z-wrap.clientHeight/2),behavior:'smooth'});});wrap.appendChild(map);wrap.addEventListener('scroll',updateFreeformMinimap,{passive:true});}return map;
+        const wrap=freeformScroller();if(!wrap||state.layoutMode!=='freeform')return null;let map=wrap.querySelector('#freeformMinimap');if(!map){map=document.createElement('div');map.id='freeformMinimap';map.className='freeform-minimap no-print';map.innerHTML='<div class="freeform-minimap-objects"></div><div class="freeform-minimap-viewport"></div>';map.addEventListener('pointerdown',event=>{const rect=map.getBoundingClientRect();const canvas=state.freeformLayout.canvas;const wrap=freeformScroller();const x=(event.clientX-rect.left)/rect.width*canvas.width;const y=(event.clientY-rect.top)/rect.height*canvas.height;centerFreeformCanvasPoint(x,y,'smooth');});wrap.appendChild(map);wrap.addEventListener('scroll',updateFreeformMinimap,{passive:true});}return map;
       }
       function updateFreeformMinimap(){
-        if(state.layoutMode!=='freeform')return;const canvas=state.freeformLayout?.canvas||{};const map=ensureFreeformMinimap();if(!map)return;map.classList.toggle('hidden',canvas.showMinimap===false);if(canvas.showMinimap===false)return;const objects=map.querySelector('.freeform-minimap-objects');objects.innerHTML=(state.freeformLayout.objects||[]).map(obj=>`<span class="${escapeHtml(obj.type)}${uiState.freeformSelectedObjectIds?.has(obj.id)?' selected':''}" style="left:${obj.x/canvas.width*100}%;top:${obj.y/canvas.height*100}%;width:${Math.max(1,obj.width/canvas.width*100)}%;height:${Math.max(1,obj.height/canvas.height*100)}%"></span>`).join('');const wrap=el('seatGrid')?.parentElement;const viewport=map.querySelector('.freeform-minimap-viewport');const z=freeformCanvasZoom();viewport.style.left=`${(wrap.scrollLeft/z)/canvas.width*100}%`;viewport.style.top=`${(wrap.scrollTop/z)/canvas.height*100}%`;viewport.style.width=`${Math.min(100,(wrap.clientWidth/z)/canvas.width*100)}%`;viewport.style.height=`${Math.min(100,(wrap.clientHeight/z)/canvas.height*100)}%`;
+        if(state.layoutMode!=='freeform')return;const canvas=state.freeformLayout?.canvas||{};const map=ensureFreeformMinimap();if(!map)return;map.classList.toggle('hidden',canvas.showMinimap===false);if(canvas.showMinimap===false)return;const objects=map.querySelector('.freeform-minimap-objects');objects.innerHTML=(state.freeformLayout.objects||[]).map(obj=>`<span class="${escapeHtml(obj.type)}${uiState.freeformSelectedObjectIds?.has(obj.id)?' selected':''}" style="left:${obj.x/canvas.width*100}%;top:${obj.y/canvas.height*100}%;width:${Math.max(1,obj.width/canvas.width*100)}%;height:${Math.max(1,obj.height/canvas.height*100)}%"></span>`).join('');const wrap=freeformScroller();const viewport=map.querySelector('.freeform-minimap-viewport');const z=freeformCanvasZoom();const grid=el('seatGrid');const wrapRect=wrap.getBoundingClientRect(),gridRect=grid.getBoundingClientRect();const visibleLeft=Math.max(0,(wrapRect.left-gridRect.left)/z),visibleTop=Math.max(0,(wrapRect.top-gridRect.top)/z);viewport.style.left=`${visibleLeft/canvas.width*100}%`;viewport.style.top=`${visibleTop/canvas.height*100}%`;viewport.style.width=`${Math.min(100,(wrap.clientWidth/z)/canvas.width*100)}%`;viewport.style.height=`${Math.min(100,(wrap.clientHeight/z)/canvas.height*100)}%`;
       }
       function toggleFreeformMinimap(){state.freeformLayout.canvas.showMinimap=!state.freeformLayout.canvas.showMinimap;uiState.pageSettings.freeformShowMinimap=state.freeformLayout.canvas.showMinimap;schedulePageSettingsPersistence('freeform-minimap');updateFreeformMinimap();if(typeof syncFreeformToolbarState==='function')syncFreeformToolbarState();}
 
@@ -32845,8 +33056,11 @@ This will replace the current classes, settings, room templates, and active layo
         el('deploymentDiagnosticsBtn')?.addEventListener('click',()=>{el('deploymentDiagnosticsModal')?.classList.add('show');renderDeploymentDiagnostics();}); el('closeDeploymentDiagnosticsBtn')?.addEventListener('click',()=>el('deploymentDiagnosticsModal')?.classList.remove('show')); el('refreshDeploymentDiagnosticsBtn')?.addEventListener('click',renderDeploymentDiagnostics); el('requestPersistentStorageBtn')?.addEventListener('click',requestPersistentStorage);
         el('openFreeformWorkspaceBtn')?.addEventListener('click',openFreeformWorkspaceTools);
         el('closeFreeformWorkspaceBtn')?.addEventListener('click',()=>el('freeformWorkspaceModal')?.classList.remove('show'));
-        el('createFreeformGroupBtn')?.addEventListener('click',createFreeformGroup);
+        el('createFreeformGroupBtn')?.addEventListener('click',()=>createFreeformGroup());
+        el('groupFreeformSelectionBtn')?.addEventListener('click',quickCreateFreeformGroup);
         el('ungroupFreeformBtn')?.addEventListener('click',ungroupFreeformSelection);
+        el('ungroupFreeformSelectionInlineBtn')?.addEventListener('click',ungroupFreeformSelection);
+        el('lockFreeformGroupBtn')?.addEventListener('click',toggleSelectedFreeformGroupLock);
         el('selectFreeformGroupBtn')?.addEventListener('click',selectFreeformGroupFromControl);
         document.querySelectorAll('[data-freeform-layer]').forEach(button=>button.addEventListener('click',()=>moveFreeformLayer(button.dataset.freeformLayer)));
         document.querySelectorAll('[data-freeform-arrange]').forEach(button=>button.addEventListener('click',()=>applyFreeformArrange(button.dataset.freeformArrange)));
@@ -32915,6 +33129,10 @@ This will replace the current classes, settings, room templates, and active layo
         openFreeformWorkspaceTools,
         openFreeformAudit,
         toggleFreeformMinimap,
+        createFreeformGroup,
+        quickCreateFreeformGroup,
+        ungroupFreeformSelection,
+        toggleSelectedFreeformGroupLock,
         openSafeShare: () => { renderSafeSharePresets(); el('safeShareModal')?.classList.add('show'); }
       });
     })();
@@ -35597,6 +35815,7 @@ const ProductionReadinessV50 = (() => {
     const ClassroomWorkflowV53 = (() => {
       let installed = false;
       let marquee = null;
+      let marqueeMode = false;
       let panState = null;
       const JOURNAL_KEY = 'classroomSeatingPlannerV53Journal';
       const PRESETS = [
@@ -35892,7 +36111,7 @@ const ProductionReadinessV50 = (() => {
       function insertPreset(id) {
         const preset=PRESETS.find(item=>item.id===id);if(!preset)return;
         ensureFreeformLayout();pushUndoSnapshot(`Before inserting ${preset.name}`);
-        const canvas=state.freeformLayout.canvas||{};const zoom=freeformCanvasZoom();const scroller=el('seatGrid')?.parentElement;
+        const canvas=state.freeformLayout.canvas||{};const zoom=freeformCanvasZoom();const scroller=freeformScroller();
         const baseX=freeformSnap(Math.max(20,((scroller?.scrollLeft||0)/zoom)+80));const baseY=freeformSnap(Math.max(20,((scroller?.scrollTop||0)/zoom)+80));
         const groupId=uid('freeform-group');state.freeformLayout.groups.push({id:groupId,name:preset.name,color:defaultBubbleColor((state.freeformLayout.groups||[]).length+5),locked:false});
         const ids=[];
@@ -35928,21 +36147,53 @@ const ProductionReadinessV50 = (() => {
         commitFreeformLayoutChange('freeform-keyboard-nudge',{render:true});
       }
 
+      function syncMarqueeMode() {
+        document.body.classList.toggle('freeform-marquee-mode',marqueeMode);
+        const button=el('toggleFreeformMarqueeBtn');
+        if(button){button.setAttribute('aria-pressed',marqueeMode?'true':'false');button.textContent=marqueeMode?'Exit select':'Box select';button.title=marqueeMode?'Exit box-selection mode':'Drag a box across multiple seats and room objects';}
+      }
+
+      function toggleMarqueeMode() {
+        marqueeMode=!marqueeMode;
+        if(marqueeMode&&document.body.classList.contains('freeform-pan-mode'))togglePan();
+        syncMarqueeMode();
+        setLiveStatusMessage(marqueeMode?'Box Select is on. Drag across seats and room objects; hold Shift to add to the selection.':'Box Select is off. Drag empty canvas to select, or drag an object to move it.');
+      }
+
       function beginMarquee(event) {
         if(state.layoutMode!=='freeform'||document.body.classList.contains('freeform-pan-mode')||event.button!==0)return;
-        const grid=el('seatGrid');if(!grid||event.target!==grid)return;
+        const grid=el('seatGrid');if(!grid||!grid.contains(event.target))return;
+        if(event.target.closest('button,input,select,textarea,.freeform-minimap,.freeform-resize-handle,.freeform-rotate-handle'))return;
+        const objectNode=event.target.closest('.freeform-object');
+        if(objectNode&&!marqueeMode)return;
         const rect=grid.getBoundingClientRect(),zoom=freeformCanvasZoom();const startX=(event.clientX-rect.left)/zoom,startY=(event.clientY-rect.top)/zoom;
-        const node=document.createElement('div');node.className='freeform-marquee show';grid.appendChild(node);marquee={grid,node,startX,startY,additive:event.shiftKey,zoom};event.preventDefault();
+        const node=document.createElement('div');node.className='freeform-marquee show';grid.appendChild(node);marquee={grid,node,startX,startY,additive:event.shiftKey,forceSingle:event.altKey,zoom,startObjectId:objectNode?.dataset.objectId||''};event.preventDefault();event.stopImmediatePropagation();
         const move=ev=>{if(!marquee)return;const x=(ev.clientX-rect.left)/zoom,y=(ev.clientY-rect.top)/zoom;const left=Math.min(startX,x),top=Math.min(startY,y),width=Math.abs(x-startX),height=Math.abs(y-startY);Object.assign(node.style,{left:`${left}px`,top:`${top}px`,width:`${width}px`,height:`${height}px`});marquee.bounds={x:left,y:top,right:left+width,bottom:top+height};};
         const up=()=>{document.removeEventListener('pointermove',move);document.removeEventListener('pointerup',up);finishMarquee();};document.addEventListener('pointermove',move);document.addEventListener('pointerup',up,{once:true});
       }
 
       function finishMarquee() {
-        if(!marquee)return;const {node,bounds,additive}=marquee;node.remove();if(bounds&&bounds.right-bounds.x>4&&bounds.bottom-bounds.y>4){const ids=(state.freeformLayout?.objects||[]).filter(obj=>{const b=freeformObjectBounds(obj);return b.x<bounds.right&&b.right>bounds.x&&b.y<bounds.bottom&&b.bottom>bounds.y;}).map(obj=>obj.id);uiState.freeformSelectedObjectIds=additive?new Set([...(uiState.freeformSelectedObjectIds||[]),...ids]):new Set(ids);updateFreeformSelectionVisuals();}marquee=null;
+        if(!marquee)return;const {node,bounds,additive,forceSingle,startObjectId}=marquee;node.remove();
+        if(bounds&&bounds.right-bounds.x>4&&bounds.bottom-bounds.y>4){
+          const hit=(state.freeformLayout?.objects||[]).filter(obj=>{const b=freeformObjectBounds(obj);const right=b.x+b.width,bottom=b.y+b.height;return b.x<bounds.right&&right>bounds.x&&b.y<bounds.bottom&&bottom>bounds.y;});
+          const ids=new Set(hit.map(obj=>String(obj.id)));
+          if(!forceSingle){const groupIds=new Set(hit.map(obj=>String(obj.groupId||'')).filter(Boolean));(state.freeformLayout?.objects||[]).forEach(obj=>{if(groupIds.has(String(obj.groupId||'')))ids.add(String(obj.id));});}
+          uiState.freeformSelectedObjectIds=additive?new Set([...(uiState.freeformSelectedObjectIds||[]),...ids]):ids;
+          uiState.suppressFreeformCanvasClick=true;
+          updateFreeformSelectionVisuals();
+          setLiveStatusMessage(`${ids.size} object${ids.size===1?'':'s'} selected. Use Group to keep them together while moving.`);
+        } else if(startObjectId){
+          uiState.suppressFreeformCanvasClick=true;
+          selectFreeformObject(startObjectId,additive,forceSingle);
+        } else if(!additive){
+          uiState.suppressFreeformCanvasClick=true;
+          selectFreeformObject(null);
+        }
+        marquee=null;
       }
 
-      function togglePan() { const active=!document.body.classList.contains('freeform-pan-mode');document.body.classList.toggle('freeform-pan-mode',active);el('toggleFreeformPanBtn')?.setAttribute('aria-pressed',active?'true':'false');if(el('toggleFreeformPanBtn'))el('toggleFreeformPanBtn').textContent=active?'Exit pan':'Pan'; }
-      function beginPan(event){if(!document.body.classList.contains('freeform-pan-mode')||event.button!==0)return;const grid=el('seatGrid'),scroller=grid?.parentElement;if(!grid||!scroller||!grid.contains(event.target))return;panState={x:event.clientX,y:event.clientY,left:scroller.scrollLeft,top:scroller.scrollTop,scroller};event.preventDefault();const move=ev=>{if(!panState)return;panState.scroller.scrollLeft=panState.left-(ev.clientX-panState.x);panState.scroller.scrollTop=panState.top-(ev.clientY-panState.y);};const up=()=>{document.removeEventListener('pointermove',move);document.removeEventListener('pointerup',up);panState=null;};document.addEventListener('pointermove',move);document.addEventListener('pointerup',up,{once:true});}
+      function togglePan() { const active=!document.body.classList.contains('freeform-pan-mode');document.body.classList.toggle('freeform-pan-mode',active);if(active&&marqueeMode){marqueeMode=false;syncMarqueeMode();}el('toggleFreeformPanBtn')?.setAttribute('aria-pressed',active?'true':'false');if(el('toggleFreeformPanBtn'))el('toggleFreeformPanBtn').textContent=active?'Exit pan':'Pan'; }
+      function beginPan(event){if(!document.body.classList.contains('freeform-pan-mode')||event.button!==0)return;const grid=el('seatGrid'),scroller=freeformScroller();if(!grid||!scroller||!grid.contains(event.target))return;panState={x:event.clientX,y:event.clientY,left:scroller.scrollLeft,top:scroller.scrollTop,scroller};event.preventDefault();event.stopImmediatePropagation();const move=ev=>{if(!panState)return;panState.scroller.scrollLeft=panState.left-(ev.clientX-panState.x);panState.scroller.scrollTop=panState.top-(ev.clientY-panState.y);};const up=()=>{document.removeEventListener('pointermove',move);document.removeEventListener('pointerup',up);panState=null;};document.addEventListener('pointermove',move);document.addEventListener('pointerup',up,{once:true});}
 
       function renderSearch(query='') {
         const term=String(query||'').trim().toLowerCase();const results=[];
@@ -36001,17 +36252,17 @@ const ProductionReadinessV50 = (() => {
         el('todayModeBtn')?.addEventListener('click',openTodayMode);el('closeTodayModeBtn')?.addEventListener('click',()=>el('todayModeModal')?.classList.remove('show'));el('saveTodayModeBtn')?.addEventListener('click',saveTodayMode);el('addTodayGuestBtn')?.addEventListener('click',addTodayGuest);el('generateTodayBtn')?.addEventListener('click',generateToday);el('printTodayBtn')?.addEventListener('click',()=>{el('todayModeModal')?.classList.remove('show');el('printBtn')?.click();});el('restoreMasterFromTodayBtn')?.addEventListener('click',restoreTodayMaster);el('clearTodayModeBtn')?.addEventListener('click',endTodayMode);el('todayGuestList')?.addEventListener('click',event=>{const btn=event.target.closest('[data-remove-today-guest]');if(btn)removeTodayGuest(btn.dataset.removeTodayGuest);});
         el('openSeatingPlansBtn')?.addEventListener('click',()=>{renderSeatingPlans();el('seatingPlansModal')?.classList.add('show');});el('closeSeatingPlansBtn')?.addEventListener('click',()=>el('seatingPlansModal')?.classList.remove('show'));el('saveSeatingPlanBtn')?.addEventListener('click',saveSeatingPlan);el('compareSeatingPlansBtn')?.addEventListener('click',comparePlans);el('seatingPlansList')?.addEventListener('click',event=>{const a=event.target.closest('[data-plan-assignments]');const f=event.target.closest('[data-plan-full]');const d=event.target.closest('[data-plan-delete]');const ar=event.target.closest('[data-plan-archive]');if(a)restorePlanAssignments(a.dataset.planAssignments);if(f)restoreFullPlan(f.dataset.planFull);if(d){state.seatingPlans=(state.seatingPlans||[]).filter(plan=>String(plan.id)!==String(d.dataset.planDelete));persistActiveClass();renderSeatingPlans();}if(ar){const plan=planById(ar.dataset.planArchive);if(plan){plan.status=plan.status==='archived'?'previous':'archived';persistActiveClass();renderSeatingPlans();}}});
         el('openFreeformPresetsBtn')?.addEventListener('click',()=>{renderPresets();el('freeformPresetsModal')?.classList.add('show');});el('closeFreeformPresetsBtn')?.addEventListener('click',()=>el('freeformPresetsModal')?.classList.remove('show'));el('freeformPresetGrid')?.addEventListener('click',event=>{const btn=event.target.closest('[data-insert-freeform-preset]');if(btn)insertPreset(btn.dataset.insertFreeformPreset);});
-        el('fitFreeformRoomInlineBtn')?.addEventListener('click',()=>el('fitFreeformRoomBtn')?.click());el('fitFreeformSelectionInlineBtn')?.addEventListener('click',()=>el('fitFreeformSelectionBtn')?.click());el('toggleFreeformPanBtn')?.addEventListener('click',togglePan);el('applyFreeformInspectorBtn')?.addEventListener('click',applyInspector);document.querySelectorAll('[data-freeform-inline-arrange]').forEach(btn=>btn.addEventListener('click',()=>document.querySelector(`[data-freeform-arrange="${cssEscape(btn.dataset.freeformInlineArrange)}"]`)?.click()));
+        el('fitFreeformRoomInlineBtn')?.addEventListener('click',()=>el('fitFreeformRoomBtn')?.click());el('fitFreeformSelectionInlineBtn')?.addEventListener('click',()=>el('fitFreeformSelectionBtn')?.click());el('toggleFreeformMarqueeBtn')?.addEventListener('click',toggleMarqueeMode);el('toggleFreeformPanBtn')?.addEventListener('click',togglePan);el('applyFreeformInspectorBtn')?.addEventListener('click',applyInspector);document.querySelectorAll('[data-freeform-inline-arrange]').forEach(btn=>btn.addEventListener('click',()=>document.querySelector(`[data-freeform-arrange="${cssEscape(btn.dataset.freeformInlineArrange)}"]`)?.click()));
         el('globalSearchBtn')?.addEventListener('click',()=>{renderSearch('');el('globalSearchModal')?.classList.add('show');setTimeout(()=>el('globalSearchInput')?.focus(),0);});el('closeGlobalSearchBtn')?.addEventListener('click',()=>el('globalSearchModal')?.classList.remove('show'));el('globalSearchInput')?.addEventListener('input',event=>renderSearch(event.target.value));el('globalSearchResults')?.addEventListener('click',event=>{const btn=event.target.closest('[data-global-result]');const result=el('globalSearchResults')?._results?.[Number(btn?.dataset.globalResult)];if(result){el('globalSearchModal')?.classList.remove('show');result.run();}});
         el('saveCsvImportProfileBtn')?.addEventListener('click',saveImportProfile);el('applyCsvImportProfileBtn')?.addEventListener('click',applyImportProfile);el('deleteCsvImportProfileBtn')?.addEventListener('click',deleteImportProfile);
         el('openRecoveryKitBtn')?.addEventListener('click',()=>{el('saveSetupModal')?.classList.remove('show');el('recoveryKitModal')?.classList.add('show');});el('closeRecoveryKitBtn')?.addEventListener('click',()=>el('recoveryKitModal')?.classList.remove('show'));el('createRecoveryKitBtn')?.addEventListener('click',createRecoveryKit);
         el('seatGrid')?.addEventListener('pointerdown',beginMarquee,true);el('seatGrid')?.addEventListener('pointerdown',beginPan,true);
-        document.addEventListener('keydown',event=>{if(state.layoutMode!=='freeform'||event.target.closest('input,textarea,select,[contenteditable=true]')||document.querySelector('.modal-backdrop.show'))return;const selected=selectedObjects();if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(event.key)&&selected.length){event.preventDefault();const base=event.altKey?1:(event.shiftKey?Math.max(10,Number(state.freeformLayout?.canvas?.gridSize)||40)*5:Math.max(5,Number(state.freeformLayout?.canvas?.gridSize)||40));nudgeSelection(event.key==='ArrowLeft'?-base:event.key==='ArrowRight'?base:0,event.key==='ArrowUp'?-base:event.key==='ArrowDown'?base:0,{raw:event.altKey});}else if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='d'&&selected.length){event.preventDefault();duplicateSelectedFreeformObject();}else if(event.key.toLowerCase()==='l'&&selected.length){event.preventDefault();el('lockFreeformObjectBtn')?.click();}else if(event.key.toLowerCase()==='r'&&selected.length===1){event.preventDefault();rotateFreeformObject(selected[0].id,event.shiftKey?-15:15);}else if((event.key==='Delete'||event.key==='Backspace')&&selected.length){event.preventDefault();deleteSelectedFreeformObject();}else if(event.key.toLowerCase()==='p'&&event.altKey){event.preventDefault();togglePan();}else if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='f'){event.preventDefault();el('globalSearchBtn')?.click();}},true);
+        document.addEventListener('keydown',event=>{if(state.layoutMode!=='freeform'||event.target.closest('input,textarea,select,[contenteditable=true]')||document.querySelector('.modal-backdrop.show'))return;if(event.key==='Escape'&&marqueeMode){event.preventDefault();marqueeMode=false;syncMarqueeMode();return;}const selected=selectedObjects();if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(event.key)&&selected.length){event.preventDefault();const base=event.altKey?1:(event.shiftKey?Math.max(10,Number(state.freeformLayout?.canvas?.gridSize)||40)*5:Math.max(5,Number(state.freeformLayout?.canvas?.gridSize)||40));nudgeSelection(event.key==='ArrowLeft'?-base:event.key==='ArrowRight'?base:0,event.key==='ArrowUp'?-base:event.key==='ArrowDown'?base:0,{raw:event.altKey});}else if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='d'&&selected.length){event.preventDefault();duplicateSelectedFreeformObject();}else if(event.key.toLowerCase()==='l'&&selected.length){event.preventDefault();el('lockFreeformObjectBtn')?.click();}else if(event.key.toLowerCase()==='r'&&selected.length===1){event.preventDefault();rotateFreeformObject(selected[0].id,event.shiftKey?-15:15);}else if((event.key==='Delete'||event.key==='Backspace')&&selected.length){event.preventDefault();deleteSelectedFreeformObject();}else if(event.key.toLowerCase()==='p'&&event.altKey){event.preventDefault();togglePan();}else if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='f'){event.preventDefault();el('globalSearchBtn')?.click();}},true);
         ['input','change'].forEach(type=>document.addEventListener(type,event=>{if(event.target.closest('input,textarea,select'))scheduleJournal();},true));document.addEventListener('click',event=>{if(event.target.closest('button'))scheduleJournal();},true);
         document.querySelectorAll('.modal-backdrop').forEach(modal=>modal.addEventListener('click',event=>{if(event.target===modal)modal.classList.remove('show');}));
       }
 
-      function install(){if(installed)return;installed=true;installEvents();document.body.dataset.classroomWorkflow='5.3';}
+      function install(){if(installed)return;installed=true;installEvents();syncMarqueeMode();document.body.dataset.classroomWorkflow='5.4.2';}
       function afterReady(){enhanceRenderedWorkspace();renderSeatingPlans();renderImportProfiles();}
       return Object.freeze({install,afterReady,enhanceRenderedWorkspace,openTodayMode,openSeatingPlans:()=>{renderSeatingPlans();el('seatingPlansModal')?.classList.add('show');},openGlobalSearch:()=>el('globalSearchBtn')?.click(),openPresets:()=>el('openFreeformPresetsBtn')?.click()});
     })();
@@ -36025,8 +36276,8 @@ const ProductionReadinessV50 = (() => {
       const STORAGE_KEY = 'classroomSeatingPlannerClassSetupSectionV54';
       const SECTIONS = [
         { id: 'overview', label: 'Overview', short: 'Overview', description: 'Readiness, next steps, and class summary.' },
-        { id: 'students', label: 'Students', short: 'Students', description: 'Add, edit, search, archive, and manage the roster.' },
         { id: 'import', label: 'Import Roster', short: 'Import', description: 'Upload, map, preview, and reconcile roster files.' },
+        { id: 'students', label: 'Students', short: 'Students', description: 'Add, edit, search, archive, and manage the roster.' },
         { id: 'rules', label: 'Groups & Rules', short: 'Groups & Rules', description: 'Create together, apart, location, and support rules.' },
         { id: 'requirements', label: 'Student Needs', short: 'Student Needs', description: 'Review student-specific seating requirements.' },
         { id: 'zones', label: 'Zones', short: 'Zones', description: 'Name room areas now and assign seats during Room Design.' },
@@ -36133,13 +36384,13 @@ const ProductionReadinessV50 = (() => {
           <nav id="classSetupTopNav" class="class-setup-top-nav no-print" aria-label="Class setup pages"></nav>
           <div id="classSetupContent" class="class-setup-content">
             <section id="classSetupOverviewPanel" class="class-setup-section-panel active" data-class-setup-panel="overview"></section>
-            <section id="classSetupStudentsPanel" class="class-setup-section-panel" data-class-setup-panel="students">
-              <div class="class-setup-section-heading"><div><span class="class-setup-eyebrow">Roster</span><h3>Students</h3><p>Add and maintain roster records here. Actual seat placement happens in Seat Students, where the room and roster are visible together.</p></div><div class="class-setup-inline-status"><strong id="classSetupStudentCount">0</strong><span>Students</span></div></div>
-              <div id="classSetupStudentsMain" class="class-setup-students-main"></div>
-            </section>
             <section id="classSetupImportPanel" class="class-setup-section-panel" data-class-setup-panel="import">
               <div class="class-setup-section-heading"><div><span class="class-setup-eyebrow">Roster tools</span><h3>Import Roster</h3><p>Choose a file, map its columns, preview the result, and reconcile changes before replacing or updating roster records.</p></div></div>
               <div id="classSetupImportMain" class="class-setup-import-main"></div>
+            </section>
+            <section id="classSetupStudentsPanel" class="class-setup-section-panel" data-class-setup-panel="students">
+              <div class="class-setup-section-heading"><div><span class="class-setup-eyebrow">Roster</span><h3>Students</h3><p>Add and maintain roster records here. Actual seat placement happens in Seat Students, where the room and roster are visible together.</p></div><div class="class-setup-inline-status"><strong id="classSetupStudentCount">0</strong><span>Students</span></div></div>
+              <div id="classSetupStudentsMain" class="class-setup-students-main"></div>
             </section>
             <section id="classSetupRulesPanel" class="class-setup-section-panel" data-class-setup-panel="rules">
               <div class="class-setup-section-heading"><div><span class="class-setup-eyebrow">Shared seating logic</span><h3>Groups &amp; Seating Rules</h3><p>Choose students, describe what should happen, and set how strongly the generator should try to honor the rule.</p></div><button id="classSetupManageRulesBtn" class="secondary no-print" type="button">Open drag-and-drop manager</button></div>
@@ -36553,12 +36804,12 @@ const ProductionReadinessV50 = (() => {
         if (!Array.isArray(HELP_GUIDE_SECTIONS) || HELP_GUIDE_SECTIONS.some(section => section.id === 'class-setup-workspace')) return;
         HELP_GUIDE_SECTIONS.splice(1, 0, {
           id: 'class-setup-workspace', category: 'Class Setup', title: 'Class Setup Workspace and Subsections',
-          keywords: 'class setup overview students import roster groups rules requirements zones review center workspace navigation',
+          keywords: 'class setup overview import roster students groups rules requirements zones review center workspace navigation',
           intro: 'Class Setup uses the center workspace for real editing. The left rail provides progress and navigation instead of squeezing forms into a narrow sidebar.',
           items: [
             { title: 'Overview', text: 'Shows readiness, class counts, and recommended next steps.' },
-            { title: 'Students', text: 'Adds, edits, searches, archives, and manages roster records. Student placement is handled later in Seat Students, where the chart is visible.' },
-            { title: 'Import Roster', text: 'Uploads a CSV, maps columns, previews changes, reconciles updates, and reuses mapping profiles.' },
+            { title: 'Import Roster', text: 'Uploads a CSV, maps columns, previews changes, reconciles updates, and reuses mapping profiles. Start here when you already have a roster file.' },
+            { title: 'Students', text: 'Adds, edits, searches, archives, and manages roster records after an import or for manual entry. Student placement is handled later in Seat Students, where the chart is visible.' },
             { title: 'Groups & Rules', text: 'Creates together, apart, location, support, and reserved-seat rules. Use the member search and selection tools to choose students.' },
             { title: 'Student Needs', text: 'Reviews individual needs such as front, aisle, access, zone, and distance preferences.' },
             { title: 'Zones', text: 'Creates named room areas. Assign visible seats to zones during Room Design.' },
