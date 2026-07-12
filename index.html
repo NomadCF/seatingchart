@@ -5,11 +5,11 @@
   <meta name="license" content="MIT License" />
   <meta name="spdx-license-identifier" content="MIT" />
   <meta name="copyright" content="Copyright (c) 2026 Chris L. Franklin" />
-  <meta name="app-version" content="5.4.2" />
+  <meta name="app-version" content="5.5.0" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline' https://accounts.google.com blob:; style-src 'self' 'unsafe-inline'; connect-src 'self' https://www.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com; img-src 'self' data: blob:; worker-src blob:; object-src 'none'; base-uri 'none'; form-action 'self'" />
   <meta name="application-name" content="Classroom Seating Planner" />
-  <meta name="build-date" content="2026-07-12T13:35:54Z" />
+  <meta name="build-date" content="2026-07-12T20:00:00Z" />
   <title>Classroom Seating Planner</title>
   <style>
     :root {
@@ -6218,19 +6218,11 @@ body.visibility-mode.vis-disable-seat-editing .cell-actions,
         grid-template-columns: 1fr !important;
         grid-template-rows: auto auto minmax(0, 1fr) !important;
       }
-      .settings-modal .settings-search-shell {
-        grid-column: 1 !important;
-        grid-row: 1 !important;
-      }
       .settings-modal .settings-page-nav {
         grid-column: 1 !important;
         grid-row: 2 !important;
         height: auto !important;
         max-height: min(156px, 28dvh) !important;
-      }
-      .settings-modal .settings-page-content {
-        grid-column: 1 !important;
-        grid-row: 3 !important;
       }
     }
 .settings-modal {
@@ -13707,9 +13699,6 @@ body.visibility-mode.vis-disable-seat-editing .cell-actions,
     }
 
     @media (max-width: 980px) {
-      body.product-v4[data-workflow="setup"] main.app {
-        display: block !important;
-      }
       body.product-v4[data-workflow="setup"] main.app > .left-panel {
         display: none !important;
       }
@@ -14765,6 +14754,95 @@ body.freeform-marquee-mode #toggleFreeformMarqueeBtn {
     width: 100%;
   }
 }
+
+
+    /* Version 5.5.0: save recovery, Drive chooser, and keyboard-editing corrections. */
+    .google-drive-file-modal {
+      width: min(860px, 96vw) !important;
+      max-width: 860px !important;
+    }
+    .google-drive-file-toolbar {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      align-items: end;
+      margin-bottom: 10px;
+    }
+    .google-drive-file-list {
+      display: grid;
+      gap: 7px;
+      max-height: min(54vh, 520px);
+      overflow: auto;
+      padding: 2px;
+    }
+    .google-drive-file-row {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      gap: 9px;
+      align-items: center;
+      width: 100%;
+      min-height: 58px;
+      padding: 9px 10px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #fff;
+      color: var(--text);
+      text-align: left;
+      box-shadow: none;
+    }
+    .google-drive-file-row:hover,
+    .google-drive-file-row.selected {
+      background: #eff6ff;
+      border-color: #93c5fd;
+      color: var(--text);
+    }
+    .google-drive-file-row input { width: auto; margin: 0; }
+    .google-drive-file-details { min-width: 0; display: grid; gap: 3px; }
+    .google-drive-file-details strong { overflow-wrap: anywhere; line-height: 1.2; }
+    .google-drive-file-details span { color: var(--muted); font-size: 11.5px; line-height: 1.3; }
+    .google-drive-file-badge {
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 3px 7px;
+      color: var(--muted);
+      background: #f8fafc;
+      font-size: 10.5px;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+    .google-drive-file-empty {
+      padding: 18px;
+      border: 1px dashed var(--border);
+      border-radius: 12px;
+      background: #f8fafc;
+      color: var(--muted);
+      line-height: 1.45;
+      text-align: center;
+    }
+    .storage-recovery-warning {
+      border: 2px solid #f59e0b;
+      background: #fffbeb;
+      color: #78350f;
+    }
+    .hint .hint-close {
+      width: 36px !important;
+      min-width: 36px !important;
+      height: 36px !important;
+      min-height: 36px !important;
+      top: 3px;
+      right: 3px;
+    }
+    .hint.dismissible-hint { padding-right: 44px; min-height: 42px; }
+    .freeform-object.keyboard-freeform-selected {
+      outline: 4px solid rgba(37, 99, 235, .62) !important;
+      outline-offset: 3px !important;
+    }
+    @media (max-width: 640px) {
+      .google-drive-file-toolbar { grid-template-columns: 1fr; }
+      .google-drive-file-row { grid-template-columns: auto minmax(0, 1fr); }
+      .google-drive-file-badge { grid-column: 2; justify-self: start; }
+    }
+
   </style>
 </head>
 <body class="left-collapsed">
@@ -16283,6 +16361,28 @@ body.freeform-marquee-mode #toggleFreeformMarqueeBtn {
     </div>
   </div>
 
+
+  <div id="googleDriveFileModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="googleDriveFileTitle" aria-describedby="googleDriveFileStatus">
+    <div class="modal google-drive-file-modal">
+      <div class="panel-header">
+        <h2 id="googleDriveFileTitle">Choose a Google Drive Save</h2>
+        <button id="closeGoogleDriveFileBtn" class="tiny secondary" type="button">Close</button>
+      </div>
+      <div class="modal-body">
+        <div id="googleDriveFileStatus" class="hint" aria-live="polite">Connect to Google Drive to list encrypted saves created by this app.</div>
+        <div class="google-drive-file-toolbar" style="margin-top:10px;">
+          <div class="field" style="margin:0;"><label for="googleDriveFileSearch">Search available saves</label><input id="googleDriveFileSearch" type="search" autocomplete="off" placeholder="Search by file name" /></div>
+          <button id="refreshGoogleDriveFilesBtn" class="secondary" type="button">Refresh List</button>
+        </div>
+        <div id="googleDriveFileList" class="google-drive-file-list" role="radiogroup" aria-label="Available Google Drive saves"></div>
+        <div class="button-row" style="margin-top:12px; justify-content:flex-end;">
+          <button id="cancelGoogleDriveFileBtn" class="secondary" type="button">Cancel</button>
+          <button id="openGoogleDriveFileBtn" type="button" disabled>Open Selected Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div id="confirmModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="confirmModalTitle">
     <div class="modal" style="max-width: 560px;">
       <div class="panel-header">
@@ -16514,12 +16614,12 @@ body.freeform-marquee-mode #toggleFreeformMarqueeBtn {
 const APP_CONFIG = Object.freeze({
   name: 'Classroom Seating Planner',
   shortName: 'Seating Planner',
-  version: '5.4.2',
+  version: '5.5.0',
   copyrightHolder: 'Chris L. Franklin',
   copyrightYear: '2026',
   releaseDate: '2026-07-12',
   releaseDateDisplay: 'July 12, 2026',
-  buildDate: '2026-07-12T13:35:54Z',
+  buildDate: '2026-07-12T20:00:00Z',
   commit: 'local',
   environment: 'production',
   dataSchemaVersion: 11,
@@ -16633,6 +16733,7 @@ const APP_CONFIG = Object.freeze({
     ];
 
     const CHANGE_LOG = [
+      { version: '5.5.0', date: 'July 12, 2026', changes: ['Added a searchable Google Drive file chooser so users can select among app-created encrypted saves, including directly from the Welcome screen.', 'Separated Google Drive authorization from new-password setup so connecting to Drive no longer drops users back into the create-password workflow before they can choose a file.', 'Made IndexedDB deletion close active connections, retry blocked deletes, and verify removal before reporting Factory Reset success.', 'Added guarded startup recovery for missing or inaccessible IndexedDB records so a damaged storage marker cannot be silently overwritten by a new autosave.', 'Changed autosave to use a short idle save plus a maximum dirty-state deadline so continuous editing cannot postpone saving indefinitely.', 'Added keyboard movement, rotation, resizing, and locking for selected Freeform objects; enlarged small hint close targets; reduced duplicate work in full renders; and expanded save diagnostics.'] },
       { version: '5.1.2', date: 'July 11, 2026', changes: ['Fixed startup decryption for legacy browser saves whose PBKDF2 iteration count was below the current new-save minimum.', 'Separated incorrect-password failures from damaged or unsupported decrypted data so recovery messages no longer blame every failure on the password.', 'Automatically rewrites successfully recovered legacy browser saves with the current password-protection settings and added regression coverage for the real compatibility path.'] },
       { version: '5.1.1', date: 'July 11, 2026', changes: ['Fixed the Erase local data and start fresh confirmation so it appears above the startup recovery dialog.', 'Added safer confirmation-dialog keyboard focus, Escape cancellation, and focus restoration.', 'Added regression coverage for the destructive recovery confirmation on desktop and mobile.'] },
       { version: '5.1.0', date: 'July 11, 2026', changes: ['Rebuilt More and Class actions as labeled, grouped action menus with clear descriptions and consistent icons.', 'Added a touch-friendly mobile action sheet with proper scrolling, scrim dismissal, Escape handling, focus return, and direct Help and Settings access.', 'Normalized forms, settings navigation, cards, dialogs, focus states, spacing, and theme surfaces across all nine themes.', 'Added interface regression coverage for mobile and desktop menus, Settings discovery, touch targets, keyboard behavior, and theme consistency.'] },
@@ -16821,12 +16922,18 @@ const APP_CONFIG = Object.freeze({
       linkedSaveStatus: 'No linked file selected.',
       linkedSaveLastSignature: '',
       linkedSaveAutoTimer: null,
+      linkedSaveMaxTimer: null,
+      autosaveDirtySince: 0,
+      autosaveInProgress: false,
       googleDriveAccessToken: '',
       googleDriveTokenExpiresAt: 0,
       googleDriveTokenClient: null,
       googleDriveBusy: false,
       googleDriveStatus: 'Google Drive is not connected.',
       googleDriveLastSyncAt: '',
+      googleDriveFiles: [],
+      googleDriveSelectedFileId: '',
+      googleDriveChooserContext: null,
       saveFallbackWarning: '',
       pageSettingsPersistTimer: null,
       restoreImportDraft: null,
@@ -16856,7 +16963,8 @@ const APP_CONFIG = Object.freeze({
       linkedFileLastModified: 0,
       pendingSaveConflict: null,
       lastBackupVerification: null,
-      appDatabaseReady: false
+      appDatabaseReady: false,
+      browserStorageStatus: 'unknown'
     };
 
     const el = (id) => document.getElementById(id);
@@ -19726,6 +19834,7 @@ const APP_CONFIG = Object.freeze({
       };
       el('printStats').textContent = `${printChartMetaLine() || activeClassName()} · Freeform layout · ${state.students.length} students · ${seatCount} seats · ${assignedIds.size} assigned`;
       updateFreeformSelectionVisuals();
+      document.querySelectorAll('.freeform-object[data-object-id]').forEach(node => node.classList.toggle('keyboard-freeform-selected', uiState.freeformSelectedObjectIds?.has(node.dataset.objectId)));
       syncFreeformToolbarState();
       ModernizationSuite?.enhanceRenderedWorkspace?.();
     }
@@ -22579,7 +22688,6 @@ Choose Override Placement to keep this assignment anyway, or Move Back to leave 
       cleanupInvalidAssignmentsAndAnchors();
       if (freeformRenderSnapshot) restoreFreeformObjectStateSnapshot(freeformRenderSnapshot, { includeAssignments: true });
       persistActiveClass();
-      if (freeformRenderSnapshot) restoreFreeformObjectStateSnapshot(freeformRenderSnapshot, { includeAssignments: true });
       const rowsInput = el('rowsInput');
       const colsInput = el('colsInput');
       if (document.activeElement !== rowsInput) rowsInput.value = state.rows;
@@ -22599,11 +22707,9 @@ Choose Override Placement to keep this assignment anyway, or Move Back to leave 
       refreshNamesOnlyToggle();
       applyDesignModeUi();
       applyVisibilityClasses();
-      if (freeformRenderSnapshot) restoreFreeformObjectStateSnapshot(freeformRenderSnapshot, { includeAssignments: true });
       renderGrid();
       renderStatus();
       updateCellSelectionVisuals();
-      if (freeformRenderSnapshot) restoreFreeformObjectStateSnapshot(freeformRenderSnapshot, { includeAssignments: true });
       persistActiveClass();
       applyTooltips();
       queueEnhanceHints();
@@ -24323,22 +24429,8 @@ Choose Override Placement to keep this assignment anyway, or Move Back to leave 
     }
 
     async function loadGoogleDriveSaveFromWelcome() {
-      closeWelcomeSecurityModal();
-      const ok = await loadFromGoogleDriveFile({ skipConfirm: true, direct: true });
-      if (ok && currentSessionEncryptionKey()) {
-        if (typeof StartupRecoveryV45 !== 'undefined') StartupRecoveryV45.completeExternalLoad();
-        safeStorageSet('localStorage', WELCOME_SETUP_STORAGE_KEY, 'true');
-        uiState.appReady = true;
-        uiState.linkedSaveLastSignature = currentSaveSignature();
-        updateSaveHealthPanel();
-        setLiveStatusMessage('Loaded encrypted Google Drive save. Continue working.');
-        return true;
-      }
-      if (!currentSessionEncryptionKey()) {
-        openWelcomeSecurityModal();
-        showWelcomeSecurityError(ok ? 'That Google Drive save loaded, but no active encryption key was established. Enter the password for that save or create a new encrypted chart.' : 'Could not load a Google Drive save. Connect to Google Drive again or load a saved file.');
-      }
-      return false;
+      clearWelcomeSecurityError();
+      return openGoogleDriveFileChooser({ skipConfirm: true, direct: true, fromWelcome: true });
     }
 
     function sanitizedStudentForVisibility(student) { const source = normalizeStudent(student); const cfg = pageSettings().visibility || {}; return { ...source, grade: cfg.disableStudentEditing || cfg.hideStudentsPanel ? '' : source.grade, notesPrivate: '', notesSubstitute: '', notesPublic: cfg.disableStudentEditing ? '' : source.notesPublic }; }
@@ -24384,12 +24476,20 @@ Choose Override Placement to keep this assignment anyway, or Move Back to leave 
           lastError = err;
         }
       }
-      const key = await requestEncryptionKey(`This ${sourceLabel} is encrypted. Enter the encryption key to continue.`);
-      if (!key) throw new Error('Encrypted load canceled.');
-      try {
-        return await decryptTextEnvelopeAndTrustKey(parsed, key);
-      } catch (err) {
-        throw err || lastError || new Error('Could not decrypt. Check the encryption key and try again.');
+      let attempt = 0;
+      while (true) {
+        const prompt = attempt === 0
+          ? `This ${sourceLabel} is encrypted. Enter the password used when that save was created.`
+          : `That password did not unlock this ${sourceLabel}. Check capitalization and spacing, then try again or cancel.`;
+        const key = await requestEncryptionKey(prompt);
+        if (!key) throw new Error('Encrypted load canceled.');
+        try {
+          return await decryptTextEnvelopeAndTrustKey(parsed, key);
+        } catch (err) {
+          lastError = err;
+          if (err?.code === 'INVALID_ENCRYPTION_ENVELOPE') throw err;
+          attempt += 1;
+        }
       }
     }
 
@@ -25388,6 +25488,7 @@ Choose Override Placement to keep this assignment anyway, or Move Back to leave 
         });
         uiState.googleDriveLastSyncAt = now;
         uiState.linkedSaveLastSignature = currentSaveSignature();
+        completeAutosaveCycle();
         updateSaveMeta({ googleDriveLastSavedAt: now, lastBackupAt: now, localSaveActive: true });
         clearSaveFallbackWarning();
         updateGoogleDriveStatus(`Saved encrypted copy to Google Drive: ${saved.name || 'current save'}.`);
@@ -25409,52 +25510,235 @@ Choose Override Placement to keep this assignment anyway, or Move Back to leave 
       }
     }
 
+    function googleDriveFileSizeLabel(size) {
+      const bytes = Number(size || 0);
+      if (!Number.isFinite(bytes) || bytes <= 0) return 'Size unavailable';
+      if (bytes < 1024) return `${bytes} B`;
+      if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+      return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+    }
+
+    async function listGoogleDriveFilesForQuery(q) {
+      const files = [];
+      let pageToken = '';
+      do {
+        const params = new URLSearchParams({
+          q,
+          fields: 'nextPageToken,files(id,name,modifiedTime,createdTime,size,mimeType,parents,appProperties,webViewLink)',
+          spaces: 'drive',
+          pageSize: '100',
+          orderBy: 'modifiedTime desc'
+        });
+        if (pageToken) params.set('pageToken', pageToken);
+        const response = await googleDriveFetch(`https://www.googleapis.com/drive/v3/files?${params.toString()}`, { method: 'GET' });
+        const data = await response.json();
+        if (Array.isArray(data.files)) files.push(...data.files);
+        pageToken = String(data.nextPageToken || '');
+      } while (pageToken);
+      return files;
+    }
+
+    async function listGoogleDriveSaveFiles() {
+      await ensureGoogleDriveToken(true);
+      const found = new Map();
+      const appQuery = [
+        'trashed = false',
+        "mimeType = 'application/json'",
+        `appProperties has { key='app' and value='${GOOGLE_DRIVE_APP_PROPERTY}' }`
+      ].join(' and ');
+      const appFiles = await listGoogleDriveFilesForQuery(appQuery);
+      appFiles.forEach(file => { if (file?.id) found.set(file.id, file); });
+
+      // Include legacy JSON saves in the existing app folder even if an older build omitted appProperties.
+      const folderId = await findGoogleDriveAppFolder();
+      if (folderId) {
+        const folderQuery = [
+          'trashed = false',
+          "mimeType = 'application/json'",
+          `'${escapeDriveQueryString(folderId)}' in parents`
+        ].join(' and ');
+        const folderFiles = await listGoogleDriveFilesForQuery(folderQuery);
+        folderFiles.forEach(file => { if (file?.id) found.set(file.id, file); });
+      }
+      return Array.from(found.values()).sort((a, b) => String(b.modifiedTime || '').localeCompare(String(a.modifiedTime || '')));
+    }
+
+    function renderGoogleDriveFileList() {
+      const list = el('googleDriveFileList');
+      const search = String(el('googleDriveFileSearch')?.value || '').trim().toLowerCase();
+      const files = (uiState.googleDriveFiles || []).filter(file => !search || String(file.name || '').toLowerCase().includes(search));
+      if (!list) return;
+      list.innerHTML = '';
+      if (!files.length) {
+        const empty = document.createElement('div');
+        empty.className = 'google-drive-file-empty';
+        empty.textContent = (uiState.googleDriveFiles || []).length
+          ? 'No available save matches this search.'
+          : 'No encrypted Classroom Seating Planner saves created by this app were found. Connecting succeeded, but there is nothing available to load under the current Drive permission.';
+        list.appendChild(empty);
+        el('openGoogleDriveFileBtn').disabled = true;
+        return;
+      }
+      files.forEach(file => {
+        const row = document.createElement('label');
+        row.className = `google-drive-file-row${uiState.googleDriveSelectedFileId === file.id ? ' selected' : ''}`;
+        const radio = document.createElement('input');
+        radio.type = 'radio';
+        radio.name = 'googleDriveSaveFile';
+        radio.value = file.id;
+        radio.checked = uiState.googleDriveSelectedFileId === file.id;
+        radio.setAttribute('aria-label', `Select ${file.name || 'Google Drive save'}`);
+        const details = document.createElement('span');
+        details.className = 'google-drive-file-details';
+        const name = document.createElement('strong');
+        name.textContent = file.name || 'Unnamed Google Drive save';
+        const meta = document.createElement('span');
+        const modified = file.modifiedTime ? new Date(file.modifiedTime).toLocaleString() : 'Unknown date';
+        meta.textContent = `Modified ${modified} · ${googleDriveFileSizeLabel(file.size)}`;
+        details.append(name, meta);
+        const badge = document.createElement('span');
+        badge.className = 'google-drive-file-badge';
+        badge.textContent = file.appProperties?.kind === 'current-save' ? 'Current save' : 'Planner JSON';
+        radio.addEventListener('change', () => {
+          uiState.googleDriveSelectedFileId = file.id;
+          renderGoogleDriveFileList();
+          el('openGoogleDriveFileBtn').disabled = false;
+        });
+        row.append(radio, details, badge);
+        list.appendChild(row);
+      });
+      el('openGoogleDriveFileBtn').disabled = !uiState.googleDriveSelectedFileId || !files.some(file => file.id === uiState.googleDriveSelectedFileId);
+    }
+
+    async function refreshGoogleDriveFileChooser() {
+      const status = el('googleDriveFileStatus');
+      const refresh = el('refreshGoogleDriveFilesBtn');
+      const open = el('openGoogleDriveFileBtn');
+      if (refresh) refresh.disabled = true;
+      if (open) open.disabled = true;
+      if (status) status.textContent = 'Connecting to Google Drive and listing available encrypted saves…';
+      try {
+        uiState.googleDriveFiles = await listGoogleDriveSaveFiles();
+        const previous = uiState.googleDriveSelectedFileId;
+        if (!uiState.googleDriveFiles.some(file => file.id === previous)) uiState.googleDriveSelectedFileId = uiState.googleDriveFiles[0]?.id || '';
+        if (status) status.textContent = uiState.googleDriveFiles.length
+          ? `${uiState.googleDriveFiles.length} available app-created save${uiState.googleDriveFiles.length === 1 ? '' : 's'} found. Choose the file to open.`
+          : 'Google Drive connected successfully, but no app-created encrypted saves are available to this app.';
+        updateGoogleDriveStatus('Connected to Google Drive. Choose an available save to load.');
+        renderGoogleDriveFileList();
+      } catch (err) {
+        uiState.googleDriveFiles = [];
+        uiState.googleDriveSelectedFileId = '';
+        if (status) status.textContent = `Could not list Google Drive saves: ${err.message}`;
+        renderGoogleDriveFileList();
+      } finally {
+        if (refresh) refresh.disabled = false;
+      }
+    }
+
+    async function openGoogleDriveFileChooser(options = {}) {
+      uiState.googleDriveChooserContext = { direct: !!options.direct, fromWelcome: !!options.fromWelcome };
+      uiState.googleDriveSelectedFileId = '';
+      const search = el('googleDriveFileSearch');
+      if (search) search.value = '';
+      el('googleDriveFileModal')?.classList.add('show');
+      await refreshGoogleDriveFileChooser();
+      return true;
+    }
+
+    function closeGoogleDriveFileChooser({ returnToWelcome = true } = {}) {
+      el('googleDriveFileModal')?.classList.remove('show');
+      const context = uiState.googleDriveChooserContext;
+      uiState.googleDriveChooserContext = null;
+      if (returnToWelcome && context?.fromWelcome && !uiState.appReady) openWelcomeSecurityModal();
+    }
+
+    async function loadGoogleDriveFileById(file, options = {}) {
+      if (!file?.id) throw new Error('Choose a Google Drive save first.');
+      updateGoogleDriveStatus(`Downloading encrypted save from Google Drive: ${file.name || 'selected save'}...`);
+      const response = await googleDriveFetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(file.id)}?alt=media`, { method: 'GET' });
+      const text = await response.text();
+      if (options.fromWelcome) {
+        closeGoogleDriveFileChooser({ returnToWelcome: false });
+        closeWelcomeSecurityModal();
+      }
+      if (options.direct) await importStateDirectFromText(text, `Google Drive save ${file.name || ''}`.trim());
+      else await importStateFromText(text, `Google Drive save ${file.name || ''}`.trim());
+      updateGoogleDriveSettings({
+        preferredStorage: 'googleDrive',
+        googleDriveFileId: file.id,
+        googleDriveFileName: file.name || '',
+        googleDriveLastSavedAt: file.modifiedTime || pageSettings().googleDriveLastSavedAt || ''
+      });
+      clearSaveFallbackWarning();
+      updateGoogleDriveStatus(options.direct ? `Loaded Google Drive save: ${file.name || 'selected save'}.` : `Restore options opened for Google Drive save: ${file.name || 'selected save'}.`);
+      setLiveStatusMessage(options.direct ? `Google Drive save loaded: ${file.name || 'selected save'}.` : 'Google Drive save downloaded. Choose what to restore.');
+      updateSaveSetupDismissed(true);
+      updateSaveHealthPanel();
+      if (options.fromWelcome && options.direct) {
+        if (typeof StartupRecoveryV45 !== 'undefined') StartupRecoveryV45.completeExternalLoad();
+        safeStorageSet('localStorage', WELCOME_SETUP_STORAGE_KEY, 'true');
+        uiState.appReady = true;
+        uiState.linkedSaveLastSignature = currentSaveSignature();
+        await ensureAppSnapshotsLoaded({ force: true });
+        await writeLocalBrowserSave({ reason: 'google-drive-load', announce: false, skipDurablePrompt: true });
+      }
+      return true;
+    }
+
+    async function openSelectedGoogleDriveFile() {
+      const context = uiState.googleDriveChooserContext || {};
+      const file = (uiState.googleDriveFiles || []).find(item => item.id === uiState.googleDriveSelectedFileId);
+      if (!file) return false;
+      const button = el('openGoogleDriveFileBtn');
+      if (button) button.disabled = true;
+      try {
+        return await loadGoogleDriveFileById(file, context);
+      } catch (err) {
+        updateGoogleDriveStatus(`Google Drive load failed: ${err.message}`);
+        setLiveStatusMessage(`Google Drive load failed: ${err.message}`);
+        if (context.fromWelcome) {
+          closeGoogleDriveFileChooser({ returnToWelcome: false });
+          openWelcomeSecurityModal();
+          showWelcomeSecurityError(err.message === 'Encrypted load canceled.'
+            ? 'Google Drive loading was canceled. Choose Open from Google Drive to try again, or open another backup.'
+            : `Could not load the selected Google Drive save: ${err.message}`);
+        } else {
+          const status = el('googleDriveFileStatus');
+          if (status) status.textContent = `Could not load the selected file: ${err.message}`;
+        }
+        return false;
+      } finally {
+        if (button && el('googleDriveFileModal')?.classList.contains('show')) button.disabled = false;
+      }
+    }
+
     async function findGoogleDriveCurrentSaveFile() {
       const cfg = googleDriveConfig();
-      if (cfg.fileId) return { id: cfg.fileId, name: cfg.fileName || 'Google Drive save' };
-      const folderId = await ensureGoogleDriveAppFolder();
-      const q = [
-        'trashed = false',
-        `'${escapeDriveQueryString(folderId)}' in parents`,
-        `appProperties has { key='app' and value='${GOOGLE_DRIVE_APP_PROPERTY}' }`,
-        "appProperties has { key='kind' and value='current-save' }"
-      ].join(' and ');
-      const url = `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(q)}&fields=files(id,name,modifiedTime,size)&spaces=drive&pageSize=10&orderBy=modifiedTime desc`;
-      const response = await googleDriveFetch(url, { method: 'GET' });
-      const data = await response.json();
-      return Array.isArray(data.files) && data.files[0] ? data.files[0] : null;
+      if (cfg.fileId) {
+        const known = (uiState.googleDriveFiles || []).find(file => file.id === cfg.fileId);
+        return known || { id: cfg.fileId, name: cfg.fileName || 'Google Drive save' };
+      }
+      const files = await listGoogleDriveSaveFiles();
+      return files[0] || null;
     }
 
     async function loadFromGoogleDriveFile(options = {}) {
-      const load = async () => {
-        try {
-          syncGoogleDriveInputsToSettings(document.activeElement?.id?.startsWith('saveOption') ? 'saveOptions' : 'settings');
-          await ensureGoogleDriveToken(true);
-          const file = await findGoogleDriveCurrentSaveFile();
-          if (!file?.id) throw new Error('No app-created current save was found in the configured Google Drive folder.');
-          updateGoogleDriveStatus(`Downloading encrypted save from Google Drive: ${file.name || 'current save'}...`);
-          const response = await googleDriveFetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(file.id)}?alt=media`, { method: 'GET' });
-          const text = await response.text();
-          if (options.direct) await importStateDirectFromText(text, 'Google Drive save');
-          else await importStateFromText(text, 'Google Drive save');
-          updateGoogleDriveSettings({ preferredStorage: 'googleDrive', googleDriveFileId: file.id, googleDriveFileName: file.name || '' });
-          clearSaveFallbackWarning();
-          updateGoogleDriveStatus(options.direct ? `Loaded Google Drive save: ${file.name || 'current save'}.` : `Restore options opened for Google Drive save: ${file.name || 'current save'}.`);
-          setLiveStatusMessage(options.direct ? 'Google Drive save loaded.' : 'Google Drive save downloaded. Choose what to restore.');
-          updateSaveSetupDismissed(true);
-          updateSaveHealthPanel();
-          return true;
-        } catch (err) {
+      if (options.fileId) {
+        const file = options.file || { id: options.fileId, name: options.fileName || 'Google Drive save' };
+        try { return await loadGoogleDriveFileById(file, options); }
+        catch (err) {
           updateGoogleDriveStatus(`Google Drive load failed: ${err.message}`);
           setLiveStatusMessage(`Google Drive load failed: ${err.message}`);
-          updateSaveHealthPanel();
           return false;
         }
-      };
-      if (options.skipConfirm) return load();
-      showInAppConfirm('Load the encrypted save from Google Drive? You will choose whether to restore everything or only selected parts after it downloads.', () => { load(); }, {
-        title: 'Load from Google Drive?',
-        confirmText: 'Download and Review',
+      }
+      if (options.skipConfirm || options.fromWelcome) return openGoogleDriveFileChooser(options);
+      showInAppConfirm('Connect to Google Drive and choose which encrypted save to load. The app will not automatically select the newest file.', () => {
+        void openGoogleDriveFileChooser(options);
+      }, {
+        title: 'Choose a Google Drive Save',
+        confirmText: 'Connect and Choose File',
         cancelText: 'Cancel'
       });
       return true;
@@ -25522,6 +25806,7 @@ Choose Override Placement to keep this assignment anyway, or Move Back to leave 
         const now = new Date().toISOString();
         uiState.linkedSaveFileName = uiState.linkedSaveHandle.name || uiState.linkedSaveFileName || 'Linked save file';
         uiState.linkedSaveLastSignature = currentSaveSignature();
+        completeAutosaveCycle();
         uiState.linkedSaveStatus = reason === 'auto' ? 'Auto-saved to linked file.' : 'Saved to linked file.';
         clearSaveFallbackWarning();
         updateSaveMeta({ linkedFileName: uiState.linkedSaveFileName, linkedLastSavedAt: now });
@@ -25592,6 +25877,7 @@ Choose Override Placement to keep this assignment anyway, or Move Back to leave 
         if (!await BrowserDataStore.setPrimarySave(payload)) throw new Error('Browser storage is unavailable or full. No local save was written. Choose a linked file, Google Drive, or download a backup.');
         const now = new Date().toISOString();
         uiState.linkedSaveLastSignature = currentSaveSignature();
+        completeAutosaveCycle();
         updateSaveMeta({ localLastSavedAt: now, localSaveActive: true, linkedLastSavedAt: saveMeta().linkedLastSavedAt || '' });
         if (reason === 'auto') await createAutosaveSnapshot('Auto snapshot');
         if (!options.preserveFallbackWarning && !String(reason).includes('fallback')) clearSaveFallbackWarning();
@@ -25668,29 +25954,81 @@ Choose Override Placement to keep this assignment anyway, or Move Back to leave 
       });
     }
 
-    function scheduleLinkedAutoSave(reason = 'change') {
-      if (!uiState.appReady || uiState.pageLocked) return;
-      const minutes = Number(pageSettings().autoSaveMinutes || 0);
-      if (!minutes || minutes < 1) return;
-      const sig = currentSaveSignature();
-      if (sig === uiState.linkedSaveLastSignature) return;
+    function clearAutosaveSchedule({ keepDirty = false } = {}) {
       clearTimeout(uiState.linkedSaveAutoTimer);
-      const reasonLabel = reason === 'settings' ? 'settings change' : reason === 'pending-save' ? 'pending save' : 'change';
+      clearTimeout(uiState.linkedSaveMaxTimer);
+      uiState.linkedSaveAutoTimer = null;
+      uiState.linkedSaveMaxTimer = null;
+      if (!keepDirty) uiState.autosaveDirtySince = 0;
+    }
+
+    function completeAutosaveCycle() {
+      clearAutosaveSchedule();
+      uiState.autosaveInProgress = false;
+    }
+
+    async function runScheduledAutoSave(trigger = 'idle') {
+      if (uiState.autosaveInProgress || !uiState.appReady || uiState.pageLocked || uiState.startupRecoveryPending) return false;
+      const currentSignature = currentSaveSignature();
+      if (currentSignature === uiState.linkedSaveLastSignature) {
+        completeAutosaveCycle();
+        return true;
+      }
+      uiState.autosaveInProgress = true;
+      clearTimeout(uiState.linkedSaveAutoTimer);
+      clearTimeout(uiState.linkedSaveMaxTimer);
+      uiState.linkedSaveAutoTimer = null;
+      uiState.linkedSaveMaxTimer = null;
+      let saved = false;
+      try {
+        if (pageSettings().preferredStorage === 'googleDrive' && googleDriveConfigured()) saved = await writeGoogleDriveSaveFile({ reason: 'auto', announce: false, autosaveTrigger: trigger });
+        else if (uiState.linkedSaveHandle) saved = await writeLinkedSaveFile({ reason: 'auto', announce: false, autosaveTrigger: trigger });
+        else saved = await writeLocalBrowserSave({ reason: 'auto', announce: false, autosaveTrigger: trigger });
+        return saved;
+      } finally {
+        uiState.autosaveInProgress = false;
+        if (currentSaveSignature() !== uiState.linkedSaveLastSignature) {
+          uiState.autosaveDirtySince = uiState.autosaveDirtySince || Date.now();
+          scheduleLinkedAutoSave('retry');
+        }
+      }
+    }
+
+    function scheduleLinkedAutoSave(reason = 'change') {
+      if (!uiState.appReady || uiState.pageLocked || uiState.startupRecoveryPending) return;
+      const minutes = Number(pageSettings().autoSaveMinutes || 0);
+      if (!minutes || minutes < 1) {
+        clearAutosaveSchedule();
+        return;
+      }
+      const sig = currentSaveSignature();
+      if (sig === uiState.linkedSaveLastSignature) {
+        clearAutosaveSchedule();
+        return;
+      }
+      const now = Date.now();
+      const maxWaitMs = Math.max(10000, minutes * 60 * 1000);
+      const idleWaitMs = Math.min(5000, maxWaitMs);
+      if (!uiState.autosaveDirtySince) {
+        uiState.autosaveDirtySince = now;
+        clearTimeout(uiState.linkedSaveMaxTimer);
+        uiState.linkedSaveMaxTimer = setTimeout(() => { void runScheduledAutoSave('maximum-wait'); }, maxWaitMs);
+      }
+      clearTimeout(uiState.linkedSaveAutoTimer);
+      uiState.linkedSaveAutoTimer = setTimeout(() => { void runScheduledAutoSave('idle'); }, idleWaitMs);
+      const reasonLabel = reason === 'settings' ? 'settings change' : reason === 'pending-save' ? 'pending save' : reason === 'retry' ? 'unsaved change retry' : 'change';
+      const deadlineAt = new Date(uiState.autosaveDirtySince + maxWaitMs);
+      const deadlineText = deadlineAt.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', second: '2-digit' });
       if (pageSettings().preferredStorage === 'googleDrive' && googleDriveConfigured()) {
-        uiState.linkedSaveStatus = `Unsaved ${reasonLabel} queued for Google Drive auto-save in ${minutes} minute${minutes === 1 ? '' : 's'}.`;
+        uiState.linkedSaveStatus = `Unsaved ${reasonLabel}; Google Drive save will run after 5 seconds of inactivity and no later than ${deadlineText}.`;
         updateGoogleDriveStatus(uiState.linkedSaveStatus);
       } else if (uiState.linkedSaveHandle) {
-        uiState.linkedSaveStatus = `Unsaved ${reasonLabel} queued for auto-save in ${minutes} minute${minutes === 1 ? '' : 's'}.`;
+        uiState.linkedSaveStatus = `Unsaved ${reasonLabel}; linked-file save will run after 5 seconds of inactivity and no later than ${deadlineText}.`;
       } else {
-        uiState.linkedSaveStatus = `Browser local auto-save queued in ${minutes} minute${minutes === 1 ? '' : 's'}.`;
+        uiState.linkedSaveStatus = `Unsaved ${reasonLabel}; browser save will run after 5 seconds of inactivity and no later than ${deadlineText}.`;
         noteLocalOnlyChange();
       }
       updateSaveHealthPanel();
-      uiState.linkedSaveAutoTimer = setTimeout(() => {
-        if (pageSettings().preferredStorage === 'googleDrive' && googleDriveConfigured()) writeGoogleDriveSaveFile({ reason: 'auto', announce: false });
-        else if (uiState.linkedSaveHandle) writeLinkedSaveFile({ reason: 'auto', announce: false });
-        else writeLocalBrowserSave({ reason: 'auto', announce: false });
-      }, minutes * 60 * 1000);
     }
 
     function updateSaveSetupDismissed(value) {
@@ -28844,7 +29182,12 @@ This will replace the current classes, settings, room templates, and active layo
         }
       });
       window.addEventListener('beforeunload', markPageExitingForNavigation);
-      window.addEventListener('pagehide', markPageExitingForNavigation);
+      window.addEventListener('pagehide', () => {
+        markPageExitingForNavigation();
+        if (uiState.appReady && !uiState.pageLocked && !uiState.startupRecoveryPending && currentSaveSignature() !== uiState.linkedSaveLastSignature) {
+          void writeLocalBrowserSave({ reason: 'pagehide-fallback', announce: false, preserveFallbackWarning: true });
+        }
+      });
       resetAutoLockTimer();
     }
 
@@ -28938,9 +29281,13 @@ This will replace the current classes, settings, room templates, and active layo
       uiState.snapshotIndexPersistToken += 1;
       clearTimeout(uiState.autoLockTimer);
       clearTimeout(uiState.linkedSaveAutoTimer);
+      clearTimeout(uiState.linkedSaveMaxTimer);
       clearTimeout(uiState.pageSettingsPersistTimer);
       uiState.autoLockTimer = null;
       uiState.linkedSaveAutoTimer = null;
+      uiState.linkedSaveMaxTimer = null;
+      uiState.autosaveDirtySince = 0;
+      uiState.autosaveInProgress = false;
       uiState.pageSettingsPersistTimer = null;
       uiState.linkedSaveHandle = null;
       uiState.linkedSaveFileName = '';
@@ -28974,8 +29321,9 @@ This will replace the current classes, settings, room templates, and active layo
         clearCookiesForThisPage();
         const databaseDeleted = await deleteLinkedSaveDatabase();
         if (!databaseDeleted && window.indexedDB) failures.push('linked-file permission database');
+        BrowserDataStore.close();
         const appDatabaseDeleted = await BrowserDataStore.clearDatabase();
-        if (!appDatabaseDeleted && window.indexedDB) failures.push('application data database');
+        if (!appDatabaseDeleted && window.indexedDB) failures.push('application data database (an open tab may still be holding it)');
         resetInMemoryAppToFactory();
         if (failures.length) {
           setLiveStatusMessage(`Factory reset cleared the active app, but the browser blocked ${failures.join(' and ')}. Close this tab and clear this page's site data in browser settings before using it again.`);
@@ -29007,7 +29355,12 @@ This will replace the current classes, settings, room templates, and active layo
       el('welcomeTogglePasswordBtn')?.addEventListener('click', () => toggleWelcomePasswordVisibility('welcomeEncryptionKeyInput'));
       el('welcomeTogglePasswordConfirmBtn')?.addEventListener('click', () => toggleWelcomePasswordVisibility('welcomeEncryptionKeyConfirmInput'));
       el('welcomeLoadExistingBtn')?.addEventListener('click', chooseExistingSaveFromWelcome);
-      el('welcomeLoadGoogleDriveBtn')?.addEventListener('click', () => { loadGoogleDriveSaveFromWelcome().catch(err => { openWelcomeSecurityModal(); showWelcomeSecurityError(err.message || 'Could not load Google Drive save.'); }); });
+      el('welcomeLoadGoogleDriveBtn')?.addEventListener('click', () => { loadGoogleDriveSaveFromWelcome().catch(err => { showWelcomeSecurityError(err.message || 'Could not list Google Drive saves.'); }); });
+      el('closeGoogleDriveFileBtn')?.addEventListener('click', () => closeGoogleDriveFileChooser());
+      el('cancelGoogleDriveFileBtn')?.addEventListener('click', () => closeGoogleDriveFileChooser());
+      el('refreshGoogleDriveFilesBtn')?.addEventListener('click', () => { void refreshGoogleDriveFileChooser(); });
+      el('googleDriveFileSearch')?.addEventListener('input', renderGoogleDriveFileList);
+      el('openGoogleDriveFileBtn')?.addEventListener('click', () => { void openSelectedGoogleDriveFile(); });
       el('welcomeImportJson')?.addEventListener('change', importExistingSaveFromWelcome);
       ['welcomeEncryptionKeyInput','welcomeEncryptionKeyConfirmInput'].forEach(id => {
         el(id)?.addEventListener('keydown', event => { if (event.key === 'Enter') completeWelcomeSecuritySetup(); });
@@ -30742,7 +31095,11 @@ This will replace the current classes, settings, room templates, and active layo
         const findings = [];
         persistActiveClass();
         const localRaw = safeStorageGet('localStorage', STORAGE_KEY);
-        try { const local = JSON.parse(localRaw || 'null'); findings.push({ kind: local?.encrypted ? 'good' : 'bad', text: local?.encrypted ? 'Local browser save is encrypted.' : 'Local browser save is missing or not encrypted.' }); } catch (err) { findings.push({ kind:'bad', text:'Local browser save is unreadable JSON.' }); }
+        try {
+          const local = JSON.parse(localRaw || 'null');
+          if (local?.indexedDb) findings.push({ kind: uiState.browserStorageStatus === 'missing-record' ? 'bad' : 'good', text: uiState.browserStorageStatus === 'missing-record' ? 'Local IndexedDB marker exists, but the primary save record is missing.' : 'Local browser save uses IndexedDB with a compatibility marker.' });
+          else findings.push({ kind: local?.encrypted ? 'good' : 'bad', text: local?.encrypted ? 'Local browser save is encrypted.' : 'Local browser save is missing or not encrypted.' });
+        } catch (err) { findings.push({ kind:'bad', text:'Local browser save is unreadable JSON.' }); }
         try { const raw = safeStorageGet('localStorage', LOCAL_AUTOSAVE_SNAPSHOT_KEY); const snaps = raw ? JSON.parse(raw) : null; findings.push({ kind: !snaps || snaps?.encrypted ? 'good' : 'warn', text: !snaps ? 'Snapshot index is empty.' : snaps?.encrypted ? 'Snapshot index is encrypted.' : 'Snapshot index is not encrypted.' }); } catch (err) { findings.push({ kind:'bad', text:'Snapshot index is unreadable JSON.' }); }
         const classes = state.classes || [];
         findings.push({ kind: classes.length ? 'good' : 'bad', text: `${classes.length} class record(s) found.` });
@@ -31227,21 +31584,57 @@ This will replace the current classes, settings, room templates, and active layo
      */
     const BrowserDataStore = (() => {
       let databasePromise = null;
+      let databaseHandle = null;
+      let databaseOpenError = '';
+
+      function closeDatabaseConnection() {
+        const db = databaseHandle;
+        databaseHandle = null;
+        databasePromise = null;
+        if (!db) return;
+        try { db.close(); } catch (_) { /* Closing an already-closed connection is harmless. */ }
+      }
 
       function openDatabase() {
+        if (databaseHandle) return Promise.resolve(databaseHandle);
         if (databasePromise) return databasePromise;
+        databaseOpenError = '';
         databasePromise = new Promise(resolve => {
-          if (!window.indexedDB) { resolve(null); return; }
+          if (!window.indexedDB) {
+            databaseOpenError = 'IndexedDB is not available in this browser context.';
+            resolve(null);
+            return;
+          }
           try {
             const request = indexedDB.open(APP_DATABASE_NAME, APP_DATABASE_VERSION);
             request.onupgradeneeded = () => {
               const db = request.result;
               if (!db.objectStoreNames.contains(APP_DATABASE_STORE)) db.createObjectStore(APP_DATABASE_STORE, { keyPath: 'key' });
             };
-            request.onsuccess = () => resolve(request.result);
-            request.onerror = () => resolve(null);
-            request.onblocked = () => resolve(null);
+            request.onsuccess = () => {
+              databaseHandle = request.result;
+              databaseHandle.onversionchange = () => closeDatabaseConnection();
+              if ('onclose' in databaseHandle) databaseHandle.onclose = () => {
+                if (databaseHandle === request.result) {
+                  databaseHandle = null;
+                  databasePromise = null;
+                }
+              };
+              resolve(databaseHandle);
+            };
+            request.onerror = () => {
+              databaseOpenError = request.error?.message || 'IndexedDB could not be opened.';
+              databasePromise = null;
+              resolve(null);
+            };
+            request.onblocked = () => {
+              databaseOpenError = 'IndexedDB access is blocked by another open tab or connection.';
+              databasePromise = null;
+              resolve(null);
+            };
           } catch (err) {
+            databaseOpenError = err?.message || 'IndexedDB could not be opened.';
+            databasePromise = null;
             resolve(null);
           }
         });
@@ -31259,6 +31652,7 @@ This will replace the current classes, settings, room templates, and active layo
             tx.onerror = () => resolve(false);
             tx.onabort = () => resolve(false);
           } catch (err) {
+            databaseOpenError = err?.message || databaseOpenError;
             resolve(false);
           }
         });
@@ -31274,6 +31668,7 @@ This will replace the current classes, settings, room templates, and active layo
             request.onsuccess = () => resolve(request.result || null);
             request.onerror = () => resolve(null);
           } catch (err) {
+            databaseOpenError = err?.message || databaseOpenError;
             resolve(null);
           }
         });
@@ -31288,6 +31683,7 @@ This will replace the current classes, settings, room templates, and active layo
             tx.objectStore(APP_DATABASE_STORE).delete(key);
             tx.oncomplete = () => resolve(true);
             tx.onerror = () => resolve(false);
+            tx.onabort = () => resolve(false);
           } catch (err) {
             resolve(false);
           }
@@ -31309,6 +31705,15 @@ This will replace the current classes, settings, room templates, and active layo
         });
       }
 
+      function parseStorageMarker(value, expectedKey) {
+        if (!value) return null;
+        try {
+          const parsed = JSON.parse(value);
+          if (parsed?.indexedDb && parsed?.database === APP_DATABASE_NAME && (!expectedKey || parsed?.key === expectedKey)) return parsed;
+        } catch (_) { /* Raw legacy save payloads are not markers. */ }
+        return null;
+      }
+
       async function setPrimarySave(payload) {
         const stored = await putRecord(APP_PRIMARY_SAVE_KEY, String(payload || ''), { kind: 'primary-save' });
         if (stored) {
@@ -31318,16 +31723,28 @@ This will replace the current classes, settings, room templates, and active layo
         return safeStorageSet('localStorage', STORAGE_KEY, String(payload || ''));
       }
 
-      async function getPrimarySave() {
+      async function getPrimarySaveDetailed() {
+        const fallback = safeStorageGet('localStorage', STORAGE_KEY) || '';
+        const marker = parseStorageMarker(fallback, APP_PRIMARY_SAVE_KEY);
         const record = await getRecord(APP_PRIMARY_SAVE_KEY);
-        if (record?.value) return String(record.value);
-        const fallback = safeStorageGet('localStorage', STORAGE_KEY);
-        if (!fallback) return '';
-        try {
-          const parsed = JSON.parse(fallback);
-          if (parsed?.indexedDb && !parsed?.encryption && !parsed?.state && !parsed?.classes) return '';
-        } catch (err) { /* A legacy encrypted/plain payload is expected. */ }
-        return fallback;
+        if (record?.value) return { status: 'ok', payload: String(record.value), source: 'indexeddb', marker, error: '' };
+        if (marker) {
+          const status = databaseOpenError ? 'storage-unavailable' : 'missing-record';
+          return {
+            status,
+            payload: '',
+            source: 'indexeddb-marker',
+            marker,
+            error: databaseOpenError || 'The browser save marker exists, but its IndexedDB record is missing.'
+          };
+        }
+        if (fallback) return { status: 'ok', payload: fallback, source: 'localstorage', marker: null, error: '' };
+        return { status: 'none', payload: '', source: '', marker: null, error: databaseOpenError || '' };
+      }
+
+      async function getPrimarySave() {
+        const result = await getPrimarySaveDetailed();
+        return result.status === 'ok' ? result.payload : '';
       }
 
       async function setSnapshotIndex(payload) {
@@ -31344,10 +31761,7 @@ This will replace the current classes, settings, room templates, and active layo
         if (record?.value) return String(record.value);
         const fallback = safeStorageGet('localStorage', LOCAL_AUTOSAVE_SNAPSHOT_KEY);
         if (!fallback) return '';
-        try {
-          const parsed = JSON.parse(fallback);
-          if (parsed?.indexedDb && !parsed?.encryption && !Array.isArray(parsed?.snapshots)) return '';
-        } catch (err) { /* Legacy payload. */ }
+        if (parseStorageMarker(fallback, APP_SNAPSHOT_INDEX_KEY)) return '';
         return fallback;
       }
 
@@ -31361,42 +31775,73 @@ This will replace the current classes, settings, room templates, and active layo
         safeStorageRemove('localStorage', LOCAL_AUTOSAVE_SNAPSHOT_KEY);
       }
 
-      async function clearDatabase() {
-        databasePromise = null;
+      function deleteDatabaseAttempt() {
         return new Promise(resolve => {
-          if (!window.indexedDB) { resolve(false); return; }
+          if (!window.indexedDB) { resolve('unavailable'); return; }
           try {
             const request = indexedDB.deleteDatabase(APP_DATABASE_NAME);
-            request.onsuccess = () => resolve(true);
-            request.onerror = () => resolve(false);
-            request.onblocked = () => resolve(false);
+            request.onsuccess = () => resolve('deleted');
+            request.onerror = () => resolve('error');
+            request.onblocked = () => resolve('blocked');
           } catch (err) {
-            resolve(false);
+            resolve('error');
           }
         });
+      }
+
+      async function verifyDatabaseDeleted() {
+        if (!window.indexedDB) return true;
+        if (typeof indexedDB.databases !== 'function') return true;
+        try {
+          const databases = await indexedDB.databases();
+          return !databases.some(item => item?.name === APP_DATABASE_NAME);
+        } catch (_) {
+          return true;
+        }
+      }
+
+      async function clearDatabase() {
+        closeDatabaseConnection();
+        let result = await deleteDatabaseAttempt();
+        if (result === 'blocked') {
+          await new Promise(resolve => setTimeout(resolve, 80));
+          closeDatabaseConnection();
+          result = await deleteDatabaseAttempt();
+        }
+        const verified = result === 'deleted' && await verifyDatabaseDeleted();
+        if (verified) databaseOpenError = '';
+        return verified;
       }
 
       async function diagnostics() {
         const db = await openDatabase();
         let estimate = null;
         let persisted = null;
+        let primaryRecordPresent = false;
         try { estimate = await navigator.storage?.estimate?.(); } catch (err) { /* Not available. */ }
         try { persisted = await navigator.storage?.persisted?.(); } catch (err) { /* Not available. */ }
+        try { primaryRecordPresent = Boolean((await getRecord(APP_PRIMARY_SAVE_KEY))?.value); } catch (_) { /* Report false. */ }
+        const localMarkerPresent = Boolean(parseStorageMarker(safeStorageGet('localStorage', STORAGE_KEY), APP_PRIMARY_SAVE_KEY));
         return {
           indexedDb: Boolean(db),
           databaseName: APP_DATABASE_NAME,
           quota: Number(estimate?.quota || 0),
           usage: Number(estimate?.usage || 0),
-          persisted
+          persisted,
+          primaryRecordPresent,
+          localMarkerPresent,
+          databaseError: databaseOpenError
         };
       }
 
       return Object.freeze({
         initialize: openDatabase,
+        close: closeDatabaseConnection,
         putRecord,
         getRecord,
         setPrimarySave,
         getPrimarySave,
+        getPrimarySaveDetailed,
         setSnapshotIndex,
         getSnapshotIndex,
         removePrimarySave,
@@ -32374,7 +32819,7 @@ This will replace the current classes, settings, room templates, and active layo
           button.setAttribute('aria-label', `Cell ${cell?.row || ''},${cell?.col || ''}, ${objectLabel(cell?.type || 'empty')}${student ? `, assigned to ${studentDisplay(student)}` : ''}`);
           button.title = uiState.keyboardCarryStudentId ? 'Place the selected student here' : 'Select this seat for keyboard placement';
         });
-        document.querySelectorAll('.freeform-object.seat[data-object-id]').forEach(node => {
+        document.querySelectorAll('.freeform-object[data-object-id]').forEach(node => {
           node.tabIndex = -1;
           node.removeAttribute('role');
           let button = node.querySelector('.keyboard-freeform-seat-focus');
@@ -32382,11 +32827,49 @@ This will replace the current classes, settings, room templates, and active layo
             button = document.createElement('button');
             button.type = 'button';
             button.className = 'keyboard-freeform-seat-focus';
+            button.title = 'Arrow keys move; Shift moves farther; Alt moves 1 pixel; [ and ] rotate; plus/minus resize; L locks or unlocks.';
             node.appendChild(button);
           }
           button.dataset.keyboardObjectId = node.dataset.objectId;
-          button.setAttribute('aria-label', `Freeform seat ${node.querySelector('.freeform-object-title')?.textContent || ''}`.trim());
+          const objectName = node.querySelector('.freeform-object-title')?.textContent || node.dataset.type || 'object';
+          button.setAttribute('aria-label', `Freeform ${objectName}. Arrow keys move, brackets rotate, plus or minus resize, and L changes lock state.`.trim());
         });
+      }
+
+      function keyboardEditFreeformObject(node, event) {
+        const id = node?.dataset?.objectId;
+        const obj = (state.freeformLayout?.objects || []).find(item => item.id === id);
+        if (!obj || eyeModeBlocksRoomEditing()) return false;
+        if (event.key.toLowerCase() === 'l') {
+          selectFreeformObject(id, false, true);
+          lockSelectedFreeformObject(true);
+          return true;
+        }
+        if (obj.locked) return false;
+        if (event.key === '[') { selectFreeformObject(id, false, true); rotateFreeformObject(id, event.shiftKey ? -45 : -15); return true; }
+        if (event.key === ']') { selectFreeformObject(id, false, true); rotateFreeformObject(id, event.shiftKey ? 45 : 15); return true; }
+        const editableKeys = new Set(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','+','=','-','_']);
+        if (!editableKeys.has(event.key)) return false;
+        const fine = event.altKey ? 1 : Math.max(1, Number(state.freeformLayout?.canvas?.gridSize || pageSettings().freeformGridSize || 10));
+        const step = event.shiftKey ? fine * 5 : fine;
+        selectFreeformObject(id, false, true);
+        pushUndoSnapshot('Before keyboard Freeform edit');
+        if (event.key === 'ArrowLeft') obj.x = Math.max(0, Number(obj.x || 0) - step);
+        if (event.key === 'ArrowRight') obj.x = Math.max(0, Number(obj.x || 0) + step);
+        if (event.key === 'ArrowUp') obj.y = Math.max(0, Number(obj.y || 0) - step);
+        if (event.key === 'ArrowDown') obj.y = Math.max(0, Number(obj.y || 0) + step);
+        if (event.key === '+' || event.key === '=') {
+          obj.width = Math.max(40, Number(obj.width || 0) + step);
+          obj.height = Math.max(40, Number(obj.height || 0) + step);
+        }
+        if (event.key === '-' || event.key === '_') {
+          obj.width = Math.max(obj.type === 'seat' ? MIN_FREEFORM_SEAT_WIDTH : 40, Number(obj.width || 0) - step);
+          obj.height = Math.max(obj.type === 'seat' ? MIN_FREEFORM_SEAT_HEIGHT : 40, Number(obj.height || 0) - step);
+        }
+        rememberFreeformGeometry([obj]);
+        commitFreeformLayoutChange('freeform-keyboard-edit', { render: true, syncToGrid: false });
+        setLiveStatusMessage(`Updated ${freeformObjectLabel(obj)} with keyboard controls.`);
+        return true;
       }
 
       function onKeyboardPlacement(event) {
@@ -32410,9 +32893,13 @@ This will replace the current classes, settings, room templates, and active layo
           }
         }
         const freeformButton = event.target.closest?.('.keyboard-freeform-seat-focus[data-keyboard-object-id]');
-        const freeformNode = freeformButton?.closest('.freeform-object.seat[data-object-id]') || event.target.closest?.('.freeform-object.seat[data-object-id]');
-        if (freeformNode && ['Enter',' '].includes(event.key) && uiState.keyboardCarryStudentId) {
-          event.preventDefault(); assignStudentToFreeformObject(uiState.keyboardCarryStudentId,freeformNode.dataset.objectId,true,true); setKeyboardCarry(''); freeformNode.focus();
+        const freeformNode = freeformButton?.closest('.freeform-object[data-object-id]') || event.target.closest?.('.freeform-object[data-object-id]');
+        if (freeformNode && ['Enter',' '].includes(event.key) && uiState.keyboardCarryStudentId && freeformNode.classList.contains('seat')) {
+          event.preventDefault(); assignStudentToFreeformObject(uiState.keyboardCarryStudentId,freeformNode.dataset.objectId,true,true); setKeyboardCarry(''); freeformButton?.focus(); return;
+        }
+        if (freeformNode && keyboardEditFreeformObject(freeformNode, event)) {
+          event.preventDefault();
+          event.stopPropagation();
         }
       }
 
@@ -34988,11 +35475,23 @@ This will replace the current classes, settings, room templates, and active layo
           : 'Additional lock, privacy, and auto-lock options are available later under <strong>Settings → Security &amp; Data</strong>.';
         clearWelcomeSecurityError();
         if (recovery && pendingParseError) {
-          showWelcomeSecurityError('The browser save could not be read as valid JSON. Open another backup or erase the local planner data and start fresh.');
+          showWelcomeSecurityError(pendingParseError || 'The browser save could not be read. Open another backup or erase the local planner data and start fresh.');
+          el('welcomeEncryptionError')?.classList.add('storage-recovery-warning');
           if (n.primary) n.primary.disabled = true;
         } else if (n.primary) {
           n.primary.disabled = false;
+          el('welcomeEncryptionError')?.classList.remove('storage-recovery-warning');
         }
+      }
+
+      function inspectStorageFailure(details = {}) {
+        const status = String(details.status || 'storage-unavailable');
+        const message = status === 'missing-record'
+          ? 'The browser found a local-save marker, but the IndexedDB save record is missing. Automatic saving is paused so the missing save cannot be overwritten. Open another backup, choose a Google Drive save, retry after reloading the browser, or explicitly erase local planner data.'
+          : `The browser could not access the IndexedDB save record${details.error ? `: ${details.error}` : '.'} Automatic saving is paused so existing data is not overwritten. Open another backup, choose a Google Drive save, retry after reloading the browser, or explicitly erase local planner data.`;
+        setPending('', details.source || 'browser autosave', message);
+        uiState.browserStorageStatus = status;
+        return { loaded: false, waiting: true, error: new Error(message) };
       }
 
       async function inspectInitialSave(payload, source = 'browser autosave') {
@@ -35186,6 +35685,7 @@ This will replace the current classes, settings, room templates, and active layo
         install,
         afterReady,
         inspectInitialSave,
+        inspectStorageFailure,
         hasPendingSave,
         isRecoveryMode,
         syncWelcomeUi,
@@ -36262,7 +36762,7 @@ const ProductionReadinessV50 = (() => {
         document.querySelectorAll('.modal-backdrop').forEach(modal=>modal.addEventListener('click',event=>{if(event.target===modal)modal.classList.remove('show');}));
       }
 
-      function install(){if(installed)return;installed=true;installEvents();syncMarqueeMode();document.body.dataset.classroomWorkflow='5.4.2';}
+      function install(){if(installed)return;installed=true;installEvents();syncMarqueeMode();document.body.dataset.classroomWorkflow=APP_REVISION;}
       function afterReady(){enhanceRenderedWorkspace();renderSeatingPlans();renderImportProfiles();}
       return Object.freeze({install,afterReady,enhanceRenderedWorkspace,openTodayMode,openSeatingPlans:()=>{renderSeatingPlans();el('seatingPlansModal')?.classList.add('show');},openGlobalSearch:()=>el('globalSearchBtn')?.click(),openPresets:()=>el('openFreeformPresetsBtn')?.click()});
     })();
@@ -36827,7 +37327,7 @@ const ProductionReadinessV50 = (() => {
         installHelpContent();
         installEvents();
         installObserver();
-        document.body.dataset.classSetupWorkspace = '5.4.1';
+        document.body.dataset.classSetupWorkspace = APP_REVISION;
       }
 
       function afterReady() {
@@ -36885,13 +37385,18 @@ const ProductionReadinessV50 = (() => {
 
       let loaded = false;
       let waitingForStartupUnlock = false;
-      const saved = await BrowserDataStore.getPrimarySave();
-      if (saved) {
-        const startupResult = await StartupRecoveryV45.inspectInitialSave(saved, 'browser autosave');
+      const primarySaveResult = await BrowserDataStore.getPrimarySaveDetailed();
+      uiState.browserStorageStatus = primarySaveResult.status;
+      if (primarySaveResult.status === 'ok' && primarySaveResult.payload) {
+        const startupResult = await StartupRecoveryV45.inspectInitialSave(primarySaveResult.payload, 'browser autosave');
         loaded = !!startupResult.loaded;
         waitingForStartupUnlock = !!startupResult.waiting;
         if (loaded) setLiveStatusMessage('Loaded existing local save automatically.');
         else if (waitingForStartupUnlock) setLiveStatusMessage('Encrypted browser save found. Enter its password to continue, or choose Start Fresh.');
+      } else if (['missing-record','storage-unavailable'].includes(primarySaveResult.status)) {
+        const startupResult = StartupRecoveryV45.inspectStorageFailure(primarySaveResult);
+        waitingForStartupUnlock = !!startupResult.waiting;
+        setLiveStatusMessage('Browser save recovery is required. Automatic saving is paused to protect the existing storage record.');
       }
 
       if (!loaded) {
