@@ -5,9 +5,9 @@
   <meta name="license" content="MIT License" />
   <meta name="spdx-license-identifier" content="MIT" />
   <meta name="copyright" content="Copyright (c) 2026 Chris L. Franklin" />
-  <meta name="app-version" content="5.7.1" />
+  <meta name="app-version" content="5.7.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com blob:; style-src 'self' 'unsafe-inline'; connect-src 'self' https://www.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com; img-src 'self' data: blob:; worker-src blob:; object-src 'none'; base-uri 'none'; form-action 'self'" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com blob:; style-src 'self' 'unsafe-inline'; connect-src 'self' https://www.googleapis.com https://classroom.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com; img-src 'self' data: blob:; worker-src blob:; object-src 'none'; base-uri 'none'; form-action 'self'" />
   <meta name="application-name" content="Classroom Seating Planner" />
   <meta name="build-date" content="2026-07-13T00:30:00Z" />
   <title>Classroom Seating Planner</title>
@@ -16302,12 +16302,12 @@ body.freeform-marquee-mode .freeform-object {
 const APP_CONFIG = Object.freeze({
   name: 'Classroom Seating Planner',
   shortName: 'Seating Planner',
-  version: '5.7.1',
+  version: '5.7.2',
   copyrightHolder: 'Chris L. Franklin',
   copyrightYear: '2026',
   releaseDate: '2026-07-12',
   releaseDateDisplay: 'July 12, 2026',
-  buildDate: '2026-07-13T00:30:00Z',
+  buildDate: '2026-07-12T19:59:05Z',
   commit: 'local',
   environment: 'production',
   dataSchemaVersion: 11,
@@ -16441,10 +16441,20 @@ const APP_CONFIG = Object.freeze({
 
     const RELEASE_HISTORY = [
       {
+        version: '5.7.2',
+        date: 'July 12, 2026',
+        title: 'Google Classroom CSP connection repair',
+        current: true,
+        changes: [
+          'Allowed HTTPS connections to classroom.googleapis.com so the Google Classroom courses and roster endpoints can run under the application Content Security Policy.',
+          'Applied the Classroom endpoint permission to both portable and hosted builds and added a static release check to prevent the required CSP source from disappearing.'
+        ]
+      },
+      {
         version: '5.7.1',
         date: 'July 12, 2026',
         title: 'Settings layout and integration-control fit repair',
-        current: true,
+        current: false,
         changes: [
           'Expanded Settings navigation rows so longer titles and descriptions wrap without being clipped.',
           'Made District Integrations forms and action rows adapt to the available content width instead of forcing cramped fixed columns.',
