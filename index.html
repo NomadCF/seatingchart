@@ -5,11 +5,11 @@
   <meta name="license" content="MIT License" />
   <meta name="spdx-license-identifier" content="MIT" />
   <meta name="copyright" content="Copyright (c) 2026 Chris L. Franklin" />
-  <meta name="app-version" content="5.7.2" />
+  <meta name="app-version" content="5.7.4" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com blob:; style-src 'self' 'unsafe-inline'; connect-src 'self' https://www.googleapis.com https://classroom.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com; img-src 'self' data: blob:; worker-src blob:; object-src 'none'; base-uri 'none'; form-action 'self'" />
   <meta name="application-name" content="Classroom Seating Planner" />
-  <meta name="build-date" content="2026-07-13T00:30:00Z" />
+  <meta name="build-date" content="2026-07-12T20:30:06Z" />
   <title>Classroom Seating Planner</title>
   <style>/* Cascade architecture: app-base contains ordinary component rules; app-priority contains state and responsive rules that intentionally outrank the base layer. Keep release history in JavaScript, not in CSS patch comments. */
 @layer app-base, app-priority;
@@ -14531,6 +14531,55 @@ body.freeform-marquee-mode .freeform-object {
     }
   }
 }
+
+@layer app-base {
+  .google-settings-page {
+    min-width: 0;
+  }
+
+  .google-hub-status-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 8px;
+  }
+
+  .google-hub-status-grid .save-health-card {
+    min-width: 0;
+  }
+
+  .google-hub-status-grid .save-health-card span {
+    overflow-wrap: anywhere;
+  }
+
+  .google-hub-action-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(190px, 100%), 1fr));
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .google-hub-action-grid button {
+    width: 100%;
+    min-width: 0;
+    min-height: 40px;
+    padding: 8px 10px;
+    white-space: normal;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+  }
+
+  .google-hub-context-link {
+    margin-top: 8px;
+    white-space: normal;
+  }
+
+  @media (max-width: 560px) {
+    .google-hub-status-grid,
+    .google-hub-action-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+}
 </style>
 </head>
 <body class="left-collapsed">
@@ -16302,12 +16351,12 @@ body.freeform-marquee-mode .freeform-object {
 const APP_CONFIG = Object.freeze({
   name: 'Classroom Seating Planner',
   shortName: 'Seating Planner',
-  version: '5.7.2',
+  version: '5.7.4',
   copyrightHolder: 'Chris L. Franklin',
   copyrightYear: '2026',
   releaseDate: '2026-07-12',
   releaseDateDisplay: 'July 12, 2026',
-  buildDate: '2026-07-12T19:59:05Z',
+  buildDate: '2026-07-12T21:15:00Z',
   commit: 'local',
   environment: 'production',
   dataSchemaVersion: 11,
@@ -16315,6 +16364,8 @@ const APP_CONFIG = Object.freeze({
   googleDriveClientId: '288395515246-7u19cjdqqqfmlp8bjs92c9tl6jvd8usk.apps.googleusercontent.com',
   googleDriveFolderName: 'Classroom Seating Planner Saves',
   googleDriveAppProperty: 'classroom-seating-planner',
+  googlePickerApiKey: "",
+  googlePickerAppId: "",
   supportUrl: '',
   repositoryUrl: ''
 });
@@ -16355,6 +16406,12 @@ const APP_CONFIG = Object.freeze({
     const LEGACY_APP_NAMES = new Set(['Seating Chart Bubble Builder', 'Seating Chart Builder', APP_NAME]);
     const GOOGLE_DRIVE_CLIENT_ID = APP_CONFIG.googleDriveClientId;
     const GOOGLE_DRIVE_APP_PROPERTY = APP_CONFIG.googleDriveAppProperty;
+    const deploymentConfigValue = value => {
+      const text = String(value || '').trim();
+      return /^__GOOGLE_[A-Z0-9_]+__$/.test(text) ? '' : text;
+    };
+    const GOOGLE_PICKER_API_KEY = deploymentConfigValue(APP_CONFIG.googlePickerApiKey);
+    const GOOGLE_PICKER_APP_ID = deploymentConfigValue(APP_CONFIG.googlePickerAppId);
 
     const PAGE_LOCK_CREDENTIAL_KEY = 'seating-chart-bubble-builder-lock-v1';
     const PAGE_LOCK_SESSION_KEY = 'seating-chart-bubble-builder-locked-session-v1';
@@ -16441,10 +16498,32 @@ const APP_CONFIG = Object.freeze({
 
     const RELEASE_HISTORY = [
       {
+        version: '5.7.4',
+        date: 'July 12, 2026',
+        title: 'Complete factory reset and unified Google settings',
+        current: true,
+        changes: [
+          'Made Factory Reset clear the in-memory and browser-resident maintenance activity history instead of allowing the activity cache to survive after localStorage was erased.',
+          'Added a dedicated Google Settings hub for Drive, Classroom, Picker deployment status, course selection, revisions, and file-management shortcuts while retaining contextual controls in Saving and District Integrations.',
+          'Reset transient Google Classroom authorization, roster drafts, revision context, and cloud-status caches during a full factory reset.'
+        ]
+      },
+      {
+        version: '5.7.3',
+        date: 'July 12, 2026',
+        title: 'Deployment-owned Google Picker configuration',
+        current: false,
+        changes: [
+          'Removed Google Picker API-key and project-number inputs from teacher-facing Settings and classroom save data.',
+          'Made Picker use build-time project credentials and hide all Picker controls when that deployment feature is not configured.',
+          'Kept Google Drive saving, loading, revisions, file management, conflict detection, Google Classroom, and SIS imports fully available without Picker.'
+        ]
+      },
+      {
         version: '5.7.2',
         date: 'July 12, 2026',
         title: 'Google Classroom CSP connection repair',
-        current: true,
+        current: false,
         changes: [
           'Allowed HTTPS connections to classroom.googleapis.com so the Google Classroom courses and roster endpoints can run under the application Content Security Policy.',
           'Applied the Classroom endpoint permission to both portable and hosted builds and added a static release check to prevent the required CSP source from disappearing.'
@@ -16720,8 +16799,6 @@ const APP_CONFIG = Object.freeze({
       googleDriveFileVersion: '',
       googleDriveHeadRevisionId: '',
       googleDriveRemoteMd5: '',
-      googlePickerApiKey: '',
-      googlePickerAppId: '',
       districtName: '',
       districtDomain: '',
       districtSupportUrl: '',
@@ -16792,8 +16869,6 @@ const APP_CONFIG = Object.freeze({
         googleDriveFileVersion: String(source.googleDriveFileVersion || '').trim(),
         googleDriveHeadRevisionId: String(source.googleDriveHeadRevisionId || '').trim(),
         googleDriveRemoteMd5: String(source.googleDriveRemoteMd5 || '').trim(),
-        googlePickerApiKey: String(source.googlePickerApiKey || '').trim().slice(0, 300),
-        googlePickerAppId: String(source.googlePickerAppId || '').trim().slice(0, 80),
         districtName: String(source.districtName || '').trim().slice(0, 160),
         districtDomain: String(source.districtDomain || '').trim().slice(0, 160),
         districtSupportUrl: String(source.districtSupportUrl || '').trim().slice(0, 500),
@@ -16861,8 +16936,6 @@ const APP_CONFIG = Object.freeze({
         googleDriveFileVersion: current.googleDriveFileVersion || '',
         googleDriveHeadRevisionId: current.googleDriveHeadRevisionId || '',
         googleDriveRemoteMd5: current.googleDriveRemoteMd5 || '',
-        googlePickerApiKey: current.googlePickerApiKey || '',
-        googlePickerAppId: current.googlePickerAppId || '',
         districtName: current.districtName || imported.districtName || '',
         districtDomain: current.districtDomain || imported.districtDomain || '',
         districtSupportUrl: current.districtSupportUrl || imported.districtSupportUrl || ''
@@ -17829,7 +17902,9 @@ const APP_CONFIG = Object.freeze({
       if (uiState.selectedCellKeys) uiState.selectedCellKeys.clear();
       uiState.activeSeatEditCellKey = null;
       uiState.mobileCarryItem = null;
+      uiState.keyboardCarryStudentId = '';
       uiState.csvImportDraft = null;
+      uiState.textInputCallback = null;
       uiState.noteEditorContext = null;
       uiState.noteEditorDraft = null;
       uiState.restoreImportDraft = null;
@@ -25038,13 +25113,19 @@ Choose Override Placement to keep this assignment anyway, or Move Back to leave 
         fileVersion: String(cfg.googleDriveFileVersion || '').trim(),
         headRevisionId: String(cfg.googleDriveHeadRevisionId || '').trim(),
         remoteMd5: String(cfg.googleDriveRemoteMd5 || '').trim(),
-        pickerApiKey: String(cfg.googlePickerApiKey || '').trim(),
-        pickerAppId: String(cfg.googlePickerAppId || '').trim()
+        pickerApiKey: GOOGLE_PICKER_API_KEY,
+        pickerAppId: GOOGLE_PICKER_APP_ID
       };
     }
 
     function googleDriveConfigured() {
       return !!googleDriveConfig().clientId;
+    }
+
+    function googlePickerConfigured() {
+      const cfg = googleDriveConfig();
+      const hostedOrigin = location.protocol === 'https:' || (location.protocol === 'http:' && ['localhost','127.0.0.1'].includes(location.hostname));
+      return !!(hostedOrigin && cfg.clientId && cfg.pickerApiKey && cfg.pickerAppId);
     }
 
     function googleDriveStorageConnected() {
@@ -29151,12 +29232,29 @@ This will replace the current classes, settings, room templates, and active layo
       state.rows = 5;
       state.cols = 6;
       state.cells = {};
+      state.layoutMode = 'grid';
+      state.freeformLayout = null;
       state.customObjects = [];
       state.zones = [];
       state.chartMeta = {};
       state.rosterArchive = [];
+      state.todaySession = null;
+      state.seatingPlans = [];
+      state.importProfiles = [];
       uiState.pageSettings = mergePageSettings(null);
       uiState.namesOnlyLayout = uiState.pageSettings.defaultNamesOnly;
+      uiState.activeSideTab = 'students';
+      uiState.activeSettingsPage = 'chart';
+      uiState.selectionMode = false;
+      uiState.isSelectingCells = false;
+      uiState.skipNextCellClick = false;
+      uiState.selectionAnchorKey = null;
+      uiState.activeSeatEditCellKey = null;
+      uiState.activeSeatEditFreeformObjectId = null;
+      uiState.designMode = false;
+      uiState.designCellSize = 28;
+      uiState.mobileActivePanel = 'layout';
+      uiState.visibilityPreviousNamesOnly = true;
       uiState.encryptionEnabled = false;
       uiState.encryptionKey = '';
       clearWrappedSessionEncryptionKeys();
@@ -29173,8 +29271,12 @@ This will replace the current classes, settings, room templates, and active layo
       uiState.noteEditorDraft = null;
       uiState.restoreImportDraft = null;
       uiState.printOptions = null;
+      uiState.howToTourActive = false;
+      uiState.howToTourIndex = 0;
+      uiState.howToTourTarget = null;
       uiState.pageLocked = false;
       uiState.visibilityMode = false;
+      uiState.appReady = false;
       uiState.lockedSnapshotEncrypted = '';
       uiState.appSnapshotsCache = [];
       uiState.appSnapshotsLoaded = true;
@@ -29201,9 +29303,32 @@ This will replace the current classes, settings, room templates, and active layo
       uiState.googleDriveBusy = false;
       uiState.googleDriveStatus = 'Google Drive is not connected.';
       uiState.googleDriveLastSyncAt = '';
+      uiState.googleDriveFiles = [];
+      uiState.googleDriveSelectedFileId = '';
+      uiState.googleDriveChooserContext = null;
       uiState.saveFallbackWarning = '';
+      uiState.dismissedSaveFallbackWarning = '';
       uiState.durableSavePromptActive = false;
       uiState.lastDurableSavePromptAt = 0;
+      uiState.welcomeSecurityJustCompleted = false;
+      uiState.suppressEncryptionPromptUntil = 0;
+      uiState.saveIdentity = null;
+      uiState.seatingWorker?.terminate?.();
+      uiState.seatingWorker = null;
+      uiState.seatingCandidates = [];
+      uiState.seatingCandidateMode = 'generate';
+      uiState.seatingCandidateSeed = '';
+      uiState.seatingWorkerRunId = 0;
+      uiState.linkedFileLastModified = 0;
+      uiState.pendingSaveConflict = null;
+      uiState.lastBackupVerification = null;
+      uiState.browserStorageStatus = 'unknown';
+      uiState.onboardingSecuritySavePromise = null;
+      uiState.startupRecoveryPending = false;
+      uiState.hiddenAt = 0;
+      uiState.isPageExiting = false;
+      uiState.autoLockInProgress = false;
+      el('v50UpdateBanner')?.setAttribute('hidden', '');
       ensureGrid();
       ensureClassSystem();
       applyPageSettings(uiState.pageSettings, { skipRender: true });
@@ -29218,6 +29343,8 @@ This will replace the current classes, settings, room templates, and active layo
         const failures = [];
         try { localStorage.clear(); } catch { failures.push('local browser storage'); }
         try { sessionStorage.clear(); } catch { failures.push('session storage'); }
+        window.AppAudit?.clearForFactoryReset?.();
+        DistrictIntegrationsV57?.resetForFactoryReset?.();
         clearCookiesForThisPage();
         const databaseDeleted = await deleteLinkedSaveDatabase();
         if (!databaseDeleted && window.indexedDB) failures.push('linked-file permission database');
@@ -35549,6 +35676,8 @@ This will replace the current classes, settings, room templates, and active layo
         try { await BrowserDataStore.clearDatabase(); } catch (_) {}
         try { await deleteLinkedSaveDatabase(); } catch (_) {}
         removeStorageKeys();
+        window.AppAudit?.clearForFactoryReset?.();
+        DistrictIntegrationsV57?.resetForFactoryReset?.();
         clearWrappedSessionEncryptionKeys();
         clearSameTabReloadSessionKey();
         clearFreeformGeometrySession();
@@ -35696,6 +35825,13 @@ const ProductionReadinessV50 = (() => {
     activityStorageAvailable = safeStorageSet('localStorage', ACTIVITY_KEY, JSON.stringify(memoryActivity));
   }
 
+  function clearActivityHistorySilently() {
+    safeStorageRemove('localStorage', ACTIVITY_KEY);
+    memoryActivity = [];
+    activityStorageAvailable = true;
+    if (renderedOnce) renderActivityLog();
+  }
+
   function record(type, message, status = 'info', details = {}) {
     const rows = readActivity();
     const cleanDetails = {};
@@ -35794,10 +35930,8 @@ const ProductionReadinessV50 = (() => {
     showInAppConfirm(
       'Clear the local maintenance and error activity history? This does not change classroom data, saves, or snapshots.',
       () => {
-        safeStorageRemove('localStorage', ACTIVITY_KEY);
-        memoryActivity = [];
-        record('maintenance.activity-cleared', 'Activity history cleared', 'success');
-        renderActivityLog();
+        clearActivityHistorySilently();
+        setLiveStatusMessage('Activity history cleared.');
       },
       { title: 'Clear Activity History?', confirmText: 'Clear History', cancelText: 'Cancel' }
     );
@@ -35933,7 +36067,13 @@ const ProductionReadinessV50 = (() => {
     installSensitiveActionAudit();
     installUpdateNotice();
     installEvents();
-    window.AppAudit = Object.freeze({ record, recordError, read: readActivity, render: renderActivityLog });
+    window.AppAudit = Object.freeze({
+      record,
+      recordError,
+      read: readActivity,
+      render: renderActivityLog,
+      clearForFactoryReset: clearActivityHistorySilently
+    });
   }
 
   function afterReady() {
@@ -35945,7 +36085,7 @@ const ProductionReadinessV50 = (() => {
     });
   }
 
-  return Object.freeze({ install, afterReady, record, recordError, renderActivityLog, systemSummary });
+  return Object.freeze({ install, afterReady, record, recordError, renderActivityLog, systemSummary, clearForFactoryReset: clearActivityHistorySilently });
 })();
 
     const InterfaceSystemV51 = (() => {
@@ -37285,30 +37425,137 @@ const ProductionReadinessV50 = (() => {
       let classroomTokenExpiresAt = 0;
       let rosterDraft = null;
       let revisionContext = null;
+      let googleHubObserver = null;
 
       const node = id => document.getElementById(id);
       const districtSettings = () => ({
         districtName: pageSettings().districtName || '',
         districtDomain: pageSettings().districtDomain || '',
         districtSupportUrl: pageSettings().districtSupportUrl || '',
-        googlePickerApiKey: pageSettings().googlePickerApiKey || '',
-        googlePickerAppId: pageSettings().googlePickerAppId || '',
         googleClassroomEnabled: !!pageSettings().googleClassroomEnabled
       });
 
-      function injectSettingsPage() {
-        if (node('settingsPageDistrict')) return;
-        const aboutButton = node('settingsPageAboutBtn');
+      function insertSettingsNavigationEntry(id, title, description, beforeId = 'settingsPageAboutBtn') {
+        if (node(`settingsPage${id[0].toUpperCase()}${id.slice(1)}Btn`)) return null;
         const button = document.createElement('button');
-        button.id = 'settingsPageDistrictBtn';
+        button.id = `settingsPage${id[0].toUpperCase()}${id.slice(1)}Btn`;
         button.className = 'settings-page-tab';
         button.type = 'button';
-        button.setAttribute('role','tab');
-        button.setAttribute('aria-selected','false');
-        button.setAttribute('aria-controls','settingsPageDistrict');
-        button.dataset.settingsNav = 'district';
-        button.innerHTML = '<span class="settings-page-title">District Integrations</span><span class="settings-page-desc">Google Classroom, SIS rosters, Picker, and deployment identity.</span>';
-        aboutButton?.before(button);
+        button.setAttribute('role', 'tab');
+        button.setAttribute('aria-selected', 'false');
+        button.setAttribute('aria-controls', `settingsPage${id[0].toUpperCase()}${id.slice(1)}`);
+        button.dataset.settingsNav = id;
+        button.innerHTML = `<span class="settings-page-title">${escapeHtml(title)}</span><span class="settings-page-desc">${escapeHtml(description)}</span>`;
+        node(beforeId)?.before(button);
+        return button;
+      }
+
+      function addMobileSettingsOption(id, title) {
+        const mobileSelect = node('settingsMobilePageSelect');
+        if (!mobileSelect || Array.from(mobileSelect.options).some(option => option.value === id)) return;
+        const option = document.createElement('option');
+        option.value = id;
+        option.textContent = title;
+        const aboutOption = Array.from(mobileSelect.options).find(item => item.value === 'about');
+        mobileSelect.insertBefore(option, aboutOption || null);
+      }
+
+      function injectGoogleSettingsHub() {
+        if (node('settingsPageGoogle')) return;
+        insertSettingsNavigationEntry('google', 'Google', 'Drive saves, Classroom rosters, Picker availability, revisions, and cloud connection status.', 'settingsPageDistrictBtn');
+        const panel = document.createElement('div');
+        panel.id = 'settingsPageGoogle';
+        panel.className = 'settings-page google-settings-page';
+        panel.setAttribute('role', 'tabpanel');
+        panel.dataset.settingsPanel = 'google';
+        panel.setAttribute('aria-label', 'Google integrations');
+        const pickerAction = googlePickerConfigured()
+          ? '<button id="googleHubPickerBtn" class="secondary" type="button">Choose Another Drive File</button>'
+          : '';
+        panel.innerHTML = `
+          <div class="settings-page-header"><strong>Google integrations</strong>Manage Google Drive and Google Classroom from one place. The same contextual controls remain available under Saving and District Integrations.</div>
+          <div class="google-hub-status-grid" aria-live="polite">
+            <div class="save-health-card"><strong>Google Drive</strong><span id="googleHubDriveStatus">Not connected.</span></div>
+            <div class="save-health-card"><strong>Google Classroom</strong><span id="googleHubClassroomStatus">Not connected.</span></div>
+            <div class="save-health-card"><strong>Google Picker</strong><span id="googleHubPickerStatus">Checking deployment configuration…</span></div>
+          </div>
+          <section class="section settings-section">
+            <h3>Google Drive saves</h3>
+            <div class="hint">Save, load, manage, and review revisions for encrypted planner files. Picker is optional and appears only when this deployment includes the project-owned API key and app ID.</div>
+            <div class="field"><label for="googleHubPreferredStorage">Preferred Save Now location</label><select id="googleHubPreferredStorage"><option value="browser">Browser local autosave / downloads</option><option value="linked">Linked save file when available</option><option value="googleDrive">Google Drive</option></select></div>
+            <div class="google-hub-action-grid">
+              <button id="googleHubDriveConnectBtn" class="secondary" type="button">Connect Google Drive</button>
+              <button id="googleHubDriveSaveBtn" class="secondary" type="button">Save Encrypted Copy</button>
+              <button id="googleHubDriveLoadBtn" class="secondary" type="button">Load from Drive</button>
+              <button id="googleHubDriveManageBtn" class="secondary" type="button">Manage Saves &amp; Revisions</button>
+              ${pickerAction}
+              <button id="googleHubDriveDisconnectBtn" class="ghost" type="button">Disconnect Drive</button>
+            </div>
+            <button id="googleHubOpenSavingBtn" class="ghost tiny google-hub-context-link" type="button">Open Saving Settings</button>
+          </section>
+          <section class="section settings-section">
+            <h3>Google Classroom roster import</h3>
+            <div class="hint">Uses read-only course and roster access. Reconciliation preserves existing notes, requirements, memberships, and seating references for matched students.</div>
+            <div class="google-hub-action-grid">
+              <button id="googleHubClassroomConnectBtn" class="secondary" type="button">Connect Google Classroom</button>
+              <button id="googleHubClassroomRefreshBtn" class="secondary" type="button">Refresh Courses</button>
+            </div>
+            <div class="field"><label for="googleHubClassroomCourseSelect">Course</label><select id="googleHubClassroomCourseSelect"><option value="">Connect to load courses</option></select></div>
+            <div class="google-hub-action-grid"><button id="googleHubClassroomReviewBtn" type="button">Review Classroom Roster</button></div>
+            <button id="googleHubOpenDistrictBtn" class="ghost tiny google-hub-context-link" type="button">Open District Integrations</button>
+          </section>
+          <section class="section settings-section">
+            <h3>Deployment status</h3>
+            <div id="googleHubDeploymentStatus" class="hint">Google OAuth uses the project configuration bundled with this build. Teachers are not asked to enter API keys or project credentials.</div>
+          </section>`;
+        const beforePanel = node('settingsPageDistrict') || node('settingsPageAbout');
+        beforePanel?.before(panel);
+        if (!SETTINGS_PAGE_IDS.includes('google')) SETTINGS_PAGE_IDS.splice(Math.max(0, SETTINGS_PAGE_IDS.indexOf('district') >= 0 ? SETTINGS_PAGE_IDS.indexOf('district') : SETTINGS_PAGE_IDS.indexOf('about')), 0, 'google');
+        addMobileSettingsOption('google', 'Google');
+      }
+
+      function copySelectOptions(source, target) {
+        if (!source || !target) return;
+        const selected = target.value || source.value;
+        target.innerHTML = Array.from(source.options).map(option => `<option value="${escapeHtml(option.value)}">${escapeHtml(option.textContent || '')}</option>`).join('');
+        target.value = Array.from(target.options).some(option => option.value === selected) ? selected : source.value;
+      }
+
+      function syncGoogleSettingsHub() {
+        const driveStatus = node('googleDriveSettingsStatus');
+        const classroomStatus = node('googleClassroomStatus');
+        if (node('googleHubDriveStatus')) node('googleHubDriveStatus').textContent = driveStatus?.textContent || uiState.googleDriveStatus || 'Not connected.';
+        if (node('googleHubClassroomStatus')) node('googleHubClassroomStatus').textContent = classroomStatus?.textContent || 'Not connected.';
+        if (node('googleHubPickerStatus')) node('googleHubPickerStatus').textContent = googlePickerConfigured()
+          ? 'Enabled by this deployment. Users can browse and authorize another Drive file.'
+          : 'Not configured. Normal Drive saving, loading, management, revisions, and Classroom import still work.';
+        if (node('googleHubDeploymentStatus')) node('googleHubDeploymentStatus').textContent = googlePickerConfigured()
+          ? 'OAuth and Picker credentials are supplied by this deployment. No teacher-entered cloud credentials are stored in planner data.'
+          : 'OAuth is supplied by this deployment. Picker is hidden because no project Picker key was included; all non-Picker Google functions remain available.';
+        const preferred = node('googleHubPreferredStorage');
+        if (preferred && document.activeElement !== preferred) preferred.value = pageSettings().preferredStorage || 'browser';
+        copySelectOptions(node('googleClassroomCourseSelect'), node('googleHubClassroomCourseSelect'));
+      }
+
+      function installGoogleHubSynchronization() {
+        googleHubObserver?.disconnect?.();
+        googleHubObserver = new MutationObserver(syncGoogleSettingsHub);
+        ['googleDriveSettingsStatus', 'googleClassroomStatus', 'googleClassroomCourseSelect'].forEach(id => {
+          const target = node(id);
+          if (target) googleHubObserver.observe(target, { childList: true, subtree: true, characterData: true, attributes: id === 'googleClassroomCourseSelect' });
+        });
+        node('googleClassroomCourseSelect')?.addEventListener('change', syncGoogleSettingsHub);
+        syncGoogleSettingsHub();
+      }
+
+      function openSettingsPage(pageId) {
+        setSettingsPage(pageId);
+        setTimeout(syncGoogleSettingsHub, 0);
+      }
+
+      function injectSettingsPage() {
+        if (node('settingsPageDistrict')) return;
+        insertSettingsNavigationEntry('district', 'District Integrations', 'Google Classroom, SIS rosters, and deployment identity.');
         const about = node('settingsPageAbout');
         const panel = document.createElement('div');
         panel.id = 'settingsPageDistrict';
@@ -37326,13 +37573,8 @@ const ProductionReadinessV50 = (() => {
             </div>
             <div class="button-row district-action-row"><button id="saveDistrictProfileBtn" class="secondary" type="button">Save District Profile</button></div>
           </section>
-          <section class="section settings-section"><h3>Google Picker</h3><div class="hint">Picker can browse Drive files explicitly selected by the signed-in user. A hosted deployment must provide its Google API key, Cloud project app ID, OAuth client ID, and authorized HTTPS origin.</div>
-            <div class="district-form-grid"><div class="field"><label for="googlePickerApiKeyInput">Google API key</label><input id="googlePickerApiKeyInput" autocomplete="off" /></div><div class="field"><label for="googlePickerAppIdInput">Cloud project app ID / project number</label><input id="googlePickerAppIdInput" autocomplete="off" /></div></div>
-            <div class="button-row district-action-row"><button id="saveGooglePickerConfigBtn" class="secondary" type="button">Save Picker Configuration</button><button id="openGooglePickerSettingsBtn" type="button">Choose Drive File with Picker</button></div>
-            <div id="googlePickerConfigStatus" class="hint district-status-hint"></div>
-          </section>
           <section class="section settings-section"><h3>Google Classroom roster import</h3><div class="hint">Read-only course and roster access is requested separately from Drive access. Imported rosters are reconciled so matched students retain notes, requirements, memberships, and seating references.</div>
-            <div class="button-row district-action-row"><button id="connectGoogleClassroomBtn" class="secondary" type="button">Connect Google Classroom</button><button id="refreshGoogleClassroomCoursesBtn" class="secondary" type="button">Refresh Courses</button></div>
+            <div class="button-row district-action-row"><button id="connectGoogleClassroomBtn" class="secondary" type="button">Connect Google Classroom</button><button id="refreshGoogleClassroomCoursesBtn" class="secondary" type="button">Refresh Courses</button><button id="openGoogleSettingsFromDistrictBtn" class="ghost" type="button">Open Google Settings</button></div>
             <div class="field"><label for="googleClassroomCourseSelect">Course</label><select id="googleClassroomCourseSelect"><option value="">Connect to load courses</option></select></div>
             <div class="button-row district-action-row"><button id="importGoogleClassroomRosterBtn" type="button">Review Classroom Roster</button></div><div id="googleClassroomStatus" class="hint district-status-hint">Not connected.</div>
           </section>
@@ -37342,19 +37584,16 @@ const ProductionReadinessV50 = (() => {
           </section>`;
         about?.before(panel);
         if (!SETTINGS_PAGE_IDS.includes('district')) SETTINGS_PAGE_IDS.splice(Math.max(0, SETTINGS_PAGE_IDS.indexOf('about')), 0, 'district');
-        const mobileSelect = node('settingsMobilePageSelect');
-        if (mobileSelect && !Array.from(mobileSelect.options).some(option => option.value === 'district')) {
-          const option = document.createElement('option'); option.value = 'district'; option.textContent = 'District Integrations';
-          const aboutOption = Array.from(mobileSelect.options).find(item => item.value === 'about');
-          mobileSelect.insertBefore(option, aboutOption || null);
-        }
+        addMobileSettingsOption('district', 'District Integrations');
+        injectGoogleSettingsHub();
       }
 
       function injectCloudModals() {
         if (!node('driveManagerModal')) {
           const shell = document.createElement('div');
+          const pickerManagerButton = googlePickerConfigured() ? '<button id="driveManagerPickerBtn" class="secondary" type="button">Choose another Drive file</button>' : '';
           shell.innerHTML = `
-            <div id="driveManagerModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="driveManagerTitle"><div class="modal modern-modal drive-manager-modal"><div class="panel-header"><h2 id="driveManagerTitle">Google Drive Save Manager</h2><button id="closeDriveManagerBtn" class="tiny secondary" type="button">Close</button></div><div class="modal-body"><div id="driveManagerStatus" class="hint">Connect to list planner saves.</div><div class="button-row"><button id="driveManagerRefreshBtn" class="secondary" type="button">Refresh</button><button id="driveManagerPickerBtn" class="secondary" type="button">Google Picker</button></div><div id="driveManagerList" class="drive-manager-list"></div></div></div></div>
+            <div id="driveManagerModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="driveManagerTitle"><div class="modal modern-modal drive-manager-modal"><div class="panel-header"><h2 id="driveManagerTitle">Google Drive Save Manager</h2><button id="closeDriveManagerBtn" class="tiny secondary" type="button">Close</button></div><div class="modal-body"><div id="driveManagerStatus" class="hint">Connect to list planner saves.</div><div class="button-row"><button id="driveManagerRefreshBtn" class="secondary" type="button">Refresh</button>${pickerManagerButton}</div><div id="driveManagerList" class="drive-manager-list"></div></div></div></div>
             <div id="driveRevisionModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="driveRevisionTitle"><div class="modal modern-modal drive-revision-modal"><div class="panel-header"><h2 id="driveRevisionTitle">Drive Revision Browser</h2><button id="closeDriveRevisionBtn" class="tiny secondary" type="button">Close</button></div><div class="modal-body"><div id="driveRevisionStatus" class="hint"></div><div id="driveRevisionList" class="drive-revision-list"></div></div></div></div>
             <div id="districtRosterModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="districtRosterTitle"><div class="modal modern-modal district-roster-modal"><div class="panel-header"><h2 id="districtRosterTitle">Review District Roster</h2><button id="closeDistrictRosterBtn" class="tiny secondary" type="button">Close</button></div><div class="modal-body"><div id="districtRosterSummary" class="reconcile-summary-grid"></div><div id="districtRosterPreview" class="csv-preview-table"></div><section class="section"><h3>Apply changes</h3><label class="checkline"><input id="districtRosterUpdateMatched" type="checkbox" checked /> Update names, grade, nickname, and source identifiers for matched students</label><label class="checkline"><input id="districtRosterAddNew" type="checkbox" checked /> Add new students</label><label class="checkline"><input id="districtRosterArchiveMissing" type="checkbox" /> Archive students missing from this roster</label><label class="checkline"><input id="districtRosterPreserveDetails" type="checkbox" checked /> Preserve notes, seating requirements, groups, zones, and assignments for matched students</label></section><div class="button-row"><button id="applyDistrictRosterBtn" type="button">Apply Reconciliation</button><button id="cancelDistrictRosterBtn" class="secondary" type="button">Cancel</button></div></div></div></div>`;
           while (shell.firstElementChild) document.body.appendChild(shell.firstElementChild);
@@ -37362,12 +37601,15 @@ const ProductionReadinessV50 = (() => {
       }
 
       function injectDriveControls() {
+        const pickerReady = googlePickerConfigured();
         const driveButtons = node('settingsGoogleDriveForgetBtn')?.closest('.button-row');
         if (driveButtons && !node('settingsGoogleDriveManageBtn')) {
-          driveButtons.insertAdjacentHTML('beforeend','<button id="settingsGoogleDriveManageBtn" class="secondary" type="button">Manage Drive Saves</button><button id="settingsGoogleDrivePickerBtn" class="secondary" type="button">Google Picker</button>');
+          driveButtons.insertAdjacentHTML('beforeend','<button id="settingsGoogleDriveManageBtn" class="secondary" type="button">Manage Drive Saves</button>');
+          if (pickerReady) driveButtons.insertAdjacentHTML('beforeend','<button id="settingsGoogleDrivePickerBtn" class="secondary" type="button">Choose another Drive file</button>');
+          driveButtons.insertAdjacentHTML('beforeend','<button id="openGoogleSettingsFromSavingBtn" class="ghost" type="button">Open Google Settings</button>');
         }
         const chooserButtons = node('openGoogleDriveFileBtn')?.closest('.button-row');
-        if (chooserButtons && !node('googleDrivePickerBtn')) chooserButtons.insertAdjacentHTML('afterbegin','<button id="googleDrivePickerBtn" class="secondary" type="button">Choose with Google Picker</button>');
+        if (pickerReady && chooserButtons && !node('googleDrivePickerBtn')) chooserButtons.insertAdjacentHTML('afterbegin','<button id="googleDrivePickerBtn" class="secondary" type="button">Choose another Drive file</button>');
         const safeBody = node('safeSharePreview')?.parentElement;
         if (safeBody && !node('downloadReadOnlyClassroomBtn')) {
           const section = document.createElement('section');
@@ -37386,26 +37628,14 @@ const ProductionReadinessV50 = (() => {
         setLiveStatusMessage('District deployment profile saved.');
       }
 
-      function savePickerConfig() {
-        updateGoogleDriveSettings({ googlePickerApiKey:String(node('googlePickerApiKeyInput')?.value||'').trim(), googlePickerAppId:String(node('googlePickerAppIdInput')?.value||'').trim() });
-        updatePickerStatus();
-        setLiveStatusMessage('Google Picker configuration saved.');
-      }
 
       function updateDistrictForm() {
         const cfg=districtSettings();
         if(node('districtNameInput'))node('districtNameInput').value=cfg.districtName;
         if(node('districtDomainInput'))node('districtDomainInput').value=cfg.districtDomain;
         if(node('districtSupportUrlInput'))node('districtSupportUrlInput').value=cfg.districtSupportUrl;
-        if(node('googlePickerApiKeyInput'))node('googlePickerApiKeyInput').value=cfg.googlePickerApiKey;
-        if(node('googlePickerAppIdInput'))node('googlePickerAppIdInput').value=cfg.googlePickerAppId;
-        updatePickerStatus();
       }
 
-      function updatePickerStatus(message='') {
-        const cfg=districtSettings(); const ready=!!(cfg.googlePickerApiKey&&cfg.googlePickerAppId&&googleDriveConfigured());
-        if(node('googlePickerConfigStatus'))node('googlePickerConfigStatus').textContent=message||(ready?'Picker configuration is complete for this deployment.':'Add the API key and Cloud project app ID. The OAuth Client ID remains configured under Saving.');
-      }
 
       function loadGooglePickerScript() {
         if (window.gapi?.load) return Promise.resolve(true);
@@ -37418,9 +37648,8 @@ const ProductionReadinessV50 = (() => {
 
       async function openGooglePicker(options = {}) {
         const cfg = googleDriveConfig();
-        if (!cfg.pickerApiKey || !cfg.pickerAppId) {
-          updatePickerStatus('Google Picker needs an API key and Cloud project app ID.');
-          if (!options.silent) setLiveStatusMessage('Configure Google Picker in Settings → District Integrations.');
+        if (!googlePickerConfigured()) {
+          if (!options.silent) setLiveStatusMessage('Google Picker is not enabled for this deployment. Use the planner Drive save list instead.');
           return false;
         }
         const token = await ensureGoogleDriveToken(true);
@@ -37556,9 +37785,24 @@ const ProductionReadinessV50 = (() => {
       function downloadReadOnlyPackage(){const preset=node('readOnlyPackagePreset')?.value||'student';downloadText(`${String(activeClassName()||'class').replace(/[^a-z0-9]+/gi,'-').toLowerCase()}-read-only-${preset}.html`,readOnlyHtml(preset),'text/html');setLiveStatusMessage('Read-only classroom HTML package downloaded.');}
 
       function installEvents(){
-        document.addEventListener('click',event=>{const driveAction=event.target.closest('[data-drive-action]');if(driveAction){void handleDriveManagerAction(driveAction);return;}const revisionAction=event.target.closest('[data-revision-action]');if(revisionAction){void handleRevisionAction(revisionAction);return;}if(event.target.closest('[data-settings-nav="district"]'))setTimeout(updateDistrictForm,0);});
-        node('saveDistrictProfileBtn')?.addEventListener('click',saveDistrictProfile);node('saveGooglePickerConfigBtn')?.addEventListener('click',savePickerConfig);
-        node('openGooglePickerSettingsBtn')?.addEventListener('click',()=>void openGooglePicker({direct:false}));node('settingsGoogleDrivePickerBtn')?.addEventListener('click',()=>void openGooglePicker({direct:false}));node('googleDrivePickerBtn')?.addEventListener('click',()=>void openGooglePicker(uiState.googleDriveChooserContext||{}));
+        document.addEventListener('click',event=>{const driveAction=event.target.closest('[data-drive-action]');if(driveAction){void handleDriveManagerAction(driveAction);return;}const revisionAction=event.target.closest('[data-revision-action]');if(revisionAction){void handleRevisionAction(revisionAction);return;}if(event.target.closest('[data-settings-nav="district"]'))setTimeout(updateDistrictForm,0);if(event.target.closest('[data-settings-nav="google"]'))setTimeout(syncGoogleSettingsHub,0);});
+        node('saveDistrictProfileBtn')?.addEventListener('click',saveDistrictProfile);
+        node('openGoogleSettingsFromDistrictBtn')?.addEventListener('click',()=>openSettingsPage('google'));
+        node('openGoogleSettingsFromSavingBtn')?.addEventListener('click',()=>openSettingsPage('google'));
+        node('googleHubOpenSavingBtn')?.addEventListener('click',()=>openSettingsPage('saving'));
+        node('googleHubOpenDistrictBtn')?.addEventListener('click',()=>openSettingsPage('district'));
+        node('googleHubPreferredStorage')?.addEventListener('change',event=>{const original=node('settingPreferredStorage');if(original){original.value=event.target.value;original.dispatchEvent(new Event('input',{bubbles:true}));}syncGoogleSettingsHub();});
+        node('googleHubDriveConnectBtn')?.addEventListener('click',()=>node('settingsGoogleDriveConnectBtn')?.click());
+        node('googleHubDriveSaveBtn')?.addEventListener('click',()=>node('settingsGoogleDriveSaveBtn')?.click());
+        node('googleHubDriveLoadBtn')?.addEventListener('click',()=>node('settingsGoogleDriveLoadBtn')?.click());
+        node('googleHubDriveManageBtn')?.addEventListener('click',()=>void openDriveManager());
+        node('googleHubPickerBtn')?.addEventListener('click',()=>void openGooglePicker({direct:false}));
+        node('googleHubDriveDisconnectBtn')?.addEventListener('click',()=>node('settingsGoogleDriveForgetBtn')?.click());
+        node('googleHubClassroomConnectBtn')?.addEventListener('click',()=>void refreshClassroomCourses());
+        node('googleHubClassroomRefreshBtn')?.addEventListener('click',()=>void refreshClassroomCourses());
+        node('googleHubClassroomCourseSelect')?.addEventListener('change',event=>{const original=node('googleClassroomCourseSelect');if(original){original.value=event.target.value;original.dispatchEvent(new Event('change',{bubbles:true}));}});
+        node('googleHubClassroomReviewBtn')?.addEventListener('click',()=>{const mirror=node('googleHubClassroomCourseSelect');const original=node('googleClassroomCourseSelect');if(original&&mirror)original.value=mirror.value;void loadClassroomRoster();});
+        node('settingsGoogleDrivePickerBtn')?.addEventListener('click',()=>void openGooglePicker({direct:false}));node('googleDrivePickerBtn')?.addEventListener('click',()=>void openGooglePicker(uiState.googleDriveChooserContext||{}));
         node('settingsGoogleDriveManageBtn')?.addEventListener('click',()=>void openDriveManager());node('closeDriveManagerBtn')?.addEventListener('click',closeDriveManager);node('driveManagerRefreshBtn')?.addEventListener('click',()=>void refreshDriveManager());node('driveManagerPickerBtn')?.addEventListener('click',()=>void openGooglePicker({direct:false}));
         node('closeDriveRevisionBtn')?.addEventListener('click',()=>node('driveRevisionModal')?.classList.remove('show'));
         node('connectGoogleClassroomBtn')?.addEventListener('click',()=>void refreshClassroomCourses());node('refreshGoogleClassroomCoursesBtn')?.addEventListener('click',()=>void refreshClassroomCourses());node('importGoogleClassroomRosterBtn')?.addEventListener('click',()=>void loadClassroomRoster());
@@ -37567,12 +37811,26 @@ const ProductionReadinessV50 = (() => {
         node('downloadReadOnlyClassroomBtn')?.addEventListener('click',downloadReadOnlyPackage);
       }
 
-      function install(){if(installed)return;installed=true;injectSettingsPage();injectCloudModals();injectDriveControls();installEvents();updateDistrictForm();document.body.dataset.districtIntegrations=APP_REVISION;}
-      function afterReady(){updateDistrictForm();}
+      function resetForFactoryReset(){
+        classroomToken='';
+        classroomTokenExpiresAt=0;
+        rosterDraft=null;
+        revisionContext=null;
+        googleHubObserver?.disconnect?.();
+        googleHubObserver=null;
+        if(node('googleClassroomCourseSelect'))node('googleClassroomCourseSelect').innerHTML='<option value="">Connect to load courses</option>';
+        if(node('googleHubClassroomCourseSelect'))node('googleHubClassroomCourseSelect').innerHTML='<option value="">Connect to load courses</option>';
+        if(node('googleClassroomStatus'))node('googleClassroomStatus').textContent='Not connected.';
+        syncGoogleSettingsHub();
+      }
+
+      function install(){if(installed)return;installed=true;injectSettingsPage();injectGoogleSettingsHub();injectCloudModals();injectDriveControls();installEvents();installGoogleHubSynchronization();updateDistrictForm();document.body.dataset.districtIntegrations=APP_REVISION;}
+      function afterReady(){updateDistrictForm();syncGoogleSettingsHub();}
       return Object.freeze({
         install,
         afterReady,
         openGooglePicker,
+        googlePickerConfigured,
         openDriveManager,
         refreshDriveManager,
         openRevisionBrowser,
@@ -37581,7 +37839,9 @@ const ProductionReadinessV50 = (() => {
         downloadReadOnlyPackage,
         buildReadOnlyHtml: readOnlyHtml,
         buildRosterDraft,
-        parseSisCsvText
+        parseSisCsvText,
+        syncGoogleSettingsHub,
+        resetForFactoryReset
       });
     })();
 
