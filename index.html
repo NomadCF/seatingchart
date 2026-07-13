@@ -5,13 +5,13 @@
   <meta name="license" content="MIT License" />
   <meta name="spdx-license-identifier" content="MIT" />
   <meta name="copyright" content="Copyright (c) 2026 Chris L. Franklin" />
-  <meta name="app-version" content="6.1.2" />
+  <meta name="app-version" content="6.1.3" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com blob:; style-src 'self' 'unsafe-inline'; connect-src 'self' https://www.googleapis.com https://classroom.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com; img-src 'self' data: blob:; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'self'" />
   <meta name="application-name" content="Classroom Seating Planner" />
   <meta name="theme-color" content="#1e3a8a" />
   
-  <meta name="build-date" content="2026-07-13T18:00:00Z" />
+  <meta name="build-date" content="2026-07-13T19:00:00Z" />
   <title>Classroom Seating Planner</title>
   <style>@layer app-base, app-priority;@layer app-base{:root{--bg:#f6f7fb;--panel-2:#f0f3f8;--text:#172033;--muted:#607089;--border:#d8deea;--accent:#2f6fed;--accent-dark:#1e55bd;--seat:#e8f0ff;--seat-border:#9db7ef;--teacher:#fff3d6;--table:#e8f7ec;--door:#fce8ee;--empty:#fbfcff;--shadow:0 12px 30px rgba(29, 39, 61, 0.08);--radius:14px;font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif
 }*{box-sizing:border-box
@@ -191,8 +191,8 @@ textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(47, 111, 237
 }.cell-actions{display:grid;width:100%;margin-top:auto;align-self:stretch;flex:0 0 auto
 }.cell-actions:empty{display:none
 }.cell-actions button{width:100%;min-width:0;min-height:24px;white-space:normal;overflow-wrap:anywhere;line-height:1.05;max-width:100%
-}.cell-actions button:only-child{grid-column:1 / -1
-}.cell-actions .wide{grid-column:1 / -1
+}.cell-actions button:only-child,
+.cell-actions .wide{grid-column:1 / -1
 }.stats{display:grid;grid-template-columns:repeat(3, 1fr);gap:8px;margin-bottom:12px
 }.stat{padding:10px;background:#f8faff;border:1px solid var(--border)
 }.stat .num{font-size:22px;font-weight:900;letter-spacing:-0.04em
@@ -378,8 +378,8 @@ textarea:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(37, 99, 235, 0.12)
 .header-title p{font-size:12px;line-height:1.28
 }.class-manager{border-radius:10px
 }.class-manager label{font-size:10px
-}.class-manager select{font-size:12px
-}.header-actions button,
+}.class-manager select,
+.header-actions button,
 .header-actions select{font-size:12px
 }.header-actions .print-mode{min-width:132px;max-width:160px
 }.app{gap:12px;padding:12px;min-height:680px
@@ -431,8 +431,8 @@ textarea{min-height:30px;padding:5px 7px;font-size:12px;border-radius:8px
 }body.header-collapsed .header-title{min-width:0
 }.panel-header-title{display:flex;align-items:center;gap:8px;min-width:0
 }.panel-header-title h2{min-width:0
-}.left-panel .panel-header{align-items:center
-}body.left-collapsed .left-panel .panel-header{align-items:center
+}.left-panel .panel-header,
+body.left-collapsed .left-panel .panel-header{align-items:center
 }body.left-collapsed .left-panel .panel-header .panel-header-title{flex-direction:column;gap:7px;width:100%
 }body.left-collapsed .left-panel .panel-header h2{margin-top:0
 }.bubble-card.drop-target{outline:3px solid rgba(47,111,237,0.22);border-color:#9bb7ff;background:#f8fbff
@@ -579,8 +579,8 @@ body.design-mode #designModeBtn{background:#e7efff;color:var(--accent-dark);bord
 }.settings-modal{max-width:900px
 }.settings-grid.two-col{display:grid;grid-template-columns:repeat(2, minmax(0, 1fr));gap:8px 12px
 }.security-card{border:1px solid var(--border);border-radius:12px;padding:10px;background:#f8fafc;display:grid;gap:8px
-}.security-card h4{margin:0
-}.section-header-row h3{margin:0
+}.security-card h4,
+.section-header-row h3{margin:0
 }body.visibility-mode #visibilityModeBtn,
 #visibilityModeBtn[aria-pressed="true"]{background:#172554;color:#fff;border-color:#172554
 }@media (max-width: 900px){.settings-grid.two-col{grid-template-columns:1fr
@@ -1094,8 +1094,8 @@ body[data-theme="linux"] .settings-page-header{background:var(--panel-2);color:v
   .freeform-layout-conversion{margin-left:0
   }.freeform-advanced-tools{flex-basis:100%;width:100%
   }.freeform-advanced-tools[open]{order:10
-  }.freeform-advanced-panel{display:grid;grid-template-columns:1fr
-  }.freeform-check-row{display:grid;grid-template-columns:1fr
+  }.freeform-advanced-panel,
+  .freeform-check-row{display:grid;grid-template-columns:1fr
   }.seat-grid.freeform-canvas{margin:0;min-width:760px;min-height:560px
   }.freeform-object{min-width:54px;min-height:42px
   }.freeform-object.seat{min-width:172px;min-height:108px
@@ -1137,8 +1137,8 @@ body[data-theme="linux"] .settings-page-header{background:var(--panel-2);color:v
 }.keyboard-seat-target{outline-offset:2px
 }.archived-class-option{color:var(--muted);font-style:italic
 }.save-conflict-box{border:1px solid #fed7aa;background:#fffbeb;color:#92400e;border-radius:12px;padding:10px;line-height:1.4
-}@media (max-width:700px){.diagnostic-row{grid-template-columns:1fr
-  }.candidate-metrics{grid-template-columns:1fr
+}@media (max-width:700px){.diagnostic-row,
+  .candidate-metrics{grid-template-columns:1fr
   }.generation-controls{display:grid;grid-template-columns:1fr
   }
 }:root{--freeform-print-fit-scale:1
@@ -1280,13 +1280,13 @@ body.product-v4 .warningbox,
 body.product-v4 .successbox,
 body.product-v4 .violation{border-radius:10px;box-shadow:none;font-size:11.5px
 }body.product-v4[data-workflow="setup"] .left-panel,
-body.product-v4[data-workflow="setup"] .v4-setup-dashboard{flex-direction:column
-}body.product-v4[data-workflow="room"] .center-panel{flex-direction:column
-}body.product-v4[data-workflow="seating"] .left-panel,
-body.product-v4[data-workflow="seating"] .center-panel{flex-direction:column
-}body.product-v4[data-workflow="review"] .center-panel,
-body.product-v4[data-workflow="review"] .right-panel{flex-direction:column
-}body.product-v4[data-workflow="share"] .v4-share-dashboard{flex-direction:column
+body.product-v4[data-workflow="setup"] .v4-setup-dashboard,
+body.product-v4[data-workflow="room"] .center-panel,
+body.product-v4[data-workflow="seating"] .left-panel,
+body.product-v4[data-workflow="seating"] .center-panel,
+body.product-v4[data-workflow="review"] .center-panel,
+body.product-v4[data-workflow="review"] .right-panel,
+body.product-v4[data-workflow="share"] .v4-share-dashboard{flex-direction:column
 }body.product-v4 .v4-dashboard{padding:0;overflow:auto;background:#fff
 }body.product-v4 .v4-dashboard-header{display:flex;align-items:flex-start;justify-content:space-between;gap:28px;padding:28px 30px 24px;background:radial-gradient(circle at 90% 0, rgba(65, 105, 225, .14), transparent 22rem),
         linear-gradient(180deg, #fff 0%, #f8faff 100%);border-bottom:1px solid var(--v4-border)
@@ -1692,8 +1692,8 @@ body.product-v4.workspace-v41.product-v42 .v4-share-card p{font-size:10.5px;line
 }#welcomeSecurityModal .welcome-existing-row button{min-height:32px;padding:5px 8px;font-size:10px
 }#welcomeSecurityModal .welcome-footnote{margin:0;padding:0 2px;color:#6b7587;font-size:9.5px;line-height:1.35;text-align:center
 }@media (max-width: 1040px){body.product-v4.workspace-v41.product-v42 .v4-brand{min-width:34px
-  }body.product-v4.workspace-v41.product-v42 .v4-brand > div{display:none
-  }body.product-v4.workspace-v41.product-v42 .v4-command-button{display:none
+  }body.product-v4.workspace-v41.product-v42 .v4-brand > div,
+  body.product-v4.workspace-v41.product-v42 .v4-command-button{display:none
   }
 }@media (max-width: 900px){body.product-v4.workspace-v41.product-v42{--v4-topbar-height:46px;--v4-context-height:42px;--v41-shell-height:42px
   }body.product-v4.workspace-v41.product-v42.v41-workflow-collapsed{--v41-shell-height:34px
@@ -1935,8 +1935,8 @@ body.interface-v51 .bubble-card:hover,
 body.interface-v51 .zone-list-card:hover{border-color:color-mix(in srgb, var(--v4-primary) 42%, var(--v4-border));box-shadow:0 7px 18px rgba(15, 23, 42, .08);transform:translateY(-1px)
 }body.interface-v51 input,
 body.interface-v51 select,
-body.interface-v51 textarea{border-radius:var(--ui51-radius-sm)
-}body.interface-v51 button{border-radius:var(--ui51-radius-sm)
+body.interface-v51 textarea,
+body.interface-v51 button{border-radius:var(--ui51-radius-sm)
 }body.interface-v51 .hint,
 body.interface-v51 .successbox,
 body.interface-v51 .warningbox,
@@ -2178,8 +2178,8 @@ summary{min-width:0
 }.button-row > button,
 .freeform-command-group > button,
 .freeform-chrome-group > button{white-space:normal;line-height:1.15
-}.toolbar-body{min-width:0
-}.toolbar-body > *{min-width:0
+}.toolbar-body,
+.toolbar-body > *{min-width:0
 }@media (max-width: 980px){.freeform-canvas-chrome{align-items:stretch;max-height:260px;overflow:auto
   }.freeform-chrome-group + .freeform-chrome-group{border-left:0;padding-left:0
   }.freeform-object-inspector{margin-left:0;width:100%
@@ -2190,8 +2190,8 @@ summary{min-width:0
   }.global-search-result{grid-template-columns:64px minmax(0, 1fr)
   }.global-search-result > :last-child{display:none
   }
-}@media (max-width: 560px){.csv-profile-bar{grid-template-columns:1fr
-  }.seating-plan-row{grid-template-columns:1fr
+}@media (max-width: 560px){.csv-profile-bar,
+  .seating-plan-row{grid-template-columns:1fr
   }.seating-plan-actions{justify-content:flex-start
   }.freeform-snap-target{max-width:100%;width:100%
   }
@@ -2224,8 +2224,8 @@ summary{min-width:0
   }body.freeform-layout-mode .freeform-snap-target{flex:0 0 auto;max-width:106px;padding:5px 7px;margin-bottom:2px
   }body.freeform-layout-mode .freeform-snap-target:not(.active){display:none
   }
-}@media (min-width: 981px) and (max-width: 1320px){body.freeform-layout-mode .freeform-status-block{display:none
-  }body.freeform-layout-mode .freeform-group-label{display:none
+}@media (min-width: 981px) and (max-width: 1320px){body.freeform-layout-mode .freeform-status-block,
+  body.freeform-layout-mode .freeform-group-label{display:none
   }body.freeform-layout-mode .freeform-command-group + .freeform-command-group{padding-left:4px
   }body.freeform-layout-mode .freeform-tools button{padding-inline:7px
   }
@@ -2761,8 +2761,8 @@ body[data-theme="linux"] .guided-learning-status.waiting{border-color:var(--bord
   }.guided-learning-actions button,
   .guided-learning-completion-actions button,
   .guided-learning-intro-actions button{flex:1 1 auto
-  }.guided-learning-intro{grid-template-columns:1fr
-  }.guided-lesson-catalog{grid-template-columns:1fr
+  }.guided-learning-intro,
+  .guided-lesson-catalog{grid-template-columns:1fr
   }.guided-progress-row{grid-template-columns:auto minmax(0, 1fr)
   }.guided-progress-row > button{grid-column:1 / -1;width:100%
   }
@@ -2818,8 +2818,8 @@ body.print-clean .cell.custom-object{background:#f3f4f6
   body.print-clean .anchor-dot,
   body.print-clean .pill.locked,
   body.print-clean .cell.has-bubbles::after,
-  body.print-clean .cell-label{display:none
-  }body.print-clean .cell.seat .seat-empty{display:none
+  body.print-clean .cell-label,
+  body.print-clean .cell.seat .seat-empty{display:none
   }body.print-clean .cell:not(.seat) .seat-empty{display:block;color:black;font-weight:800
   }body.print-clean .cell{background:white;color:black;border:1px solid #9aa7b8
   }body.print-clean .cell.wall,
@@ -3014,8 +3014,8 @@ body.design-mode .cell[data-design-tooltip]:hover::before{display:none;content:n
   }.center-panel > .panel-header .button-row{grid-area:roomactions;display:flex;flex-wrap:nowrap;justify-content:flex-start;width:100%;max-width:100%;overflow-x:auto;overflow-y:hidden;gap:5px;padding-bottom:2px
   }.center-panel > .panel-header .button-row button{flex:0 0 auto;min-height:32px;font-size:10.5px;padding:4px 7px
   }#layoutToolsPanel{flex:0 0 auto;min-height:0;max-height:min(44dvh, 320px);overflow:auto
-  }body.layout-tools-collapsed #layoutToolsPanel{display:none
-  }.toolbar-header{display:none
+  }body.layout-tools-collapsed #layoutToolsPanel,
+  .toolbar-header{display:none
   }.toolbar-body{display:grid;grid-template-columns:repeat(2, minmax(0, 1fr));gap:6px;align-items:end
   }.toolbar .field,
   .toolbar .field.tool{min-width:0;width:100%
@@ -3060,23 +3060,23 @@ body.design-mode .cell[data-design-tooltip]:hover::before{display:none;content:n
   }
 }.modal{width:min(780px, 100%);height:auto;min-height:0;min-width:0;flex-basis:auto
 }.settings-modal{width:min(900px, 96vw)
-}.add-student-body.collapsed{display:none
-}body.visibility-mode.vis-hide-class-actions #newClassBtn,
+}.add-student-body.collapsed,
+body.visibility-mode.vis-hide-class-actions #newClassBtn,
 body.visibility-mode.vis-hide-class-actions #renameClassBtn,
 body.visibility-mode.vis-hide-class-actions #duplicateClassBtn,
-body.visibility-mode.vis-hide-class-actions #deleteClassBtn{display:none
-}body.visibility-mode.vis-hide-save-load #saveLoadMenuBtn{display:none
-}body.visibility-mode.vis-hide-settings #settingsBtn{display:none
-}body.visibility-mode.vis-hide-print #printBtn{display:none
-}body.visibility-mode.vis-hide-layout-tools #layoutToolsPanel,
-body.visibility-mode.vis-hide-layout-tools #toggleLayoutToolsBtn{display:none
-}body.visibility-mode.vis-hide-students .left-panel{display:none
-}body.visibility-mode.vis-hide-status .right-panel{display:none
-}body.visibility-mode.vis-hide-chart-actions #generateBtn,
+body.visibility-mode.vis-hide-class-actions #deleteClassBtn,
+body.visibility-mode.vis-hide-save-load #saveLoadMenuBtn,
+body.visibility-mode.vis-hide-settings #settingsBtn,
+body.visibility-mode.vis-hide-print #printBtn,
+body.visibility-mode.vis-hide-layout-tools #layoutToolsPanel,
+body.visibility-mode.vis-hide-layout-tools #toggleLayoutToolsBtn,
+body.visibility-mode.vis-hide-students .left-panel,
+body.visibility-mode.vis-hide-status .right-panel,
+body.visibility-mode.vis-hide-chart-actions #generateBtn,
 body.visibility-mode.vis-hide-chart-actions #randomizeAllBtn,
 body.visibility-mode.vis-hide-chart-actions #clearAssignmentsBtn,
-body.visibility-mode.vis-hide-chart-actions #clearAnchorsBtn{display:none
-}body.visibility-mode.vis-hide-room-header-actions #layoutNamesOnlyBtn,
+body.visibility-mode.vis-hide-chart-actions #clearAnchorsBtn,
+body.visibility-mode.vis-hide-room-header-actions #layoutNamesOnlyBtn,
 body.visibility-mode.vis-hide-room-header-actions #analyzeBtn{display:none
 }body.visibility-mode.vis-hide-students.vis-hide-status .app{grid-template-columns:minmax(0, 1fr)
 }body.visibility-mode.vis-hide-students:not(.vis-hide-status) .app{grid-template-columns:minmax(0, 1fr) var(--right-col)
@@ -3174,8 +3174,8 @@ body.header-collapsed .header-settings-slot #pageLockBtn{width:30px;min-width:30
   body.header-collapsed .header-toggle-slot #toggleHeaderBtn{width:28px;min-width:28px;flex-basis:28px;height:28px;min-height:28px
   }
 }.save-options-modal{max-width:860px;width:min(860px, 96vw)
-}.save-inline-status[hidden]{display:none
-}body.header-collapsed .save-inline-status{display:none
+}.save-inline-status[hidden],
+body.header-collapsed .save-inline-status{display:none
 }@media (max-width: 980px){html,
   body{height:100dvh;min-height:100dvh;overflow:hidden
   }body{display:flex;flex-direction:column;--header-offset:0px;--left-col:0px;--right-col:0px;background:#e8edf5
@@ -3190,8 +3190,8 @@ body.header-collapsed .header-settings-slot #pageLockBtn{width:30px;min-width:30
   }.header-title-line{display:flex;align-items:center;gap:5px;min-width:0
   }.header-title h1,
   body.header-collapsed .header-title h1{font-size:13px;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0
-  }.save-inline-status{display:none
-  }.header-title p,
+  }.save-inline-status,
+  .header-title p,
   body.header-collapsed .header-title p{display:none
   }.header-settings-slot,
   body.header-collapsed .header-settings-slot{grid-area:settings;display:flex;align-items:center;justify-content:flex-end;gap:3px;min-width:124px;max-width:132px;width:auto
@@ -3233,8 +3233,8 @@ body.header-collapsed .header-settings-slot #pageLockBtn{width:30px;min-width:30
   }.modal-backdrop{align-items:flex-start;padding:6px;overflow:auto
   }.modal{width:100%;max-width:calc(100vw - 12px);max-height:calc(100dvh - 12px)
   }
-}@media (max-width: 560px){.header-actions button{font-size:10px
-  }.mobile-panel-nav button{font-size:10px
+}@media (max-width: 560px){.header-actions button,
+  .mobile-panel-nav button{font-size:10px
   }
 }body.header-collapsed{--header-offset:42px
 }body.header-collapsed header{display:grid;grid-template-columns:minmax(120px, 1fr) minmax(150px, 220px) max-content max-content 34px;grid-template-areas:"title class actions settings toggle";align-items:center;gap:6px;min-height:42px;height:42px;max-height:42px;padding:4px 8px;overflow:hidden
@@ -3273,8 +3273,8 @@ body.header-collapsed .header-toggle-slot #toggleHeaderBtn{width:28px;min-width:
   }body.header-collapsed .header-title h1{font-size:11.5px
   }body.header-collapsed .class-manager{display:flex;height:30px;min-height:30px;padding:2px 3px;border-radius:8px
   }body.header-collapsed .class-manager select{height:25px;min-height:25px;padding:2px 5px;font-size:10px
-  }body.header-collapsed .header-actions{gap:2px;min-width:max-content
-  }body.header-collapsed .header-settings-slot{gap:2px;min-width:max-content
+  }body.header-collapsed .header-actions,
+  body.header-collapsed .header-settings-slot{gap:2px;min-width:max-content
   }body.header-collapsed .header-actions #undoBtn,
   body.header-collapsed .header-actions #redoBtn,
   body.header-collapsed .header-actions #saveLoadMenuBtn,
@@ -3357,13 +3357,13 @@ body.visibility-mode.vis-disable-seat-editing .seat-person[draggable="true"]{cur
 body.visibility-mode.vis-disable-room-editing #toggleLayoutToolsBtn,
 body.visibility-mode.vis-disable-room-editing #designModeBtn,
 body.visibility-mode.vis-disable-room-editing #selectCellsBtn,
-body.visibility-mode.vis-disable-room-editing #clearCellSelectionBtn{display:none
-}body.visibility-mode.vis-disable-student-editing #addStudentBody,
+body.visibility-mode.vis-disable-room-editing #clearCellSelectionBtn,
+body.visibility-mode.vis-disable-student-editing #addStudentBody,
 body.visibility-mode.vis-disable-student-editing #toggleAddStudentBtn,
 body.visibility-mode.vis-disable-student-editing #clearStudentsBtn,
 body.visibility-mode.vis-disable-student-editing [data-edit-student-id],
-body.visibility-mode.vis-disable-student-editing [data-delete-student]{display:none
-}body.visibility-mode.vis-disable-bubble-editing #addBubbleBtn,
+body.visibility-mode.vis-disable-student-editing [data-delete-student],
+body.visibility-mode.vis-disable-bubble-editing #addBubbleBtn,
 body.visibility-mode.vis-disable-bubble-editing #clearBubblesBtn,
 body.visibility-mode.vis-disable-bubble-editing #openBubbleManagerBtn,
 body.visibility-mode.vis-disable-bubble-editing #addZoneBtn,
@@ -3371,8 +3371,8 @@ body.visibility-mode.vis-disable-bubble-editing #openZoneManagerBtn,
 body.visibility-mode.vis-disable-bubble-editing [data-delete-bubble],
 body.visibility-mode.vis-disable-bubble-editing [data-remove-bubble-member],
 body.visibility-mode.vis-disable-bubble-editing [data-delete-zone],
-body.visibility-mode.vis-disable-bubble-editing [data-toggle-student-bubble]{display:none
-}body.visibility-mode.vis-hide-bubble-details .bubble-color-bar,
+body.visibility-mode.vis-disable-bubble-editing [data-toggle-student-bubble],
+body.visibility-mode.vis-hide-bubble-details .bubble-color-bar,
 body.visibility-mode.vis-hide-bubble-details .bubble-color-bar.reserved,
 body.visibility-mode.vis-hide-bubble-details .anchor-dot,
 body.visibility-mode.vis-hide-bubble-details .student-bubble-dots,
@@ -3492,9 +3492,9 @@ body[data-theme="linux"] .note-editor-row.sensitive-note-hidden{background:var(-
 }.settings-modal .settings-page-tab .settings-page-desc,
 .settings-page-tab .settings-page-desc{display:block;line-height:1.25
 }.layout-mode-field{min-width:170px
-}body:not(.freeform-layout-mode) .freeform-only-tool{display:none
-}body.freeform-layout-mode .grid-only-tool{display:none
-}body.freeform-layout-mode .standard-only-tool{display:none
+}body:not(.freeform-layout-mode) .freeform-only-tool,
+body.freeform-layout-mode .grid-only-tool,
+body.freeform-layout-mode .standard-only-tool{display:none
 }.freeform-tools .visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0
 }.seat-grid.freeform-canvas{display:block
 }.freeform-object.teacher{background:linear-gradient(180deg, #fef3c7 0%, #fde7b5 100%)
@@ -3510,8 +3510,8 @@ body[data-theme="linux"] .note-editor-row.sensitive-note-hidden{background:var(-
 }body.freeform-clean-view .freeform-object-actions,
 body.freeform-clean-view .freeform-rotate-handle,
 body.freeform-clean-view .freeform-resize-handle,
-body.freeform-clean-view .freeform-minimap{display:none
-}body.print-clean .freeform-resize-handle,
+body.freeform-clean-view .freeform-minimap,
+body.print-clean .freeform-resize-handle,
 body.print-clean .freeform-rotate-handle,
 body.print-clean .freeform-object-actions{display:none
 }.settings-page-tab{overflow:hidden;min-width:0;align-items:flex-start
@@ -3569,8 +3569,8 @@ body.product-v4[data-workflow="review"] .right-panel{display:flex
 }body.product-v4 .left-panel .panel-header-title #toggleLeftPanelBtn,
 body.product-v4 .right-panel #toggleRightPanelBtn,
 body.product-v4 #toggleHeaderBtn,
-body.product-v4 #mobilePanelNav{display:none
-}body.product-v4[data-workflow="room"] #generateBtn,
+body.product-v4 #mobilePanelNav,
+body.product-v4[data-workflow="room"] #generateBtn,
 body.product-v4[data-workflow="room"] #randomizeAllBtn,
 body.product-v4[data-workflow="room"] #clearAssignmentsBtn,
 body.product-v4[data-workflow="room"] #clearAnchorsBtn,
@@ -3580,8 +3580,8 @@ body.product-v4[data-workflow="review"] #randomizeAllBtn,
 body.product-v4[data-workflow="review"] #clearAssignmentsBtn,
 body.product-v4[data-workflow="review"] #clearAnchorsBtn,
 body.product-v4[data-workflow="review"] #openRoomTemplatesBtn,
-body.product-v4[data-workflow="review"] #toggleLayoutToolsBtn{display:none
-}body.product-v4[data-workflow="seating"] #layoutToolsPanel,
+body.product-v4[data-workflow="review"] #toggleLayoutToolsBtn,
+body.product-v4[data-workflow="seating"] #layoutToolsPanel,
 body.product-v4[data-workflow="review"] #layoutToolsPanel{display:none
 }body.product-v4 .cell.multi-selected,
 body.product-v4 .freeform-object.selected{outline-color:rgba(37, 88, 216, .72);box-shadow:0 0 0 4px rgba(37, 88, 216, .12), 0 6px 18px rgba(15, 23, 42, .10)
@@ -3591,8 +3591,8 @@ body.product-v4.print-preview-active .v4-dashboard{display:none
 }body.product-v4.print-preview-active .app{height:auto
 }@media (max-width: 900px){body.product-v4 .v4-topbar{padding:0 9px
   }body.product-v4 .class-manager{grid-template-columns:minmax(0, 1fr);width:100%
-  }body.product-v4 .class-manager label{display:none
-  }body.product-v4 .v4-utility-dock > #helpGuideBtn{display:none
+  }body.product-v4 .class-manager label,
+  body.product-v4 .v4-utility-dock > #helpGuideBtn{display:none
   }body.product-v4 .app,
   body.product-v4.left-collapsed .app,
   body.product-v4.right-collapsed .app,
@@ -3614,8 +3614,8 @@ body.product-v4.print-preview-active .v4-dashboard{display:none
   }body.product-v4 .modal{max-height:calc(100dvh - 12px)
   }
 }@media (max-width: 560px){body.product-v4 .v4-class-dock > .v4-icon-button,
-  body.product-v4 .v4-utility-dock > #settingsBtn{display:none
-  }body.product-v4 .v4-utility-dock > button:not(#v4MoreMenuBtn){display:none
+  body.product-v4 .v4-utility-dock > #settingsBtn,
+  body.product-v4 .v4-utility-dock > button:not(#v4MoreMenuBtn){display:none
   }
 }@media print{body.product-v4 .v4-topbar,
   body.product-v4 .v4-workflow-shell,
@@ -3644,12 +3644,12 @@ body.product-v4.right-collapsed .right-panel .panel-header h2{writing-mode:horiz
   }
 }body.product-v4 .v4-student-search .v4-icon-button{width:28px;min-width:28px;height:28px;min-height:28px;padding:0
 }body.product-v4[data-workflow="room"] .generation-controls,
-body.product-v4[data-workflow="room"] #layoutToolsPanel > .toolbar-body > .hint{display:none
-}body.product-v4[data-workflow="seating"] #studentsSideTabPanel > .section:first-of-type,
+body.product-v4[data-workflow="room"] #layoutToolsPanel > .toolbar-body > .hint,
+body.product-v4[data-workflow="seating"] #studentsSideTabPanel > .section:first-of-type,
 body.product-v4[data-workflow="seating"] #studentsSideTabPanel > .csv-import-section,
 body.product-v4[data-workflow="seating"] .left-panel .side-tabs,
-body.product-v4[data-workflow="seating"] .left-panel .panel-title-actions{display:none
-}body.product-v4[data-workflow="room"] #layoutNamesOnlyBtn{display:none
+body.product-v4[data-workflow="seating"] .left-panel .panel-title-actions,
+body.product-v4[data-workflow="room"] #layoutNamesOnlyBtn{display:none
 }@media (max-width: 900px){body.product-v4 .v4-workflow-nav{grid-template-columns:repeat(5, minmax(0, 1fr));width:100%;max-width:100%;overflow:hidden
   }body.product-v4[data-workflow="setup"] main.app > .center-panel,
   body.product-v4[data-workflow="setup"] main.app > .right-panel,
@@ -3699,8 +3699,8 @@ body.product-v4.workspace-v41 .v41-section-toggle{flex:0 0 auto;box-shadow:none
 }body.product-v4.workspace-v41 .v41-panel-toggle,
 body.product-v4.workspace-v41 .v41-dashboard-toggle{width:30px;min-width:30px;height:30px;min-height:30px;padding:0
 }body.product-v4.workspace-v41 .v41-section-toggle{width:24px;min-width:24px;height:24px;min-height:24px;padding:0;border-radius:7px
-}body.product-v4.workspace-v41 .section.v41-section-collapsed > :not(h3):not(.section-header-row){display:none
-}body.product-v4.workspace-v41 .v41-dashboard-summary-collapsed .v4-dashboard-header .v4-eyebrow,
+}body.product-v4.workspace-v41 .section.v41-section-collapsed > :not(h3):not(.section-header-row),
+body.product-v4.workspace-v41 .v41-dashboard-summary-collapsed .v4-dashboard-header .v4-eyebrow,
 body.product-v4.workspace-v41 .v41-dashboard-summary-collapsed .v4-dashboard-header p,
 body.product-v4.workspace-v41 .v41-dashboard-summary-collapsed .v4-readiness-ring,
 body.product-v4.workspace-v41 .v41-dashboard-summary-collapsed .v4-security-badge,
@@ -3726,8 +3726,8 @@ body.product-v4.workspace-v41.v41-focus-mode .v4-utility-dock > #settingsBtn{dis
 }body.product-v4.workspace-v41.v41-focus-mode .class-manager{grid-template-columns:minmax(130px, 280px);width:min(100%, 300px)
 }body.product-v4.workspace-v41.v41-focus-mode .class-manager label{display:none
 }@media (max-width: 900px){body.product-v4.workspace-v41 .v4-topbar{padding:0 6px
-  }body.product-v4.workspace-v41 .v4-class-dock > .v4-icon-button{display:none
-  }body.product-v4.workspace-v41 .v4-utility-dock > button:not(#v41FocusModeBtn):not(#v4MoreMenuBtn){display:none
+  }body.product-v4.workspace-v41 .v4-class-dock > .v4-icon-button,
+  body.product-v4.workspace-v41 .v4-utility-dock > button:not(#v41FocusModeBtn):not(#v4MoreMenuBtn){display:none
   }body.product-v4.workspace-v41 .class-manager{grid-template-columns:minmax(0, 1fr);width:100%
   }body.product-v4.workspace-v41 .class-manager label{display:none
   }body.product-v4.workspace-v41 .v41-guidance-toggle{display:inline-flex
@@ -3736,8 +3736,8 @@ body.product-v4.workspace-v41.v41-focus-mode .v4-utility-dock > #settingsBtn{dis
   body.product-v4.workspace-v41.left-collapsed .app,
   body.product-v4.workspace-v41.right-collapsed .app,
   body.product-v4.workspace-v41.left-collapsed.right-collapsed .app{height:calc(100dvh - var(--v4-topbar-height) - var(--v41-shell-height) - var(--v4-workflow-nav-height) - env(safe-area-inset-bottom, 0px));padding:5px
-  }body.product-v4.workspace-v41 .v41-panel-toggle{display:none
-  }body.product-v4.workspace-v41.v41-focus-mode .v4-quick-dock{display:none
+  }body.product-v4.workspace-v41 .v41-panel-toggle,
+  body.product-v4.workspace-v41.v41-focus-mode .v4-quick-dock{display:none
   }body.product-v4.workspace-v41.v41-focus-mode .v4-workflow-nav{display:grid
   }
 }@media (max-width: 900px){body.product-v4.workspace-v41.v41-workflow-collapsed .v4-workflow-nav{display:grid
@@ -4091,8 +4091,8 @@ body.product-v4.interface-v51 .ui51-menu-scrim:active{background:var(--ui51-scri
 }body.product-v4[data-workflow="setup"] main.app{grid-template-columns:minmax(210px, 238px) minmax(0, 1fr)
 }body.product-v4[data-workflow="setup"] main.app > .left-panel,
 body.product-v4[data-workflow="setup"] main.app > .class-setup-workspace{display:flex
-}body.product-v4[data-workflow="setup"] main.app > .v4-setup-dashboard{display:none
-}body.product-v4[data-workflow="setup"] .left-panel .side-tabs,
+}body.product-v4[data-workflow="setup"] main.app > .v4-setup-dashboard,
+body.product-v4[data-workflow="setup"] .left-panel .side-tabs,
 body.product-v4[data-workflow="setup"] .left-panel .side-tab-panels,
 body.product-v4[data-workflow="setup"] .left-panel .panel-title-actions{display:none
 }#classSetupOverviewPanel > .v4-setup-dashboard{display:flex
@@ -4130,8 +4130,8 @@ body.product-v4 .class-setup-rail-nav button:hover{border-color:var(--border);ba
 }.class-setup-zone-form-card .field:has(#zoneSelect),
 .class-setup-zone-form-card #saveZoneFromSelectionBtn,
 .class-setup-zone-form-card #applyZoneToSelectionBtn,
-.class-setup-zone-form-card #clearZonesFromSelectionBtn{display:none
-}body:not([data-workflow="setup"]) .class-setup-zone-create-only{display:none
+.class-setup-zone-form-card #clearZonesFromSelectionBtn,
+body:not([data-workflow="setup"]) .class-setup-zone-create-only{display:none
 }@media (max-width: 1320px){body.product-v4[data-workflow="setup"] main.app{grid-template-columns:minmax(210px, 232px) minmax(0, 1fr)
   }
 }@media (max-width: 980px){body.product-v4[data-workflow="setup"] main.app{display:block
@@ -6028,12 +6028,12 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
 const APP_CONFIG = Object.freeze({
   name: 'Classroom Seating Planner',
   shortName: 'Seating Planner',
-  version: '6.1.2',
+  version: '6.1.3',
   copyrightHolder: 'Chris L. Franklin',
   copyrightYear: '2026',
   releaseDate: '2026-07-13',
   releaseDateDisplay: 'July 13, 2026',
-  buildDate: '2026-07-13T18:00:00Z',
+  buildDate: '2026-07-13T19:00:00Z',
   commit: 'local',
   environment: 'production',
   dataSchemaVersion: 12,
@@ -6079,6 +6079,63 @@ const IMPORT_LIMITS = Object.freeze({
   maxCsvColumns: 150,
   maxCsvCellLength: 32768
 });
+const OBJECT_TYPE_COLORS = Object.freeze({
+  seat: '#dbeafe',
+  teacher: '#fff3d6',
+  table: '#e8f7ec',
+  door: '#fce8ee',
+  wall: '#d9dee8',
+  walkway: '#ffffff',
+  window: '#e0f2fe',
+  projector: '#eef2ff',
+  board: '#dcfce7',
+  carpet: '#f5e8d3',
+  ada: '#ecfeff',
+  blocked: '#313846',
+  empty: '#fbfcff'
+});
+const BUILT_IN_OBJECT_LABELS = Object.freeze({
+  empty: 'Empty',
+  blocked: 'Blocked',
+  teacher: 'Teacher Desk',
+  table: 'Table',
+  door: 'Door',
+  wall: 'Wall',
+  walkway: 'Walkway',
+  window: 'Window',
+  projector: 'Projector',
+  board: 'Board',
+  carpet: 'Carpet',
+  ada: 'ADA Space',
+  seat: 'Seat'
+});
+const BUBBLE_TYPE_LABELS = Object.freeze({
+  together: 'Seat together / nearby',
+  avoid: 'Avoid seating together',
+  special: 'Special / anchored seats',
+  front: 'Prefer front',
+  back: 'Prefer back',
+  nearBoard: 'Near board/projector',
+  nearTeacher: 'Near teacher desk',
+  awayDoor: 'Away from door',
+  awayWindow: 'Away from window',
+  spread: 'Spread apart',
+  zone: 'Prefer seat zone'
+});
+const BUBBLE_TYPE_DESCRIPTIONS = Object.freeze({
+  together: 'Keeps selected students close together when the room allows it.',
+  avoid: 'Tries to keep selected students from sitting near one another.',
+  special: 'Fills reserved seats for this group before placing other students.',
+  front: 'Favors seats near the selected front side of the room.',
+  back: 'Favors seats farther from the selected front side of the room.',
+  nearBoard: 'Favors seats near a board or projector room object.',
+  nearTeacher: 'Favors seats near the teacher desk.',
+  awayDoor: 'Favors seats farther from door room objects.',
+  awayWindow: 'Favors seats farther from window room objects.',
+  spread: 'Distributes selected students across the room instead of clustering them.',
+  zone: 'Favors seats assigned to the selected named room zone.'
+});
+
 const APP_NAME = APP_CONFIG.name;
 const GOOGLE_DRIVE_CLIENT_ID = APP_CONFIG.googleDriveClientId;
 const GOOGLE_DRIVE_APP_PROPERTY = APP_CONFIG.googleDriveAppProperty;
@@ -6190,10 +6247,23 @@ const PROJECT_FEATURES = [
 
 const RELEASE_HISTORY = [
   {
+    version: '6.1.3',
+    date: 'July 13, 2026',
+    title: 'Verified cleanup and render optimization',
+    current: true,
+    changes: [
+      'Consolidated immutable room-object and seating-rule lookup tables so render and analysis paths no longer recreate identical objects on every call.',
+      'Removed duplicate per-card drag handlers and retained the existing delegated drag workflow, including student-to-rule and zone-to-rule drops.',
+      'Batched student, rule, zone, grid-cell, and Freeform object insertion through document fragments to reduce repeated live-DOM mutations.',
+      'Built reusable assignment and bubble membership lookups for roster and status rendering instead of repeatedly scanning cells and rules for every student.',
+      'Merged adjacent CSS rules with identical declarations without changing cascade order, selectors, responsive behavior, or theme behavior.'
+    ]
+  },
+  {
     version: '6.1.2',
     date: 'July 13, 2026',
     title: 'State-aware guided learning',
-    current: true,
+    current: false,
     changes: [
       'Stopped lessons from advancing into controls inside windows or panels that were never opened.',
       'Added state checks for the expected workflow, dialog, panel, and visible target before highlighting a step.',
@@ -8541,8 +8611,7 @@ function ensureGrid() {
 
 
 function objectTypeColor(type) {
-  const colors = { seat: '#dbeafe', teacher: '#fff3d6', table: '#e8f7ec', door: '#fce8ee', wall: '#d9dee8', walkway: '#ffffff', window: '#e0f2fe', projector: '#eef2ff', board: '#dcfce7', carpet: '#f5e8d3', ada: '#ecfeff', blocked: '#313846', empty: '#fbfcff' };
-  return colors[type] || '#eef2f7';
+  return OBJECT_TYPE_COLORS[type] || '#eef2f7';
 }
 
 function normalizeFreeformObject(object, index = 0) {
@@ -9605,6 +9674,7 @@ function renderFreeformLayout() {
   syncFreeformCanvasStage(layout);
   const frontSide = freeformRoomFrontSide();
   grid.innerHTML = `<div class="freeform-room-marker front side-${frontSide}" aria-hidden="true">Front of Room</div>`;
+  const fragment = document.createDocumentFragment();
   [...layout.objects].sort((a, b) => (Number(a.zIndex) || 1) - (Number(b.zIndex) || 1)).forEach(obj => {
     const node = document.createElement('div');
     const student = freeformObjectStudent(obj, lookups);
@@ -9671,8 +9741,9 @@ function renderFreeformLayout() {
       try { data = JSON.parse(event.dataTransfer.getData('application/json')); } catch { return; }
       if (data.type === 'student') assignStudentToFreeformObject(data.id, obj.id, true);
     });
-    grid.appendChild(node);
+    fragment.appendChild(node);
   });
+  grid.appendChild(fragment);
   grid.onclick = event => { if (uiState.suppressFreeformCanvasClick) { uiState.suppressFreeformCanvasClick = false; return; } if (!event.target.closest('.freeform-object')) selectFreeformObject(null); };
   grid.ondragover = event => { if (state.layoutMode === 'freeform') event.preventDefault(); };
   grid.ondrop = event => {
@@ -10174,6 +10245,15 @@ function seatCells() {
 
 function assignedSeatForStudent(studentId) {
   return Object.values(state.cells).find(cell => cell.assignedStudentId === studentId) || null;
+}
+
+function assignedSeatsByStudent() {
+  const seats = new Map();
+  Object.values(state.cells).forEach(cell => {
+    const studentId = cell.assignedStudentId;
+    if (studentId && !seats.has(String(studentId))) seats.set(String(studentId), cell);
+  });
+  return seats;
 }
 
 function assignedStudentIds() {
@@ -11414,18 +11494,20 @@ function renderStudents() {
   if (!state.students.length) {
     list.innerHTML = '<div class="hint">No students yet. Add a student manually or import a CSV roster.</div>';
   }
+  const bubblesByStudent = buildLookupMaps().bubblesByStudent;
+  const assignedSeats = assignedSeatsByStudent();
+  const fragment = document.createDocumentFragment();
   const sorted = [...state.students].sort((a,b) => studentDisplay(a).localeCompare(studentDisplay(b)));
   sorted.forEach(student => {
-    const bubbles = studentBubbles(student.id);
-    const assigned = assignedSeatForStudent(student.id);
+    const bubbles = bubblesByStudent.get(String(student.id)) || [];
+    const assigned = assignedSeats.get(String(student.id)) || null;
     const card = document.createElement('div');
     card.className = 'student-card';
     card.draggable = !eyeModeBlocksSeatEditing();
-    card.dataset.dragType = 'student';
     card.dataset.studentId = student.id;
     card.innerHTML = `
           <div class="student-name">
-            <span class="student-name-main">${studentBubbleDots(student.id)}<span class="student-name-text">${escapeHtml(studentDisplay(student))}</span>${studentNoteFlags(student)}</span>
+            <span class="student-name-main">${studentBubbleDots(student.id, bubbles)}<span class="student-name-text">${escapeHtml(studentDisplay(student))}</span>${studentNoteFlags(student)}</span>
             <span class="card-actions">
               <button class="tiny secondary icon-button" type="button" data-edit-student-notes="${escapeHtml(student.id)}" aria-label="Open notes" title="Open categorized notes for this student.">📝</button>
               <button class="tiny secondary mobile-student-edit-action" type="button" data-edit-student-id="${escapeHtml(student.id)}" title="Edit this student's first name, last name, nickname, grade, or ID.">Edit</button>
@@ -11439,15 +11521,9 @@ function renderStudents() {
             ${ModernizationSuite.studentRequirementPills(student)}
           </div>
         `;
-    card.addEventListener('dragstart', event => {
-      card.classList.add('dragging');
-      event.dataTransfer.setData('application/json', JSON.stringify({ type: 'student', id: student.id }));
-      event.dataTransfer.setData('text/plain', JSON.stringify({ type: 'student', id: student.id }));
-      event.dataTransfer.effectAllowed = 'move';
-    });
-    card.addEventListener('dragend', () => card.classList.remove('dragging'));
-    list.appendChild(card);
+    fragment.appendChild(card);
   });
+  list.appendChild(fragment);
 }
 
 function renderBubbleMemberPicker() {
@@ -11462,14 +11538,16 @@ function renderBubbleMemberPicker() {
     picker.innerHTML = '<div class="class-setup-empty compact"><strong>No students available</strong><span>Add or import students before creating a group or seating rule.</span></div>';
     return;
   }
+  const fragment = document.createDocumentFragment();
   const sorted = [...state.students].sort((a,b) => studentDisplay(a).localeCompare(studentDisplay(b)));
   sorted.forEach(student => {
     const label = document.createElement('label');
     label.className = 'checkline bubble-member-option';
     const checked = checkedIds.has(String(student.id)) ? ' checked' : '';
     label.innerHTML = `<input type="checkbox" value="${escapeHtml(student.id)}"${checked} /> <span><strong>${escapeHtml(studentDisplay(student))}</strong><small>${escapeHtml(studentMetaText(student) || 'Student')}</small></span>`;
-    picker.appendChild(label);
+    fragment.appendChild(label);
   });
+  picker.appendChild(fragment);
 }
 
 function renderBubbles() {
@@ -11483,6 +11561,7 @@ function renderBubbles() {
     list.innerHTML = '<div class="class-setup-empty"><strong>No groups or seating rules yet</strong><span>Create only the relationships or location preferences that matter for this class. You can return and add more later.</span></div>';
     return;
   }
+  const fragment = document.createDocumentFragment();
   const sorted = [...state.bubbles].sort((a,b) => b.priority - a.priority || a.name.localeCompare(b.name));
   sorted.forEach(bubble => {
     const members = (bubble.studentIds || []).map(getStudent).filter(Boolean).sort((a,b) => studentDisplay(a).localeCompare(studentDisplay(b)));
@@ -11490,7 +11569,6 @@ function renderBubbles() {
     const card = document.createElement('article');
     card.className = 'bubble-card rule-card';
     card.draggable = document.body.dataset.workflow !== 'setup' && !eyeModeBlocksBubbleEditing() && !eyeModeBlocksSeatEditing();
-    card.dataset.dragType = 'bubble';
     card.dataset.bubbleId = bubble.id;
     card.style.setProperty('--rule-color', safeColor(bubble.color, '#2f6fed'));
     card.title = document.body.dataset.workflow === 'setup'
@@ -11517,29 +11595,9 @@ function renderBubbles() {
           <div class="rule-card-stats"><span class="pill">${escapeHtml(priorityLabel(bubble.priority))}</span><span class="pill">${members.length} student${members.length === 1 ? '' : 's'}</span>${attachedZone ? `<span class="pill special">Zone: ${escapeHtml(attachedZone.name)}</span>` : ''}</div>
           <div class="rule-card-section"><span class="rule-card-section-label">Students</span><div class="rule-card-members">${memberListHtml}</div></div>
           <footer class="rule-card-footer"><span>${escapeHtml(anchorText)}</span><span>${anchors.length ? 'Manage anchors in Room Design' : 'Assign anchors later in Room Design'}</span></footer>`;
-    card.addEventListener('dragstart', event => {
-      card.classList.add('dragging');
-      event.dataTransfer.setData('application/json', JSON.stringify({ type: 'bubble', id: bubble.id }));
-      event.dataTransfer.setData('text/plain', JSON.stringify({ type: 'bubble', id: bubble.id }));
-      event.dataTransfer.effectAllowed = 'copyMove';
-    });
-    card.addEventListener('dragend', () => card.classList.remove('dragging'));
-    card.addEventListener('dragover', event => {
-      event.preventDefault();
-      card.classList.add('drop-target');
-      event.dataTransfer.dropEffect = 'copy';
-    });
-    card.addEventListener('dragleave', () => card.classList.remove('drop-target'));
-    card.addEventListener('drop', event => {
-      event.preventDefault();
-      event.stopPropagation();
-      card.classList.remove('drop-target');
-      const data = readDragData(event);
-      if (data && data.type === 'student') addStudentToBubble(bubble.id, data.id, true);
-      if (data && data.type === 'zone') attachBubbleToZone(bubble.id, data.id, true);
-    });
-    list.appendChild(card);
+    fragment.appendChild(card);
   });
+  list.appendChild(fragment);
   ClassSetupWorkspaceV54?.updateSummary?.();
 }
 
@@ -11557,6 +11615,7 @@ function renderZones() {
     list.innerHTML = '<div class="hint">No zones yet. Select cells in the room grid, then save them as a zone.</div>';
     return;
   }
+  const fragment = document.createDocumentFragment();
   zones.forEach(zone => {
     const cellCount = Object.values(state.cells).filter(cell => (cell.zoneIds || []).includes(zone.id)).length;
     const students = (zone.studentIds || []).map(getStudent).filter(Boolean).sort((a,b) => studentDisplay(a).localeCompare(studentDisplay(b)));
@@ -11564,7 +11623,6 @@ function renderZones() {
     const card = document.createElement('div');
     card.className = 'zone-list-card';
     card.draggable = true;
-    card.dataset.dragType = 'zone';
     card.dataset.zoneId = zone.id;
     card.style.borderColor = safeColor(zone.color, '#8b5cf6');
     card.innerHTML = `
@@ -11607,8 +11665,9 @@ function renderZones() {
       if (data.type === 'student' || data.type === 'bubbleMember') addStudentToZone(zone.id, data.id, true);
       if (data.type === 'bubble') attachBubbleToZone(data.id, zone.id, true);
     });
-    list.appendChild(card);
+    fragment.appendChild(card);
   });
+  list.appendChild(fragment);
 }
 
 
@@ -11624,6 +11683,7 @@ function renderBubbleManager() {
   if (studentCount) studentCount.textContent = state.students.length;
   if (bubbleCount) bubbleCount.textContent = state.bubbles.length;
   if (zoneCount) zoneCount.textContent = (state.zones || []).length;
+  const assignedSeats = assignedSeatsByStudent();
 
   studentList.innerHTML = '';
   if (!state.students.length) {
@@ -11635,10 +11695,9 @@ function renderBubbleManager() {
         const card = document.createElement('div');
         card.className = 'student-card bubble-manager-student';
         card.draggable = true;
-        card.dataset.dragType = 'student';
         card.dataset.studentId = student.id;
         card.title = 'Drag this student into a bubble or zone. Right-click for membership and edit options.';
-        const assigned = assignedSeatForStudent(student.id);
+        const assigned = assignedSeats.get(String(student.id)) || null;
         card.innerHTML = `
               <div class="student-name">
                 <span>${studentBubbleDots(student.id)} ${escapeHtml(studentDisplay(student))}</span>
@@ -11647,13 +11706,6 @@ function renderBubbleManager() {
               </div>
               <div class="student-meta">${escapeHtml(studentMetaText(student))}${assigned ? ` · Seat ${assigned.row},${assigned.col}` : ''}</div>
             `;
-        card.addEventListener('dragstart', event => {
-          card.classList.add('dragging');
-          event.dataTransfer.setData('application/json', JSON.stringify({ type: 'student', id: student.id }));
-          event.dataTransfer.setData('text/plain', JSON.stringify({ type: 'student', id: student.id }));
-          event.dataTransfer.effectAllowed = 'copyMove';
-        });
-        card.addEventListener('dragend', () => card.classList.remove('dragging'));
         studentList.appendChild(card);
       });
   }
@@ -11670,7 +11722,6 @@ function renderBubbleManager() {
         const card = document.createElement('div');
         card.className = 'bubble-manager-bubble';
         card.draggable = true;
-        card.dataset.dragType = 'bubble';
         card.dataset.bubbleId = bubble.id;
         card.style.setProperty('--manager-bubble-color', safeColor(bubble.color));
         card.title = 'Drop students here to add them to this bubble, or drop a zone here to attach this bubble to that zone.';
@@ -11734,7 +11785,6 @@ function renderBubbleManager() {
         const card = document.createElement('div');
         card.className = 'bubble-manager-zone';
         card.draggable = true;
-        card.dataset.dragType = 'zone';
         card.dataset.zoneId = zone.id;
         card.style.setProperty('--manager-zone-color', safeColor(zone.color, '#8b5cf6'));
         card.title = 'Drop students or bubbles here. Drag this zone onto a bubble to attach that bubble to the zone.';
@@ -11805,37 +11855,11 @@ function renderBubbleManager() {
 }
 
 function typeLabel(type) {
-  const labels = {
-    together: 'Seat together / nearby',
-    avoid: 'Avoid seating together',
-    special: 'Special / anchored seats',
-    front: 'Prefer front',
-    back: 'Prefer back',
-    nearBoard: 'Near board/projector',
-    nearTeacher: 'Near teacher desk',
-    awayDoor: 'Away from door',
-    awayWindow: 'Away from window',
-    spread: 'Spread apart',
-    zone: 'Prefer seat zone'
-  };
-  return labels[type] || labels.together;
+  return BUBBLE_TYPE_LABELS[type] || BUBBLE_TYPE_LABELS.together;
 }
 
 function ruleTypeDescription(type) {
-  const descriptions = {
-    together: 'Keeps selected students close together when the room allows it.',
-    avoid: 'Tries to keep selected students from sitting near one another.',
-    special: 'Fills reserved seats for this group before placing other students.',
-    front: 'Favors seats near the selected front side of the room.',
-    back: 'Favors seats farther from the selected front side of the room.',
-    nearBoard: 'Favors seats near a board or projector room object.',
-    nearTeacher: 'Favors seats near the teacher desk.',
-    awayDoor: 'Favors seats farther from door room objects.',
-    awayWindow: 'Favors seats farther from window room objects.',
-    spread: 'Distributes selected students across the room instead of clustering them.',
-    zone: 'Favors seats assigned to the selected named room zone.'
-  };
-  return descriptions[type] || descriptions.together;
+  return BUBBLE_TYPE_DESCRIPTIONS[type] || BUBBLE_TYPE_DESCRIPTIONS.together;
 }
 
 function priorityLabel(priority) {
@@ -11852,8 +11876,7 @@ function studentBubbles(studentId) {
   return state.bubbles.filter(bubble => (bubble.studentIds || []).map(String).includes(targetId));
 }
 
-function studentBubbleDots(studentId) {
-  const bubbles = studentBubbles(studentId);
+function studentBubbleDots(studentId, bubbles = studentBubbles(studentId)) {
   if (!bubbles.length) {
     return '<span class="student-bubble-dots" title="No bubbles assigned"><span class="student-bubble-dot empty"></span></span>';
   }
@@ -11902,6 +11925,7 @@ function renderGrid() {
   grid.style.setProperty('--cell-height', `${calculatedCellHeight}px`);
   grid.style.gridTemplateColumns = `repeat(${state.cols}, var(--cell-width))`;
   grid.innerHTML = '';
+  const fragment = document.createDocumentFragment();
   for (let r = 1; r <= state.rows; r++) {
     for (let c = 1; c <= state.cols; c++) {
       const cellKey = keyOf(r, c);
@@ -12053,9 +12077,10 @@ function renderGrid() {
           if (keys.length > 1) setLiveStatusMessage(`Reserved ${keys.length} selected seats for that bubble.`);
         }
       });
-      grid.appendChild(div);
+      fragment.appendChild(div);
     }
   }
+  grid.appendChild(fragment);
   el('printStats').textContent = `${printChartMetaLine() || activeClassName()} · ${state.students.length} students · ${seatCount} seats · ${assignedIds.size} assigned`;
   requestAnimationFrame(() => {
     normalizeCellHeight(calculatedCellHeight);
@@ -12095,8 +12120,7 @@ function normalizeCellHeight(minHeight) {
 }
 
 function objectLabel(type) {
-  const builtIn = { empty: 'Empty', blocked: 'Blocked', teacher: 'Teacher Desk', table: 'Table', door: 'Door', wall: 'Wall', walkway: 'Walkway', window: 'Window', projector: 'Projector', board: 'Board', carpet: 'Carpet', ada: 'ADA Space', seat: 'Seat' };
-  if (builtIn[type]) return builtIn[type];
+  if (BUILT_IN_OBJECT_LABELS[type]) return BUILT_IN_OBJECT_LABELS[type];
   const custom = customObjectForType(type);
   if (custom) return custom.label;
   if (isCustomCellType(type)) return String(type).replace(/^custom-/, '').replace(/-/g, ' ').replace(/\b\w/g, ch => ch.toUpperCase());
@@ -12106,6 +12130,8 @@ function objectLabel(type) {
 function renderStatus() {
   const seats = seatCells();
   const placed = assignedStudentIds().size;
+  const bubblesByStudent = buildLookupMaps().bubblesByStudent;
+  const assignedSeats = assignedSeatsByStudent();
   el('statStudents').textContent = state.students.length;
   el('statSeats').textContent = seats.length;
   el('statPlaced').textContent = placed;
@@ -12115,7 +12141,7 @@ function renderStatus() {
   const assigned = [];
   const unassigned = [];
   state.students.forEach(student => {
-    const seat = assignedSeatForStudent(student.id);
+    const seat = assignedSeats.get(String(student.id)) || null;
     if (seat) assigned.push({ student, seat });
     else unassigned.push(student);
   });
@@ -12123,7 +12149,7 @@ function renderStatus() {
   assignedList.innerHTML = assigned.length ? assigned.map(({student, seat}) => `
         <div class="student-card assigned" draggable="true" data-student-id="${escapeHtml(student.id)}">
           <div class="student-name">
-            <span class="student-name-main">${studentBubbleDots(student.id)}<span class="student-name-text">${escapeHtml(studentDisplay(student))}</span></span>
+            <span class="student-name-main">${studentBubbleDots(student.id, bubblesByStudent.get(String(student.id)) || [])}<span class="student-name-text">${escapeHtml(studentDisplay(student))}</span></span>
             <span class="card-actions">
               <button class="tiny secondary icon-button" type="button" data-edit-student-notes="${escapeHtml(student.id)}" aria-label="Open notes" title="Open categorized notes for this student.">📝</button>
               <button class="tiny secondary mobile-student-edit-action" type="button" data-edit-student-id="${escapeHtml(student.id)}" title="Edit this student's first name, last name, nickname, grade, or ID.">Edit</button>
@@ -12138,7 +12164,7 @@ function renderStatus() {
   unassignedList.innerHTML = unassigned.length ? unassigned.map(student => `
         <div class="student-card unassigned" draggable="true" data-student-id="${escapeHtml(student.id)}">
           <div class="student-name">
-            <span class="student-name-main">${studentBubbleDots(student.id)}<span class="student-name-text">${escapeHtml(studentDisplay(student))}</span></span>
+            <span class="student-name-main">${studentBubbleDots(student.id, bubblesByStudent.get(String(student.id)) || [])}<span class="student-name-text">${escapeHtml(studentDisplay(student))}</span></span>
             <span class="card-actions"><button class="tiny secondary icon-button" type="button" data-edit-student-notes="${escapeHtml(student.id)}" aria-label="Open notes" title="Open categorized notes for this student.">📝</button><button class="tiny secondary mobile-student-edit-action" type="button" data-edit-student-id="${escapeHtml(student.id)}" title="Edit this student's first name, last name, nickname, grade, or ID.">Edit</button></span>
           </div>
           <div class="student-meta">${escapeHtml(studentMetaText(student))}</div>
@@ -18748,7 +18774,8 @@ function wireEvents() {
     if (eyeModeBlocksBubbleEditing()) return blockEyeModeAction('bubble');
     bubbleCard.classList.remove('drop-target', 'drag-drop-active');
     const data = readDragData(event);
-    if (data && data.type === 'student') addStudentToBubble(bubbleCard.dataset.bubbleId, data.id, true);
+    if (data?.type === 'student') addStudentToBubble(bubbleCard.dataset.bubbleId, data.id, true);
+    if (data?.type === 'zone') attachBubbleToZone(bubbleCard.dataset.bubbleId, data.id, true);
   });
 
   document.body.addEventListener('contextmenu', event => {
