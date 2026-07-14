@@ -5,9 +5,9 @@
   <meta name="license" content="MIT License" />
   <meta name="spdx-license-identifier" content="MIT" />
   <meta name="copyright" content="Copyright (c) 2026 Chris L. Franklin" />
-  <meta name="app-version" content="6.3.1" />
+  <meta name="app-version" content="6.3.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com blob:; style-src 'self' 'unsafe-inline'; connect-src 'self' https://www.googleapis.com https://classroom.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com; img-src 'self' data: blob:; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'self'" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com https://www.paypalobjects.com blob:; style-src 'self' 'unsafe-inline'; connect-src 'self' https://www.googleapis.com https://classroom.googleapis.com https://accounts.google.com https://www.paypal.com https://www.paypalobjects.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://www.paypal.com; img-src 'self' data: blob: https://www.paypalobjects.com; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'self' https://www.paypal.com" />
   <meta name="application-name" content="Classroom Seating Planner" />
   <meta name="theme-color" content="#1e3a8a" />
   
@@ -218,6 +218,14 @@ textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(47, 111, 237
 }.modal-body{padding:16px;overflow:auto
 }.about-grid{display:grid;grid-template-columns:150px 1fr;gap:8px 12px;border:1px solid var(--border);border-radius:12px;padding:12px;background:#fbfcff;margin:10px 0
 }.about-grid strong{color:var(--muted)
+}.about-donation{min-width:0;display:grid;gap:8px;align-items:start
+}.about-donation-copy{margin:0;color:var(--muted);font-size:12px;line-height:1.4
+}.paypal-donate-button{min-height:26px;display:flex;align-items:center;max-width:100%;color:var(--muted);font-size:11px;line-height:1.35
+}.paypal-donate-button img{display:block;max-width:100%;height:auto
+}.paypal-donate-button[data-paypal-donation-state="unavailable"]{padding:7px 8px;border:1px dashed var(--border);border-radius:9px;background:#fff
+}@media (max-width: 560px){.about-grid{grid-template-columns:1fr
+  }.about-grid > strong:not(:first-child){margin-top:4px
+  }
 }.feature-list,
 .change-log-list{display:grid;gap:8px;margin:10px 0
 }.feature-list{grid-template-columns:repeat(auto-fit, minmax(210px, 1fr))
@@ -5133,6 +5141,11 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
         <p class="muted">A privacy-conscious classroom planning workspace for building rosters, designing rooms, generating seating plans, reviewing constraints, and creating purpose-specific print and sharing outputs.</p>
         <div class="about-grid">
           <strong>Written by</strong><span>Chris L. Franklin</span>
+          <strong>Optional support</strong>
+          <div class="about-donation">
+            <p class="about-donation-copy">Classroom Seating Planner is free to use. Donations are entirely optional, never expected, and do not unlock features. This button appears only in About.</p>
+            <div id="aboutDonateButton" class="paypal-donate-button" data-paypal-donate-target role="status" aria-live="polite"><span>PayPal donation button loads when this About section is opened.</span></div>
+          </div>
           <strong>Version</strong><span id="aboutRevision">Loading...</span>
           <strong>Release date</strong><span id="aboutUpdated">Loading...</span>
           <strong>Build</strong><span id="aboutBuildInfo">Loading...</span>
@@ -5513,6 +5526,11 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
                       <p class="muted">A privacy-conscious classroom planning workspace for building rosters, designing rooms, generating seating plans, reviewing constraints, and creating purpose-specific print and sharing outputs.</p>
                       <div class="about-grid">
                         <strong>Written by</strong><span>Chris L. Franklin</span>
+                        <strong>Optional support</strong>
+                        <div class="about-donation">
+                          <p class="about-donation-copy">Classroom Seating Planner is free to use. Donations are entirely optional, never expected, and do not unlock features. This button appears only in About.</p>
+                          <div id="settingsDonateButton" class="paypal-donate-button" data-paypal-donate-target role="status" aria-live="polite"><span>PayPal donation button loads when this About section is opened.</span></div>
+                        </div>
                         <strong>Version</strong><span id="settingsRevision">Loading...</span>
                         <strong>Release date</strong><span id="settingsUpdated">Loading...</span>
                         <strong>Build</strong><span id="settingsBuildInfo">Loading...</span>
@@ -6105,7 +6123,7 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
 const APP_CONFIG = Object.freeze({
   name: 'Classroom Seating Planner',
   shortName: 'Seating Planner',
-  version: '6.3.1',
+  version: '6.3.2',
   copyrightHolder: 'Chris L. Franklin',
   copyrightYear: '2026',
   releaseDate: '2026-07-13',
@@ -6123,6 +6141,16 @@ const APP_CONFIG = Object.freeze({
   googlePickerAppId: "",
   supportUrl: '',
   repositoryUrl: ''
+});
+
+const PAYPAL_DONATION_CONFIG = Object.freeze({
+  sdkUrl: 'https://www.paypalobjects.com/donate/sdk/donate-sdk.js',
+  hostedButtonId: '9QMGWW9NAVE4W',
+  image: Object.freeze({
+    src: 'https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif',
+    alt: 'Donate with PayPal button',
+    title: 'PayPal - The safer, easier way to pay online!'
+  })
 });
 
 const STORAGE_KEY = 'classroom-seating-planner-v6-primary';
@@ -6338,10 +6366,22 @@ const PROJECT_FEATURES = [
 
 const RELEASE_HISTORY = [
   {
+    version: '6.3.2',
+    date: 'July 13, 2026',
+    title: 'Optional About-page support button',
+    current: true,
+    changes: [
+      'Added an optional PayPal donation button beside the author and version information in About.',
+      'Kept the support language explicitly no-pressure: donations are never expected, unlock no features, and are not promoted elsewhere.',
+      'Lazy-loads the PayPal donation SDK only when About is opened, with an offline-safe unavailable message if the service cannot load.',
+      'Expanded the Content Security Policy only for the PayPal donation hosts required by this opt-in About-page control.'
+    ]
+  },
+  {
     version: '6.3.1',
     date: 'July 13, 2026',
     title: 'Data integrity and cleanup hardening',
-    current: true,
+    current: false,
     changes: [
       'Made destructive confirmations fail closed when the custom confirmation dialog is unavailable.',
       'Made selective restore atomic by rolling back the complete document when an apply step fails.',
@@ -13402,6 +13442,79 @@ function renderAllFeatureLists() {
   renderFeatureList('settingsFeatureList');
 }
 
+let paypalDonationSdkPromise = null;
+
+function paypalDonationTargets() {
+  return Array.from(document.querySelectorAll('[data-paypal-donate-target]'));
+}
+
+function setPayPalDonationStatus(target, message, state = 'waiting') {
+  if (!target) return;
+  target.dataset.paypalDonationState = state;
+  target.replaceChildren();
+  const status = document.createElement('span');
+  status.textContent = message;
+  target.appendChild(status);
+}
+
+function loadPayPalDonationSdk() {
+  if (window.PayPal?.Donation?.Button) return Promise.resolve(window.PayPal);
+  if (paypalDonationSdkPromise) return paypalDonationSdkPromise;
+  paypalDonationSdkPromise = new Promise((resolve, reject) => {
+    const existing = document.querySelector(`script[src="${PAYPAL_DONATION_CONFIG.sdkUrl}"]`);
+    const script = existing || document.createElement('script');
+    const finish = () => {
+      if (window.PayPal?.Donation?.Button) resolve(window.PayPal);
+      else reject(new Error('PayPal donation controls did not become available.'));
+    };
+    script.addEventListener('load', finish, { once: true });
+    script.addEventListener('error', () => reject(new Error('PayPal donation controls could not be loaded.')), { once: true });
+    if (!existing) {
+      script.src = PAYPAL_DONATION_CONFIG.sdkUrl;
+      script.charset = 'UTF-8';
+      script.async = true;
+      script.dataset.paypalDonationSdk = 'true';
+      document.head.appendChild(script);
+    }
+  }).catch(error => {
+    paypalDonationSdkPromise = null;
+    throw error;
+  });
+  return paypalDonationSdkPromise;
+}
+
+async function initializePayPalDonationButtons() {
+  const targets = paypalDonationTargets().filter(target => !['loading', 'rendered'].includes(target.dataset.paypalDonationState));
+  if (!targets.length) return;
+  targets.forEach(target => setPayPalDonationStatus(target, 'Loading optional PayPal donation button...', 'loading'));
+  try {
+    const paypal = await loadPayPalDonationSdk();
+    for (const target of targets) {
+      target.replaceChildren();
+      target.dataset.paypalDonationState = 'rendering';
+      const button = paypal.Donation.Button({
+        env: 'production',
+        hosted_button_id: PAYPAL_DONATION_CONFIG.hostedButtonId,
+        image: { ...PAYPAL_DONATION_CONFIG.image }
+      });
+      await Promise.resolve(button.render(`#${target.id}`));
+      target.dataset.paypalDonationState = 'rendered';
+    }
+  } catch (_error) {
+    targets.forEach(target => setPayPalDonationStatus(target, 'The optional PayPal donation button is unavailable while offline or blocked by the browser.', 'unavailable'));
+  }
+}
+
+function installPayPalDonationSupport() {
+  const aboutModal = el('aboutModal');
+  if (!aboutModal || aboutModal.dataset.paypalDonationObserver === 'true') return;
+  aboutModal.dataset.paypalDonationObserver = 'true';
+  if (typeof MutationObserver !== 'function') return;
+  const observer = new MutationObserver(() => {
+    if (aboutModal.classList.contains('show')) initializePayPalDonationButtons();
+  });
+  observer.observe(aboutModal, { attributes: true, attributeFilter: ['class'] });
+}
 
 function openChangeLogModal() {
   renderChangeLog();
@@ -14012,6 +14125,7 @@ function setSettingsPage(page = 'chart') {
   if (mobilePageSelect && Array.from(mobilePageSelect.options).some(option => option.value === selected)) {
     mobilePageSelect.value = selected;
   }
+  if (selected === 'about') initializePayPalDonationButtons();
 }
 
 
@@ -19847,6 +19961,7 @@ function wireEvents() {
   if (el('aboutModal')) el('aboutModal').addEventListener('click', event => {
     if (event.target.id === 'aboutModal') el('aboutModal').classList.remove('show');
   });
+  installPayPalDonationSupport();
   if (el('licenseModal')) el('licenseModal').addEventListener('click', event => {
     if (event.target.id === 'licenseModal') closeLicenseModal();
   });
