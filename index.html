@@ -5,7 +5,7 @@
   <meta name="license" content="MIT License" />
   <meta name="spdx-license-identifier" content="MIT" />
   <meta name="copyright" content="Copyright (c) 2026 Chris L. Franklin" />
-  <meta name="app-version" content="6.4.1" />
+  <meta name="app-version" content="6.4.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com https://www.paypalobjects.com blob:; style-src 'self' 'unsafe-inline'; connect-src 'self' https://www.googleapis.com https://classroom.googleapis.com https://accounts.google.com https://www.paypal.com https://www.paypalobjects.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://www.paypal.com; img-src 'self' data: blob: https://www.paypalobjects.com; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'self' https://www.paypal.com" />
   <meta name="application-name" content="Classroom Seating Planner" />
@@ -6129,7 +6129,7 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
 const APP_CONFIG = Object.freeze({
   name: 'Classroom Seating Planner',
   shortName: 'Seating Planner',
-  version: '6.4.1',
+  version: '6.4.2',
   copyrightHolder: 'Chris L. Franklin',
   copyrightYear: '2026',
   releaseDate: '2026-07-14',
@@ -6372,10 +6372,22 @@ const PROJECT_FEATURES = [
 
 const RELEASE_HISTORY = [
   {
+    version: '6.4.2',
+    date: 'July 14, 2026',
+    title: 'Faithful read-only classroom packages',
+    current: true,
+    changes: [
+      'Corrected read-only Grid exports to use the same 1-based cell keys as the classroom editor.',
+      'Preserved Grid dimensions, room-object styling, coordinates, and assigned student names in static classroom packages.',
+      'Preserved Freeform canvas dimensions, grid spacing, front orientation, object coordinates, sizes, rotations, colors, z-order, labels, and assignment state.',
+      'Added asymmetric Grid and Freeform regression fixtures while keeping private records, credentials, editing controls, groups, zones, and recovery data excluded.'
+    ]
+  },
+  {
     version: '6.4.1',
     date: 'July 14, 2026',
     title: 'Verified cleanup and grid rendering optimization',
-    current: true,
+    current: false,
     changes: [
       'Delegated standard-grid interaction handling to the persistent grid container so rerenders no longer recreate listeners for every cell and assigned student.',
       'Consolidated repeated placement-completion, settings-control, optional-column, and JSON-clone helpers without changing public identifiers or stored data.',
@@ -28822,8 +28834,116 @@ const DistrictIntegrationsV57 = (() => {
   }
 
 
-  function safeStudentPackage(preset){persistActiveClass();const source=deepClone(activeClassRecord()||{});const idMap=new Map();const includeSub=preset==='substitute';source.students=(source.students||[]).map((student,index)=>{const nextId=preset==='anonymous'?`student-${index+1}`:`shared-${index+1}`;idMap.set(String(student.id),nextId);return{id:nextId,firstName:preset==='anonymous'?'Student':student.firstName,lastName:preset==='anonymous'?String(index+1):student.lastName,nickName:preset==='anonymous'?'':student.nickName,grade:'',notesPublic:'',notesSubstitute:includeSub?student.notesSubstitute||'':'',notesPrivate:''};});Object.values(source.cells||{}).forEach(cell=>{if(cell.assignedStudentId)cell.assignedStudentId=idMap.get(String(cell.assignedStudentId))||null;cell.anchorGroupIds=[];cell.zoneIds=[];});(source.freeformLayout?.objects||[]).forEach(obj=>{if(obj.assignedStudentId)obj.assignedStudentId=idMap.get(String(obj.assignedStudentId))||null;obj.anchorGroupIds=[];obj.zoneIds=[];});source.groups=[];source.zones=[];source.rosterArchive=[];source.seatingPlans=[];source.importProfiles=[];source.snapshots=[];if(preset==='room'){source.students=[];Object.values(source.cells||{}).forEach(cell=>{cell.assignedStudentId=null;});(source.freeformLayout?.objects||[]).forEach(obj=>{obj.assignedStudentId=null;});}return source;}
-  function readOnlyHtml(preset){const cls=safeStudentPackage(preset);const studentMap=new Map((cls.students||[]).map(student=>[String(student.id),student]));const title=`${cls.name||'Classroom'} · Read-only`;let room='';if(cls.layoutMode==='freeform'){const canvas=cls.freeformLayout?.canvas||{width:1200,height:760};room=`<div class="freeform" style="--canvas-w:${Number(canvas.width)||1200}px;--canvas-h:${Number(canvas.height)||760}px">${(cls.freeformLayout?.objects||[]).map(obj=>{const student=studentMap.get(String(obj.assignedStudentId||''));const label=student?studentDisplay(student):(obj.label||objectLabel(obj.type));return`<div class="object ${escapeHtml(obj.type||'custom')}" style="left:${Number(obj.x)||0}px;top:${Number(obj.y)||0}px;width:${Number(obj.width)||120}px;height:${Number(obj.height)||80}px;transform:rotate(${Number(obj.rotation)||0}deg)">${escapeHtml(label)}</div>`;}).join('')}</div>`;}else{const cells=[];for(let r=0;r<(cls.rows||1);r++)for(let c=0;c<(cls.cols||1);c++){const cell=cls.cells?.[`${r}-${c}`]||{};const student=studentMap.get(String(cell.assignedStudentId||''));cells.push(`<div class="cell ${escapeHtml(cell.type||'empty')}">${escapeHtml(student?studentDisplay(student):(cell.label||objectLabel(cell.type||'empty')))}</div>`);}room=`<div class="grid" style="--cols:${cls.cols||1}">${cells.join('')}</div>`;}const notes=preset==='substitute'?(cls.students||[]).filter(student=>student.notesSubstitute).map(student=>`<li><strong>${escapeHtml(studentDisplay(student))}</strong><span>${escapeHtml(student.notesSubstitute)}</span></li>`).join(''):'';return`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'"><meta name="robots" content="noindex,nofollow"><title>${escapeHtml(title)}</title><style>body{font-family:system-ui,sans-serif;margin:0;padding:24px;background:#f8fafc;color:#172033}header{margin-bottom:18px}h1{margin:0}.notice{padding:10px;border:1px solid #bfdbfe;background:#eff6ff;border-radius:10px;margin:10px 0}.grid{display:grid;grid-template-columns:repeat(var(--cols),minmax(92px,1fr));gap:8px}.cell,.object{border:1px solid #94a3b8;border-radius:10px;background:#fff;padding:8px;display:grid;place-items:center;text-align:center;min-height:76px;overflow-wrap:anywhere}.cell.seat{background:#dbeafe}.freeform{position:relative;width:min(100%,var(--canvas-w));height:var(--canvas-h);background:#fff;border:1px solid #cbd5e1;overflow:auto}.object{position:absolute;box-sizing:border-box}.notes{margin-top:18px;padding:12px;background:#fff;border:1px solid #cbd5e1;border-radius:12px}.notes ul{display:grid;gap:8px;padding:0;list-style:none}.notes li{display:grid;grid-template-columns:minmax(120px,.6fr) 1fr;gap:8px;padding:8px;border:1px solid #e2e8f0;border-radius:8px}@media print{body{padding:0}.notice{display:none}} </style></head><body><header><h1>${escapeHtml(title)}</h1><div class="notice">Read-only classroom package generated ${escapeHtml(new Date().toLocaleString())}. It contains no editing controls, passwords, Settings, cloud credentials, or hidden source records.</div></header>${room}${notes?`<section class="notes"><h2>Substitute notes</h2><ul>${notes}</ul></section>`:''}</body></html>`;}
+  function safeStudentPackage(preset){persistActiveClass();const source=deepClone(activeClassRecord()||{});const idMap=new Map();const includeSub=preset==='substitute';source.students=(source.students||[]).map((student,index)=>{const nextId=preset==='anonymous'?`student-${index+1}`:`shared-${index+1}`;idMap.set(String(student.id),nextId);return{id:nextId,firstName:preset==='anonymous'?'Student':student.firstName,lastName:preset==='anonymous'?String(index+1):student.lastName,nickName:preset==='anonymous'?'':student.nickName,grade:'',notesPublic:'',notesSubstitute:includeSub?student.notesSubstitute||'':'',notesPrivate:''};});Object.values(source.cells||{}).forEach(cell=>{if(cell.assignedStudentId)cell.assignedStudentId=idMap.get(String(cell.assignedStudentId))||null;cell.anchorGroupIds=[];cell.zoneIds=[];});(source.freeformLayout?.objects||[]).forEach(obj=>{if(obj.assignedStudentId)obj.assignedStudentId=idMap.get(String(obj.assignedStudentId))||null;obj.anchorGroupIds=[];obj.zoneIds=[];obj.groupId='';});source.groups=[];source.zones=[];source.rosterArchive=[];source.seatingPlans=[];source.importProfiles=[];source.snapshots=[];if(preset==='room'){source.students=[];Object.values(source.cells||{}).forEach(cell=>{cell.assignedStudentId=null;});(source.freeformLayout?.objects||[]).forEach(obj=>{obj.assignedStudentId=null;});}return source;}
+  function readOnlyClassToken(value, fallback = 'empty') {
+    const token = String(value || fallback).trim().replace(/[^a-zA-Z0-9_-]+/g, '-');
+    return token || fallback;
+  }
+
+  function readOnlyNumber(value, fallback = 0) {
+    const number = Number(value);
+    return Number.isFinite(number) ? number : fallback;
+  }
+
+  function readOnlyGridMarkup(cls, studentMap) {
+    const rows = Math.max(1, Math.trunc(readOnlyNumber(cls.rows, 1)));
+    const cols = Math.max(1, Math.trunc(readOnlyNumber(cls.cols, 1)));
+    const cells = [];
+    for (let row = 1; row <= rows; row += 1) {
+      for (let col = 1; col <= cols; col += 1) {
+        const cellKey = `${row}-${col}`;
+        const cell = cls.cells?.[cellKey] || {};
+        const type = String(cell.type || 'empty');
+        const student = studentMap.get(String(cell.assignedStudentId || ''));
+        const cellLabel = type === 'seat'
+          ? (student ? studentDisplay(student) : 'Unassigned')
+          : (cell.label || objectLabel(type));
+        cells.push(`<div class="readonly-cell cell ${readOnlyClassToken(type)}" data-cell-key="${escapeHtml(cellKey)}">
+          <div class="readonly-cell-heading"><span>${row},${col}</span><span>${escapeHtml(objectLabel(type))}</span></div>
+          <div class="readonly-cell-content${student ? ' assigned' : ''}">${escapeHtml(cellLabel)}</div>
+        </div>`);
+      }
+    }
+    return `<div class="readonly-room-viewport"><div class="readonly-grid" style="--readonly-cols:${cols}">${cells.join('')}</div></div>`;
+  }
+
+  function readOnlyFreeformObjectMarkup(object, studentMap) {
+    const type = String(object.type || 'custom');
+    const student = studentMap.get(String(object.assignedStudentId || ''));
+    const title = student ? studentDisplay(student) : (type === 'seat' ? 'Unassigned' : (object.label || objectLabel(type)));
+    const label = String(object.label || '').trim();
+    const color = safeColor(object.color, objectTypeColor(type));
+    const classes = [
+      'readonly-object',
+      'freeform-object',
+      readOnlyClassToken(type, 'custom'),
+      type === 'seat' ? (student ? 'assigned' : 'unassigned') : '',
+      object.locked ? 'locked' : '',
+      object.groupId ? 'grouped' : ''
+    ].filter(Boolean).join(' ');
+    const style = [
+      `left:${readOnlyNumber(object.x, 0)}px`,
+      `top:${readOnlyNumber(object.y, 0)}px`,
+      `width:${Math.max(1, readOnlyNumber(object.width, type === 'seat' ? DEFAULT_FREEFORM_SEAT_WIDTH : 160))}px`,
+      `height:${Math.max(1, readOnlyNumber(object.height, type === 'seat' ? DEFAULT_FREEFORM_SEAT_HEIGHT : 96))}px`,
+      `z-index:${Math.max(1, Math.trunc(readOnlyNumber(object.zIndex, 1)))}`,
+      `background:${color}`,
+      `transform:rotate(${readOnlyNumber(object.rotation, 0)}deg)`
+    ].join(';');
+    const meta = type === 'seat'
+      ? `<span class="readonly-pill">Seat</span>${label && !/^seat$/i.test(label) ? `<span class="readonly-pill subtle">${escapeHtml(label)}</span>` : ''}`
+      : `<span class="readonly-pill subtle">${escapeHtml(objectLabel(type))}</span>`;
+    return `<div class="${classes}" style="${style}">
+      <div class="readonly-object-title${student ? '' : ' placeholder'}">${escapeHtml(title)}</div>
+      <div class="readonly-object-meta">${meta}</div>
+    </div>`;
+  }
+
+  function readOnlyFreeformMarkup(cls, studentMap) {
+    const canvas = cls.freeformLayout?.canvas || {};
+    const width = Math.max(1, readOnlyNumber(canvas.width, 1200));
+    const height = Math.max(1, readOnlyNumber(canvas.height, 760));
+    const gridSize = Math.max(4, readOnlyNumber(canvas.gridSize, 20));
+    const frontSide = ['top', 'right', 'bottom', 'left'].includes(String(canvas.frontSide || '').toLowerCase())
+      ? String(canvas.frontSide).toLowerCase()
+      : 'top';
+    const objects = [...(cls.freeformLayout?.objects || [])]
+      .sort((a, b) => readOnlyNumber(a.zIndex, 1) - readOnlyNumber(b.zIndex, 1))
+      .map(object => readOnlyFreeformObjectMarkup(object, studentMap))
+      .join('');
+    return `<div class="readonly-room-viewport readonly-freeform-viewport"><div class="readonly-freeform-stage" style="width:${width}px;height:${height}px"><div class="readonly-freeform" style="width:${width}px;height:${height}px;background-size:${gridSize}px ${gridSize}px"><div class="readonly-room-marker side-${frontSide}">Front of Room</div>${objects}</div></div></div>`;
+  }
+
+  function readOnlyRoomMarkup(cls) {
+    const studentMap = new Map((cls.students || []).map(student => [String(student.id), student]));
+    return cls.layoutMode === 'freeform'
+      ? readOnlyFreeformMarkup(cls, studentMap)
+      : readOnlyGridMarkup(cls, studentMap);
+  }
+
+  function readOnlyNotesMarkup(cls, preset) {
+    if (preset !== 'substitute') return '';
+    const notes = (cls.students || [])
+      .filter(student => student.notesSubstitute)
+      .sort((a, b) => studentDisplay(a).localeCompare(studentDisplay(b)))
+      .map(student => `<li><strong>${escapeHtml(studentDisplay(student))}</strong><span>${escapeHtml(student.notesSubstitute)}</span></li>`)
+      .join('');
+    return notes ? `<section class="readonly-notes"><h2>Substitute notes</h2><ul>${notes}</ul></section>` : '';
+  }
+
+  function readOnlyViewerStyles() {
+    return `:root{color-scheme:light;--readonly-cell-width:112px;--readonly-cell-height:133px;--readonly-border:#c9d3e3;--readonly-text:#172033;--readonly-muted:#607089}*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#eef2f7;color:var(--readonly-text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}body{padding:20px}header,.readonly-content{width:min(100%,1800px);margin:0 auto}header{margin-bottom:14px}h1{margin:0;font-size:clamp(22px,3vw,34px);letter-spacing:-.035em}.readonly-summary{margin:5px 0 0;color:var(--readonly-muted);font-size:12px}.readonly-notice{padding:9px 11px;border:1px solid #bfdbfe;background:#eff6ff;border-radius:10px;margin:10px 0 0;color:#1e3a8a;font-size:12px;line-height:1.4}.readonly-room-viewport{width:100%;overflow:auto;padding:14px;background-color:#f8fafc;background-image:linear-gradient(rgba(120,137,163,.075) 1px,transparent 1px),linear-gradient(90deg,rgba(120,137,163,.075) 1px,transparent 1px);background-size:24px 24px;border:1px solid #d7deea;border-radius:14px;box-shadow:0 10px 24px rgba(15,23,42,.08)}.readonly-grid{display:grid;grid-template-columns:repeat(var(--readonly-cols),var(--readonly-cell-width));grid-auto-rows:minmax(var(--readonly-cell-height),auto);gap:7px;width:max-content;min-width:0;margin:0 auto}.readonly-cell{position:relative;width:var(--readonly-cell-width);min-height:var(--readonly-cell-height);display:flex;flex-direction:column;justify-content:flex-start;overflow:hidden;padding:7px;border:1px dashed #c9d3e3;border-radius:11px;background:#fbfcff;box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 1px 2px rgba(15,23,42,.04)}.readonly-cell-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:5px;color:#607089;font-size:9.5px;font-weight:850;line-height:1.15}.readonly-cell-heading span:last-child{text-align:right}.readonly-cell-content{display:grid;place-items:center;flex:1 1 auto;min-height:48px;padding:6px 3px;color:#475467;font-size:10.8px;font-weight:750;line-height:1.22;text-align:center;overflow-wrap:anywhere}.readonly-cell-content.assigned{color:#14213d;font-size:11.2px;font-weight:850}.cell.seat{background:linear-gradient(180deg,#eff6ff 0%,#dbeafe 100%);border-color:#9db7ef}.cell.blocked{color:#fff;background:repeating-linear-gradient(135deg,#313846,#313846 8px,#3f4859 8px,#3f4859 16px);border-color:#222a36}.cell.blocked .readonly-cell-heading,.cell.blocked .readonly-cell-content{color:rgba(255,255,255,.88)}.cell.teacher{background:#fff3d6;border-color:#ffd074}.cell.table{background:#e8f7ec;border-color:#9ce0b2}.cell.door{background:#fce8ee;border-color:#f6a3bb}.cell.wall{color:#344054;background:repeating-linear-gradient(90deg,#d9dee8,#d9dee8 6px,#c7cfdb 6px,#c7cfdb 12px);border-color:#9aa7b8}.cell.walkway{color:#475467;background:repeating-linear-gradient(45deg,#fff,#fff 8px,#edf2f7 8px,#edf2f7 16px);border-style:dashed;border-color:#aab7c8}.cell.window{color:#075985;background:linear-gradient(135deg,#e0f2fe,#f0f9ff);border-color:#7dd3fc}.cell.projector{color:#3730a3;background:linear-gradient(135deg,#eef2ff,#f8fafc);border-color:#a5b4fc}.cell.board{color:#166534;background:linear-gradient(135deg,#dcfce7,#f0fdf4);border-color:#86efac}.cell.carpet{color:#7c4a03;background:repeating-linear-gradient(45deg,#f5e8d3,#f5e8d3 8px,#eed7b6 8px,#eed7b6 16px);border-color:#d6a45f}.cell.ada{color:#155e75;background:repeating-linear-gradient(135deg,#ecfeff,#ecfeff 8px,#cffafe 8px,#cffafe 16px);border-color:#67e8f9}.readonly-freeform-viewport{padding:14px}.readonly-freeform-stage{position:relative;min-width:max-content;min-height:max-content;margin:0 auto}.readonly-freeform{position:relative;background-color:#f8fafc;background-image:linear-gradient(to right,rgba(148,163,184,.22) 1px,transparent 1px),linear-gradient(to bottom,rgba(148,163,184,.22) 1px,transparent 1px),radial-gradient(circle at top left,rgba(255,255,255,.95),rgba(248,250,252,.86) 45%,rgba(241,245,249,.76) 100%);border:1px solid rgba(148,163,184,.55);border-radius:16px;box-shadow:inset 0 1px 0 rgba(255,255,255,.92),0 10px 30px rgba(15,23,42,.07);overflow:visible}.readonly-object{position:absolute;display:grid;place-items:center;align-content:center;justify-items:center;gap:5px;min-width:0;padding:9px;border:1px solid rgba(15,23,42,.14);border-radius:16px;color:#0f172a;box-shadow:0 8px 20px rgba(15,23,42,.08),inset 0 1px 0 rgba(255,255,255,.84);transform-origin:center center;overflow:hidden}.readonly-object.seat{min-width:160px;min-height:100px;align-content:start;padding:11px 10px 9px;background:linear-gradient(180deg,rgba(255,255,255,.92) 0%,rgba(248,250,252,.9) 100%)}.readonly-object.seat.assigned{border-color:rgba(96,165,250,.55)}.readonly-object.seat.unassigned{border-style:dashed;border-color:rgba(148,163,184,.52)}.readonly-object.blocked{color:#fff}.readonly-object.wall{border-radius:8px}.readonly-object.walkway{border-style:dashed;opacity:.88}.readonly-object.locked{border-style:dashed}.readonly-object.grouped{border-style:double}.readonly-object-title{width:100%;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;color:inherit;font-size:12px;font-weight:900;line-height:1.2;letter-spacing:-.01em;text-align:center;overflow-wrap:anywhere}.readonly-object-title.placeholder{color:#475569;font-weight:800}.readonly-object-meta{display:flex;justify-content:center;gap:5px;flex-wrap:wrap;width:100%;font-size:10px;color:#475569;line-height:1.1}.readonly-pill{display:inline-flex;align-items:center;padding:2px 6px;border:1px solid #cfe0ff;border-radius:999px;background:#edf3ff;color:#1e55bd;font-size:10px;font-weight:800}.readonly-pill.subtle{border-color:#d7deea;background:#f8fafc;color:#475569}.readonly-room-marker{position:absolute;z-index:0;display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border:1px solid rgba(59,130,246,.18);border-radius:999px;background:rgba(255,255,255,.88);color:#1d4ed8;font-size:10px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;box-shadow:0 3px 12px rgba(15,23,42,.07);pointer-events:none}.readonly-room-marker.side-top{top:8px;left:50%;transform:translateX(-50%)}.readonly-room-marker.side-bottom{right:auto;bottom:8px;left:50%;transform:translateX(-50%)}.readonly-room-marker.side-left{top:50%;left:8px;transform:translateY(-50%) rotate(-90deg)}.readonly-room-marker.side-right{top:50%;right:8px;transform:translateY(-50%) rotate(90deg)}.readonly-notes{width:min(100%,1800px);margin:16px auto 0;padding:12px;background:#fff;border:1px solid #cbd5e1;border-radius:12px}.readonly-notes h2{margin:0 0 10px;font-size:16px}.readonly-notes ul{display:grid;gap:8px;margin:0;padding:0;list-style:none}.readonly-notes li{display:grid;grid-template-columns:minmax(120px,.6fr) minmax(0,1fr);gap:8px;padding:8px;border:1px solid #e2e8f0;border-radius:8px}.readonly-notes span{white-space:pre-wrap;overflow-wrap:anywhere}@media(max-width:700px){body{padding:10px}.readonly-room-viewport{padding:8px}.readonly-notes li{grid-template-columns:1fr}}@media print{body{padding:0;background:#fff}.readonly-notice{display:none}.readonly-room-viewport{overflow:visible;padding:0;border:0;box-shadow:none;background:#fff}.readonly-grid{margin:0 auto}.readonly-freeform-viewport{overflow:visible}.readonly-notes{border-color:#94a3b8;break-before:auto}}`;
+  }
+
+  function readOnlyHtml(preset) {
+    const cls = safeStudentPackage(preset);
+    const title = `${cls.name || 'Classroom'} · Read-only`;
+    const room = readOnlyRoomMarkup(cls);
+    const notes = readOnlyNotesMarkup(cls, preset);
+    const mode = cls.layoutMode === 'freeform' ? 'Freeform room' : `${Math.max(1, Number(cls.rows) || 1)} × ${Math.max(1, Number(cls.cols) || 1)} Grid`;
+    return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'"><meta name="robots" content="noindex,nofollow"><title>${escapeHtml(title)}</title><style>${readOnlyViewerStyles()}</style></head><body><header><h1>${escapeHtml(title)}</h1><p class="readonly-summary">${escapeHtml(mode)} · ${cls.students?.length || 0} included student${cls.students?.length === 1 ? '' : 's'}</p><div class="readonly-notice">Read-only classroom package generated ${escapeHtml(new Date().toLocaleString())}. It contains no editing controls, passwords, Settings, cloud credentials, or hidden source records.</div></header><main class="readonly-content">${room}</main>${notes}</body></html>`;
+  }
+
   function downloadReadOnlyPackage(){const preset=node('readOnlyPackagePreset')?.value||'student';downloadText(`${String(activeClassName()||'class').replace(/[^a-z0-9]+/gi,'-').toLowerCase()}-read-only-${preset}.html`,readOnlyHtml(preset),'text/html');setLiveStatusMessage('Read-only classroom HTML package downloaded.');}
 
   function openClassSetupImport() {
