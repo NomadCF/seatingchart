@@ -5,13 +5,13 @@
   <meta name="license" content="MIT License" />
   <meta name="spdx-license-identifier" content="MIT" />
   <meta name="copyright" content="Copyright (c) 2026 Chris L. Franklin" />
-  <meta name="app-version" content="6.3.2" />
+  <meta name="app-version" content="6.3.4" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com https://www.paypalobjects.com blob:; style-src 'self' 'unsafe-inline'; connect-src 'self' https://www.googleapis.com https://classroom.googleapis.com https://accounts.google.com https://www.paypal.com https://www.paypalobjects.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://www.paypal.com; img-src 'self' data: blob: https://www.paypalobjects.com; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'self' https://www.paypal.com" />
   <meta name="application-name" content="Classroom Seating Planner" />
   <meta name="theme-color" content="#1e3a8a" />
   
-  <meta name="build-date" content="2026-07-13T00:00:00Z" />
+  <meta name="build-date" content="2026-07-14T00:00:00Z" />
   <title>Classroom Seating Planner</title>
   <style>@layer app-base, app-priority;@layer app-base{:root{--bg:#f6f7fb;--panel-2:#f0f3f8;--text:#172033;--muted:#607089;--border:#d8deea;--accent:#2f6fed;--accent-dark:#1e55bd;--seat:#e8f0ff;--seat-border:#9db7ef;--teacher:#fff3d6;--table:#e8f7ec;--door:#fce8ee;--empty:#fbfcff;--shadow:0 12px 30px rgba(29, 39, 61, 0.08);--radius:14px;font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif
 }*{box-sizing:border-box
@@ -575,11 +575,11 @@ body.design-mode #designModeBtn{background:#e7efff;color:var(--accent-dark);bord
   }.mobile-carry-ghost{position:fixed;z-index:13000;display:none;max-width:210px;pointer-events:none;transform:translate(-50%, -50%);padding:7px 10px;border-radius:999px;border:1px solid rgba(37, 99, 235, 0.42);background:rgba(15, 23, 42, 0.92);color:#ffffff;font-size:11px;font-weight:850;box-shadow:0 12px 30px rgba(15, 23, 42, 0.32);white-space:nowrap;overflow:hidden;text-overflow:ellipsis
   }.mobile-carry-ghost.show{display:block
   }
-}@media (max-width: 900px){.mobile-student-edit-action{align-items:center;justify-content:center
+}@media (max-width: 900px){.student-edit-action{align-items:center;justify-content:center
   }.student-card .student-name{align-items:flex-start
   }.student-card .card-actions,
   .student-card .student-name > .card-actions{flex-wrap:wrap;justify-content:flex-end;gap:5px
-  }.student-card .mobile-student-edit-action{min-height:30px;padding:6px 8px
+  }.student-card .student-edit-action{min-height:30px;padding:6px 8px
   }.group-manager-student .student-name{display:flex;align-items:flex-start;justify-content:space-between;gap:8px
   }
 }.modal{max-width:780px
@@ -2443,6 +2443,13 @@ body[data-theme="linux"] .class-setup-review-row{background:var(--panel-bg, #0f1
 }.class-setup-section-heading p{max-width:920px;font-size:11.5px;line-height:1.45
 }.class-setup-inline-status{align-self:stretch;place-content:center;min-width:92px
 }.class-setup-students-main{grid-template-columns:minmax(330px, 430px) minmax(0, 1fr);gap:14px
+}.class-setup-students-main.add-student-panel-collapsed{grid-template-columns:48px minmax(0, 1fr)
+}.class-setup-students-main.add-student-panel-collapsed .class-setup-student-form-card{min-width:48px;width:48px;padding:7px 5px;overflow:hidden
+}.class-setup-students-main.add-student-panel-collapsed .class-setup-student-form-card .section-header-row{min-height:36px;justify-content:center
+}.class-setup-students-main.add-student-panel-collapsed .class-setup-student-form-card .section-header-row h3,
+.class-setup-students-main.add-student-panel-collapsed .class-setup-student-form-card .class-setup-card-intro{display:none
+}.class-setup-students-main.add-student-panel-collapsed #toggleAddStudentBtn{margin:0
+}.class-setup-students-main .class-setup-student-list-card > h3{display:none
 }.class-setup-editor-card{min-width:0;background:#fff
 }.class-setup-editor-card > h3,
 .class-setup-editor-card .section-header-row h3{margin:0;font-size:14px;line-height:1.2
@@ -2557,7 +2564,10 @@ body[data-theme="linux"] .class-setup-review-row{background:var(--panel-bg, #0f1
   }
 }@media (max-width: 1120px){.class-setup-students-main,
   .class-setup-rules-main,
-  .class-setup-zones-main{grid-template-columns:1fr
+  .class-setup-zones-main,
+  .class-setup-students-main.add-student-panel-collapsed{grid-template-columns:1fr
+  }.class-setup-students-main.add-student-panel-collapsed .class-setup-student-form-card{width:auto;min-width:0;padding:7px 9px
+  }.class-setup-students-main.add-student-panel-collapsed .class-setup-student-form-card .section-header-row{justify-content:flex-end
   }.class-setup-student-form-card,
   .class-setup-rule-form-card{position:static
   }.class-setup-rule-form-card .group-members{grid-template-columns:repeat(2, minmax(0, 1fr))
@@ -3030,9 +3040,7 @@ body.design-mode .cell[data-design-tooltip]:hover::before{display:none;content:n
   .group-card.mobile-carry-selected,
   .group-manager-group.mobile-carry-selected{border-color:#2563eb;background:#eff6ff;box-shadow:inset 0 0 0 2px rgba(37,99,235,0.18), 0 8px 20px rgba(37,99,235,0.12)
   }
-}.mobile-student-edit-action{display:none
-}@media (max-width: 900px){.mobile-student-edit-action{display:inline-flex
-  }
+}.student-edit-action{display:inline-flex;align-items:center;justify-content:center
 }.modal{width:min(780px, 100%);height:auto;min-height:0;min-width:0;flex-basis:auto
 }.settings-modal{width:min(900px, 96vw)
 }.add-student-body.collapsed,
@@ -3687,6 +3695,7 @@ body.product-v4.workspace-v41.v41-left-panel-collapsed[data-workflow="seating"] 
 }body.product-v4.workspace-v41.v41-right-panel-collapsed[data-workflow="review"] .app{grid-template-columns:minmax(0, 1fr) var(--v41-panel-rail)
 }body.product-v4.workspace-v41.v41-left-panel-collapsed .left-panel .panel-body,
 body.product-v4.workspace-v41.v41-left-panel-collapsed .left-panel .panel-title-actions,
+body.product-v4.workspace-v41.v41-left-panel-collapsed .left-panel #guideManualSeatingBtn,
 body.product-v4.workspace-v41.v41-right-panel-collapsed .right-panel .panel-body,
 body.product-v4.workspace-v41.v41-right-panel-collapsed .right-panel .panel-title-actions{display:none
 }body.product-v4.workspace-v41 .v41-menu-action{display:flex;align-items:center;gap:8px
@@ -4881,6 +4890,7 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
                   <button id="toggleFreeformMarqueeBtn" class="secondary" type="button" aria-pressed="false" title="Drag a box across multiple seats and room objects">Box select</button>
                   <button id="toggleFreeformPanBtn" class="secondary" type="button" aria-pressed="false">Pan</button>
                   <button id="openFreeformPresetsBtn" class="secondary" type="button">Presets</button>
+                  <button id="clearFreeformRoomBtn" class="danger" type="button" title="Remove every Freeform seat and room object while keeping the roster and Standard Grid layout.">Clear room</button>
                 </div>
               </div>
 
@@ -4902,8 +4912,8 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
                     <strong>Movement</strong>
                     <div class="freeform-check-row">
                       <label class="checkline" title="Snap dragged and resized objects to the canvas grid."><input id="freeformSnapToggle" type="checkbox" checked /> <span>Snap to grid</span></label>
-                      <label class="checkline" title="Allow seats to move through other seats while dragging."><input id="freeformSeatPassThroughToggle" type="checkbox" /> <span>Pass through</span></label>
-                      <label class="checkline" title="Allow seats to remain overlapping after release."><input id="freeformSeatOverlapToggle" type="checkbox" /> <span>Allow overlaps</span></label>
+                      <label class="checkline" title="Allow seats to move through other seats while dragging."><input id="freeformSeatPassThroughToggle" type="checkbox" checked /> <span>Pass through</span></label>
+                      <label class="checkline" title="Allow seats to remain overlapping after release."><input id="freeformSeatOverlapToggle" type="checkbox" checked /> <span>Allow overlaps</span></label>
                       <label class="checkline" title="Show edge and center alignment guides while moving objects."><input id="freeformMagneticGuidesToggle" type="checkbox" checked /> <span>Guides</span></label>
                     </div>
                   </section>
@@ -5281,7 +5291,7 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
                       <h3>Page Load Defaults</h3>
                       <div class="settings-grid two-col">
                         <label class="checkline" for="settingDefaultNamesOnly"><input id="settingDefaultNamesOnly" type="checkbox" /> <span>Start/load in Names Only mode</span></label>
-                        <label class="checkline" for="settingHeaderCollapsed"><input id="settingHeaderCollapsed" type="checkbox" /> <span>Collapse top header on load/import</span></label>
+                        <label class="checkline" for="settingHeaderCollapsed"><input id="settingHeaderCollapsed" type="checkbox" /> <span>Minimize workflow guidance on load/import</span></label>
                         <label class="checkline" for="settingLeftCollapsed"><input id="settingLeftCollapsed" type="checkbox" /> <span>Collapse Students, Groups &amp; Zones on load/import</span></label>
                         <label class="checkline" for="settingRightCollapsed"><input id="settingRightCollapsed" type="checkbox" /> <span>Collapse Chart Status on load/import</span></label>
                         <label class="checkline" for="settingLayoutToolsCollapsed"><input id="settingLayoutToolsCollapsed" type="checkbox" /> <span>Collapse Layout Tools on load/import</span></label>
@@ -5290,6 +5300,7 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
                         <label class="checkline" for="settingHideHints"><input id="settingHideHints" type="checkbox" /> <span>Hide all text hints</span></label>
                       </div>
                       <div class="button-row" style="margin-top:8px;">
+                        <button id="applyPageLoadDefaultsNowBtn" class="secondary tiny" type="button">Apply Defaults to Current View</button>
                         <button id="resetDismissedHintsBtn" class="secondary tiny" type="button">Reset Closed Hints</button>
                       </div>
                       <div class="row" style="margin-top:10px;">
@@ -5302,7 +5313,7 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
                           <input id="settingDesignCellSize" type="number" min="20" max="72" step="1" />
                         </div>
                       </div>
-                      <div class="hint">These page settings save with linked, downloaded, and uploaded classes files, then reapply when the save is loaded. If there are no students, Add Student opens automatically even when its default is collapsed.</div>
+                      <div class="hint">These defaults save with linked, downloaded, and uploaded class files. They apply when a save is loaded or when you select Apply Defaults to Current View, so changing a checkbox does not rearrange the open Settings window. If there are no students, Add Student opens automatically even when its default is collapsed.</div>
                     </section>
           </div>
           <div id="settingsPageHelp" class="settings-page" role="tabpanel" data-settings-panel="help" aria-label="Help and guides">
@@ -6123,12 +6134,12 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
 const APP_CONFIG = Object.freeze({
   name: 'Classroom Seating Planner',
   shortName: 'Seating Planner',
-  version: '6.3.2',
+  version: '6.3.4',
   copyrightHolder: 'Chris L. Franklin',
   copyrightYear: '2026',
-  releaseDate: '2026-07-13',
-  releaseDateDisplay: 'July 13, 2026',
-  buildDate: '2026-07-13T00:00:00Z',
+  releaseDate: '2026-07-14',
+  releaseDateDisplay: 'July 14, 2026',
+  buildDate: '2026-07-14T00:00:00Z',
   commit: 'local',
   environment: 'production',
   dataSchemaVersion: 13,
@@ -6366,10 +6377,34 @@ const PROJECT_FEATURES = [
 
 const RELEASE_HISTORY = [
   {
+    version: '6.3.4',
+    date: 'July 14, 2026',
+    title: 'Roster and Freeform workspace fixes',
+    current: true,
+    changes: [
+      'Kept student Edit actions visible on desktop and corrected student-context access checks.',
+      'Removed redundant Student List section chrome in Class Setup and made the Add Student panel collapse into a narrow rail so the roster uses the reclaimed space.',
+      'Fully hid the manual-seating guide control whenever the Class Setup or Students panel is minimized.',
+      'Made Freeform seat pass-through and overlap-on-drop enabled by default, preserved intentionally empty Freeform rooms, and added a confirmed Clear Room action.'
+    ]
+  },
+  {
+    version: '6.3.3',
+    date: 'July 14, 2026',
+    title: 'Stable Page Load Defaults',
+    current: false,
+    changes: [
+      'Separated saved Page Load Defaults from the currently open workspace so editing a default no longer collapses or resizes the page behind Settings.',
+      'Mapped workflow and side-panel defaults to the modern product workspace state instead of applying incompatible legacy header and panel classes.',
+      'Added Apply Defaults to Current View for deliberate immediate use while preserving normal next-load behavior.',
+      'Prevented mobile first-load handling from restoring legacy collapse classes and added regression coverage for desktop and mobile layout state.'
+    ]
+  },
+  {
     version: '6.3.2',
     date: 'July 13, 2026',
     title: 'Optional About-page support button',
-    current: true,
+    current: false,
     changes: [
       'Added an optional PayPal donation button beside the author and version information in About.',
       'Kept the support language explicitly no-pressure: donations are never expected, unlock no features, and are not promoted elsewhere.',
@@ -6857,8 +6892,8 @@ const DEFAULT_PAGE_SETTINGS = Object.freeze({
   defaultSideTab: 'students',
   designCellSize: 28,
   freeformSnapToGrid: true,
-  freeformAllowSeatPassThrough: false,
-  freeformAllowSeatOverlapOnDrop: false,
+  freeformAllowSeatPassThrough: true,
+  freeformAllowSeatOverlapOnDrop: true,
   freeformMagneticGuides: true,
   freeformShowMinimap: true,
   freeformShowPrintBoundaries: false,
@@ -7532,7 +7567,7 @@ function ensureAddStudentCollapseUi() {
   button.id = 'toggleAddStudentBtn';
   button.className = 'tiny secondary icon-button no-print';
   button.type = 'button';
-  button.title = 'Expand or collapse manual student entry tools.';
+  button.title = 'Expand or collapse the Add Student panel.';
   button.setAttribute('aria-expanded', 'false');
   header.append(title, button);
   const body = document.createElement('div');
@@ -7556,26 +7591,35 @@ function refreshAddStudentCollapse() {
   if (typeof uiState.addStudentCollapsed !== 'boolean') uiState.addStudentCollapsed = !!pageSettings().addStudentCollapsed;
   const collapsed = !!uiState.addStudentCollapsed && (state.students.length > 0 || isMobileViewport());
   body.classList.toggle('collapsed', collapsed);
-  btn.textContent = collapsed ? '▾' : '▴';
+  const section = body.closest('.class-setup-student-form-card');
+  const workspace = body.closest('.class-setup-students-main');
+  section?.classList.toggle('add-student-panel-collapsed', collapsed);
+  workspace?.classList.toggle('add-student-panel-collapsed', collapsed);
+  btn.textContent = collapsed ? '▸' : '◂';
   btn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
-  btn.setAttribute('aria-label', collapsed ? 'Expand Add Student' : 'Collapse Add Student');
+  btn.setAttribute('aria-label', collapsed ? 'Expand Add Student panel' : 'Collapse Add Student panel');
+  btn.title = collapsed ? 'Expand the Add Student panel.' : 'Collapse the Add Student panel to give the roster more room.';
 }
 
-function applyPageSettings(settings = pageSettings(), options = {}) {
-  uiState.pageSettings = mergePageSettings(settings);
-  const cfg = pageSettings();
+function applyPageLoadDefaults(cfg) {
   uiState.namesOnlyLayout = !!cfg.defaultNamesOnly;
-  document.body.dataset.theme = cfg.theme || 'default';
   uiState.activeSideTab = cfg.defaultSideTab;
   uiState.designCellSize = clampNumber(cfg.designCellSize, 20, 72);
   uiState.addStudentCollapsed = !!cfg.addStudentCollapsed;
-  document.body.classList.toggle('header-collapsed', !!cfg.headerCollapsed);
-  document.body.classList.toggle('left-collapsed', !!cfg.leftCollapsed);
-  document.body.classList.toggle('right-collapsed', !!cfg.rightCollapsed);
+
+  const productWorkspace = document.body.classList.contains('product-v4');
+  if (productWorkspace) {
+     
+     
+    document.body.classList.remove('header-collapsed', 'left-collapsed', 'right-collapsed');
+    WorkspaceLayoutV41.applyPageLoadDefaults(cfg);
+  } else {
+    document.body.classList.toggle('header-collapsed', !!cfg.headerCollapsed);
+    document.body.classList.toggle('left-collapsed', !!cfg.leftCollapsed);
+    document.body.classList.toggle('right-collapsed', !!cfg.rightCollapsed);
+  }
+
   document.body.classList.toggle('layout-tools-collapsed', !!cfg.layoutToolsCollapsed);
-  document.body.classList.toggle('hide-all-hints', !!cfg.hideHints);
-  document.body.classList.toggle('freeform-clean-view', !!cfg.freeformCleanView);
-  queueEnhanceHints();
   refreshHeaderToggle();
   refreshPanelToggleButtons();
   refreshLayoutToolsToggle();
@@ -7584,6 +7628,16 @@ function applyPageSettings(settings = pageSettings(), options = {}) {
   applyDesignModeUi();
   refreshAddStudentCollapse();
   setSideTab(uiState.activeSideTab);
+}
+
+function applyPageSettings(settings = pageSettings(), options = {}) {
+  uiState.pageSettings = mergePageSettings(settings);
+  const cfg = pageSettings();
+  document.body.dataset.theme = cfg.theme || 'default';
+  document.body.classList.toggle('hide-all-hints', !!cfg.hideHints);
+  document.body.classList.toggle('freeform-clean-view', !!cfg.freeformCleanView);
+  if (options.applyLoadDefaults === true) applyPageLoadDefaults(cfg);
+  queueEnhanceHints();
   applyVisibilityClasses();
   resetAutoLockTimer();
   syncSameTabReloadKeyForSettings(cfg);
@@ -7591,7 +7645,12 @@ function applyPageSettings(settings = pageSettings(), options = {}) {
 }
 
 function applyMobileFirstLoadCollapseDefaults() {
-  document.body.classList.add('header-collapsed', 'left-collapsed', 'right-collapsed', 'layout-tools-collapsed');
+  if (document.body.classList.contains('product-v4')) {
+    document.body.classList.remove('header-collapsed', 'left-collapsed', 'right-collapsed');
+  } else {
+    document.body.classList.add('header-collapsed', 'left-collapsed', 'right-collapsed');
+  }
+  document.body.classList.add('layout-tools-collapsed');
   uiState.addStudentCollapsed = true;
   setCsvCollapsed(true);
   refreshHeaderToggle();
@@ -8853,10 +8912,13 @@ function normalizeFreeformObject(object, index = 0) {
 }
 
 function normalizeFreeformLayout(layout) {
-  const source = layout && typeof layout === 'object' ? layout : {};
+  const sourceIsObject = Boolean(layout && typeof layout === 'object');
+  const source = sourceIsObject ? layout : {};
   const canvas = source.canvas && typeof source.canvas === 'object' ? source.canvas : {};
-  const objects = Array.isArray(source.objects) ? source.objects.map(normalizeFreeformObject) : [];
+  const hasObjectCollection = Array.isArray(source.objects);
+  const objects = hasObjectCollection ? source.objects.map(normalizeFreeformObject) : [];
   return {
+    initialized: source.initialized === true || objects.length > 0,
     canvas: {
       width: clampNumber(canvas.width ?? 2800, 400, 12000),
       height: clampNumber(canvas.height ?? 1800, 300, 12000),
@@ -8886,6 +8948,7 @@ function normalizeFreeformLayout(layout) {
           id: entry?.id ? String(entry.id) : uid('room-version'),
           name: String(entry?.name || `Room Version ${index + 1}`).trim().slice(0, 80) || `Room Version ${index + 1}`,
           createdAt: entry?.createdAt || new Date().toISOString(),
+          initialized: entry?.initialized === true || (Array.isArray(entry?.objects) && entry.objects.length > 0),
           canvas: entry?.canvas && typeof entry.canvas === 'object' ? deepClone(entry.canvas) : {},
           groups: Array.isArray(entry?.groups) ? deepClone(entry.groups) : [],
           objects: Array.isArray(entry?.objects) ? deepClone(entry.objects) : []
@@ -9200,9 +9263,10 @@ function positionFreeformObjectWithoutOverlap(obj, { startX = null, startY = nul
 function ensureFreeformLayout({ rebuildMissing = false } = {}) {
   state.freeformLayout = normalizeFreeformLayout(state.freeformLayout);
   const objects = state.freeformLayout.objects || [];
-  if (!objects.length) {
+  if (!objects.length && !state.freeformLayout.initialized) {
     state.freeformLayout.objects = createFreeformObjectsFromGrid({ keepAssignments: true });
-  } else if (rebuildMissing) {
+    state.freeformLayout.initialized = true;
+  } else if (objects.length && rebuildMissing) {
      
      
      
@@ -9219,6 +9283,7 @@ function ensureFreeformLayout({ rebuildMissing = false } = {}) {
 function rebuildFreeformFromGrid({ keepAssignments = true } = {}) {
   state.freeformLayout = normalizeFreeformLayout(state.freeformLayout);
   state.freeformLayout.objects = createFreeformObjectsFromGrid({ keepAssignments });
+  state.freeformLayout.initialized = true;
   state.freeformLayout.nextZ = state.freeformLayout.objects.length + 1;
   resetFreeformGeometryCache();
   persistFreeformGeometrySession('freeform-rebuild-from-grid');
@@ -9403,7 +9468,10 @@ function freeformGeometrySessionClassKey() {
 }
 
 function persistFreeformGeometrySession(reason = 'freeform-geometry') {
-  if (!Array.isArray(state.freeformLayout?.objects) || !state.freeformLayout.objects.length) return false;
+  if (!Array.isArray(state.freeformLayout?.objects) || !state.freeformLayout.objects.length) {
+    clearFreeformGeometrySession();
+    return true;
+  }
   const records = state.freeformLayout.objects.map(freeformGeometryRecord).filter(Boolean);
   const payload = {
     revision: APP_REVISION,
@@ -10198,6 +10266,7 @@ function addFreeformObject(type = null, overrides = {}) {
     color: objectTypeColor(selectedType)
   }, state.freeformLayout.objects.length);
   positionFreeformObjectWithoutOverlap(obj, { startX: obj.x, startY: obj.y });
+  state.freeformLayout.initialized = true;
   state.freeformLayout.objects.push(obj);
   selectFreeformObject(obj.id);
   rememberFreeformGeometry([obj]);
@@ -10230,15 +10299,52 @@ function duplicateSelectedFreeformObject() {
 }
 
 function deleteSelectedFreeformObject() {
-  const ids = uiState.freeformSelectedObjectIds || new Set();
-  if (!ids.size) return;
-  const removedIds = Array.from(ids);
-  state.freeformLayout.objects = (state.freeformLayout.objects || []).filter(obj => !ids.has(obj.id) || obj.locked);
+  if (eyeModeBlocksRoomEditing()) return blockEyeModeAction('room');
+  ensureFreeformLayout();
+  const selectedIds = new Set(uiState.freeformSelectedObjectIds || []);
+  if (!selectedIds.size) return;
+  const removableIds = new Set((state.freeformLayout.objects || []).filter(obj => selectedIds.has(obj.id) && !obj.locked).map(obj => obj.id));
+  if (!removableIds.size) {
+    setLiveStatusMessage('The selected Freeform objects are locked. Unlock them before deleting.');
+    return;
+  }
+  pushUndoSnapshot('Before deleting freeform objects');
+  state.freeformLayout.objects = (state.freeformLayout.objects || []).filter(obj => !removableIds.has(obj.id));
+  state.freeformLayout.initialized = true;
   const usedGroupIds = new Set(state.freeformLayout.objects.map(obj => String(obj.groupId || '')).filter(Boolean));
   state.freeformLayout.groups = (state.freeformLayout.groups || []).filter(group => usedGroupIds.has(String(group.id)));
-  forgetFreeformGeometry(removedIds);
-  ids.clear();
+  forgetFreeformGeometry(removableIds);
+  uiState.freeformSelectedObjectIds = new Set();
   commitFreeformLayoutChange('freeform-delete-object', { render: true, syncToGrid: false });
+  setLiveStatusMessage(`${removableIds.size} Freeform object${removableIds.size === 1 ? '' : 's'} deleted.`);
+}
+
+function clearFreeformRoom() {
+  if (eyeModeBlocksRoomEditing()) return blockEyeModeAction('room');
+  ensureFreeformLayout();
+  const objectCount = (state.freeformLayout.objects || []).length;
+  if (!objectCount) {
+    setLiveStatusMessage('The Freeform room is already blank.');
+    return;
+  }
+  showInAppConfirm(
+    `Remove all ${objectCount} Freeform object${objectCount === 1 ? '' : 's'}, including seats and defined room objects?
+
+Students, groups, zones, saved room history, and the Standard Grid layout are kept. You can also use Undo immediately after clearing.`,
+    () => {
+      pushUndoSnapshot('Before clearing freeform room');
+      state.freeformLayout.objects = [];
+      state.freeformLayout.groups = [];
+      state.freeformLayout.initialized = true;
+      state.freeformLayout.nextZ = 1;
+      uiState.freeformSelectedObjectIds = new Set();
+      resetFreeformGeometryCache();
+      clearFreeformGeometrySession();
+      commitFreeformLayoutChange('freeform-clear-room', { render: true, syncToGrid: false });
+      setLiveStatusMessage('Freeform room cleared. The blank canvas is ready for a new floor plan.');
+    },
+    { title: 'Clear Freeform Room?', confirmText: 'Clear Room', cancelText: 'Cancel' }
+  );
 }
 
 function rotateFreeformObject(id, degrees = 15) {
@@ -11803,7 +11909,7 @@ function renderStudents() {
             <span class="student-name-main">${studentGroupDots(student.id, groups)}<span class="student-name-text">${escapeHtml(studentDisplay(student))}</span>${studentNoteFlags(student)}</span>
             <span class="card-actions">
               <button class="tiny secondary icon-button" type="button" data-edit-student-notes="${escapeHtml(student.id)}" aria-label="Open notes" title="Open categorized notes for this student.">📝</button>
-              <button class="tiny secondary mobile-student-edit-action" type="button" data-edit-student-id="${escapeHtml(student.id)}" title="Edit this student's first name, last name, nickname, grade, or ID.">Edit</button>
+              <button class="tiny secondary student-edit-action" type="button" data-edit-student-id="${escapeHtml(student.id)}" title="Edit this student's first name, last name, nickname, grade, or ID.">Edit</button>
               <button class="tiny danger icon-button" type="button" data-delete-student="${escapeHtml(student.id)}" aria-label="Delete student" title="Delete this student">🗑</button>
             </span>
           </div>
@@ -12228,7 +12334,7 @@ function renderGroupManager() {
                 <span class="card-actions">
                   <button class="tiny secondary" type="button" data-group-manager-pick="student" data-manager-item-id="${escapeHtml(student.id)}">Pick Up</button>
                   <button class="tiny secondary icon-button" type="button" data-edit-student-notes="${escapeHtml(student.id)}" aria-label="Open notes" title="Open categorized notes for this student.">📝</button>
-                  <button class="tiny secondary mobile-student-edit-action" type="button" data-edit-student-id="${escapeHtml(student.id)}" title="Edit this student's information.">Edit</button>
+                  <button class="tiny secondary student-edit-action" type="button" data-edit-student-id="${escapeHtml(student.id)}" title="Edit this student's information.">Edit</button>
                 </span>
               </div>
               <div class="student-meta">${escapeHtml(studentMetaText(student))}${assigned ? ` · Seat ${assigned.row},${assigned.col}` : ''}</div>
@@ -12682,7 +12788,7 @@ function renderStatus() {
             <span class="student-name-main">${studentGroupDots(student.id, groupsByStudent.get(String(student.id)) || [])}<span class="student-name-text">${escapeHtml(studentDisplay(student))}</span></span>
             <span class="card-actions">
               <button class="tiny secondary icon-button" type="button" data-edit-student-notes="${escapeHtml(student.id)}" aria-label="Open notes" title="Open categorized notes for this student.">📝</button>
-              <button class="tiny secondary mobile-student-edit-action" type="button" data-edit-student-id="${escapeHtml(student.id)}" title="Edit this student's first name, last name, nickname, grade, or ID.">Edit</button>
+              <button class="tiny secondary student-edit-action" type="button" data-edit-student-id="${escapeHtml(student.id)}" title="Edit this student's first name, last name, nickname, grade, or ID.">Edit</button>
               <button class="tiny ${seat.manual ? 'ghost' : 'secondary'}" data-toggle-student-lock="${escapeHtml(student.id)}">${seat.manual ? 'Unlock' : 'Lock'}</button>
               <button class="tiny secondary" data-clear-student-assignment="${escapeHtml(student.id)}">Unassign</button>
             </span>
@@ -12695,7 +12801,7 @@ function renderStatus() {
         <div class="student-card unassigned" draggable="true" data-student-id="${escapeHtml(student.id)}">
           <div class="student-name">
             <span class="student-name-main">${studentGroupDots(student.id, groupsByStudent.get(String(student.id)) || [])}<span class="student-name-text">${escapeHtml(studentDisplay(student))}</span></span>
-            <span class="card-actions"><button class="tiny secondary icon-button" type="button" data-edit-student-notes="${escapeHtml(student.id)}" aria-label="Open notes" title="Open categorized notes for this student.">📝</button><button class="tiny secondary mobile-student-edit-action" type="button" data-edit-student-id="${escapeHtml(student.id)}" title="Edit this student's first name, last name, nickname, grade, or ID.">Edit</button></span>
+            <span class="card-actions"><button class="tiny secondary icon-button" type="button" data-edit-student-notes="${escapeHtml(student.id)}" aria-label="Open notes" title="Open categorized notes for this student.">📝</button><button class="tiny secondary student-edit-action" type="button" data-edit-student-id="${escapeHtml(student.id)}" title="Edit this student's first name, last name, nickname, grade, or ID.">Edit</button></span>
           </div>
           <div class="student-meta">${escapeHtml(studentMetaText(student))}</div>
         </div>
@@ -12969,7 +13075,7 @@ const CONTROL_TOOLTIPS = {
   settingsAddCustomObjectBtn: 'Add the typed custom object to the Click Tool and right-click menu. It will save with this chart.',
   settingsSaveLockPinBtn: 'Save or replace the Lock/Unlock PIN/password. It is stored as a salted hash, not plain text.',
   settingsSaveVisibilityPinBtn: 'Save or replace the Eye visibility mode exit PIN/password. It is stored as a salted hash, not plain text.',
-  toggleAddStudentBtn: 'Expand or collapse the Add Student form. It opens automatically when there are no students.',
+  toggleAddStudentBtn: 'Expand or collapse the Add Student panel. When collapsed, the roster uses the reclaimed space. It opens automatically when there are no students.',
   closeClassNameBtn: 'Close the class name window without saving.',
   saveClassNameBtn: 'Create or rename the class using the entered class name.',
   cancelClassNameBtn: 'Close the class name window without saving.',
@@ -13212,7 +13318,9 @@ function showStudentGroupContextMenu(studentId, x, y) {
   menu.dataset.studentId = targetId;
   title.textContent = studentDisplay(student);
   const editButton = `<button type="button" data-edit-student-id="${escapeHtml(targetId)}" title="Edit this student's first name, last name, nickname, grade, or ID.">Edit Student Information...</button><button type="button" data-edit-student-notes="${escapeHtml(targetId)}" title="Open categorized notes for this student.">📝 Student Notes...</button><div class="context-menu-separator"></div>`;
-  if (!state.groups.length) {
+  if (eyeModeBlocksGroupEditing()) {
+    items.innerHTML = editButton + '<div class="context-menu-empty-note">Group membership editing is disabled in the current visibility mode.</div>';
+  } else if (!state.groups.length) {
     items.innerHTML = editButton + '<div class="context-menu-empty-note">No groups exist yet. Create a group first, then assign students here.</div>';
   } else {
     items.innerHTML = editButton + state.groups
@@ -13678,7 +13786,7 @@ function readPageSettingsFormCore() {
       disableGroupEditing: checked('visDisableGroupEditing')
     }
   });
-  applyPageSettings(uiState.pageSettings, { skipRender: false });
+  applyPageSettings(uiState.pageSettings, { skipRender: true });
   const accessStatus = el('settingsAccessStatus');
   if (accessStatus) accessStatus.textContent = settingsAccessRequirementText();
   updateSaveHealthPanel();
@@ -13687,7 +13795,7 @@ function readPageSettingsFormCore() {
   resetAutoLockTimer();
   syncSameTabReloadKeyForSettings(pageSettings());
   scheduleLinkedAutoSave('settings');
-  setLiveStatusMessage('Page settings updated. Save to the selected storage location or download a backup copy to keep these defaults with the file.');
+  setLiveStatusMessage('Settings updated. Page Load Defaults will apply the next time a save is loaded, or when Apply Defaults to Current View is selected.');
 }
 
 function updatePinStatus(message = '') {
@@ -14916,7 +15024,7 @@ function restoreEntireImportedFile() {
   saveAppSnapshots((parsed.appSnapshots || []).map(normalizeAppSnapshotRecord));
   if (parsed.preferences?.dismissedHintKeys) saveDismissedHintKeys(new Set(parsed.preferences.dismissedHintKeys));
   applyClassToState(state.activeClassId);
-  applyPageSettings(uiState.pageSettings, { skipRender: true });
+  applyPageSettings(uiState.pageSettings, { skipRender: true, applyLoadDefaults: true });
   renderAll();
 }
 
@@ -14952,7 +15060,7 @@ function applySelectedRestoreChanges(draft, source) {
   if (el('restorePageSettingsToggle')?.checked && draft.pageSettings) {
     uiState.pageSettings = mergePageSettings(draft.pageSettings);
     if (draft.preferences?.dismissedHintKeys) saveDismissedHintKeys(new Set(draft.preferences.dismissedHintKeys));
-    applyPageSettings(uiState.pageSettings, { skipRender: true });
+    applyPageSettings(uiState.pageSettings, { skipRender: true, applyLoadDefaults: true });
   }
   sanitizeActiveStateReferences();
   persistActiveClass();
@@ -16994,7 +17102,7 @@ const HELP_GUIDE_SECTIONS = [
       },
       {
         "title": "Page Load Defaults",
-        "text": "Choose default Names Only mode, collapsed panels, CSV/Add Student collapse, default tab, design cell size, and hint visibility."
+        "text": "Choose default Names Only mode, workflow guidance, panels, CSV/Add Student collapse, default tab, design cell size, and hint visibility. Changes do not rearrange the current workspace until applied."
       },
       {
         "title": "Eye / Visibility Mode",
@@ -17704,7 +17812,7 @@ function importStateCore(json) {
   state.classes = parsed.classes.map(normalizeClassRecord);
   state.activeClassId = parsed.activeClassId;
   applyClassToState(state.activeClassId);
-  applyPageSettings(uiState.pageSettings, { skipRender: true });
+  applyPageSettings(uiState.pageSettings, { skipRender: true, applyLoadDefaults: true });
   renderAll();
 }
 
@@ -19152,7 +19260,7 @@ function resetInMemoryAppToFactory() {
   el('v50UpdateBanner')?.setAttribute('hidden', '');
   ensureGrid();
   ensureClassSystem();
-  applyPageSettings(uiState.pageSettings, { skipRender: true });
+  applyPageSettings(uiState.pageSettings, { skipRender: true, applyLoadDefaults: true });
   renderAll();
   updateUndoRedoButtons();
   updateSaveHealthPanel();
@@ -19380,6 +19488,7 @@ function wireEvents() {
   el('addFreeformObjectBtn')?.addEventListener('click', () => { if (eyeModeBlocksRoomEditing()) return blockEyeModeAction('room'); addFreeformObject(); });
   el('duplicateFreeformObjectBtn')?.addEventListener('click', duplicateSelectedFreeformObject);
   el('deleteFreeformObjectBtn')?.addEventListener('click', deleteSelectedFreeformObject);
+  el('clearFreeformRoomBtn')?.addEventListener('click', clearFreeformRoom);
   el('lockFreeformObjectBtn')?.addEventListener('click', () => lockSelectedFreeformObject(true));
   el('rotateFreeformObjectBtn')?.addEventListener('click', () => { const obj = selectedFreeformObject(); if (obj) rotateFreeformObject(obj.id, 15); });
   el('toggleFreeformCleanViewBtn')?.addEventListener('click', () => {
@@ -19489,7 +19598,7 @@ function wireEvents() {
     const studentCard = event.target.closest('.student-card[data-student-id], .group-member-chip[data-student-id], .group-manager-member[data-student-id]');
     if (studentCard) {
       event.preventDefault();
-      if (eyeModeBlocksGroupEditing()) { blockEyeModeAction('group'); return; }
+      if (eyeModeBlocksStudentEditing() && eyeModeBlocksGroupEditing()) { blockEyeModeAction('student'); return; }
       showStudentGroupContextMenu(studentCard.dataset.studentId, event.clientX, event.clientY);
       return;
     }
@@ -19642,11 +19751,11 @@ function wireEvents() {
 
     const freeformDeleteBtn = event.target.closest('[data-freeform-delete]');
     if (freeformDeleteBtn) {
+      event.preventDefault();
+      event.stopPropagation();
       if (eyeModeBlocksRoomEditing()) return blockEyeModeAction('room');
-      const removedId = freeformDeleteBtn.dataset.freeformDelete;
-      state.freeformLayout.objects = (state.freeformLayout?.objects || []).filter(obj => obj.id !== removedId || obj.locked);
-      forgetFreeformGeometry([removedId]);
-      commitFreeformLayoutChange('freeform-delete-object', { render: true, syncToGrid: false });
+      uiState.freeformSelectedObjectIds = new Set([freeformDeleteBtn.dataset.freeformDelete]);
+      deleteSelectedFreeformObject();
       return;
     }
 
@@ -19815,6 +19924,10 @@ function wireEvents() {
     const control = el(id);
     if (!control) return;
     control.addEventListener(control.tagName === 'SELECT' || control.type === 'number' ? 'input' : 'change', readPageSettingsForm);
+  });
+  el('applyPageLoadDefaultsNowBtn')?.addEventListener('click', () => {
+    applyPageSettings(pageSettings(), { skipRender: false, applyLoadDefaults: true });
+    setLiveStatusMessage('Page Load Defaults applied to the current workspace.');
   });
   el('settingsSaveLockPinBtn')?.addEventListener('click', saveLockPinFromSettings);
   el('settingsSaveVisibilityPinBtn')?.addEventListener('click', saveVisibilityPinFromSettings);
@@ -23917,10 +24030,10 @@ The schema-compatible payload parsed successfully${encrypted ? ' and decrypted w
   }
   function toggleFreeformMinimap(){state.freeformLayout.canvas.showMinimap=!state.freeformLayout.canvas.showMinimap;uiState.pageSettings.freeformShowMinimap=state.freeformLayout.canvas.showMinimap;schedulePageSettingsPersistence('freeform-minimap');updateFreeformMinimap();if(typeof syncFreeformToolbarState==='function')syncFreeformToolbarState();}
 
-  function roomVersionPayload(){const layout=state.freeformLayout;return{canvas:{...deepClone(layout.canvas),zoom:1},groups:deepClone(layout.groups||[]),objects:(layout.objects||[]).map(obj=>{const copy=deepClone(obj);delete copy.assignedStudentId;delete copy.manual;delete copy.anchorGroupIds;delete copy.zoneIds;return copy;})};}
+  function roomVersionPayload(){const layout=state.freeformLayout;return{initialized:true,canvas:{...deepClone(layout.canvas),zoom:1},groups:deepClone(layout.groups||[]),objects:(layout.objects||[]).map(obj=>{const copy=deepClone(obj);delete copy.assignedStudentId;delete copy.manual;delete copy.anchorGroupIds;delete copy.zoneIds;return copy;})};}
   function saveRoomVersion(name=null,announce=true){ensureFreeformLayout();const history=state.freeformLayout.roomHistory||(state.freeformLayout.roomHistory=[]);const version={id:uid('room-version'),name:String(name||el('roomVersionNameInput')?.value||`Room ${new Date().toLocaleString()}`).trim().slice(0,80),createdAt:new Date().toISOString(),...roomVersionPayload()};history.unshift(version);if(history.length>24)history.length=24;persistActiveClass();scheduleLinkedAutoSave('freeform-room-history');renderRoomHistory();if(announce)setLiveStatusMessage(`Saved room-layout version “${version.name}”.`);return version;}
   function renderRoomHistory(){const list=el('roomHistoryList');if(!list)return;const history=state.freeformLayout?.roomHistory||[];list.innerHTML=history.length?history.map(entry=>`<div class="room-history-row"><div><strong>${escapeHtml(entry.name)}</strong><span>${escapeHtml(new Date(entry.createdAt).toLocaleString())}</span></div><div class="button-row"><button type="button" class="tiny secondary" data-restore-room-version="${escapeHtml(entry.id)}">Restore</button><button type="button" class="tiny danger" data-delete-room-version="${escapeHtml(entry.id)}" aria-label="Delete ${escapeHtml(entry.name)}">×</button></div></div>`).join(''):'<div class="restore-empty">No room-layout versions saved yet.</div>';}
-  function restoreRoomVersion(id){const version=(state.freeformLayout?.roomHistory||[]).find(entry=>entry.id===id);if(!version)return;pushUndoSnapshot('Before restoring room version');const currentById=new Map((state.freeformLayout.objects||[]).map(obj=>[obj.id,obj]));const currentByCell=new Map((state.freeformLayout.objects||[]).filter(obj=>obj.cellKey).map(obj=>[obj.cellKey,obj]));const history=state.freeformLayout.roomHistory;const restored=normalizeFreeformLayout({canvas:version.canvas,groups:version.groups,objects:version.objects,roomHistory:history});restored.objects.forEach(obj=>{const existing=currentById.get(obj.id)||currentByCell.get(obj.cellKey);if(existing&&obj.type==='seat'){obj.assignedStudentId=existing.assignedStudentId||null;obj.manual=Boolean(existing.manual);obj.anchorGroupIds=deepClone(existing.anchorGroupIds||[]);obj.zoneIds=deepClone(existing.zoneIds||[]);}});state.freeformLayout=restored;resetFreeformGeometryCache();rememberFreeformGeometry(restored.objects);commitFreeformLayoutChange('freeform-restore-room-version',{render:true});renderRoomHistory();}
+  function restoreRoomVersion(id){const version=(state.freeformLayout?.roomHistory||[]).find(entry=>entry.id===id);if(!version)return;pushUndoSnapshot('Before restoring room version');const currentById=new Map((state.freeformLayout.objects||[]).map(obj=>[obj.id,obj]));const currentByCell=new Map((state.freeformLayout.objects||[]).filter(obj=>obj.cellKey).map(obj=>[obj.cellKey,obj]));const history=state.freeformLayout.roomHistory;const restored=normalizeFreeformLayout({initialized:version.initialized,canvas:version.canvas,groups:version.groups,objects:version.objects,roomHistory:history});restored.objects.forEach(obj=>{const existing=currentById.get(obj.id)||currentByCell.get(obj.cellKey);if(existing&&obj.type==='seat'){obj.assignedStudentId=existing.assignedStudentId||null;obj.manual=Boolean(existing.manual);obj.anchorGroupIds=deepClone(existing.anchorGroupIds||[]);obj.zoneIds=deepClone(existing.zoneIds||[]);}});state.freeformLayout=restored;resetFreeformGeometryCache();rememberFreeformGeometry(restored.objects);commitFreeformLayoutChange('freeform-restore-room-version',{render:true});renderRoomHistory();}
   function deleteRoomVersion(id){state.freeformLayout.roomHistory=(state.freeformLayout.roomHistory||[]).filter(entry=>entry.id!==id);persistActiveClass();scheduleLinkedAutoSave('freeform-delete-room-version');renderRoomHistory();}
 
   function freeformPrintPixels(){const canvas=state.freeformLayout?.canvas||{};const sizes={letter:[8.5,11],legal:[8.5,14],a4:[8.27,11.69]};let [w,h]=sizes[canvas.printPageSize]||sizes.letter;if(canvas.printOrientation==='landscape')[w,h]=[h,w];const margin=Number(canvas.printMargin)||0;return{width:Math.max(96,(w-margin*2)*96),height:Math.max(96,(h-margin*2)*96)};}
@@ -24789,6 +24902,9 @@ const WorkspaceLayoutV41 = (() => {
     const rightTitle = document.querySelector('.right-panel > .panel-header h2');
     if (rightTitle) rightTitle.textContent = 'Chart review';
 
+    const manualSeatingGuide = document.getElementById('guideManualSeatingBtn');
+    if (manualSeatingGuide) manualSeatingGuide.hidden = leftCollapsed;
+
     const leftButton = document.getElementById('v41ToggleLeftPanel');
     if (leftButton) {
       const panelName = workflow === 'seating' ? 'student list' : 'class setup';
@@ -24838,6 +24954,14 @@ const WorkspaceLayoutV41 = (() => {
     updatePanelButtons();
     updateDashboardButtons();
     updateRibbon();
+  }
+
+  function applyPageLoadDefaults(settings = {}) {
+    state.workflowCollapsed = Boolean(settings.headerCollapsed);
+    state.panelStates.seatingLeft = Boolean(settings.leftCollapsed);
+    state.panelStates.reviewRight = Boolean(settings.rightCollapsed);
+    saveState();
+    applyLayoutState();
   }
 
   function toggleFocusMode(force) {
@@ -25125,7 +25249,7 @@ const WorkspaceLayoutV41 = (() => {
     applyLayoutState();
   }
 
-  return Object.freeze({ install, afterReady, toggleFocusMode, toggleWorkflow, togglePanel, resetLayout, getState: () => JSON.parse(JSON.stringify(state)) });
+  return Object.freeze({ install, afterReady, applyPageLoadDefaults, toggleFocusMode, toggleWorkflow, togglePanel, resetLayout, getState: () => JSON.parse(JSON.stringify(state)) });
 })();
 
 const ProductPolishV42 = (() => {
@@ -27358,11 +27482,13 @@ const ClassSetupWorkspaceV54 = (() => {
     }
     if (listSection) {
       listSection.classList.add('class-setup-editor-card', 'class-setup-student-list-card');
-      const heading = listSection.querySelector('h3');
+      listSection.classList.remove('v41-section-collapsed');
+      const heading = listSection.querySelector(':scope > h3');
       if (heading?.firstChild) heading.firstChild.textContent = 'Students ';
       const hint = node('studentListContextHint');
       if (hint) hint.innerHTML = 'Manage names, notes, attendance, and requirements here. Use <strong>Seat Students</strong> later to place students because that screen shows the room and roster together.';
     }
+    refreshAddStudentCollapse();
   }
 
   function decorateImportSection() {
@@ -29723,7 +29849,7 @@ async function initializeApp() {
   }
 
   if (!loaded) {
-    applyPageSettings(uiState.pageSettings, { skipRender: true });
+    applyPageSettings(uiState.pageSettings, { skipRender: true, applyLoadDefaults: true });
     renderAll();
   }
   uiState.linkedSaveLastSignature = currentSaveSignature();
