@@ -5,7 +5,7 @@
   <meta name="license" content="MIT License" />
   <meta name="spdx-license-identifier" content="MIT" />
   <meta name="copyright" content="Copyright (c) 2026 Chris L. Franklin" />
-  <meta name="app-version" content="6.4.3" />
+  <meta name="app-version" content="6.4.4" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com https://www.paypalobjects.com blob:; style-src 'self' 'unsafe-inline'; connect-src 'self' https://www.googleapis.com https://classroom.googleapis.com https://accounts.google.com https://www.paypal.com https://www.paypalobjects.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://www.paypal.com; img-src 'self' data: blob: https://www.paypalobjects.com; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'self' https://www.paypal.com" />
   <meta name="application-name" content="Classroom Seating Planner" />
@@ -5322,6 +5322,8 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
               <div class="button-row settings-help-actions">
                 <button id="settingsHelpGuideBtn" type="button">Open Help &amp; Lessons</button>
                 <button id="settingsQuickStartBtn" class="secondary" type="button">Start Quick Start</button>
+                <button id="settingsDriveSharingGuideBtn" class="secondary" type="button" data-guided-start="drive-collaboration" data-guided-mode="explain">Drive Sharing Guide</button>
+                <button id="settingsSecurityGuideBtn" class="secondary" type="button" data-guided-start="security-privacy" data-guided-mode="explain">Security Setup Guide</button>
                 <button id="settingsResumeLessonBtn" class="ghost" type="button">Resume lesson</button>
               </div>
             </section>
@@ -5329,9 +5331,10 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
               <h3>What each tool does</h3>
               <div class="feature-list">
                 <div class="feature-card"><strong>Quick Start</strong><span>An eight-step overview of creating a class, building the room, seating students, reviewing, saving, and sharing.</span></div>
-                <div class="feature-card"><strong>Hands-on lessons</strong><span>Practice Freeform tools, manual placement, random seating, candidate generation, groups, zones, snapshots, printing, imports, and Google connections.</span></div>
+                <div class="feature-card"><strong>Hands-on lessons</strong><span>Practice Freeform tools, manual placement, random seating, candidate generation, groups, zones, snapshots, printing, imports, Google connections, security setup, and Drive collaboration.</span></div>
                 <div class="feature-card"><strong>Practice classes</strong><span>Lessons can create a clearly labeled temporary class so users can learn without modifying a real roster or room.</span></div>
-                <div class="feature-card"><strong>Reference guide</strong><span>Search explanations, examples, security guidance, printing help, and troubleshooting without starting a lesson.</span></div>
+                <div class="feature-card"><strong>Reference guide</strong><span>Search explanations, examples, security guidance, sharing roles, password-protected read-only packages, printing help, and troubleshooting without starting a lesson.</span></div>
+                <div class="feature-card"><strong>Wizard and workflow index</strong><span>Lists every major guided flow, where it starts, what it changes, and which recovery or cancel path protects existing data.</span></div>
               </div>
             </section>
           </div>
@@ -6129,7 +6132,7 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
 const APP_CONFIG = Object.freeze({
   name: 'Classroom Seating Planner',
   shortName: 'Seating Planner',
-  version: '6.4.3',
+  version: '6.4.4',
   copyrightHolder: 'Chris L. Franklin',
   copyrightYear: '2026',
   releaseDate: '2026-07-14',
@@ -6360,7 +6363,7 @@ const PROJECT_FEATURES = [
   { title: 'Manual and keyboard placement', text: 'Drag, swap, lock, clear, or keyboard-place students while preserving anchors, reserved seats, and intentional Freeform geometry.' },
   { title: 'Review and integrity checks', text: 'Inspect unassigned students, rule outcomes, duplicate assignments, invalid locks, overlaps, hidden objects, and other room or data problems.' },
   { title: 'Encrypted saving and recovery', text: 'Use encrypted browser autosave, linked working files, downloaded backups, snapshots, selective restore, guarded startup recovery, and an optional separately stored password-recovery package.' },
-  { title: 'Optional Google Drive', text: 'Save and load encrypted working files through Google Drive with conflict detection, reconnect status, and deployment-controlled OAuth configuration.' },
+  { title: 'Optional Google Drive collaboration', text: 'Save and load encrypted working files through Google Drive, choose viewers or editors by Google-account email, enforce file roles, and merge overlapping saves without pretending the app provides live cursor-level co-editing.' },
   { title: 'Purpose-limited sharing', text: 'Create teacher, substitute, student-facing, support-team, anonymous, and room-only outputs with a privacy summary before export.' },
   { title: 'Printing and room output', text: 'Prepare names-only, substitute, or detailed charts with selectable fields, notes, configuration details, paper sizes, scale, tiling, and crop marks.' },
   { title: 'Security and privacy controls', text: 'Protect Settings, use Lock and Eye PINs, auto-lock the page, reveal sensitive notes deliberately, and erase browser-resident data through explicit recovery workflows.' },
@@ -6372,10 +6375,23 @@ const PROJECT_FEATURES = [
 
 const RELEASE_HISTORY = [
   {
-    version: '6.4.3',
+    version: '6.4.4',
+    date: 'July 14, 2026',
+    title: 'Complete help, how-to, wizard, and collaboration guidance audit',
+    current: true,
+    changes: [
+      'Added a dedicated Google Drive collaboration guide that shows exactly where the owner chooses people, assigns Viewer or Editor access, and reviews or removes permissions.',
+      'Added focused guided lessons for editable Drive sharing and security/privacy setup, including context-aware entry points inside their working dialogs.',
+      'Documented every major wizard and guided workflow, including first-run security, CSV mapping, Safe Sharing, selective restore, roster reconciliation, class merge, Drive merge, and recovery flows.',
+      'Clarified that Drive collaboration is revision-aware shared-file editing rather than live Google Docs-style cursor streaming, and documented how recipients open a shared file under the narrow per-file Drive scope.',
+      'Added automated help-coverage checks so collaboration, security, read-only package protection, and wizard documentation cannot quietly disappear from future builds.'
+    ]
+  },
+  {
+    version: '6.4.4',
     date: 'July 14, 2026',
     title: 'Protected read-only packages and menu layering',
-    current: true,
+    current: false,
     changes: [
       'Raised the compact Save menu above the application header and workflow shell while retaining viewport-aware positioning and scrolling.',
       'Added an optional viewer password and confirmation directly to the Read-only Classroom HTML export.',
@@ -17193,7 +17209,7 @@ const HELP_GUIDE_SECTIONS = [
       },
       {
         "title": "5. Generate, review, print, and save",
-        "text": "Generate or randomize the chart, run Analyze, choose print privacy options, then use Save Now and download a backup copy after major changes."
+        "text": "Generate or randomize the chart, run Analyze, choose print privacy options, then use Save Now and download a backup copy after major changes. For shared editing, use Share Drive Save and choose each person's Viewer or Editor role."
       }
     ],
     "tips": [
@@ -17259,6 +17275,14 @@ const HELP_GUIDE_SECTIONS = [
         "text": "Recommended when supported. Choose a real JSON file once, then save directly back to it. Store it in a synced, network, or backed-up folder when available."
       },
       {
+        "title": "Share Drive Save with People",
+        "text": "After a Google Drive save is active, open Save & Share > Share Drive Save > Share and collaborate, use the disk menu, or open Settings > Google. Enter a Google-account email and choose Viewer or Editor."
+      },
+      {
+        "title": "Password-protected read-only HTML",
+        "text": "Safe Sharing can encrypt a faithful Grid or Freeform viewer with a separate password. The recipient can view the selected audience profile but cannot edit or overwrite the planner save."
+      },
+      {
         "title": "Auto-save interval",
         "text": "When enabled in Settings, major changes queue an automatic save to the selected file. Save Now remains available for manual control."
       },
@@ -17318,6 +17342,68 @@ const HELP_GUIDE_SECTIONS = [
     ],
     "examples": [
       "Before changing the plan for a new quarter, save a snapshot named Before Q2 changes."
+    ]
+  },
+  {
+    "id": "drive-sharing-collaboration",
+    "category": "Share",
+    "title": "Google Drive Sharing and Multi-User Collaboration",
+    "keywords": "share drive save collaborator people user email viewer editor writer reader role permission multi-user multi user concurrent merge shared file picker notification revoke remove access",
+    "intro": "The editable multi-user workflow uses one encrypted Google Drive save. The file owner chooses people and roles in Share and collaborate. This is revision-aware shared-file editing with conflict detection and three-way merge, not live Google Docs-style cursor streaming.",
+    "items": [
+      {
+        "title": "Where the owner chooses people",
+        "text": "Open Save & Share, find Share Drive Save, and choose Share and collaborate. The same dialog is available from the disk menu as Share Drive Save with People, and from Settings > Google as Share Current Drive Save."
+      },
+      {
+        "title": "Prerequisite: an active Drive save",
+        "text": "Connect Google Drive and save or load the editable planner file first. Sharing permissions belong to that active Drive file; browser-only or downloaded JSON files do not have a Google collaborator list."
+      },
+      {
+        "title": "Choose the collaborator",
+        "text": "Enter the person's Google-account email address in Choose who can open the editable save. The planner sends the permission request to the Google Drive API; it does not maintain a separate user directory or account database."
+      },
+      {
+        "title": "Viewer versus Editor",
+        "text": "Viewer is read-only inside the planner. Editor can change the classroom and save back to the shared Drive file. Give Editor only to staff who should modify the master working copy."
+      },
+      {
+        "title": "Notification and message",
+        "text": "Leave Send Google notification enabled to have Google email the recipient. The optional message can explain which hosted planner site to open and whether the recipient should edit the master or only review it."
+      },
+      {
+        "title": "How the recipient opens the shared save",
+        "text": "The recipient opens the same hosted Classroom Seating Planner deployment, connects Google Drive, and uses Load from Drive or Manage Saves & Revisions. If the file is not visible under the narrow per-file scope, use Choose Another Drive File through Google Picker when the deployment provides it."
+      },
+      {
+        "title": "Current permissions",
+        "text": "The Current Drive permissions list shows the people Google returns for the file. The owner can change Viewer/Editor access or remove a collaborator without creating a new save file."
+      },
+      {
+        "title": "Concurrent edits and merge",
+        "text": "The app checks Drive revision metadata before saving. Non-overlapping changes can be merged automatically; overlapping changes open Resolve Drive merge conflicts so the user chooses which value wins. Users do not see each other's seats move live."
+      },
+      {
+        "title": "Editable save versus encrypted viewer package",
+        "text": "Share the Drive save with Editor access for collaborative editing. Use an encrypted read-only HTML package or encrypted viewer file for substitutes, students, or anyone who should not modify the master. Send the viewer password through a separate channel."
+      },
+      {
+        "title": "Copy link, change access, or revoke access",
+        "text": "Copy Drive link copies Google's link for the active file. Use the permission list to change a role or remove access. Removing Drive access does not recall copies the recipient already downloaded or printed."
+      }
+    ],
+    "tips": [
+      "Use a short message that names the hosted planner URL and tells the recipient to connect the Google account that received the permission.",
+      "Ask editors to save and close before another editor begins a large room redesign when practical; the merge system is a safety net, not a substitute for coordination.",
+      "Use the encrypted viewer package when the recipient needs a stable view rather than the editable master."
+    ],
+    "warnings": [
+      "Google Drive sharing does not provide live cursors or instant seat movement. Changes become visible after another user loads or refreshes the Drive copy.",
+      "A Viewer cannot save changes back to the shared file. A recipient who needs to edit must receive Editor access from the owner or save a separate copy.",
+      "The application uses a narrow per-file Drive scope. A shared file may require Google Picker to grant this deployment access for the recipient."
+    ],
+    "examples": [
+      "The intervention specialist receives Editor access to the shared working save. A substitute receives a password-protected read-only HTML package instead."
     ]
   },
   {
@@ -17877,6 +17963,14 @@ const HELP_GUIDE_SECTIONS = [
       {
         "title": "Open Print Page",
         "text": "Applies options and opens print preview mode. Use the browser print command after that."
+      },
+      {
+        "title": "Read-only classroom package",
+        "text": "Creates a faithful Grid or Freeform HTML view for a selected audience without the editable application. Enable password protection to encrypt the selected classroom data before sending the file."
+      },
+      {
+        "title": "Editable Drive sharing",
+        "text": "For another teacher who must edit the master, share the active Google Drive save and give that person Editor access. Read-only packages do not participate in multi-user editing."
       }
     ],
     "tips": [
@@ -17927,6 +18021,120 @@ const HELP_GUIDE_SECTIONS = [
     ]
   },
   {
+    "id": "dialogs-reference",
+    "category": "Help",
+    "title": "Tools, Dialogs, Editors, and Confirmation Windows",
+    "keywords": "dialog modal popup window editor confirmation about changelog license global search class tools student edit notes seat edit group manager snapshot revision template audit preset workspace conflict diagnostics information",
+    "intro": "This reference groups the application's pop-up tools by purpose so users can identify what opened, what it changes, and whether closing it is safe.",
+    "items": [
+      {
+        "title": "Information and navigation windows",
+        "text": "About, Change Log, License, Help & Lessons, and Global Search are informational or navigational. Closing them does not change classroom data."
+      },
+      {
+        "title": "Class and roster editors",
+        "text": "Class Name, Class Tools, District Roster, Student Editor, Student Notes, and Student / Group / Zone Manager change the active class only after the relevant Save, Add, Apply, or Delete action."
+      },
+      {
+        "title": "Room and object editors",
+        "text": "Seat Editor, Room Templates, Freeform Workspace, Freeform Presets, and Freeform Audit control room geometry and objects. Preview and audit windows do not change the room; Apply, Restore, or object-edit actions do."
+      },
+      {
+        "title": "Seating explanation and review windows",
+        "text": "Why This Placement, Rule Conflicts, Seating Candidates, Today Mode, Seating Plans, and Undo History explain or stage changes. Candidate selection, plan activation, attendance changes, and history restore actions modify the active class."
+      },
+      {
+        "title": "Save, backup, revision, and recovery windows",
+        "text": "Save Setup, Selective Restore, Snapshots, Snapshot Preview, Backup Verification, Drive File, Drive Manager, Drive Revisions, Save Conflict, Drive Merge, Operation Recovery, Offline Recovery Kit, and Password Recovery each state whether they are previewing, exporting, restoring, or writing data. Review the summary before Apply, Restore, Merge, or Save."
+      },
+      {
+        "title": "Sharing and Google windows",
+        "text": "Share and Collaborate chooses Google Drive people and Viewer or Editor access. Shared Viewer and Safe Sharing create restricted copies rather than changing Drive permissions. Deployment Diagnostics reports whether hosted Google features are configured."
+      },
+      {
+        "title": "Security and privacy windows",
+        "text": "Welcome Security, Encryption Password, Security Guided Help, Settings Access, Page Lock setup, Lock Now, Eye Mode setup, Eye Mode exit, and privacy-key protection control access to sensitive data. Closing a setup window without saving leaves the previous policy in place."
+      },
+      {
+        "title": "Confirmations",
+        "text": "The general confirmation window is reused for destructive or consequential actions. Read its message rather than assuming every confirmation performs the same operation; Cancel leaves the pending action unapplied."
+      }
+    ],
+    "tips": [
+      "Use the window title and its primary button to distinguish a preview from an action that writes data.",
+      "When a dialog contains a Guide me button, open it for a focused lesson tied to the controls currently on screen."
+    ],
+    "warnings": [
+      "Drive permission changes, restores, merges, imports, deletions, and factory reset actions can affect other users or stored data. Review the final confirmation and create a snapshot or backup when offered."
+    ]
+  },
+  {
+    "id": "wizards-how-to",
+    "category": "Help",
+    "title": "Wizards, Guided Help, and Recovery Flows",
+    "keywords": "wizard guided flow how-to how to onboarding welcome security csv mapping import safe sharing restore reconciliation merge recovery password drive conflict setup steps cancel rollback",
+    "intro": "The application uses several guided flows. This index explains where each one starts, what it changes, and which safety step protects existing work.",
+    "items": [
+      {
+        "title": "Welcome Security Setup",
+        "text": "Appears on first use or during startup recovery. It creates or verifies the encryption password before normal classroom work begins. Starting fresh is destructive only after the explicit reset confirmation."
+      },
+      {
+        "title": "Security Guided Help",
+        "text": "Open Settings > Security & Data > Security Guided Help. It checks encryption, Settings access, Lock PIN, Eye PIN, auto-lock, and storage encryption. Valid options auto-save to encrypted browser storage; unmatched PIN fields block completion."
+      },
+      {
+        "title": "Guided Lessons",
+        "text": "Open Help & Lessons from the header or Settings. Explain mode points to real controls without changing class data. Practice mode creates a clearly labeled practice class and validates completed actions."
+      },
+      {
+        "title": "CSV Mapping Wizard",
+        "text": "Open Class Setup > Import Roster > Mapped CSV. Map columns, preview rows, choose duplicate handling, optionally create a snapshot, and then apply the import. Canceling before Apply leaves the class unchanged."
+      },
+      {
+        "title": "Roster Reconciliation",
+        "text": "Google Classroom and SIS imports show matched, new, missing, and duplicate students before applying changes. Existing notes, requirements, groups, zones, and seat references are preserved for matched students."
+      },
+      {
+        "title": "Save Setup and Selective Restore",
+        "text": "Open the save status or More Save Options. Choose durable storage, download backups, upload a compatible file, and select exactly which classes, settings, snapshots, templates, or components to restore."
+      },
+      {
+        "title": "Safe Sharing and read-only package flow",
+        "text": "Open Save & Share > Read-only classroom package. Choose the audience, included fields, and optional viewer password. The preview states what is included before the HTML file is created."
+      },
+      {
+        "title": "Google Drive Share and Collaborate",
+        "text": "Open Save & Share > Share Drive Save. Choose a Google-account email, Viewer or Editor, notification settings, and then review the Current Drive permissions list."
+      },
+      {
+        "title": "Class Compare and Merge",
+        "text": "Open the class manager's compare/merge action. Choose the source and categories, review the summary, and optionally create a snapshot before applying. The destination class identity is preserved."
+      },
+      {
+        "title": "Drive Merge Conflict Resolver",
+        "text": "Appears only when both local and remote users changed the same Drive save. Non-conflicting values merge automatically; each overlapping value must be resolved before Merge and save. Cancel preserves the newer remote file."
+      },
+      {
+        "title": "Operation Recovery Center",
+        "text": "Records privacy-safe details after failed imports or Google operations, explains whether data changed, and offers retry, rejected-row download, or a sanitized support report when available."
+      },
+      {
+        "title": "Offline and Password Recovery",
+        "text": "The Offline Recovery Kit creates an encrypted backup plus a separate key. The Password Recovery Package wraps the active encryption password with a separate recovery code. Each pair must be stored in separate secure locations."
+      }
+    ],
+    "tips": [
+      "Read the first hint in a wizard before pressing Continue; it states whether the flow changes data immediately or waits for a final Apply action.",
+      "Create a snapshot before imports, merges, bulk seating changes, or any restore that affects real classes.",
+      "Use Explain mode when training staff with real classes and Practice mode when they should click through the workflow themselves."
+    ],
+    "warnings": [
+      "A wizard cannot recover a forgotten encryption password unless a recovery package and its separate code were created beforehand.",
+      "Closing a confirmation or preview is safe; applying a restore, merge, import, permission change, or Factory Reset changes data or access and should be reviewed deliberately."
+    ]
+  },
+  {
     "id": "troubleshooting",
     "category": "Troubleshooting",
     "title": "Common Problems and Fixes",
@@ -17956,6 +18164,18 @@ const HELP_GUIDE_SECTIONS = [
       {
         "title": "Hints disappeared",
         "text": "Check Settings > Hide all text hints, or click Reset Closed Hints."
+      },
+      {
+        "title": "Share Drive Save is unavailable",
+        "text": "Connect Google Drive and save or load a Drive file first. The owner also needs Google permission to share that file. Browser-only and downloaded saves do not have Drive collaborator controls."
+      },
+      {
+        "title": "A collaborator cannot find the shared file",
+        "text": "Confirm the same Google account received access, then use Load from Drive or Manage Saves & Revisions. Under the narrow per-file scope, Choose Another Drive File through Google Picker may be required when the deployment provides it."
+      },
+      {
+        "title": "The shared file is view only or reports a conflict",
+        "text": "View-only means the owner granted Viewer access. A conflict means the remote Drive copy changed after this tab loaded it; use the merge resolver, save a new copy, or cancel instead of overwriting blindly."
       },
       {
         "title": "Layout feels cramped",
@@ -28270,6 +28490,7 @@ const DistrictIntegrationsV57 = (() => {
               <button id="googleHubDriveSaveBtn" class="secondary" type="button">Save Encrypted Copy</button>
               <button id="googleHubDriveLoadBtn" class="secondary" type="button">Load from Drive</button>
               <button id="googleHubDriveManageBtn" class="secondary" type="button">Manage Saves &amp; Revisions</button>
+              <button id="googleHubDriveShareBtn" class="secondary" type="button">Share Current Drive Save</button>
               ${pickerAction}
               <button id="googleHubDriveDisconnectBtn" class="ghost" type="button">Disconnect Drive</button>
             </div>
@@ -30572,9 +30793,9 @@ const SharedDriveCollaborationV64 = (() => {
 
   function appendMarkup() {
     const style = document.createElement('style');
-    style.textContent = `.shared-drive-modal{max-width:min(980px,96vw)}.shared-drive-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.shared-drive-permission-list{display:grid;gap:7px;max-height:300px;overflow:auto}.shared-drive-permission-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px;border:1px solid var(--border);border-radius:10px;background:#fff}.shared-drive-permission-row>div:first-child{display:grid;gap:2px;min-width:0}.shared-drive-permission-row span{color:var(--muted);font-size:11px}.shared-drive-permission-row select{min-width:110px}.shared-viewer-grid{display:grid;gap:8px}.shared-viewer-cell,.shared-viewer-object{box-sizing:border-box;border:1px solid var(--border);border-radius:10px;background:#fff;padding:8px;display:grid;place-items:center;text-align:center;min-height:72px}.shared-viewer-cell.seat{background:#dbeafe}.shared-viewer-canvas{position:relative;background:#fff;border:1px solid var(--border);overflow:auto}.shared-viewer-object{position:absolute}.drive-merge-conflict{display:grid;gap:7px;padding:9px;border:1px solid #fed7aa;border-radius:10px;background:#fffbeb}.drive-merge-conflict pre{max-height:180px;overflow:auto;white-space:pre-wrap;font-size:11px}@media(max-width:760px){.shared-drive-grid,.shared-drive-permission-row{grid-template-columns:1fr}}body[data-drive-access-role="reader"] [data-drive-write-action]{display:none!important}.drive-read-only-banner{position:fixed;left:50%;bottom:14px;z-index:39000;transform:translateX(-50%);max-width:min(680px,calc(100vw - 28px));padding:9px 12px;border:1px solid #f2ca83;border-radius:12px;background:#fffbeb;color:#7c2d12;box-shadow:0 12px 34px rgba(15,23,42,.22);font-size:12px;font-weight:800}.drive-read-only-banner[hidden]{display:none}body[data-drive-access-role="reader"] .app button,body[data-drive-access-role="reader"] .app input,body[data-drive-access-role="reader"] .app select,body[data-drive-access-role="reader"] .app textarea,body[data-drive-access-role="reader"] .app [draggable="true"]{cursor:not-allowed}`;
+    style.textContent = `.shared-drive-modal{max-width:min(980px,96vw)}.shared-drive-howto{margin-bottom:10px;padding:10px 12px;border:1px solid #bfdbfe;border-radius:12px;background:#eff6ff;color:#1e3a8a;font-size:12px;line-height:1.4}.shared-drive-howto strong{color:#172554}.shared-drive-howto ol{margin:6px 0;padding-left:20px}.shared-drive-howto p{margin:6px 0 0}.shared-drive-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.shared-drive-permission-list{display:grid;gap:7px;max-height:300px;overflow:auto}.shared-drive-permission-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px;border:1px solid var(--border);border-radius:10px;background:#fff}.shared-drive-permission-row>div:first-child{display:grid;gap:2px;min-width:0}.shared-drive-permission-row span{color:var(--muted);font-size:11px}.shared-drive-permission-row select{min-width:110px}.shared-viewer-grid{display:grid;gap:8px}.shared-viewer-cell,.shared-viewer-object{box-sizing:border-box;border:1px solid var(--border);border-radius:10px;background:#fff;padding:8px;display:grid;place-items:center;text-align:center;min-height:72px}.shared-viewer-cell.seat{background:#dbeafe}.shared-viewer-canvas{position:relative;background:#fff;border:1px solid var(--border);overflow:auto}.shared-viewer-object{position:absolute}.drive-merge-conflict{display:grid;gap:7px;padding:9px;border:1px solid #fed7aa;border-radius:10px;background:#fffbeb}.drive-merge-conflict pre{max-height:180px;overflow:auto;white-space:pre-wrap;font-size:11px}@media(max-width:760px){.shared-drive-grid,.shared-drive-permission-row{grid-template-columns:1fr}}body[data-drive-access-role="reader"] [data-drive-write-action]{display:none!important}.drive-read-only-banner{position:fixed;left:50%;bottom:14px;z-index:39000;transform:translateX(-50%);max-width:min(680px,calc(100vw - 28px));padding:9px 12px;border:1px solid #f2ca83;border-radius:12px;background:#fffbeb;color:#7c2d12;box-shadow:0 12px 34px rgba(15,23,42,.22);font-size:12px;font-weight:800}.drive-read-only-banner[hidden]{display:none}body[data-drive-access-role="reader"] .app button,body[data-drive-access-role="reader"] .app input,body[data-drive-access-role="reader"] .app select,body[data-drive-access-role="reader"] .app textarea,body[data-drive-access-role="reader"] .app [draggable="true"]{cursor:not-allowed}`;
     document.head.appendChild(style);
-    document.body.insertAdjacentHTML('beforeend', `<div id="sharedDriveModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="sharedDriveTitle"><div class="modal shared-drive-modal"><div class="panel-header"><div><span class="v44-modal-eyebrow">Google Drive</span><h2 id="sharedDriveTitle">Share and collaborate</h2></div><button id="closeSharedDriveBtn" type="button" class="tiny secondary">Close</button></div><div class="modal-body"><div class="button-row"><span id="sharedDriveRoleBadge" class="pill">Role unknown</span><button id="refreshSharedDriveBtn" type="button" class="secondary">Refresh access</button><button id="copySharedDriveLinkBtn" type="button" class="secondary">Copy Drive link</button></div><p id="sharedDriveStatus" class="hint">Connect Google Drive and save or load a file first.</p><div class="shared-drive-grid"><section class="section"><h3>Add collaborator</h3><div class="field"><label for="sharedDriveEmail">Google account email</label><input id="sharedDriveEmail" type="email" autocomplete="off"></div><div class="field"><label for="sharedDriveRole">Access</label><select id="sharedDriveRole"><option value="reader">Viewer</option><option value="writer">Editor</option></select></div><label class="checkline"><input id="sharedDriveNotify" type="checkbox" checked> Send Google notification</label><div class="field"><label for="sharedDriveMessage">Optional message</label><textarea id="sharedDriveMessage" rows="3"></textarea></div><button id="addSharedDrivePermissionBtn" type="button" data-drive-write-action>Add collaborator</button></section><section class="section"><h3>Encrypted viewer file</h3><div class="field"><label for="sharedViewerPreset">Viewer profile</label><select id="sharedViewerPreset"><option value="substitute">Substitute chart and substitute notes</option><option value="student">Student-facing names only</option><option value="anonymous">Anonymous numbered chart</option><option value="room">Room layout only</option></select></div><div class="row"><div class="field"><label for="sharedViewerPassword">Viewer password</label><input id="sharedViewerPassword" type="password" autocomplete="new-password"></div><div class="field"><label for="sharedViewerPasswordConfirm">Confirm</label><input id="sharedViewerPasswordConfirm" type="password" autocomplete="new-password"></div></div><div class="button-row"><button id="createDriveViewerFileBtn" type="button" data-drive-write-action>Create in Drive</button><button id="downloadEncryptedViewerHtmlBtn" type="button" class="secondary">Download encrypted HTML</button></div><p id="sharedViewerResult" class="muted">The viewer password is never uploaded separately. Send it through another channel.</p></section></div><section class="section"><h3>Current Drive permissions</h3><div id="sharedDrivePermissionList" class="shared-drive-permission-list"></div></section></div></div></div><div id="sharedViewerModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="sharedViewerModalTitle"><div class="modal shared-drive-modal"><div class="panel-header"><h2 id="sharedViewerModalTitle">Shared classroom view</h2><button id="closeSharedViewerBtn" type="button" class="tiny secondary">Close</button></div><div id="sharedViewerModalBody" class="modal-body"></div></div></div><div id="driveMergeModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="driveMergeTitle"><div class="modal shared-drive-modal"><div class="panel-header"><h2 id="driveMergeTitle">Resolve Drive merge conflicts</h2><button id="cancelDriveMergeBtn" type="button" class="tiny secondary">Cancel</button></div><div class="modal-body"><div class="hint">Non-conflicting local and remote changes were merged automatically. Choose which value wins for each overlapping edit.</div><div id="driveMergeConflictList" class="list" style="margin-top:10px"></div><div class="button-row" style="margin-top:10px"><button id="commitDriveMergeBtn" type="button">Merge and save</button></div></div></div></div>`);
+    document.body.insertAdjacentHTML('beforeend', `<div id="sharedDriveModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="sharedDriveTitle"><div class="modal shared-drive-modal"><div class="panel-header"><div><span class="v44-modal-eyebrow">Google Drive</span><h2 id="sharedDriveTitle">Share and collaborate</h2></div><div class="button-row"><button id="sharedDriveGuideBtn" type="button" class="tiny ghost" data-guided-start="drive-collaboration" data-guided-mode="explain">Guide me</button><button id="closeSharedDriveBtn" type="button" class="tiny secondary">Close</button></div></div><div class="modal-body"><div id="sharedDriveHowTo" class="shared-drive-howto"><strong>Editable multi-user setup</strong><ol><li>Save or load the master planner in Google Drive.</li><li>Enter a Google-account email and choose Viewer or Editor.</li><li>Have the recipient open the same hosted planner, connect Drive, and load the shared file.</li><li>Save changes back to Drive; overlapping edits use the merge resolver.</li></ol><p>This is revision-aware shared-file editing, not live Google Docs-style cursor streaming.</p></div><div class="button-row"><span id="sharedDriveRoleBadge" class="pill">Role unknown</span><button id="refreshSharedDriveBtn" type="button" class="secondary">Refresh access</button><button id="copySharedDriveLinkBtn" type="button" class="secondary">Copy Drive link</button></div><p id="sharedDriveStatus" class="hint">Connect Google Drive and save or load a file first.</p><div class="shared-drive-grid"><section class="section"><h3>Choose who can open the editable save</h3><div class="field"><label for="sharedDriveEmail">Google account email</label><input id="sharedDriveEmail" type="email" autocomplete="off" placeholder="teacher@example.org"></div><div class="field"><label for="sharedDriveRole">Access role</label><select id="sharedDriveRole"><option value="reader">Viewer — open but cannot save changes</option><option value="writer">Editor — can change and save the master</option></select></div><label class="checkline"><input id="sharedDriveNotify" type="checkbox" checked> Send Google notification</label><div class="field"><label for="sharedDriveMessage">Optional message</label><textarea id="sharedDriveMessage" rows="3" placeholder="Open the district-hosted planner, connect this Google account, then load the shared Drive save."></textarea></div><button id="addSharedDrivePermissionBtn" type="button" data-drive-write-action>Add person to Drive file</button><div class="hint mini">The planner does not keep a separate user list. Google Drive owns the permission. Viewer is enforced as read-only; Editor can save back to the shared file.</div></section><section class="section"><h3>Create a separate encrypted viewer</h3><div class="field"><label for="sharedViewerPreset">Viewer profile</label><select id="sharedViewerPreset"><option value="substitute">Substitute chart and substitute notes</option><option value="student">Student-facing names only</option><option value="anonymous">Anonymous numbered chart</option><option value="room">Room layout only</option></select></div><div class="row"><div class="field"><label for="sharedViewerPassword">Viewer password</label><input id="sharedViewerPassword" type="password" autocomplete="new-password"></div><div class="field"><label for="sharedViewerPasswordConfirm">Confirm</label><input id="sharedViewerPasswordConfirm" type="password" autocomplete="new-password"></div></div><div class="button-row"><button id="createDriveViewerFileBtn" type="button" data-drive-write-action>Create in Drive</button><button id="downloadEncryptedViewerHtmlBtn" type="button" class="secondary">Download encrypted HTML</button></div><p id="sharedViewerResult" class="muted">Use this for a stable read-only copy, not collaborative editing. Send the password through another channel.</p></section></div><section class="section"><h3>Current Drive permissions</h3><div class="hint mini">Change a person's role here or remove access. Removing access does not recall a file the person already downloaded or printed.</div><div id="sharedDrivePermissionList" class="shared-drive-permission-list"></div></section></div></div></div><div id="sharedViewerModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="sharedViewerModalTitle"><div class="modal shared-drive-modal"><div class="panel-header"><h2 id="sharedViewerModalTitle">Shared classroom view</h2><button id="closeSharedViewerBtn" type="button" class="tiny secondary">Close</button></div><div id="sharedViewerModalBody" class="modal-body"></div></div></div><div id="driveMergeModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="driveMergeTitle"><div class="modal shared-drive-modal"><div class="panel-header"><h2 id="driveMergeTitle">Resolve Drive merge conflicts</h2><button id="cancelDriveMergeBtn" type="button" class="tiny secondary">Cancel</button></div><div class="modal-body"><div class="hint">Non-conflicting local and remote changes were merged automatically. Choose which value wins for each overlapping edit.</div><div id="driveMergeConflictList" class="list" style="margin-top:10px"></div><div class="button-row" style="margin-top:10px"><button id="commitDriveMergeBtn" type="button">Merge and save</button></div></div></div></div>`);
   }
 
   function openManager() {
@@ -30585,13 +30806,14 @@ const SharedDriveCollaborationV64 = (() => {
 
   function installEntryPoint() {
     const shareGrid = document.querySelector('.v4-share-grid');
-    if (shareGrid && !node('openSharedDriveManagerBtn')) shareGrid.insertAdjacentHTML('afterbegin', `<article class="v4-share-card v4-share-card-primary"><div class="v4-share-icon">☁</div><span class="v4-eyebrow">Google Drive collaboration</span><h3>Share Drive save</h3><p>Add viewers or editors, create encrypted viewer copies, and merge concurrent edits safely.</p><button id="openSharedDriveManagerBtn" type="button" class="secondary">Share and collaborate</button></article>`);
+    if (shareGrid && !node('openSharedDriveManagerBtn')) shareGrid.insertAdjacentHTML('afterbegin', `<article class="v4-share-card v4-share-card-primary"><div class="v4-share-icon">☁</div><span class="v4-eyebrow">Google Drive collaboration</span><h3>Share Drive save with people</h3><p>Choose a Google-account email, assign Viewer or Editor access, review permissions, and merge overlapping saves safely.</p><button id="openSharedDriveManagerBtn" type="button" class="secondary">Choose people and access</button></article>`);
     const saveMenu = node('saveLoadMenu');
-    if (saveMenu && !saveMenu.querySelector('[data-save-menu-action="drive-share-manager"]')) saveMenu.insertAdjacentHTML('beforeend', '<button type="button" data-save-menu-action="drive-share-manager">Share Drive Save...</button>');
+    if (saveMenu && !saveMenu.querySelector('[data-save-menu-action="drive-share-manager"]')) saveMenu.insertAdjacentHTML('beforeend', '<button type="button" data-save-menu-action="drive-share-manager">Share Drive Save with People...</button>');
   }
 
   function installEvents() {
     node('openSharedDriveManagerBtn')?.addEventListener('click', openManager);
+    node('googleHubDriveShareBtn')?.addEventListener('click', openManager);
     node('closeSharedDriveBtn')?.addEventListener('click', () => { node('sharedDriveModal')?.classList.remove('show'); DialogManager.synchronize(); });
     node('refreshSharedDriveBtn')?.addEventListener('click', () => void listPermissions().catch(error => { node('sharedDriveStatus').textContent = error.message; }));
     node('addSharedDrivePermissionBtn')?.addEventListener('click', () => void addPermission().catch(error => { node('sharedDriveStatus').textContent = error.message; }));
@@ -30965,6 +31187,8 @@ const GuidedLearning = (() => {
     printOptionsOpened: () => el('printOptionsModal')?.classList.contains('show'),
     printPreviewOpened: () => document.body.classList.contains('print-preview-active') || signalSeen('openPrintPreviewBtn'),
     safeShareOpened: () => el('safeShareModal')?.classList.contains('show') || signalSeen('downloadReadOnlyClassroomBtn'),
+    sharedDriveManagerOpened: () => el('sharedDriveModal')?.classList.contains('show'),
+    securityWizardOpened: () => el('securitySetupWizardModal')?.classList.contains('show'),
     settingsGoogleOpened: () => el('settingsModal')?.classList.contains('show') && uiState.activeSettingsPage === 'google',
     driveActionUsed: () => signalSeen('googleHubDriveConnectBtn', 'settingsGoogleDriveManageBtn', 'settingsGoogleDriveConnectBtn'),
     classroomActionUsed: () => signalSeen('googleHubClassroomConnectBtn', 'classSetupGoogleClassroomConnectBtn'),
@@ -31186,6 +31410,45 @@ const GuidedLearning = (() => {
       ]
     },
     {
+      id: 'security-privacy',
+      category: 'Security and privacy',
+      title: 'Set Up Security, Locking, and Privacy',
+      summary: 'Use the Security Guided Help to verify encryption, Settings access, Lock and Eye PINs, auto-lock, and encrypted storage.',
+      duration: '7–9 minutes',
+      difficulty: 'Intermediate',
+      practiceSupported: false,
+      steps: [
+        simpleStep('open', 'Open Security Guided Help', 'The security wizard gathers the related controls in one status-driven checklist.', 'Open Settings > Security & Data, then choose Open Security Guided Help.', '#securitySetupWizardOpenBtn', { check: CHECKS.securityWizardOpened, requiredInExplain: true, prepare: () => openSettingsPageForLearning('security') }),
+        simpleStep('encryption', 'Verify the encryption password', 'The active encryption password protects browser saves, snapshots, downloaded saves, Drive saves, and protected viewer packages. It is not recoverable unless a recovery package was created beforehand.', 'Review Encryption password status.', '#securityWizardSteps [data-security-check="encryption"]', { check: CHECKS.always, requiredInPractice: false }),
+        simpleStep('settings-access', 'Protect Settings access', 'Settings can require the Lock PIN, Eye PIN, encryption password, or an automatic fallback order. No prompt is available but should be intentional.', 'Open Settings access requirement and review the selected method.', '#securityWizardSteps [data-security-check="settings"]', { check: CHECKS.always, requiredInPractice: false }),
+        simpleStep('lock-pin', 'Configure the Lock PIN', 'The Lock PIN restores a normally locked or auto-locked page. It is stored as a salted PBKDF2 hash rather than plain text.', 'Review the Lock PIN row.', '#securityWizardSteps [data-security-check="lock"]', { check: CHECKS.always, requiredInPractice: false }),
+        simpleStep('eye-pin', 'Configure the Eye Mode PIN', 'Eye Mode hides disallowed details and uses its exit PIN without exposing the full encryption password during ordinary classroom display.', 'Review the Eye Mode PIN row.', '#securityWizardSteps [data-security-check="eye"]', { check: CHECKS.always, requiredInPractice: false }),
+        simpleStep('autolock', 'Choose auto-lock triggers', 'Inactivity, window blur, hidden-tab, and return-after-time rules can protect an unattended classroom screen.', 'Review the Auto-lock rules row.', '#securityWizardSteps [data-security-check="autolock"]', { check: CHECKS.always, requiredInPractice: false }),
+        simpleStep('storage', 'Confirm encrypted browser storage', 'After setup, save once so the current browser record and snapshot index are encrypted with the active password.', 'Review Storage encryption status.', '#securityWizardSteps [data-security-check="storage"]', { check: CHECKS.always, requiredInPractice: false }),
+        simpleStep('finish', 'Save and finish deliberately', 'Valid fields auto-save; Save Security Setup provides an explicit checkpoint. Unmatched PIN fields prevent completion.', 'Use Save Security Setup or Done after the checklist reflects the intended policy.', '#securityWizardSaveBtn', { check: CHECKS.always, requiredInPractice: false })
+      ]
+    },
+    {
+      id: 'drive-collaboration',
+      category: 'Google Drive sharing',
+      title: 'Share an Editable Drive Save with Other Staff',
+      summary: 'Choose collaborators, assign Viewer or Editor roles, explain how recipients open the file, and understand revision-aware merging.',
+      duration: '6–8 minutes',
+      difficulty: 'Intermediate',
+      practiceSupported: false,
+      steps: [
+        simpleStep('open', 'Open Share and collaborate', 'The collaborator picker belongs to the active Google Drive save, not to browser-only autosave or a downloaded file.', 'Open Save & Share > Share Drive Save with People, the disk menu command, or Settings > Google > Share Current Drive Save.', '#openSharedDriveManagerBtn', { workflow: 'share', check: CHECKS.sharedDriveManagerOpened, requiredInExplain: true }),
+        simpleStep('prerequisite', 'Confirm the active Drive file', 'Connect Drive and save or load the master file first. The status line names the Drive file and whether the current account may manage sharing.', 'Read the sharing status before adding anyone.', '#sharedDriveStatus', { check: CHECKS.always, requiredInPractice: false }),
+        simpleStep('email', 'Choose the person', 'Enter the Google-account email that should receive access. Google Drive owns this permission; the planner does not create a separate app account.', 'Review the Google account email field.', '#sharedDriveEmail', { check: CHECKS.always, requiredInPractice: false }),
+        simpleStep('role', 'Choose Viewer or Editor', 'Viewer can open the file but the planner blocks editing and saving. Editor can change the master and save back to Drive.', 'Choose the least access the recipient needs.', '#sharedDriveRole', { check: CHECKS.always, requiredInPractice: false }),
+        simpleStep('notify', 'Send useful opening instructions', 'Google can notify the recipient. The message should identify the district-hosted planner and tell the recipient to connect the Google account that received access.', 'Review the notification and optional message controls.', '#sharedDriveNotify', { check: CHECKS.always, requiredInPractice: false }),
+        simpleStep('permissions', 'Review and maintain access', 'Current Drive permissions lets the owner change Viewer/Editor roles or remove a collaborator later.', 'Review the permission list.', '#sharedDrivePermissionList', { check: CHECKS.always, requiredInPractice: false }),
+        simpleStep('recipient', 'Explain how the recipient opens the save', 'The recipient opens the same hosted planner, connects Drive, and uses Load from Drive or Manage Saves & Revisions. Google Picker may be required to grant per-file access when the deployment provides it.', 'Use Copy Drive link only as a convenience; the recipient still opens the file through the planner.', '#copySharedDriveLinkBtn', { check: CHECKS.always, requiredInPractice: false }),
+        simpleStep('merge', 'Understand multi-user timing', 'This is not live cursor-level co-editing. The app checks Drive revisions when saving, merges non-overlapping changes, and asks which value wins for overlapping edits.', 'Remember that another editor sees changes after loading or refreshing the Drive copy.', '#sharedDriveHowTo', { check: CHECKS.always, requiredInPractice: false }),
+        simpleStep('viewer', 'Use a viewer package for non-editors', 'A password-protected read-only HTML or encrypted viewer file is safer for substitutes, students, or anyone who should not modify the master.', 'Review the separate encrypted viewer controls and send its password through another channel.', '#sharedViewerPreset', { check: CHECKS.always, requiredInPractice: false })
+      ]
+    },
+    {
       id: 'google-connections',
       category: 'Google tools',
       title: 'Connect Google Drive and Google Classroom',
@@ -31197,7 +31460,8 @@ const GuidedLearning = (() => {
         simpleStep('settings', 'Open the Google Settings page', 'Google Drive and Classroom authorization are managed centrally without asking teachers for API keys.', 'Open Settings → Google.', '#settingsPageGoogle', { check: CHECKS.settingsGoogleOpened, prepare: () => openSettingsPageForLearning('google') }),
         simpleStep('drive-auth', 'Connect Google Drive', 'Drive uses a narrow OAuth scope to create, update, list, revise, and manage files available to the planner.', 'Use Connect Drive when the hosted deployment is configured.', '#googleHubDriveConnectBtn', { check: CHECKS.driveActionUsed, requiredInPractice: false }),
         simpleStep('drive-files', 'Manage Drive saves', 'The Drive manager can choose the active file, rename, duplicate, open, trash, and browse revisions.', 'Open Manage Drive Files and review the controls.', '#settingsGoogleDriveManageBtn', { check: () => el('driveManagerModal')?.classList.contains('show'), requiredInPractice: false, requiredInExplain: true }),
-        simpleStep('conflicts', 'Understand revision-aware conflicts', 'Before overwriting, the planner compares version, head revision, checksum, and modified time. If a real conflict occurs, the choices are overwrite deliberately, save a new copy, or cancel.', 'Review the Drive manager status and remember that the conflict window appears only when a genuine remote change is detected.', '#driveManagerStatus', { check: CHECKS.always, requiredInPractice: false }),
+        simpleStep('sharing', 'Know where collaborators are chosen', 'After a Drive save is active, use Save & Share > Share Drive Save with People, the disk menu command, or Settings > Google > Share Current Drive Save. The dedicated Drive Sharing lesson explains roles and recipient opening steps.', 'Review the Share Current Drive Save entry point.', '#googleHubDriveShareBtn', { check: CHECKS.always, requiredInPractice: false }),
+        simpleStep('conflicts', 'Understand revision-aware conflicts', 'Before overwriting, the planner compares version, head revision, checksum, and modified time. If a real conflict occurs, the choices are overwrite deliberately, save a new copy, merge, or cancel.', 'Review the Drive manager status and remember that the conflict window appears only when a genuine remote change is detected.', '#driveManagerStatus', { check: CHECKS.always, requiredInPractice: false }),
         simpleStep('picker', 'Understand optional Google Picker', 'Picker is a deployment feature for browsing other Drive files. Teachers never enter API keys or project IDs.', 'Check the Picker deployment status on the Google page.', '#googleHubPickerStatus', { check: CHECKS.always, requiredInPractice: false }),
         simpleStep('classroom-auth', 'Connect Google Classroom', 'Classroom uses separate read-only course and roster scopes.', 'Connect Classroom when authorized by the district.', '#googleHubClassroomConnectBtn', { check: CHECKS.classroomActionUsed, requiredInPractice: false }),
         simpleStep('course', 'Choose a Classroom course', 'Selecting a course loads its roster into the reconciliation preview instead of replacing the current class immediately.', 'Refresh courses, choose one, and review the roster preview.', '#googleHubClassroomCourseSelect', { check: CHECKS.always, requiredInPractice: false }),
@@ -31488,6 +31752,11 @@ const GuidedLearning = (() => {
         void DistrictIntegrations.openDriveManager();
         return true;
       },
+      sharedDriveModal: () => {
+        SharedDriveCollaborationV64.openManager();
+        return true;
+      },
+      securitySetupWizardModal: () => clickLearningControl('securitySetupWizardOpenBtn'),
       helpGuideModal: () => {
         openHelpGuideModal();
         return true;
@@ -32276,6 +32545,8 @@ const GuidedLearning = (() => {
     insertContextButton({ id: 'guideSavingBtn', targetSelector: '#saveSetupModal .panel-header', lessonId: 'save-recover', mode: 'practice', position: 'append' });
     insertContextButton({ id: 'guidePrintBtn', targetSelector: '#printOptionsModal .panel-header', lessonId: 'print-share', mode: 'practice', position: 'append' });
     insertContextButton({ id: 'guideGoogleBtn', targetSelector: '#settingsPageGoogle .settings-page-header', lessonId: 'google-connections', mode: 'explain', position: 'append' });
+    insertContextButton({ id: 'guideCollaborationBtn', targetSelector: '#sharedDriveModal .panel-header', lessonId: 'drive-collaboration', mode: 'explain', position: 'append' });
+    insertContextButton({ id: 'guideSecurityBtn', targetSelector: '#securitySetupWizardModal .panel-header', lessonId: 'security-privacy', mode: 'explain', position: 'append' });
   }
 
   function resetProgress() {
