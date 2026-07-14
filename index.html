@@ -5,7 +5,7 @@
   <meta name="license" content="MIT License" />
   <meta name="spdx-license-identifier" content="MIT" />
   <meta name="copyright" content="Copyright (c) 2026 Chris L. Franklin" />
-  <meta name="app-version" content="6.4.0" />
+  <meta name="app-version" content="6.4.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com https://www.paypalobjects.com blob:; style-src 'self' 'unsafe-inline'; connect-src 'self' https://www.googleapis.com https://classroom.googleapis.com https://accounts.google.com https://www.paypal.com https://www.paypalobjects.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://www.paypal.com; img-src 'self' data: blob: https://www.paypalobjects.com; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'self' https://www.paypal.com" />
   <meta name="application-name" content="Classroom Seating Planner" />
@@ -916,7 +916,7 @@ body[data-theme="linux"] .settings-page-header{background:var(--panel-2);color:v
 }.settings-search-shell label{margin:0
 }.settings-search-shell input{width:100%
 }.settings-page-tab mark{background:#fef08a;color:#111827;border-radius:4px;padding:0 2px
-}.workflow-card{border:1px solid var(--border);border-radius:13px;background:#ffffff;padding:10px;display:grid;gap:6px;align-content:start
+}.workflow-card{background:#ffffff;gap:6px
 }.workflow-card strong{font-size:13px
 }.workflow-card span,
 .workflow-card p{color:var(--muted);font-size:12px;line-height:1.35;margin:0
@@ -2060,7 +2060,7 @@ textarea{min-width:0;max-width:100%
 .freeform-object-meta{overflow-wrap:anywhere;word-break:normal
 }.pill,
 .zone-tag,
-.freeform-group-chip{min-width:0;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap
+.freeform-group-chip{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap
 }.freeform-object{contain:layout style
 }.freeform-object-title,
 .freeform-object-meta,
@@ -2263,10 +2263,10 @@ body.product-v4[data-workflow="setup"] main.app > .class-setup-workspace{flex-di
 }body.product-v4[data-workflow="setup"] .left-panel .panel-header h2{font-size:15px
 }.class-setup-rail{display:none;gap:10px;min-width:0
 }body.product-v4[data-workflow="setup"] .class-setup-rail{display:grid
-}.class-setup-rail-summary{display:grid;grid-template-columns:1fr auto;gap:3px 8px;align-items:baseline;padding:11px;border:1px solid var(--border);border-radius:12px;background:linear-gradient(150deg, #eff6ff 0%, #ffffff 72%)
+}.class-setup-rail-summary{grid-template-columns:1fr auto;gap:3px 8px;align-items:baseline;padding:11px;border:1px solid var(--border);border-radius:12px;background:linear-gradient(150deg, #eff6ff 0%, #ffffff 72%)
 }.class-setup-rail-summary .class-setup-eyebrow{grid-column:1
 }.class-setup-rail-summary strong{grid-column:2;grid-row:1 / span 2;align-self:center;font-size:22px;letter-spacing:-.04em;color:var(--accent-dark)
-}.class-setup-rail-summary > span:last-child{grid-column:1 / -1;min-width:0;color:var(--muted);font-size:10.5px;line-height:1.35;overflow-wrap:anywhere
+}.class-setup-rail-summary > span:last-child{grid-column:1 / -1;min-width:0;color:var(--muted);overflow-wrap:anywhere
 }.class-setup-eyebrow{color:var(--accent-dark);font-size:9px;font-weight:900;letter-spacing:.08em;text-transform:uppercase
 }.class-setup-rail-nav{display:grid;gap:4px
 }.class-setup-rail-nav button{display:grid;gap:2px;width:100%;min-width:0;min-height:50px;padding:8px 10px;border:1px solid transparent;border-radius:10px;background:transparent;color:var(--text);text-align:left;box-shadow:none
@@ -2282,7 +2282,7 @@ body.product-v4[data-workflow="setup"] main.app > .class-setup-workspace{flex-di
 }.class-setup-title-block p{max-width:780px;margin:0;color:var(--muted);font-size:11px;line-height:1.4;overflow-wrap:anywhere
 }.class-setup-header-actions{display:flex;flex-wrap:wrap;gap:7px;flex:0 0 auto
 }.class-setup-top-nav{display:flex;gap:3px;min-width:0;padding:7px 12px 0;overflow-x:auto;scrollbar-width:thin;border-bottom:1px solid var(--border);background:#ffffff
-}.class-setup-top-nav button{flex:0 0 auto;min-height:36px;padding:7px 11px 8px;border:0;border-bottom:3px solid transparent;border-radius:8px 8px 0 0;background:transparent;color:var(--muted);box-shadow:none;font-size:11px;font-weight:800;white-space:nowrap
+}.class-setup-top-nav button{flex:0 0 auto;min-height:36px;padding:7px 11px 8px;border:0;border-bottom:3px solid transparent;border-radius:8px 8px 0 0;background:transparent;color:var(--muted);box-shadow:none;font-weight:800;white-space:nowrap
 }.class-setup-top-nav button:hover{background:#f8fafc;color:var(--text)
 }.class-setup-top-nav button.active{border-bottom-color:var(--accent);background:#eff6ff;color:var(--accent-dark)
 }.class-setup-content{min-height:0;overflow:auto;padding:14px
@@ -2877,9 +2877,7 @@ body.header-collapsed .header-actions{display:none
 body.header-collapsed .header-title p{display:none
 }body.header-collapsed .header-toggle-slot #toggleHeaderBtn{width:28px;min-width:28px;flex-basis:28px;height:28px;min-height:28px
 }body.left-collapsed .left-panel .panel-title-actions{display:none
-}@media (max-width: 1100px){header{grid-template-columns:1fr auto;grid-template-areas:"title toggle"
-          "class class"
-          "actions actions"
+}@media (max-width: 1100px){header{grid-template-columns:1fr auto
   }body.header-collapsed header{grid-template-columns:1fr auto 34px;grid-template-areas:"title class toggle"
   }
 }.left-panel .panel-header .panel-header-title #toggleLeftPanelBtn{padding:0
@@ -2916,9 +2914,7 @@ body.names-only-layout .cell-status .anchor-dot{display:none
 }body.names-only-layout .cell.has-groups,
 body.names-only-layout .cell.has-student-groups,
 body.names-only-layout .cell.has-anchor-groups{border-color:var(--border);box-shadow:none;padding-top:7px
-}@media (max-width: 1100px){header{grid-template-columns:1fr 34px 34px;grid-template-areas:"title settings toggle"
-          "class class class"
-          "actions actions actions"
+}@media (max-width: 1100px){header{grid-template-columns:1fr 34px 34px
   }body.header-collapsed header{grid-template-columns:minmax(120px, 1fr) minmax(230px, auto) 34px 34px;grid-template-areas:"title class settings toggle"
   }
 }body.left-collapsed .left-panel .side-tabs{display:none
@@ -2940,22 +2936,17 @@ body.header-collapsed .header-toggle-slot #toggleHeaderBtn{width:28px;min-width:
 }body.design-mode .cell[data-design-tooltip]:hover{overflow:visible
 }body.design-mode .cell[data-design-tooltip]:hover::after,
 body.design-mode .cell[data-design-tooltip]:hover::before{display:none;content:none
-}@media (max-width: 980px){html,
-  body{overflow:hidden
-  }body{display:flex;flex-direction:column;--header-offset:0px;--left-col:0px;--right-col:0px
-  }header,
-  body.header-collapsed header{position:relative;flex:0 0 auto;display:grid;grid-template-columns:minmax(0, 1fr) auto auto;grid-template-areas:"title settings toggle"
-          "class class class"
-          "actions actions actions";align-items:center;gap:5px;width:100%;max-width:100%;min-height:0;height:auto;max-height:35dvh;padding:6px;overflow:hidden;border-radius:0
+}@media (max-width: 980px){header,
+  body.header-collapsed header{grid-template-columns:minmax(0, 1fr) auto auto;align-items:center;max-height:35dvh;border-radius:0
   }.header-title,
-  body.header-collapsed .header-title{grid-area:title;display:flex;align-items:center;min-width:0;margin:0
+  body.header-collapsed .header-title{display:flex;align-items:center;margin:0
   }header h1,
   .header-title h1,
   body.header-collapsed .header-title h1{max-width:100%;margin:0;font-size:14px;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis
   }header p,
   .header-title p,
   body.header-collapsed .header-title p{display:none
-  }.header-settings-slot{grid-area:settings;justify-self:end;display:flex;align-items:center;gap:4px;width:auto;min-width:0
+  }.header-settings-slot{grid-area:settings;justify-self:end;display:flex;align-items:center;width:auto;min-width:0
   }.header-toggle-slot{grid-area:toggle;justify-self:end;display:flex
   }.header-settings-slot #settingsBtn,
   .header-settings-slot #pageLockBtn,
@@ -2964,23 +2955,23 @@ body.design-mode .cell[data-design-tooltip]:hover::before{display:none;content:n
   body.header-collapsed .header-settings-slot #pageLockBtn,
   body.header-collapsed .header-toggle-slot #toggleHeaderBtn{width:32px;min-width:32px;flex:0 0 32px;height:32px;min-height:32px;padding:0
   }.class-manager,
-  body.header-collapsed .class-manager{grid-area:class;justify-self:stretch;display:flex;flex-wrap:nowrap;align-items:center;gap:4px;width:100%;max-width:100%;min-width:0;min-height:0;height:auto;margin:0;padding:4px;overflow-x:auto;overflow-y:hidden;border-radius:10px
+  body.header-collapsed .class-manager{justify-self:stretch;align-items:center;min-height:0;margin:0;border-radius:10px
   }.class-manager select,
   body.header-collapsed .class-manager select{display:block;flex:0 0 min(215px, 58vw);width:min(215px, 58vw);min-width:150px;max-width:none;height:32px;min-height:32px;padding:5px 8px;font-size:12px
   }.class-manager button,
-  body.header-collapsed .class-manager button{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;width:auto;min-width:max-content;height:32px;min-height:32px;padding:4px 8px;font-size:10px;white-space:nowrap
+  body.header-collapsed .class-manager button{display:inline-flex;align-items:center;justify-content:center;width:auto;height:32px;min-height:32px;padding:4px 8px;white-space:nowrap
   }.header-actions{grid-area:actions;display:flex;flex-wrap:nowrap;align-items:center;justify-content:flex-start;width:100%;max-width:100%;min-width:0;overflow-x:auto;overflow-y:hidden;gap:5px;padding:0 0 2px
   }.header-actions > *{flex:0 0 auto;min-height:32px
   }.header-actions button,
   .header-actions select{font-size:11px;padding:5px 8px
-  }.mobile-panel-nav{position:fixed;left:0;right:0;bottom:0;z-index:9000;display:grid;grid-template-columns:repeat(3, minmax(0, 1fr));gap:6px;height:var(--mobile-bottom-nav-height);padding:7px 8px calc(7px + env(safe-area-inset-bottom, 0px));background:rgba(241, 245, 249, 0.98);border-top:1px solid rgba(148, 163, 184, 0.65);box-shadow:0 -8px 22px rgba(15, 23, 42, 0.12)
-  }.mobile-panel-nav button{min-width:0;min-height:40px;height:40px;padding:4px 3px;border-radius:12px;background:#ffffff;border:1px solid rgba(148, 163, 184, 0.7);color:#334155;font-weight:850;font-size:10.5px;line-height:1.05;box-shadow:none
+  }.mobile-panel-nav{height:var(--mobile-bottom-nav-height);background:rgba(241, 245, 249, 0.98);border-top:1px solid rgba(148, 163, 184, 0.65);box-shadow:0 -8px 22px rgba(15, 23, 42, 0.12)
+  }.mobile-panel-nav button{min-height:40px;height:40px;padding:4px 3px;border-radius:12px;background:#ffffff;border:1px solid rgba(148, 163, 184, 0.7);color:#334155;font-weight:850;font-size:10.5px;line-height:1.05;box-shadow:none
   }.mobile-panel-nav button.active{color:#1d4ed8;background:#eef4ff;border-color:#8fb0ff;box-shadow:inset 0 0 0 1px rgba(47,111,237,0.16)
   }.app,
   body.left-collapsed .app,
   body.right-collapsed .app,
-  body.left-collapsed.right-collapsed .app{position:relative;flex:1 1 auto;display:block;width:100%;max-width:100%;height:auto;min-height:0;max-height:none;padding:0;margin:0;overflow:hidden;background:#e8edf5
-  }.app > .panel{position:absolute;inset:var(--mobile-panel-gap) var(--mobile-panel-gap) calc(var(--mobile-bottom-nav-height) + var(--mobile-panel-gap)) var(--mobile-panel-gap);width:auto;max-width:none;height:auto;max-height:none;min-height:0;min-width:0;display:none;overflow:hidden;border-radius:14px
+  body.left-collapsed.right-collapsed .app{max-height:none;background:#e8edf5
+  }.app > .panel{inset:var(--mobile-panel-gap) var(--mobile-panel-gap) calc(var(--mobile-bottom-nav-height) + var(--mobile-panel-gap)) var(--mobile-panel-gap);max-width:none;max-height:none;border-radius:14px
   }.panel-header,
   .center-panel > .panel-header,
   body.left-collapsed .left-panel .panel-header,
@@ -3021,8 +3012,8 @@ body.design-mode .cell[data-design-tooltip]:hover::before{display:none;content:n
   }body.design-mode .cell{width:var(--design-cell-width, 28px);min-height:var(--design-cell-height, 37px)
   }.list{gap:7px
   }.section{padding:8px;margin-bottom:8px
-  }.modal-backdrop{align-items:flex-start;padding:6px;overflow:auto;z-index:11000
-  }.modal{width:100%;max-width:calc(100vw - 12px);max-height:calc(100dvh - 12px);overflow:auto;border-radius:14px
+  }.modal-backdrop{z-index:11000
+  }.modal{overflow:auto;border-radius:14px
   }.group-manager-grid,
   .settings-grid{grid-template-columns:1fr
   }.context-menu{position:fixed;max-width:calc(100vw - 12px);max-height:calc(100dvh - 72px);overflow:auto;z-index:12000
@@ -3048,7 +3039,7 @@ body.design-mode .cell[data-design-tooltip]:hover::before{display:none;content:n
   .group-manager-group.mobile-carry-selected{border-color:#2563eb;background:#eff6ff;box-shadow:inset 0 0 0 2px rgba(37,99,235,0.18), 0 8px 20px rgba(37,99,235,0.12)
   }
 }.student-edit-action{display:inline-flex;align-items:center;justify-content:center
-}.modal{width:min(780px, 100%);height:auto;min-height:0;min-width:0;flex-basis:auto
+}.modal{width:min(780px, 100%);height:auto;min-height:0;flex-basis:auto
 }.settings-modal{width:min(900px, 96vw)
 }.add-student-body.collapsed,
 body.visibility-mode.vis-hide-class-actions #newClassBtn,
@@ -3144,9 +3135,7 @@ body.header-collapsed .header-settings-slot #pageLockBtn{width:30px;min-width:30
 }.header-settings-slot .icon-button,
 .header-toggle-slot .icon-button{flex:0 0 auto
 }@media (max-width: 980px){header,
-  body.header-collapsed header{grid-template-columns:minmax(0, 1fr) minmax(136px, auto) 32px;grid-template-areas:"title settings toggle"
-          "class class class"
-          "actions actions actions"
+  body.header-collapsed header{grid-template-columns:minmax(0, 1fr) minmax(136px, auto) 32px
   }.header-settings-slot{min-width:136px;max-width:150px;gap:4px
   }
 }@media (max-width: 560px){header,
@@ -3184,7 +3173,7 @@ body.header-collapsed .save-inline-status{display:none
   .header-title p,
   body.header-collapsed .header-title p{display:none
   }.header-settings-slot,
-  body.header-collapsed .header-settings-slot{grid-area:settings;display:flex;align-items:center;justify-content:flex-end;gap:3px;min-width:124px;max-width:132px;width:auto
+  body.header-collapsed .header-settings-slot{grid-area:settings;display:flex;align-items:center;justify-content:flex-end;min-width:124px;max-width:132px;width:auto
   }.header-settings-slot #visibilityModeBtn,
   .header-settings-slot #helpGuideBtn,
   .header-settings-slot #settingsBtn,
@@ -3386,10 +3375,10 @@ body[data-theme="linux"] .note-editor-row.sensitive-note-hidden{background:var(-
 }.settings-modal{max-width:1120px;min-height:min(680px, 92vh)
 }.settings-modal .panel-header{flex:0 0 auto
 }.settings-modal .settings-body{flex:1 1 auto;min-height:0;height:auto
-}@media (max-width: 860px){.settings-modal{width:calc(100vw - 12px);max-width:calc(100vw - 12px);height:calc(100dvh - 12px);max-height:calc(100dvh - 12px);min-height:0
-  }.settings-modal .settings-body{grid-template-columns:1fr;grid-template-rows:auto minmax(0, 1fr);align-items:stretch
-  }.settings-modal .settings-page-nav{position:relative;height:auto;max-height:min(156px, 28dvh);overflow:auto;grid-template-columns:repeat(2, minmax(0, 1fr))
-  }.settings-modal .settings-page-content{height:auto;min-height:0;overflow:auto
+}@media (max-width: 860px){.settings-modal{max-width:calc(100vw - 12px);min-height:0
+  }.settings-modal .settings-body{grid-template-rows:auto minmax(0, 1fr);align-items:stretch
+  }.settings-modal .settings-page-nav{position:relative;overflow:auto
+  }.settings-modal .settings-page-content{height:auto
   }
 }@media (max-width: 520px){.settings-modal .settings-page-nav{grid-template-columns:1fr;max-height:min(118px, 24dvh)
   }
@@ -3405,7 +3394,7 @@ body[data-theme="linux"] .note-editor-row.sensitive-note-hidden{background:var(-
 }.settings-modal .settings-page-nav{min-width:0;height:100%
 }.settings-modal .settings-page-content{height:100%
 }@media (max-width: 860px){.settings-modal .settings-body{grid-template-columns:1fr;grid-template-rows:auto auto minmax(0, 1fr)
-  }.settings-modal .settings-page-nav{grid-column:1;grid-row:2;height:auto;max-height:min(156px, 28dvh)
+  }.settings-modal .settings-page-nav{max-height:min(156px, 28dvh)
   }
 }.settings-modal{display:flex;flex-direction:column;width:min(1120px, 96vw);height:min(820px, 92vh);max-height:min(820px, 92vh)
 }.settings-modal .modal-body.settings-body{flex:1 1 auto;min-height:0;padding:12px;display:grid;grid-template-columns:minmax(210px, 246px) minmax(0, 1fr);grid-template-rows:auto minmax(0, 1fr);gap:12px;align-items:stretch;overflow:hidden
@@ -3422,10 +3411,9 @@ body[data-theme="linux"] .note-editor-row.sensitive-note-hidden{background:var(-
 }.security-wizard-check-body .security-card,
 .security-wizard-check-body .auto-lock-card{margin:0
 }@media (max-width: 860px){.settings-modal{width:calc(100vw - 12px);height:calc(100dvh - 12px);max-height:calc(100dvh - 12px)
-  }.settings-modal .modal-body.settings-body{grid-template-columns:1fr;grid-template-rows:auto auto minmax(0, 1fr)
-  }.settings-modal .settings-search-shell{grid-column:1;grid-row:1
+  }.settings-modal .modal-body.settings-body{grid-template-rows:auto auto minmax(0, 1fr)
   }.settings-modal .settings-page-nav{grid-column:1;grid-row:2;grid-template-columns:repeat(2, minmax(0, 1fr));height:auto;max-height:min(172px, 30dvh)
-  }.settings-modal .settings-page-content{grid-column:1;grid-row:3
+  }.settings-modal .settings-page-content{grid-row:3
   }
 }@media (max-width: 560px){.settings-modal .modal-body.settings-body{padding:8px;gap:8px
   }.settings-modal .settings-page-nav{grid-template-columns:1fr;max-height:min(136px, 24dvh)
@@ -3724,7 +3712,7 @@ body.product-v4.workspace-v41.v41-focus-mode .v4-utility-dock > #settingsBtn{dis
   }body.product-v4.workspace-v41 .app,
   body.product-v4.workspace-v41.left-collapsed .app,
   body.product-v4.workspace-v41.right-collapsed .app,
-  body.product-v4.workspace-v41.left-collapsed.right-collapsed .app{height:calc(100dvh - var(--v4-topbar-height) - var(--v41-shell-height) - var(--v4-workflow-nav-height) - env(safe-area-inset-bottom, 0px));padding:5px
+  body.product-v4.workspace-v41.left-collapsed.right-collapsed .app{padding:5px
   }body.product-v4.workspace-v41 .v41-panel-toggle,
   body.product-v4.workspace-v41.v41-focus-mode .v4-quick-dock{display:none
   }body.product-v4.workspace-v41.v41-focus-mode .v4-workflow-nav{display:grid
@@ -3734,7 +3722,7 @@ body.product-v4.workspace-v41.v41-focus-mode .v4-utility-dock > #settingsBtn{dis
   }body.product-v4.workspace-v41.v41-focus-mode .app,
   body.product-v4.workspace-v41.v41-focus-mode.left-collapsed .app,
   body.product-v4.workspace-v41.v41-focus-mode.right-collapsed .app,
-  body.product-v4.workspace-v41.v41-focus-mode.left-collapsed.right-collapsed .app{height:calc(100dvh - var(--v4-topbar-height));padding-bottom:5px
+  body.product-v4.workspace-v41.v41-focus-mode.left-collapsed.right-collapsed .app{padding-bottom:5px
   }body.product-v4.workspace-v41.v41-focus-mode .v4-workflow-nav{display:none
   }
 }@media (max-width: 900px){body.product-v4.workspace-v41 .v4-utility-dock > #v41FocusModeBtn{display:inline-flex
@@ -6141,7 +6129,7 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
 const APP_CONFIG = Object.freeze({
   name: 'Classroom Seating Planner',
   shortName: 'Seating Planner',
-  version: '6.4.0',
+  version: '6.4.1',
   copyrightHolder: 'Chris L. Franklin',
   copyrightYear: '2026',
   releaseDate: '2026-07-14',
@@ -6384,10 +6372,23 @@ const PROJECT_FEATURES = [
 
 const RELEASE_HISTORY = [
   {
-    version: '6.3.5',
+    version: '6.4.1',
+    date: 'July 14, 2026',
+    title: 'Verified cleanup and grid rendering optimization',
+    current: true,
+    changes: [
+      'Delegated standard-grid interaction handling to the persistent grid container so rerenders no longer recreate listeners for every cell and assigned student.',
+      'Consolidated repeated placement-completion, settings-control, optional-column, and JSON-clone helpers without changing public identifiers or stored data.',
+      'Removed 100 exact duplicate CSS declarations that had identical selectors, values, cascade layers, and media contexts.',
+      'Added static and regression guards for delegated grid behavior, duplicate CSS declarations, save compatibility, and release-build integrity.',
+      'Kept data schema 13, encryption envelope 3, storage keys, current field names, and legacy schema-12 import compatibility unchanged.'
+    ]
+  },
+  {
+    version: '6.4.0',
     date: 'July 14, 2026',
     title: 'Direct Freeform rotation controls',
-    current: true,
+    current: false,
     changes: [
       'Added a counterclockwise rotation handle to the top-left corner of every Freeform object while retaining clockwise rotation in the top-right.',
       'Made either corner handle clickable for a 15-degree step and draggable for continuous pointer-based rotation around the object center.',
@@ -6829,6 +6830,28 @@ const uiState = {
 };
 
 const el = (id) => document.getElementById(id);
+function setControlValue(id, value) {
+  const control = el(id);
+  if (control) control.value = String(value ?? '');
+}
+
+function setControlChecked(id, value) {
+  const control = el(id);
+  if (control) control.checked = Boolean(value);
+}
+
+function notifyPlacementCompletion(completion, placed, reason = '') {
+  if (typeof completion?.onComplete === 'function') completion.onComplete(Boolean(placed), reason);
+}
+
+function optionalColumnIndex(value) {
+  return value === '' ? -1 : Number(value);
+}
+
+function cloneJsonValue(value) {
+  return value === undefined ? undefined : JSON.parse(JSON.stringify(value));
+}
+
 function recordStorageFailure(storageName, operation, key, error) {
   const message = `${storageName}.${operation} failed for ${String(key || 'unknown key')}: ${error?.message || 'storage unavailable'}`;
   uiState.lastStorageError = message;
@@ -10602,18 +10625,15 @@ function affectedFreeformStudentIdsForAssignment(studentId, target) {
 }
 
 function assignStudentToFreeformObject(studentId, objectId, render = true, warnOnRules = true, completion = null) {
-  const complete = (placed, reason = '') => {
-    if (typeof completion?.onComplete === 'function') completion.onComplete(Boolean(placed), reason);
-  };
   const student = getStudent(studentId);
   const target = (state.freeformLayout?.objects || []).find(obj => obj.id === objectId && obj.type === 'seat');
   if (!student || !target) {
-    complete(false, 'invalid-target');
+    notifyPlacementCompletion(completion, false, 'invalid-target');
     return false;
   }
   if (target.locked) {
     blockLockedSeatEditAction();
-    complete(false, 'locked');
+    notifyPlacementCompletion(completion, false, 'locked');
     return false;
   }
   if (warnOnRules) {
@@ -10636,11 +10656,11 @@ Choose Override Placement to keep this assignment anyway, or Move Back to leave 
           rememberFreeformGeometry(state.freeformLayout?.objects || []);
           renderFreeformLayout();
           setLiveStatusMessage('Freeform placement was moved back because of the group-rule warning.');
-          complete(false, 'cancelled');
+          notifyPlacementCompletion(completion, false, 'cancelled');
         }
       });
       renderFreeformLayout();
-      complete(false, 'pending-confirmation');
+      notifyPlacementCompletion(completion, false, 'pending-confirmation');
       return false;
     }
   }
@@ -10650,7 +10670,7 @@ Choose Override Placement to keep this assignment anyway, or Move Back to leave 
   const conflicts = freeformCollisionMessagesForStudents([student.id]);
   if (conflicts.length) setLiveStatusMessage(conflicts[0].replace(/^(bad|warn):/, ''));
   else setLiveStatusMessage(`${studentDisplay(student)} assigned to the selected freeform seat.`);
-  complete(true, 'placed');
+  notifyPlacementCompletion(completion, true, 'placed');
   return true;
 }
 
@@ -10951,18 +10971,15 @@ function applyMoveOrSwap(studentId, targetCellKey, manual = true) {
 
 
 function assignStudentToCell(studentId, cellKey, manual = true, warnOnRules = true, completion = null) {
-  const complete = (placed, reason = '') => {
-    if (typeof completion?.onComplete === 'function') completion.onComplete(Boolean(placed), reason);
-  };
   if (eyeModeBlocksSeatEditing()) {
     blockEyeModeAction('seat');
-    complete(false, 'blocked');
+    notifyPlacementCompletion(completion, false, 'blocked');
     return false;
   }
   const target = state.cells[cellKey];
   const student = getStudent(studentId);
   if (!student || !target || target.type !== 'seat') {
-    complete(false, 'invalid-target');
+    notifyPlacementCompletion(completion, false, 'invalid-target');
     return false;
   }
   const source = assignedSeatForStudent(studentId);
@@ -10987,15 +11004,15 @@ function assignStudentToCell(studentId, cellKey, manual = true, warnOnRules = tr
         mirrorLinkedFreeformSeatsFromGrid();
         renderAll();
         setLiveStatusMessage('Move completed after group-rule warning.');
-        complete(true, 'confirmed');
+        notifyPlacementCompletion(completion, true, 'confirmed');
       }, {
         title: 'Group Rule Warning',
         confirmText: 'Continue Move',
         cancelText: 'Cancel',
-        onCancel: () => complete(false, 'cancelled')
+        onCancel: () => notifyPlacementCompletion(completion, false, 'cancelled')
       });
       renderAll();
-      complete(false, 'pending-confirmation');
+      notifyPlacementCompletion(completion, false, 'pending-confirmation');
       return false;
     }
   }
@@ -11003,7 +11020,7 @@ function assignStudentToCell(studentId, cellKey, manual = true, warnOnRules = tr
   applyMoveOrSwap(studentId, cellKey, manual);
   mirrorLinkedFreeformSeatsFromGrid();
   renderAll();
-  complete(true, 'placed');
+  notifyPlacementCompletion(completion, true, 'placed');
   return true;
 }
 
@@ -12732,6 +12749,159 @@ function calculateCellHeight(lookups = buildLookupMaps()) {
   return Math.max(normalCellFloor(), Math.ceil(needed));
 }
 
+function delegatedGridCell(event) {
+  const target = event.target instanceof Element ? event.target : null;
+  const cell = target?.closest('.cell[data-cell-key]');
+  const grid = el('seatGrid');
+  return cell && grid?.contains(cell) ? cell : null;
+}
+
+function delegatedGridStudent(event) {
+  const target = event.target instanceof Element ? event.target : null;
+  const student = target?.closest('[data-seat-student-id]');
+  const grid = el('seatGrid');
+  return student && grid?.contains(student) ? student : null;
+}
+
+function installGridEventDelegation() {
+  const grid = el('seatGrid');
+  if (!grid || grid.dataset.delegatedEventsInstalled === 'true') return;
+  grid.dataset.delegatedEventsInstalled = 'true';
+
+  grid.addEventListener('contextmenu', event => {
+    const studentTarget = delegatedGridStudent(event);
+    if (studentTarget) {
+      event.preventDefault();
+      event.stopPropagation();
+      if (eyeModeBlocksGroupEditing()) return blockEyeModeAction('group');
+      showStudentGroupContextMenu(studentTarget.dataset.seatStudentId, event.clientX, event.clientY);
+      return;
+    }
+    const cell = delegatedGridCell(event);
+    if (!cell) return;
+    event.preventDefault();
+    if (eyeModeBlocksRoomEditing()) return blockEyeModeAction('room');
+    showCellContextMenu(cell.dataset.cellKey, event.clientX, event.clientY);
+  });
+
+  grid.addEventListener('dblclick', event => {
+    const cell = delegatedGridCell(event);
+    if (!cell || (event.target instanceof Element && event.target.closest('button'))) return;
+    event.preventDefault();
+    if (eyeModeBlocksSeatEditing() || eyeModeBlocksRoomEditing()) return blockEyeModeAction(eyeModeBlocksSeatEditing() ? 'seat' : 'room');
+    openSeatEditModal(cell.dataset.cellKey);
+  });
+
+  grid.addEventListener('dragstart', event => {
+    const studentTarget = delegatedGridStudent(event);
+    if (!studentTarget) return;
+    if (eyeModeBlocksSeatEditing()) {
+      event.preventDefault();
+      blockEyeModeAction('seat');
+      return;
+    }
+    event.stopPropagation();
+    event.dataTransfer?.setData('application/json', JSON.stringify({
+      type: 'student',
+      id: studentTarget.dataset.seatStudentId,
+      sourceCellKey: delegatedGridCell(event)?.dataset.cellKey || ''
+    }));
+    if (event.dataTransfer) event.dataTransfer.effectAllowed = 'move';
+  });
+
+  grid.addEventListener('mousedown', event => {
+    const cell = delegatedGridCell(event);
+    if (!cell || event.button !== 0 || !(event.target instanceof Element)) return;
+    if (event.target.closest('button, [data-seat-student-id]') || eyeModeBlocksRoomEditing()) return;
+    if (uiState.selectionMode || event.shiftKey) beginCellSelection(event, cell.dataset.cellKey);
+  });
+
+  grid.addEventListener('mouseover', event => {
+    const cell = delegatedGridCell(event);
+    if (!cell || (event.relatedTarget instanceof Node && cell.contains(event.relatedTarget))) return;
+    if (uiState.designMode) showDesignModeTooltip(cell, event);
+    if (!uiState.isSelectingCells || event.buttons !== 1) return;
+    const cellKey = cell.dataset.cellKey;
+    if (event.shiftKey && uiState.selectionAnchorKey && state.cells[uiState.selectionAnchorKey]) addCellRangeToSelection(uiState.selectionAnchorKey, cellKey);
+    else addCellToSelection(cellKey);
+  });
+
+  grid.addEventListener('mousemove', event => {
+    if (uiState.designMode && delegatedGridCell(event)) moveDesignModeTooltip(event);
+  });
+
+  grid.addEventListener('mouseout', event => {
+    const cell = delegatedGridCell(event);
+    if (!cell || (event.relatedTarget instanceof Node && cell.contains(event.relatedTarget))) return;
+    if (uiState.designMode) hideDesignModeTooltip();
+  });
+
+  grid.addEventListener('click', event => {
+    const cell = delegatedGridCell(event);
+    if (!cell || !(event.target instanceof Element)) return;
+    const cellKey = cell.dataset.cellKey;
+    if (uiState.mobileCarryItem && isMobileViewport()) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      if (eyeModeBlocksSeatEditing()) return blockEyeModeAction('seat');
+      applyMobileCarryToCell(cellKey);
+      return;
+    }
+    if (event.target.closest('button, [data-seat-student-id]')) return;
+    if (uiState.skipNextCellClick) {
+      uiState.skipNextCellClick = false;
+      return;
+    }
+    if (uiState.selectionMode) {
+      if (eyeModeBlocksRoomEditing()) return blockEyeModeAction('room');
+      toggleCellSelection(cellKey);
+      return;
+    }
+    if (event.shiftKey) {
+      if (eyeModeBlocksRoomEditing()) return blockEyeModeAction('room');
+      if (uiState.selectionAnchorKey && state.cells[uiState.selectionAnchorKey]) addCellRangeToSelection(uiState.selectionAnchorKey, cellKey);
+      else addCellToSelection(cellKey);
+      uiState.selectionAnchorKey = cellKey;
+      return;
+    }
+    if (eyeModeBlocksRoomEditing()) return blockEyeModeAction('room');
+    setCellType(cellKey, el('layoutTool').value);
+  });
+
+  grid.addEventListener('dragover', event => {
+    const cell = delegatedGridCell(event);
+    if (!cell || state.cells[cell.dataset.cellKey]?.type !== 'seat' || eyeModeBlocksSeatEditing()) return;
+    event.preventDefault();
+    cell.classList.add('drop-target');
+  });
+
+  grid.addEventListener('dragleave', event => {
+    const cell = delegatedGridCell(event);
+    if (!cell || (event.relatedTarget instanceof Node && cell.contains(event.relatedTarget))) return;
+    cell.classList.remove('drop-target');
+  });
+
+  grid.addEventListener('drop', event => {
+    const cell = delegatedGridCell(event);
+    if (!cell) return;
+    event.preventDefault();
+    cell.classList.remove('drop-target');
+    const cellKey = cell.dataset.cellKey;
+    if (state.cells[cellKey]?.type !== 'seat') return;
+    if (eyeModeBlocksSeatEditing()) return blockEyeModeAction('seat');
+    let data;
+    try { data = JSON.parse(event.dataTransfer?.getData('application/json') || ''); } catch { return; }
+    if (data.type === 'student') assignStudentToCell(data.id, cellKey, true, true);
+    if (data.type === 'group') {
+      if (eyeModeBlocksGroupEditing()) return blockEyeModeAction('group');
+      const keys = isContextCellSelectionBatch(cellKey) ? selectedCellKeysArray() : [cellKey];
+      keys.forEach(key => addGroupAnchorWithoutRender(data.id, key));
+      renderAll();
+      if (keys.length > 1) setLiveStatusMessage(`Reserved ${keys.length} selected seats for that group.`);
+    }
+  });
+}
+
 function renderGrid() {
   ensureGrid();
   if (state.layoutMode === 'freeform') return renderFreeformLayout();
@@ -12784,24 +12954,9 @@ function renderGrid() {
       div.dataset.cellKey = cellKey;
       if (uiState.designMode) div.dataset.designTooltip = `Defined as: ${objectLabel(cell.type)}${(cell.zoneIds || []).length ? ' | Zones: ' + (cell.zoneIds || []).map(id => lookups.zones.get(String(id))?.name || id).join(', ') : ''} (row ${r}, column ${c})`;
       if (uiState.selectedCellKeys.has(cellKey)) div.classList.add('multi-selected');
-      div.addEventListener('contextmenu', event => {
-        if (event.target.closest('[data-seat-student-id]')) return;
-        event.preventDefault();
-        if (eyeModeBlocksRoomEditing()) { blockEyeModeAction('room'); return; }
-        showCellContextMenu(cellKey, event.clientX, event.clientY);
-      });
-      div.addEventListener('dblclick', event => {
-        if (event.target.closest('button')) return;
-        event.preventDefault();
-        if (eyeModeBlocksSeatEditing() || eyeModeBlocksRoomEditing()) { blockEyeModeAction(eyeModeBlocksSeatEditing() ? 'seat' : 'room'); return; }
-        openSeatEditModal(cellKey);
-      });
       if (uiState.designMode) {
         const designLabel = objectLabel(cell.type);
         div.innerHTML = `<div class="design-cell-label" title="${escapeHtml(designLabel)} at row ${r}, column ${c}">${escapeHtml(designLabel)}</div>`;
-        div.addEventListener('mouseenter', event => showDesignModeTooltip(div, event));
-        div.addEventListener('mousemove', event => moveDesignModeTooltip(event));
-        div.addEventListener('mouseleave', hideDesignModeTooltip);
       } else {
         const anchorDots = anchors.map(anchor => `<span class="anchor-dot" style="background:${escapeHtml(anchor.color)}" title="Reserved for ${escapeHtml(anchor.name)}"></span>`).join('');
         div.innerHTML = `
@@ -12824,84 +12979,6 @@ function renderGrid() {
               `}
             `;
       }
-      const seatPerson = div.querySelector('[data-seat-student-id]');
-      if (seatPerson) {
-        seatPerson.addEventListener('dragstart', event => {
-          if (eyeModeBlocksSeatEditing()) { event.preventDefault(); blockEyeModeAction('seat'); return; }
-          event.stopPropagation();
-          event.dataTransfer.setData('application/json', JSON.stringify({ type: 'student', id: seatPerson.dataset.seatStudentId, sourceCellKey: cellKey }));
-          event.dataTransfer.effectAllowed = 'move';
-        });
-        seatPerson.addEventListener('contextmenu', event => {
-          event.preventDefault();
-          event.stopPropagation();
-          if (eyeModeBlocksGroupEditing()) { blockEyeModeAction('group'); return; }
-          showStudentGroupContextMenu(seatPerson.dataset.seatStudentId, event.clientX, event.clientY);
-        });
-      }
-      div.addEventListener('mousedown', event => {
-        if (event.button !== 0) return;
-        if (event.target.closest('button') || event.target.closest('[data-seat-student-id]')) return;
-        if (eyeModeBlocksRoomEditing()) return;
-        if (uiState.selectionMode || event.shiftKey) beginCellSelection(event, cellKey);
-      });
-      div.addEventListener('mouseenter', event => {
-        if (!uiState.isSelectingCells || event.buttons !== 1) return;
-        if (event.shiftKey && uiState.selectionAnchorKey && state.cells[uiState.selectionAnchorKey]) addCellRangeToSelection(uiState.selectionAnchorKey, cellKey);
-        else addCellToSelection(cellKey);
-      });
-      div.addEventListener('click', event => {
-        if (uiState.mobileCarryItem && isMobileViewport()) {
-          event.preventDefault();
-          event.stopImmediatePropagation();
-          if (eyeModeBlocksSeatEditing()) { blockEyeModeAction('seat'); return; }
-          applyMobileCarryToCell(cellKey);
-          return;
-        }
-        if (event.target.closest('button')) return;
-        if (event.target.closest('[data-seat-student-id]')) return;
-        if (uiState.skipNextCellClick) {
-          uiState.skipNextCellClick = false;
-          return;
-        }
-        if (uiState.selectionMode) {
-          if (eyeModeBlocksRoomEditing()) { blockEyeModeAction('room'); return; }
-          toggleCellSelection(cellKey);
-          return;
-        }
-        if (event.shiftKey) {
-          if (eyeModeBlocksRoomEditing()) { blockEyeModeAction('room'); return; }
-          if (uiState.selectionAnchorKey && state.cells[uiState.selectionAnchorKey]) addCellRangeToSelection(uiState.selectionAnchorKey, cellKey);
-          else addCellToSelection(cellKey);
-          uiState.selectionAnchorKey = cellKey;
-          return;
-        }
-        if (eyeModeBlocksRoomEditing()) { blockEyeModeAction('room'); return; }
-        setCellType(cellKey, el('layoutTool').value);
-      });
-      div.addEventListener('dragover', event => {
-        if (cell.type === 'seat' && !eyeModeBlocksSeatEditing()) {
-          event.preventDefault();
-          div.classList.add('drop-target');
-        }
-      });
-      div.addEventListener('dragleave', () => div.classList.remove('drop-target'));
-      div.addEventListener('drop', event => {
-        event.preventDefault();
-        div.classList.remove('drop-target');
-        if (cell.type !== 'seat') return;
-        if (eyeModeBlocksSeatEditing()) { blockEyeModeAction('seat'); return; }
-        let data;
-        try { data = JSON.parse(event.dataTransfer.getData('application/json')); } catch { return; }
-        if (data.type === 'student') assignStudentToCell(data.id, cellKey, true, true);
-        if (data.type === 'group') {
-          if (eyeModeBlocksGroupEditing()) { blockEyeModeAction('group'); return; }
-          const keys = isContextCellSelectionBatch(cellKey) ? selectedCellKeysArray() : [cellKey];
-          keys.forEach(key => addGroupAnchorWithoutRender(data.id, key));
-          renderAll();
-          if (keys.length > 1) setLiveStatusMessage(`Reserved ${keys.length} selected seats for that group.`);
-        }
-      });
       fragment.appendChild(div);
     }
   }
@@ -13867,47 +13944,45 @@ function updateAboutInfo() {
 
 function updatePageSettingsFormCore() {
   const cfg = pageSettings();
-  const setChecked = (id, value) => { const node = el(id); if (node) node.checked = !!value; };
-  const setValue = (id, value) => { const node = el(id); if (node) node.value = String(value ?? ''); };
-  setValue('settingTheme', cfg.theme || 'default');
-  setChecked('settingDefaultNamesOnly', cfg.defaultNamesOnly);
-  setChecked('settingHeaderCollapsed', cfg.headerCollapsed);
-  setChecked('settingLeftCollapsed', cfg.leftCollapsed);
-  setChecked('settingRightCollapsed', cfg.rightCollapsed);
-  setChecked('settingLayoutToolsCollapsed', cfg.layoutToolsCollapsed);
-  setChecked('settingCsvCollapsed', cfg.csvCollapsed);
-  setChecked('settingAddStudentCollapsed', cfg.addStudentCollapsed);
-  setChecked('settingHideHints', cfg.hideHints);
-  setValue('settingAutoSaveMinutes', cfg.autoSaveMinutes || 0);
-  setValue('settingPreferredStorage', cfg.preferredStorage || 'browser');
-  setValue('settingGoogleDriveClientId', cfg.googleDriveClientId || GOOGLE_DRIVE_CLIENT_ID || '');
-  setValue('settingGoogleDriveFolderName', cfg.googleDriveFolderName || APP_CONFIG.googleDriveFolderName);
-  setValue('saveOptionGoogleDriveFolderName', cfg.googleDriveFolderName || APP_CONFIG.googleDriveFolderName);
-  setValue('settingDefaultSideTab', cfg.defaultSideTab);
-  setValue('settingDesignCellSize', cfg.designCellSize);
-  setValue('settingSettingsAccessMethod', cfg.settingsAccessMethod || 'auto');
-  setValue('settingAutoLockMinutes', cfg.autoLockMinutes || 0);
-  setChecked('settingAutoLockOnBlur', cfg.autoLockOnBlur);
-  setChecked('settingAutoLockOnTabHidden', cfg.autoLockOnTabHidden);
-  setValue('settingAutoLockOnReturnMinutes', cfg.autoLockOnReturnMinutes || 0);
-  setValue('settingPbkdf2Iterations', cfg.pbkdf2Iterations || DEFAULT_PAGE_SETTINGS.pbkdf2Iterations);
+  setControlValue('settingTheme', cfg.theme || 'default');
+  setControlChecked('settingDefaultNamesOnly', cfg.defaultNamesOnly);
+  setControlChecked('settingHeaderCollapsed', cfg.headerCollapsed);
+  setControlChecked('settingLeftCollapsed', cfg.leftCollapsed);
+  setControlChecked('settingRightCollapsed', cfg.rightCollapsed);
+  setControlChecked('settingLayoutToolsCollapsed', cfg.layoutToolsCollapsed);
+  setControlChecked('settingCsvCollapsed', cfg.csvCollapsed);
+  setControlChecked('settingAddStudentCollapsed', cfg.addStudentCollapsed);
+  setControlChecked('settingHideHints', cfg.hideHints);
+  setControlValue('settingAutoSaveMinutes', cfg.autoSaveMinutes || 0);
+  setControlValue('settingPreferredStorage', cfg.preferredStorage || 'browser');
+  setControlValue('settingGoogleDriveClientId', cfg.googleDriveClientId || GOOGLE_DRIVE_CLIENT_ID || '');
+  setControlValue('settingGoogleDriveFolderName', cfg.googleDriveFolderName || APP_CONFIG.googleDriveFolderName);
+  setControlValue('saveOptionGoogleDriveFolderName', cfg.googleDriveFolderName || APP_CONFIG.googleDriveFolderName);
+  setControlValue('settingDefaultSideTab', cfg.defaultSideTab);
+  setControlValue('settingDesignCellSize', cfg.designCellSize);
+  setControlValue('settingSettingsAccessMethod', cfg.settingsAccessMethod || 'auto');
+  setControlValue('settingAutoLockMinutes', cfg.autoLockMinutes || 0);
+  setControlChecked('settingAutoLockOnBlur', cfg.autoLockOnBlur);
+  setControlChecked('settingAutoLockOnTabHidden', cfg.autoLockOnTabHidden);
+  setControlValue('settingAutoLockOnReturnMinutes', cfg.autoLockOnReturnMinutes || 0);
+  setControlValue('settingPbkdf2Iterations', cfg.pbkdf2Iterations || DEFAULT_PAGE_SETTINGS.pbkdf2Iterations);
   updatePasswordStrengthDisplay('settingsEncryptionKey', 'settingsPasswordStrength');
-  setChecked('visHideClassActions', cfg.visibility.hideClassActions);
-  setChecked('visHideWizard', cfg.visibility.hideWizard);
-  setChecked('visHideSaveLoad', cfg.visibility.hideSaveLoad);
-  setChecked('visHideSettings', cfg.visibility.hideSettings);
-  setChecked('visHidePrint', cfg.visibility.hidePrint);
-  setChecked('visHideLayoutTools', cfg.visibility.hideLayoutTools);
-  setChecked('visHideStudentsPanel', cfg.visibility.hideStudentsPanel);
-  setChecked('visHideStatusPanel', cfg.visibility.hideStatusPanel);
-  setChecked('visHideChartActions', cfg.visibility.hideChartActions);
-  setChecked('visHideRoomHeaderActions', cfg.visibility.hideRoomHeaderActions);
-  setChecked('visForceNamesOnly', cfg.visibility.forceNamesOnly);
-  setChecked('visHideGroupDetails', cfg.visibility.hideGroupDetails);
-  setChecked('visDisableSeatEditing', cfg.visibility.disableSeatEditing);
-  setChecked('visDisableRoomEditing', cfg.visibility.disableRoomEditing);
-  setChecked('visDisableStudentEditing', cfg.visibility.disableStudentEditing);
-  setChecked('visDisableGroupEditing', cfg.visibility.disableGroupEditing);
+  setControlChecked('visHideClassActions', cfg.visibility.hideClassActions);
+  setControlChecked('visHideWizard', cfg.visibility.hideWizard);
+  setControlChecked('visHideSaveLoad', cfg.visibility.hideSaveLoad);
+  setControlChecked('visHideSettings', cfg.visibility.hideSettings);
+  setControlChecked('visHidePrint', cfg.visibility.hidePrint);
+  setControlChecked('visHideLayoutTools', cfg.visibility.hideLayoutTools);
+  setControlChecked('visHideStudentsPanel', cfg.visibility.hideStudentsPanel);
+  setControlChecked('visHideStatusPanel', cfg.visibility.hideStatusPanel);
+  setControlChecked('visHideChartActions', cfg.visibility.hideChartActions);
+  setControlChecked('visHideRoomHeaderActions', cfg.visibility.hideRoomHeaderActions);
+  setControlChecked('visForceNamesOnly', cfg.visibility.forceNamesOnly);
+  setControlChecked('visHideGroupDetails', cfg.visibility.hideGroupDetails);
+  setControlChecked('visDisableSeatEditing', cfg.visibility.disableSeatEditing);
+  setControlChecked('visDisableRoomEditing', cfg.visibility.disableRoomEditing);
+  setControlChecked('visDisableStudentEditing', cfg.visibility.disableStudentEditing);
+  setControlChecked('visDisableGroupEditing', cfg.visibility.disableGroupEditing);
   updateVisibilityCredentialNote();
   updatePinStatus();
   updateGoogleDriveControls();
@@ -19636,6 +19711,7 @@ function wireEvents() {
 
   el('selectCellsBtn').addEventListener('click', () => { if (eyeModeBlocksRoomEditing()) return blockEyeModeAction('room'); toggleCellSelectionMode(); });
   el('clearCellSelectionBtn').addEventListener('click', clearCellSelection);
+  installGridEventDelegation();
   document.addEventListener('mousemove', selectCellFromPointer);
   document.addEventListener('mouseup', endCellSelection);
 
@@ -20680,22 +20756,20 @@ const WorkflowExpansion = (() => {
     return { ...base, ...normalizeAddonSettings(value || {}) };
   }
 
-  function setValue(id, value) { const node = el(id); if (node) node.value = String(value ?? ''); }
-  function setChecked(id, value) { const node = el(id); if (node) node.checked = !!value; }
   function checked(id) { return !!el(id)?.checked; }
   function valueOf(id) { return el(id)?.value; }
 
   function updateAddonSettingsForm() {
     const cfg = pageSettings();
-    setValue('settingPrivacyDisplayMode', cfg.privacyDisplayMode || 'teacher');
-    setValue('settingNoteRevealTimeoutSeconds', cfg.noteRevealTimeoutSeconds ?? 30);
-    setChecked('settingNoteRevealHideOnBlur', cfg.noteRevealHideOnBlur);
-    setValue('settingSnapshotRetention', cfg.snapshotRetention ?? 50);
-    setValue('settingCsvDuplicateMode', cfg.csvDuplicateMode || 'update');
-    setChecked('settingCsvSnapshotBeforeImport', cfg.csvSnapshotBeforeImport);
-    setChecked('settingPrintSecurityWarnings', cfg.printSecurityWarnings);
-    setChecked('settingExportSecurityWarnings', cfg.exportSecurityWarnings);
-    setChecked('settingsReencryptAllSnapshots', cfg.reencryptSnapshotsOnPasswordChange);
+    setControlValue('settingPrivacyDisplayMode', cfg.privacyDisplayMode || 'teacher');
+    setControlValue('settingNoteRevealTimeoutSeconds', cfg.noteRevealTimeoutSeconds ?? 30);
+    setControlChecked('settingNoteRevealHideOnBlur', cfg.noteRevealHideOnBlur);
+    setControlValue('settingSnapshotRetention', cfg.snapshotRetention ?? 50);
+    setControlValue('settingCsvDuplicateMode', cfg.csvDuplicateMode || 'update');
+    setControlChecked('settingCsvSnapshotBeforeImport', cfg.csvSnapshotBeforeImport);
+    setControlChecked('settingPrintSecurityWarnings', cfg.printSecurityWarnings);
+    setControlChecked('settingExportSecurityWarnings', cfg.exportSecurityWarnings);
+    setControlChecked('settingsReencryptAllSnapshots', cfg.reencryptSnapshotsOnPasswordChange);
     updateLockWorkflowReadiness();
     renderSaveHealthReport(false);
   }
@@ -21431,8 +21505,8 @@ const WorkflowExpansion = (() => {
   function renderCsvMappingWizard() {
     renderCsvMappingWizardCore();
     installCsvWizardExtras();
-    setValue('csvImportDuplicateMode', pageSettings().csvDuplicateMode || 'update');
-    setChecked('csvImportSnapshotBefore', pageSettings().csvSnapshotBeforeImport);
+    setControlValue('csvImportDuplicateMode', pageSettings().csvDuplicateMode || 'update');
+    setControlChecked('csvImportSnapshotBefore', pageSettings().csvSnapshotBeforeImport);
     const stage = el('csvWizardStage');
     if (stage) stage.textContent = 'Step 2 of 4: Confirm mapped fields and duplicate behavior. Preview updates as mappings change.';
   }
@@ -23608,13 +23682,12 @@ const ModernizationSuite = (() => {
     const matrix = parseCsvMatrix(text);
     if (!matrix.length || matrix.length < 2) throw new Error('The CSV does not contain a header row and student records.');
     const headers = matrix[0].map(value => String(value || '').trim());
-    const toIndex = value => value === '' ? -1 : Number(value);
     const index = {
-      firstName: toIndex(guessCsvColumn(headers,['first name','firstname','first'])),
-      lastName: toIndex(guessCsvColumn(headers,['last name','lastname','last'])),
-      nickName: toIndex(guessCsvColumn(headers,['nickname','nick name','preferred name'])),
-      grade: toIndex(guessCsvColumn(headers,['grade','level'])),
-      id: toIndex(guessCsvColumn(headers,['student id','studentid','id']))
+      firstName: optionalColumnIndex(guessCsvColumn(headers,['first name','firstname','first'])),
+      lastName: optionalColumnIndex(guessCsvColumn(headers,['last name','lastname','last'])),
+      nickName: optionalColumnIndex(guessCsvColumn(headers,['nickname','nick name','preferred name'])),
+      grade: optionalColumnIndex(guessCsvColumn(headers,['grade','level'])),
+      id: optionalColumnIndex(guessCsvColumn(headers,['student id','studentid','id']))
     };
     if (index.firstName < 0 && index.lastName < 0 && index.id < 0) throw new Error('No recognized first-name or last-name column, or student-ID column, was found.');
     const value = (row,key) => index[key] >= 0 ? String(row[index[key]] || '').trim() : '';
@@ -25454,7 +25527,7 @@ const WorkspaceLayoutV41 = (() => {
     applyLayoutState();
   }
 
-  return Object.freeze({ install, afterReady, applyPageLoadDefaults, toggleFocusMode, toggleWorkflow, togglePanel, resetLayout, getState: () => JSON.parse(JSON.stringify(state)) });
+  return Object.freeze({ install, afterReady, applyPageLoadDefaults, toggleFocusMode, toggleWorkflow, togglePanel, resetLayout, getState: () => cloneJsonValue(state) });
 })();
 
 const ProductPolishV42 = (() => {
@@ -28680,13 +28753,12 @@ const DistrictIntegrationsV57 = (() => {
     const matrix = parseCsvMatrix(text);
     if (matrix.length < 2) throw new Error('The SIS CSV needs a header row and at least one student.');
     const headers = matrix[0].map(value => String(value || '').trim());
-    const toIndex = value => value === '' ? -1 : Number(value);
     const index = {
-      firstName: toIndex(guessCsvColumn(headers, ['first name', 'firstname', 'given name', 'givenname'])),
-      lastName: toIndex(guessCsvColumn(headers, ['last name', 'lastname', 'family name', 'familyname', 'surname'])),
-      nickName: toIndex(guessCsvColumn(headers, ['preferred name', 'nickname', 'display name'])),
-      grade: toIndex(guessCsvColumn(headers, ['grade', 'grade level', 'level'])),
-      id: toIndex(guessCsvColumn(headers, ['sourcedid', 'sis id', 'student id', 'local id', 'student number', 'identifier']))
+      firstName: optionalColumnIndex(guessCsvColumn(headers, ['first name', 'firstname', 'given name', 'givenname'])),
+      lastName: optionalColumnIndex(guessCsvColumn(headers, ['last name', 'lastname', 'family name', 'familyname', 'surname'])),
+      nickName: optionalColumnIndex(guessCsvColumn(headers, ['preferred name', 'nickname', 'display name'])),
+      grade: optionalColumnIndex(guessCsvColumn(headers, ['grade', 'grade level', 'level'])),
+      id: optionalColumnIndex(guessCsvColumn(headers, ['sourcedid', 'sis id', 'student id', 'local id', 'student number', 'identifier']))
     };
     if (index.firstName < 0 && index.lastName < 0 && index.id < 0) throw new Error('No recognized first-name or last-name column, or student-ID column, was found.');
     const value = (row, key) => Number.isInteger(index[key]) && index[key] >= 0 ? String(row[index[key]] || '').trim() : '';
@@ -29970,7 +30042,6 @@ const SharedDriveCollaborationV64 = (() => {
   let permissionRows = [];
 
   const node = id => document.getElementById(id);
-  const clone = value => value === undefined ? undefined : JSON.parse(JSON.stringify(value));
   const equal = (a, b) => JSON.stringify(a) === JSON.stringify(b);
   async function copyTextSafe(value) {
     const text = String(value || '');
@@ -30077,7 +30148,7 @@ const SharedDriveCollaborationV64 = (() => {
 
   function viewerClassData(preset = 'substitute') {
     persistActiveClass();
-    const source = clone(activeClassRecord() || {});
+    const source = cloneJsonValue(activeClassRecord() || {});
     const includeNames = preset !== 'anonymous' && preset !== 'room';
     const includeSubNotes = preset === 'substitute';
     const students = preset === 'room' ? [] : (source.students || []).map((student, index) => ({
@@ -30092,7 +30163,7 @@ const SharedDriveCollaborationV64 = (() => {
       format: VIEWER_FORMAT, app: APP_NAME, version: APP_REVISION, createdAt: new Date().toISOString(), preset,
       class: {
         id: source.id, name: source.name, rows: source.rows, cols: source.cols, layoutMode: source.layoutMode,
-        cells: clone(source.cells || {}), freeformLayout: clone(source.freeformLayout || {}), students
+        cells: cloneJsonValue(source.cells || {}), freeformLayout: cloneJsonValue(source.freeformLayout || {}), students
       }
     };
   }
@@ -30177,9 +30248,9 @@ const SharedDriveCollaborationV64 = (() => {
   }
 
   function mergeThreeWay(base, local, remote, path = '$', conflicts = []) {
-    if (equal(local, remote)) return clone(local);
-    if (equal(local, base)) return clone(remote);
-    if (equal(remote, base)) return clone(local);
+    if (equal(local, remote)) return cloneJsonValue(local);
+    if (equal(local, base)) return cloneJsonValue(remote);
+    if (equal(remote, base)) return cloneJsonValue(local);
     if (Array.isArray(base) || Array.isArray(local) || Array.isArray(remote)) {
       const arrays = [base, local, remote].every(Array.isArray);
       const keyed = arrays && [base, local, remote].every(list => list.every(item => item && typeof item === 'object' && !Array.isArray(item) && item.id !== undefined));
@@ -30194,8 +30265,8 @@ const SharedDriveCollaborationV64 = (() => {
         }
         return result;
       }
-      conflicts.push({ path, base: clone(base), local: clone(local), remote: clone(remote), choice: 'local' });
-      return clone(local);
+      conflicts.push({ path, base: cloneJsonValue(base), local: cloneJsonValue(local), remote: cloneJsonValue(remote), choice: 'local' });
+      return cloneJsonValue(local);
     }
     const objects = [base, local, remote].every(value => value && typeof value === 'object' && !Array.isArray(value));
     if (objects) {
@@ -30206,8 +30277,8 @@ const SharedDriveCollaborationV64 = (() => {
       }
       return result;
     }
-    conflicts.push({ path, base: clone(base), local: clone(local), remote: clone(remote), choice: 'local' });
-    return clone(local);
+    conflicts.push({ path, base: cloneJsonValue(base), local: cloneJsonValue(local), remote: cloneJsonValue(remote), choice: 'local' });
+    return cloneJsonValue(local);
   }
 
   function setPath(root, path, value) {
@@ -30221,7 +30292,7 @@ const SharedDriveCollaborationV64 = (() => {
       if (!current) return;
     }
     const last = tokens[tokens.length - 1];
-    if (last) current[last] = clone(value);
+    if (last) current[last] = cloneJsonValue(value);
   }
 
   async function remotePlainDocument(fileId) {
@@ -30237,7 +30308,7 @@ const SharedDriveCollaborationV64 = (() => {
     const fileId = googleDriveConfig().fileId;
     if (!fileId) throw new Error('No linked Google Drive file is available to merge.');
     assertCanWriteCurrentDriveFile();
-    const base = uiState.sharedDriveBaseFileId === fileId && uiState.sharedDriveBaseDocument ? clone(uiState.sharedDriveBaseDocument) : null;
+    const base = uiState.sharedDriveBaseFileId === fileId && uiState.sharedDriveBaseDocument ? cloneJsonValue(uiState.sharedDriveBaseDocument) : null;
     if (!base) throw new Error('This tab does not have a base revision for three-way merge. Reload the Drive file, then retry.');
     const local = JSON.parse(exportState('all'));
     const remote = await remotePlainDocument(fileId);
