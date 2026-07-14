@@ -5,7 +5,7 @@
   <meta name="license" content="MIT License" />
   <meta name="spdx-license-identifier" content="MIT" />
   <meta name="copyright" content="Copyright (c) 2026 Chris L. Franklin" />
-  <meta name="app-version" content="6.4.5" />
+  <meta name="app-version" content="6.4.6" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com https://www.paypalobjects.com blob:; style-src 'self' 'unsafe-inline'; connect-src 'self' https://www.googleapis.com https://classroom.googleapis.com https://accounts.google.com https://www.paypal.com https://www.paypalobjects.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://www.paypal.com; img-src 'self' data: blob: https://www.paypalobjects.com; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'self' https://www.paypal.com" />
   <meta name="application-name" content="Classroom Seating Planner" />
@@ -6132,7 +6132,7 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
 const APP_CONFIG = Object.freeze({
   name: 'Classroom Seating Planner',
   shortName: 'Seating Planner',
-  version: '6.4.5',
+  version: '6.4.6',
   copyrightHolder: 'Chris L. Franklin',
   copyrightYear: '2026',
   releaseDate: '2026-07-14',
@@ -6375,10 +6375,26 @@ const PROJECT_FEATURES = [
 
 const RELEASE_HISTORY = [
   {
+    version: '6.4.6',
+    date: 'July 14, 2026',
+    title: 'Drive sharing and false save conflicts repaired',
+    current: true,
+    changes: [
+      'Fixed the disk-menu Share Drive Save with People command so the central Save-menu dispatcher opens the Google Drive collaborator picker instead of swallowing the click.',
+      'Removed the redundant document-level sharing listener and routed the action through one maintained handler.',
+      'Replaced the generic run-this-control tooltip with a clear description of Viewer and Editor permission management.',
+      'Added regression coverage for the actual disk-menu command.',
+      'Captured the exact uploaded or loaded Drive document as the merge base instead of regenerating timestamps after the transfer.',
+      'Stopped export timestamps, save hashes and revisions, backup manifests, record update times, and device-local settings from appearing as classroom conflicts.',
+      'Allowed metadata-only Drive revision changes to continue saving without opening the conflict dialog.',
+      'Regenerated the SHA-256 backup manifest after merging and added regression coverage for automatic and genuine-conflict paths.'
+    ]
+  },
+  {
     version: '6.4.5',
     date: 'July 14, 2026',
     title: 'Read-only package profile details restored',
-    current: true,
+    current: false,
     changes: [
       'Made the Read-only Classroom HTML renderer display the information promised by the selected package profile instead of retaining fields invisibly or discarding them before rendering.',
       'Substitute packages now include student grades plus clearly labeled public and substitute notes while continuing to exclude private notes, seating requirements, cloud settings, and editing controls.',
@@ -13480,6 +13496,7 @@ function applyTooltips(root = document) {
   root.querySelectorAll('[data-wizard-action="close-to-layout"]').forEach(button => setTooltip(button, 'Close the wizard so you can right-click or click grid cells to edit the room layout.'));
   root.querySelectorAll('[data-wizard-action="generate"]').forEach(button => setTooltip(button, 'Generate a seating chart from the wizard while keeping locked seats fixed.'));
   root.querySelectorAll('[data-wizard-action="randomize"]').forEach(button => setTooltip(button, 'Randomize from the wizard while keeping locked seats fixed and respecting group rules as much as possible.'));
+  root.querySelectorAll('[data-save-menu-action="drive-share-manager"]').forEach(button => setTooltip(button, 'Open the Google Drive sharing manager to add, review, change, or remove Viewer and Editor access for the active Drive save.'));
 
   root.querySelectorAll('button').forEach(button => {
     if (!button.title) {
@@ -14584,6 +14601,7 @@ async function handleSaveMenuAction(action, insideSaveOptions = false) {
   if (action === 'google-drive-save') await writeGoogleDriveSaveFile({ reason: 'manual', announce: true });
   if (action === 'google-drive-load') await loadFromGoogleDriveFile();
   if (action === 'google-drive-disconnect') forgetGoogleDriveLink();
+  if (action === 'drive-share-manager') SharedDriveCollaborationV64.openManager();
   if (action === 'safe-share') ModernizationSuite.openSafeShare();
   if (action === 'download-package') await downloadSavePackage();
   if (action === 'download-students') await downloadStudentDataJson();
@@ -15034,7 +15052,7 @@ async function prepareExportPayload(scope = 'all') {
   if (!currentSessionEncryptionKey()) {
     throw new Error('A session encryption password is required before saving or exporting app data. Use the Welcome screen or Settings > Saving to set it.');
   }
-  return { payload: await encryptText(plain, scope), saveIdentity: proposedIdentity };
+  return { payload: await encryptText(plain, scope), saveIdentity: proposedIdentity, document: JSON.parse(plain) };
 }
 
 function commitPreparedSave(prepared) {
@@ -16031,16 +16049,33 @@ async function writeGoogleDriveSaveFile(options = {}) {
     if (!options.forceOverwrite && cfg.fileId && pageSettings().googleDriveConflictPolicy !== 'overwrite') {
       const conflict = await ModernizationSuite.googleDriveConflict(cfg.fileId, cfg);
       if (conflict) {
-        uiState.googleDriveBusy = false;
-        if (pageSettings().googleDriveConflictPolicy === 'copy') {
-          updateGoogleDriveSettings({ googleDriveFileId: '', googleDriveFileName: '' }, { persist: false });
+        let remoteInspection = null;
+        try {
+          remoteInspection = await SharedDriveCollaborationV64.inspectRemoteDriveChange(cfg.fileId);
+        } catch (_) {
+          remoteInspection = null;
+        }
+        if (remoteInspection?.metadataOnly) {
+          updateGoogleDriveSettings({
+            googleDriveLastSavedAt: conflict.modifiedTime || cfg.lastSavedAt || '',
+            googleDriveFileVersion: String(conflict.version || cfg.fileVersion || ''),
+            googleDriveHeadRevisionId: String(conflict.headRevisionId || cfg.headRevisionId || ''),
+            googleDriveRemoteMd5: String(conflict.md5Checksum || cfg.remoteMd5 || '')
+          }, { persist: false });
+          SharedDriveCollaborationV64.captureBaseDocument(remoteInspection.remote, cfg.fileId);
+          updateGoogleDriveStatus('Google Drive revision metadata changed, but the classroom content did not. Continuing the save without a false conflict.');
         } else {
-          return ModernizationSuite.saveConflict(`The Google Drive copy changed after this tab's last confirmed save. ${conflict.reasons?.join(' ') || `Remote modified time: ${new Date(conflict.modifiedTime).toLocaleString()}.`}`, {
-            overwrite: () => writeGoogleDriveSaveFile({ ...options, forceOverwrite: true, announce: true }),
-            copy: () => { updateGoogleDriveSettings({ googleDriveFileId: '', googleDriveFileName: '' }, { persist: false }); return writeGoogleDriveSaveFile({ ...options, forceOverwrite: true, announce: true }); },
-            merge: () => SharedDriveCollaborationV64.mergeRemoteDriveChanges(options),
-            cancel: () => setLiveStatusMessage('Google Drive save canceled. The newer remote copy was preserved.')
-          });
+          uiState.googleDriveBusy = false;
+          if (pageSettings().googleDriveConflictPolicy === 'copy') {
+            updateGoogleDriveSettings({ googleDriveFileId: '', googleDriveFileName: '' }, { persist: false });
+          } else {
+            return ModernizationSuite.saveConflict(`The Google Drive copy changed after this tab's last confirmed save. ${conflict.reasons?.join(' ') || `Remote modified time: ${new Date(conflict.modifiedTime).toLocaleString()}.`}`, {
+              overwrite: () => writeGoogleDriveSaveFile({ ...options, forceOverwrite: true, announce: true }),
+              copy: () => { updateGoogleDriveSettings({ googleDriveFileId: '', googleDriveFileName: '' }, { persist: false }); return writeGoogleDriveSaveFile({ ...options, forceOverwrite: true, announce: true }); },
+              merge: () => SharedDriveCollaborationV64.mergeRemoteDriveChanges(options),
+              cancel: () => setLiveStatusMessage('Google Drive save canceled. The newer remote copy was preserved.')
+            });
+          }
         }
       }
     }
@@ -16068,7 +16103,7 @@ async function writeGoogleDriveSaveFile(options = {}) {
     updateSaveSetupDismissed(true);
     updateSaveHealthPanel();
     await writeLocalBrowserSave({ reason: 'google-drive-mirror', announce: false, preparedSave });
-    SharedDriveCollaborationV64.captureBaseFromCurrent(saved.id || pageSettings().googleDriveFileId || '');
+    SharedDriveCollaborationV64.captureBaseDocument(preparedSave.document, saved.id || pageSettings().googleDriveFileId || '');
     SharedDriveCollaborationV64.applyDriveCapabilities(saved.capabilities || uiState.googleDriveCapabilities);
     return true;
   } catch (err) {
@@ -16257,7 +16292,8 @@ async function loadGoogleDriveFileById(file, options = {}) {
     closeGoogleDriveFileChooser({ returnToWelcome: false });
     closeWelcomeSecurityModal();
   }
-  if (options.direct) await importStateDirectFromText(text, `Google Drive save ${file.name || ''}`.trim());
+  let loadedDriveDocument = null;
+  if (options.direct) loadedDriveDocument = await importStateDirectFromText(text, `Google Drive save ${file.name || ''}`.trim());
   else await importStateFromText(text, `Google Drive save ${file.name || ''}`.trim());
   SharedDriveCollaborationV64.applyDriveCapabilities(file.capabilities || null);
   updateGoogleDriveSettings({
@@ -16274,7 +16310,8 @@ async function loadGoogleDriveFileById(file, options = {}) {
   setLiveStatusMessage(options.direct ? `Google Drive save loaded: ${file.name || 'selected save'}.` : 'Google Drive save downloaded. Choose what to restore.');
   updateSaveSetupDismissed(true);
   updateSaveHealthPanel();
-  SharedDriveCollaborationV64.captureBaseFromCurrent(file.id);
+  if (loadedDriveDocument) SharedDriveCollaborationV64.captureBaseDocument(loadedDriveDocument, file.id);
+  else SharedDriveCollaborationV64.captureBaseFromCurrent(file.id);
   if (options.fromWelcome && options.direct) {
     if (typeof StartupRecoveryV45 !== 'undefined') StartupRecoveryV45.completeExternalLoad();
     safeStorageSet('localStorage', WELCOME_SETUP_STORAGE_KEY, 'true');
@@ -17393,7 +17430,7 @@ const HELP_GUIDE_SECTIONS = [
       },
       {
         "title": "Concurrent edits and merge",
-        "text": "The app checks Drive revision metadata before saving. Non-overlapping changes can be merged automatically; overlapping changes open Resolve Drive merge conflicts so the user chooses which value wins. Users do not see each other's seats move live."
+        "text": "The app checks Drive revision metadata before saving. Non-overlapping classroom changes can be merged automatically. Export timestamps, save hashes and revisions, backup manifests, record update times, and device-local settings are resolved automatically and never shown as classroom conflicts. Only genuine overlapping classroom edits open Resolve Drive merge conflicts. Users do not see each other's seats move live."
       },
       {
         "title": "Editable save versus encrypted viewer package",
@@ -18187,7 +18224,7 @@ const HELP_GUIDE_SECTIONS = [
       },
       {
         "title": "The shared file is view only or reports a conflict",
-        "text": "View-only means the owner granted Viewer access. A conflict means the remote Drive copy changed after this tab loaded it; use the merge resolver, save a new copy, or cancel instead of overwriting blindly."
+        "text": "View-only means the owner granted Viewer access. Generated save timestamps, hashes, revisions, manifests, and update times are handled automatically. A conflict dialog now means the remote Drive copy contains a genuine overlapping classroom edit; use the merge resolver, save a new copy, or cancel instead of overwriting blindly."
       },
       {
         "title": "Layout feels cramped",
@@ -21564,6 +21601,7 @@ const WorkflowExpansion = (() => {
   async function importStateDirectFromText(text, sourceLabel = 'local save') {
     const { parsed } = await parseSupportedPayloadText(text, sourceLabel, { allowComponents: false });
     importStateCore(JSON.stringify(parsed));
+    return parsed;
   }
 
   function collectSaveHealthFindings() {
@@ -30653,13 +30691,27 @@ const SharedDriveCollaborationV64 = (() => {
     }
   }
 
-  function captureBaseFromCurrent(fileId = '') {
+  function captureBaseDocument(documentValue, fileId = '') {
     try {
-      uiState.sharedDriveBaseDocument = JSON.parse(exportState('all'));
+      const parsed = typeof documentValue === 'string' ? JSON.parse(documentValue) : cloneJsonValue(documentValue);
+      if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) throw new Error('Drive base document must be an object.');
+      uiState.sharedDriveBaseDocument = parsed;
       uiState.sharedDriveBaseFileId = String(fileId || googleDriveConfig().fileId || '');
+      return true;
     } catch (_) {
       uiState.sharedDriveBaseDocument = null;
       uiState.sharedDriveBaseFileId = '';
+      return false;
+    }
+  }
+
+  function captureBaseFromCurrent(fileId = '') {
+    try {
+      return captureBaseDocument(exportState('all'), fileId);
+    } catch (_) {
+      uiState.sharedDriveBaseDocument = null;
+      uiState.sharedDriveBaseFileId = '';
+      return false;
     }
   }
 
@@ -30816,8 +30868,101 @@ const SharedDriveCollaborationV64 = (() => {
     DialogManager.synchronize();
   }
 
+  function driveMergeTimestamp(values, mode = 'latest') {
+    const candidates = values
+      .filter(value => value !== undefined && value !== null && String(value).trim())
+      .map(value => ({ value: String(value), time: Date.parse(String(value)) }))
+      .filter(item => Number.isFinite(item.time));
+    if (!candidates.length) return values.find(value => value !== undefined && value !== null) ?? '';
+    candidates.sort((a, b) => a.time - b.time);
+    return (mode === 'earliest' ? candidates[0] : candidates[candidates.length - 1]).value;
+  }
+
+  function mergedDriveSaveIdentity(base = {}, local = {}, remote = {}, mergedDocument = null) {
+    const identities = [base, local, remote].filter(value => value && typeof value === 'object' && !Array.isArray(value));
+    const revisionNumber = Math.max(0, ...identities.map(value => Number(value.revisionNumber || 0)).filter(Number.isFinite));
+    const mergedIdentity = {
+      saveId: String(local?.saveId || remote?.saveId || base?.saveId || uid('save')),
+      revisionNumber,
+      parentRevision: Math.max(0, ...identities.map(value => Number(value.parentRevision || 0)).filter(Number.isFinite)),
+      deviceId: String(local?.deviceId || remote?.deviceId || base?.deviceId || appDeviceId()),
+      createdAt: driveMergeTimestamp(identities.map(value => value.createdAt), 'earliest') || new Date().toISOString(),
+      modifiedAt: driveMergeTimestamp(identities.map(value => value.modifiedAt), 'latest') || new Date().toISOString(),
+      contentHash: String(local?.contentHash || remote?.contentHash || base?.contentHash || '')
+    };
+    if (mergedDocument) {
+      mergedIdentity.contentHash = hashString(stableJsonStringify({
+        classes: mergedDocument.classes || [],
+        activeClassId: mergedDocument.activeClassId || '',
+        roomTemplates: mergedDocument.roomTemplates || []
+      }));
+    }
+    return mergedIdentity;
+  }
+
+  function resolveDriveMergeMetadata(path, base, local, remote) {
+    if (path === '$.backupManifest') return { handled: true, value: undefined };
+    if (path === '$.saveIdentity') return { handled: true, value: mergedDriveSaveIdentity(base, local, remote) };
+    if (path === '$.exportedAt') return { handled: true, value: driveMergeTimestamp([base, local, remote], 'latest') };
+    if (path === '$.pageSettings' || path === '$.preferences') {
+      return { handled: true, value: cloneJsonValue(local ?? remote ?? base) };
+    }
+    if (/\.updatedAt$/.test(path) || /\.modifiedAt$/.test(path)) {
+      return { handled: true, value: driveMergeTimestamp([base, local, remote], 'latest') };
+    }
+    if (/\.createdAt$/.test(path) && !path.startsWith('$.appSnapshots')) {
+      return { handled: true, value: driveMergeTimestamp([base, local, remote], 'earliest') };
+    }
+    return { handled: false, value: undefined };
+  }
+
+  function collaborationComparableDocument(documentValue) {
+    const copy = cloneJsonValue(documentValue || {});
+    if (!copy || typeof copy !== 'object' || Array.isArray(copy)) return copy;
+    delete copy.exportedAt;
+    delete copy.saveIdentity;
+    delete copy.backupManifest;
+    delete copy.pageSettings;
+    delete copy.preferences;
+    const stripGeneratedFields = value => {
+      if (!value || typeof value !== 'object') return;
+      if (Array.isArray(value)) {
+        value.forEach(stripGeneratedFields);
+        return;
+      }
+      delete value.updatedAt;
+      Object.values(value).forEach(stripGeneratedFields);
+    };
+    stripGeneratedFields(copy);
+    return copy;
+  }
+
+  function collaborationDocumentsEqual(left, right) {
+    return stableJsonStringify(collaborationComparableDocument(left)) === stableJsonStringify(collaborationComparableDocument(right));
+  }
+
+  function finalizeMergedDriveDocument(documentValue, context = {}) {
+    const merged = cloneJsonValue(documentValue || {});
+    delete merged.backupManifest;
+    merged.exportedAt = driveMergeTimestamp([
+      context.base?.exportedAt,
+      context.local?.exportedAt,
+      context.remote?.exportedAt,
+      merged.exportedAt
+    ], 'latest') || new Date().toISOString();
+    merged.saveIdentity = mergedDriveSaveIdentity(
+      context.base?.saveIdentity,
+      context.local?.saveIdentity,
+      context.remote?.saveIdentity,
+      merged
+    );
+    return merged;
+  }
+
   function mergeThreeWay(base, local, remote, path = '$', conflicts = []) {
     if (equal(local, remote)) return cloneJsonValue(local);
+    const metadataResolution = resolveDriveMergeMetadata(path, base, local, remote);
+    if (metadataResolution.handled) return cloneJsonValue(metadataResolution.value);
     if (equal(local, base)) return cloneJsonValue(remote);
     if (equal(remote, base)) return cloneJsonValue(local);
     if (Array.isArray(base) || Array.isArray(local) || Array.isArray(remote)) {
@@ -30873,6 +31018,17 @@ const SharedDriveCollaborationV64 = (() => {
     return parsed;
   }
 
+  async function inspectRemoteDriveChange(fileId = '') {
+    const targetFileId = String(fileId || googleDriveConfig().fileId || '');
+    if (!targetFileId) return { metadataOnly: false, remote: null, reference: null };
+    const remote = await remotePlainDocument(targetFileId);
+    const base = uiState.sharedDriveBaseFileId === targetFileId && uiState.sharedDriveBaseDocument
+      ? cloneJsonValue(uiState.sharedDriveBaseDocument)
+      : null;
+    const reference = base || JSON.parse(exportState('all'));
+    return { metadataOnly: collaborationDocumentsEqual(reference, remote), remote, reference };
+  }
+
   async function mergeRemoteDriveChanges(saveOptions = {}) {
     const fileId = googleDriveConfig().fileId;
     if (!fileId) throw new Error('No linked Google Drive file is available to merge.');
@@ -30883,21 +31039,23 @@ const SharedDriveCollaborationV64 = (() => {
     const remote = await remotePlainDocument(fileId);
     const conflicts = [];
     const merged = mergeThreeWay(base, local, remote, '$', conflicts);
-    if (!conflicts.length) return applyMergedDocument(merged, saveOptions);
-    uiState.sharedDriveMergePending = { merged, conflicts, saveOptions };
+    const mergeContext = { base, local, remote };
+    if (!conflicts.length) return applyMergedDocument(merged, saveOptions, mergeContext);
+    uiState.sharedDriveMergePending = { merged, conflicts, saveOptions, mergeContext };
     node('driveMergeConflictList').innerHTML = conflicts.map((conflict, index) => `<div class="drive-merge-conflict"><strong>${escapeHtml(conflict.path)}</strong><select data-merge-choice="${index}"><option value="local">Use my change</option><option value="remote">Use remote change</option></select><details><summary>Compare values</summary><pre>Mine: ${escapeHtml(JSON.stringify(conflict.local, null, 2))}\n\nRemote: ${escapeHtml(JSON.stringify(conflict.remote, null, 2))}</pre></details></div>`).join('');
     node('driveMergeModal').classList.add('show');
     DialogManager.synchronize();
     return false;
   }
 
-  async function applyMergedDocument(documentToApply, saveOptions = {}) {
+  async function applyMergedDocument(documentToApply, saveOptions = {}, mergeContext = {}) {
     const rollback = createHistorySnapshot();
     try {
-      await importStateDirectFromText(JSON.stringify(documentToApply), 'three-way merged Google Drive save');
+      const finalized = finalizeMergedDriveDocument(documentToApply, mergeContext);
+      const manifested = await addBackupManifest(JSON.stringify(finalized, null, 2), 'all');
+      await importStateDirectFromText(manifested, 'three-way merged Google Drive save');
       const saved = await writeGoogleDriveSaveFile({ ...saveOptions, forceOverwrite: true, announce: true });
       if (!saved) throw new Error('The merged document could not be saved to Google Drive.');
-      captureBaseFromCurrent(googleDriveConfig().fileId);
       setLiveStatusMessage('Remote and local Google Drive changes were merged and saved.');
       return true;
     } catch (error) {
@@ -30915,7 +31073,7 @@ const SharedDriveCollaborationV64 = (() => {
     });
     node('driveMergeModal').classList.remove('show');
     uiState.sharedDriveMergePending = null;
-    return applyMergedDocument(pending.merged, pending.saveOptions);
+    return applyMergedDocument(pending.merged, pending.saveOptions, pending.mergeContext);
   }
 
   function readOnlyInteractionGuard(event) {
@@ -30935,7 +31093,7 @@ const SharedDriveCollaborationV64 = (() => {
     const style = document.createElement('style');
     style.textContent = `.shared-drive-modal{max-width:min(980px,96vw)}.shared-drive-howto{margin-bottom:10px;padding:10px 12px;border:1px solid #bfdbfe;border-radius:12px;background:#eff6ff;color:#1e3a8a;font-size:12px;line-height:1.4}.shared-drive-howto strong{color:#172554}.shared-drive-howto ol{margin:6px 0;padding-left:20px}.shared-drive-howto p{margin:6px 0 0}.shared-drive-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.shared-drive-permission-list{display:grid;gap:7px;max-height:300px;overflow:auto}.shared-drive-permission-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px;border:1px solid var(--border);border-radius:10px;background:#fff}.shared-drive-permission-row>div:first-child{display:grid;gap:2px;min-width:0}.shared-drive-permission-row span{color:var(--muted);font-size:11px}.shared-drive-permission-row select{min-width:110px}.shared-viewer-grid{display:grid;gap:8px}.shared-viewer-cell,.shared-viewer-object{box-sizing:border-box;border:1px solid var(--border);border-radius:10px;background:#fff;padding:8px;display:grid;place-items:center;text-align:center;min-height:72px}.shared-viewer-cell.seat{background:#dbeafe}.shared-viewer-canvas{position:relative;background:#fff;border:1px solid var(--border);overflow:auto}.shared-viewer-object{position:absolute}.drive-merge-conflict{display:grid;gap:7px;padding:9px;border:1px solid #fed7aa;border-radius:10px;background:#fffbeb}.drive-merge-conflict pre{max-height:180px;overflow:auto;white-space:pre-wrap;font-size:11px}@media(max-width:760px){.shared-drive-grid,.shared-drive-permission-row{grid-template-columns:1fr}}body[data-drive-access-role="reader"] [data-drive-write-action]{display:none!important}.drive-read-only-banner{position:fixed;left:50%;bottom:14px;z-index:39000;transform:translateX(-50%);max-width:min(680px,calc(100vw - 28px));padding:9px 12px;border:1px solid #f2ca83;border-radius:12px;background:#fffbeb;color:#7c2d12;box-shadow:0 12px 34px rgba(15,23,42,.22);font-size:12px;font-weight:800}.drive-read-only-banner[hidden]{display:none}body[data-drive-access-role="reader"] .app button,body[data-drive-access-role="reader"] .app input,body[data-drive-access-role="reader"] .app select,body[data-drive-access-role="reader"] .app textarea,body[data-drive-access-role="reader"] .app [draggable="true"]{cursor:not-allowed}`;
     document.head.appendChild(style);
-    document.body.insertAdjacentHTML('beforeend', `<div id="sharedDriveModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="sharedDriveTitle"><div class="modal shared-drive-modal"><div class="panel-header"><div><span class="v44-modal-eyebrow">Google Drive</span><h2 id="sharedDriveTitle">Share and collaborate</h2></div><div class="button-row"><button id="sharedDriveGuideBtn" type="button" class="tiny ghost" data-guided-start="drive-collaboration" data-guided-mode="explain">Guide me</button><button id="closeSharedDriveBtn" type="button" class="tiny secondary">Close</button></div></div><div class="modal-body"><div id="sharedDriveHowTo" class="shared-drive-howto"><strong>Editable multi-user setup</strong><ol><li>Save or load the master planner in Google Drive.</li><li>Enter a Google-account email and choose Viewer or Editor.</li><li>Have the recipient open the same hosted planner, connect Drive, and load the shared file.</li><li>Save changes back to Drive; overlapping edits use the merge resolver.</li></ol><p>This is revision-aware shared-file editing, not live Google Docs-style cursor streaming.</p></div><div class="button-row"><span id="sharedDriveRoleBadge" class="pill">Role unknown</span><button id="refreshSharedDriveBtn" type="button" class="secondary">Refresh access</button><button id="copySharedDriveLinkBtn" type="button" class="secondary">Copy Drive link</button></div><p id="sharedDriveStatus" class="hint">Connect Google Drive and save or load a file first.</p><div class="shared-drive-grid"><section class="section"><h3>Choose who can open the editable save</h3><div class="field"><label for="sharedDriveEmail">Google account email</label><input id="sharedDriveEmail" type="email" autocomplete="off" placeholder="teacher@example.org"></div><div class="field"><label for="sharedDriveRole">Access role</label><select id="sharedDriveRole"><option value="reader">Viewer — open but cannot save changes</option><option value="writer">Editor — can change and save the master</option></select></div><label class="checkline"><input id="sharedDriveNotify" type="checkbox" checked> Send Google notification</label><div class="field"><label for="sharedDriveMessage">Optional message</label><textarea id="sharedDriveMessage" rows="3" placeholder="Open the district-hosted planner, connect this Google account, then load the shared Drive save."></textarea></div><button id="addSharedDrivePermissionBtn" type="button" data-drive-write-action>Add person to Drive file</button><div class="hint mini">The planner does not keep a separate user list. Google Drive owns the permission. Viewer is enforced as read-only; Editor can save back to the shared file.</div></section><section class="section"><h3>Create a separate encrypted viewer</h3><div class="field"><label for="sharedViewerPreset">Viewer profile</label><select id="sharedViewerPreset"><option value="substitute">Substitute chart and substitute notes</option><option value="student">Student-facing names only</option><option value="anonymous">Anonymous numbered chart</option><option value="room">Room layout only</option></select></div><div class="row"><div class="field"><label for="sharedViewerPassword">Viewer password</label><input id="sharedViewerPassword" type="password" autocomplete="new-password"></div><div class="field"><label for="sharedViewerPasswordConfirm">Confirm</label><input id="sharedViewerPasswordConfirm" type="password" autocomplete="new-password"></div></div><div class="button-row"><button id="createDriveViewerFileBtn" type="button" data-drive-write-action>Create in Drive</button><button id="downloadEncryptedViewerHtmlBtn" type="button" class="secondary">Download encrypted HTML</button></div><p id="sharedViewerResult" class="muted">Use this for a stable read-only copy, not collaborative editing. Send the password through another channel.</p></section></div><section class="section"><h3>Current Drive permissions</h3><div class="hint mini">Change a person's role here or remove access. Removing access does not recall a file the person already downloaded or printed.</div><div id="sharedDrivePermissionList" class="shared-drive-permission-list"></div></section></div></div></div><div id="sharedViewerModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="sharedViewerModalTitle"><div class="modal shared-drive-modal"><div class="panel-header"><h2 id="sharedViewerModalTitle">Shared classroom view</h2><button id="closeSharedViewerBtn" type="button" class="tiny secondary">Close</button></div><div id="sharedViewerModalBody" class="modal-body"></div></div></div><div id="driveMergeModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="driveMergeTitle"><div class="modal shared-drive-modal"><div class="panel-header"><h2 id="driveMergeTitle">Resolve Drive merge conflicts</h2><button id="cancelDriveMergeBtn" type="button" class="tiny secondary">Cancel</button></div><div class="modal-body"><div class="hint">Non-conflicting local and remote changes were merged automatically. Choose which value wins for each overlapping edit.</div><div id="driveMergeConflictList" class="list" style="margin-top:10px"></div><div class="button-row" style="margin-top:10px"><button id="commitDriveMergeBtn" type="button">Merge and save</button></div></div></div></div>`);
+    document.body.insertAdjacentHTML('beforeend', `<div id="sharedDriveModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="sharedDriveTitle"><div class="modal shared-drive-modal"><div class="panel-header"><div><span class="v44-modal-eyebrow">Google Drive</span><h2 id="sharedDriveTitle">Share and collaborate</h2></div><div class="button-row"><button id="sharedDriveGuideBtn" type="button" class="tiny ghost" data-guided-start="drive-collaboration" data-guided-mode="explain">Guide me</button><button id="closeSharedDriveBtn" type="button" class="tiny secondary">Close</button></div></div><div class="modal-body"><div id="sharedDriveHowTo" class="shared-drive-howto"><strong>Editable multi-user setup</strong><ol><li>Save or load the master planner in Google Drive.</li><li>Enter a Google-account email and choose Viewer or Editor.</li><li>Have the recipient open the same hosted planner, connect Drive, and load the shared file.</li><li>Save changes back to Drive; overlapping edits use the merge resolver.</li></ol><p>This is revision-aware shared-file editing, not live Google Docs-style cursor streaming.</p></div><div class="button-row"><span id="sharedDriveRoleBadge" class="pill">Role unknown</span><button id="refreshSharedDriveBtn" type="button" class="secondary">Refresh access</button><button id="copySharedDriveLinkBtn" type="button" class="secondary">Copy Drive link</button></div><p id="sharedDriveStatus" class="hint">Connect Google Drive and save or load a file first.</p><div class="shared-drive-grid"><section class="section"><h3>Choose who can open the editable save</h3><div class="field"><label for="sharedDriveEmail">Google account email</label><input id="sharedDriveEmail" type="email" autocomplete="off" placeholder="teacher@example.org"></div><div class="field"><label for="sharedDriveRole">Access role</label><select id="sharedDriveRole"><option value="reader">Viewer — open but cannot save changes</option><option value="writer">Editor — can change and save the master</option></select></div><label class="checkline"><input id="sharedDriveNotify" type="checkbox" checked> Send Google notification</label><div class="field"><label for="sharedDriveMessage">Optional message</label><textarea id="sharedDriveMessage" rows="3" placeholder="Open the district-hosted planner, connect this Google account, then load the shared Drive save."></textarea></div><button id="addSharedDrivePermissionBtn" type="button" data-drive-write-action>Add person to Drive file</button><div class="hint mini">The planner does not keep a separate user list. Google Drive owns the permission. Viewer is enforced as read-only; Editor can save back to the shared file.</div></section><section class="section"><h3>Create a separate encrypted viewer</h3><div class="field"><label for="sharedViewerPreset">Viewer profile</label><select id="sharedViewerPreset"><option value="substitute">Substitute chart and substitute notes</option><option value="student">Student-facing names only</option><option value="anonymous">Anonymous numbered chart</option><option value="room">Room layout only</option></select></div><div class="row"><div class="field"><label for="sharedViewerPassword">Viewer password</label><input id="sharedViewerPassword" type="password" autocomplete="new-password"></div><div class="field"><label for="sharedViewerPasswordConfirm">Confirm</label><input id="sharedViewerPasswordConfirm" type="password" autocomplete="new-password"></div></div><div class="button-row"><button id="createDriveViewerFileBtn" type="button" data-drive-write-action>Create in Drive</button><button id="downloadEncryptedViewerHtmlBtn" type="button" class="secondary">Download encrypted HTML</button></div><p id="sharedViewerResult" class="muted">Use this for a stable read-only copy, not collaborative editing. Send the password through another channel.</p></section></div><section class="section"><h3>Current Drive permissions</h3><div class="hint mini">Change a person's role here or remove access. Removing access does not recall a file the person already downloaded or printed.</div><div id="sharedDrivePermissionList" class="shared-drive-permission-list"></div></section></div></div></div><div id="sharedViewerModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="sharedViewerModalTitle"><div class="modal shared-drive-modal"><div class="panel-header"><h2 id="sharedViewerModalTitle">Shared classroom view</h2><button id="closeSharedViewerBtn" type="button" class="tiny secondary">Close</button></div><div id="sharedViewerModalBody" class="modal-body"></div></div></div><div id="driveMergeModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="driveMergeTitle"><div class="modal shared-drive-modal"><div class="panel-header"><h2 id="driveMergeTitle">Resolve Drive merge conflicts</h2><button id="cancelDriveMergeBtn" type="button" class="tiny secondary">Cancel</button></div><div class="modal-body"><div class="hint">Non-conflicting local and remote classroom changes were merged automatically. Save timestamps, revision hashes, backup manifests, and record update times are resolved automatically and are never presented as classroom conflicts. Choose which value wins only for genuine overlapping edits.</div><div id="driveMergeConflictList" class="list" style="margin-top:10px"></div><div class="button-row" style="margin-top:10px"><button id="commitDriveMergeBtn" type="button">Merge and save</button></div></div></div></div>`);
   }
 
   function openManager() {
@@ -30965,7 +31123,6 @@ const SharedDriveCollaborationV64 = (() => {
     node('closeSharedViewerBtn')?.addEventListener('click', () => { node('sharedViewerModal')?.classList.remove('show'); uiState.sharedViewerDocument = null; DialogManager.synchronize(); });
     node('commitDriveMergeBtn')?.addEventListener('click', () => void commitMergeChoices().catch(error => setLiveStatusMessage(`Drive merge failed: ${error.message}`)));
     node('cancelDriveMergeBtn')?.addEventListener('click', () => { node('driveMergeModal')?.classList.remove('show'); uiState.sharedDriveMergePending = null; DialogManager.synchronize(); });
-    document.addEventListener('click', event => { const action = event.target.closest('[data-save-menu-action="drive-share-manager"]'); if (action) { node('saveLoadMenu')?.classList.remove('show'); openManager(); } });
     ['click','change','input','pointerdown','dragstart','drop'].forEach(type => document.addEventListener(type, readOnlyInteractionGuard, true));
   }
 
@@ -30978,7 +31135,22 @@ const SharedDriveCollaborationV64 = (() => {
     applyDriveCapabilities(uiState.googleDriveCapabilities);
   }
 
-  return Object.freeze({ install, openManager, applyDriveCapabilities, assertCanWriteCurrentDriveFile, captureBaseFromCurrent, tryOpenEncryptedViewerPayload, mergeRemoteDriveChanges, mergeThreeWay, viewerClassData, encryptedViewerPayload });
+  return Object.freeze({
+    install,
+    openManager,
+    applyDriveCapabilities,
+    assertCanWriteCurrentDriveFile,
+    captureBaseDocument,
+    captureBaseFromCurrent,
+    tryOpenEncryptedViewerPayload,
+    inspectRemoteDriveChange,
+    mergeRemoteDriveChanges,
+    mergeThreeWay,
+    finalizeMergedDriveDocument,
+    collaborationDocumentsEqual,
+    viewerClassData,
+    encryptedViewerPayload
+  });
 })();
 
 async function registerHostedServiceWorker() {
