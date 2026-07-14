@@ -5,7 +5,7 @@
   <meta name="license" content="MIT License" />
   <meta name="spdx-license-identifier" content="MIT" />
   <meta name="copyright" content="Copyright (c) 2026 Chris L. Franklin" />
-  <meta name="app-version" content="6.3.4" />
+  <meta name="app-version" content="6.3.5" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com https://www.paypalobjects.com blob:; style-src 'self' 'unsafe-inline'; connect-src 'self' https://www.googleapis.com https://classroom.googleapis.com https://accounts.google.com https://www.paypal.com https://www.paypalobjects.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://www.paypal.com; img-src 'self' data: blob: https://www.paypalobjects.com; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'self' https://www.paypal.com" />
   <meta name="application-name" content="Classroom Seating Planner" />
@@ -1063,7 +1063,14 @@ body[data-theme="linux"] .settings-page-header{background:var(--panel-2);color:v
 .freeform-room-marker.back.side-left{left:8px;right:auto;top:50%;bottom:auto;transform:translateY(-50%) rotate(-90deg)
 }.freeform-room-marker.front.side-right,
 .freeform-room-marker.back.side-right{right:8px;left:auto;top:50%;bottom:auto;transform:translateY(-50%) rotate(90deg)
-}.freeform-rotate-handle{position:absolute;top:-13px;right:-13px;border-radius:999px;font-size:12px;cursor:pointer;z-index:2;opacity:0;pointer-events:none;transition:opacity .14s ease
+}.freeform-rotate-handle{position:absolute;top:-13px;border-radius:999px;font-size:12px;cursor:grab;z-index:2;opacity:0;pointer-events:none;touch-action:none;user-select:none;transition:opacity .14s ease, transform .14s ease
+}.freeform-rotate-clockwise{right:-13px
+}.freeform-rotate-counterclockwise{left:-13px
+}.freeform-rotate-handle:hover,
+.freeform-rotate-handle:focus-visible{transform:scale(1.08)
+}.freeform-rotate-handle:active,
+.freeform-object.freeform-rotating .freeform-rotate-handle{cursor:grabbing
+}.freeform-object.freeform-rotating{transition:none
 }.freeform-object:hover .freeform-object-actions,
 .freeform-object.selected .freeform-object-actions,
 .freeform-object:focus-within .freeform-object-actions{opacity:1;pointer-events:auto;transform:translateY(0)
@@ -3487,7 +3494,7 @@ body.freeform-layout-mode .standard-only-tool{display:none
 }.freeform-object.carpet{background:linear-gradient(180deg, #fce7f3 0%, #fbcfe8 100%)
 }.freeform-object-actions .icon-btn{padding:0
 }.freeform-object .group-color-bar{display:none
-}.freeform-rotate-handle{width:24px;min-width:24px;height:24px;min-height:24px;padding:0
+}.freeform-rotate-handle{width:24px;min-width:24px;height:24px;min-height:24px;padding:0;line-height:1
 }body.freeform-clean-view .freeform-object-actions,
 body.freeform-clean-view .freeform-rotate-handle,
 body.freeform-clean-view .freeform-resize-handle,
@@ -4878,7 +4885,7 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
                 <button id="groupFreeformSelectionBtn" class="secondary" type="button" disabled title="Group selected seats and room objects so they move together">Group</button>
                 <button id="ungroupFreeformSelectionInlineBtn" class="secondary" type="button" disabled title="Remove selected objects from their named group">Ungroup</button>
                 <button id="lockFreeformGroupBtn" class="secondary" type="button" disabled title="Lock or unlock every object in the selected group">Lock group</button>
-                <button id="rotateFreeformObjectBtn" class="secondary" type="button">Rotate</button>
+                <button id="rotateFreeformObjectBtn" class="secondary" type="button" title="Rotate the selected Freeform object 15 degrees clockwise">Rotate 15°</button>
                 <button id="deleteFreeformObjectBtn" class="danger" type="button">Delete</button>
               </div>
 
@@ -6134,7 +6141,7 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
 const APP_CONFIG = Object.freeze({
   name: 'Classroom Seating Planner',
   shortName: 'Seating Planner',
-  version: '6.3.4',
+  version: '6.3.5',
   copyrightHolder: 'Chris L. Franklin',
   copyrightYear: '2026',
   releaseDate: '2026-07-14',
@@ -6361,7 +6368,7 @@ const PROJECT_FEATURES = [
   { title: 'Roster and class management', text: 'Maintain multiple classes, compare and merge class records, import or reconcile CSV rosters, preserve notes and requirements, archive classes, and roll classes into a new term.' },
   { title: 'Seating rules and student needs', text: 'Model together, avoid, anchored, spread, location, zone, object-distance, accessibility, and individual student requirements.' },
   { title: 'Explainable seating options', text: 'Run a preflight conflict inspector, then compare visual seating options using rule matches, required conflicts, individual needs, and student movement before applying a chart.' },
-  { title: 'Grid and Freeform rooms', text: 'Design structured grids or physically positioned Freeform rooms with rotation-aware collision, groups, layers, alignment, history, minimap, and room audits.' },
+  { title: 'Grid and Freeform rooms', text: 'Design structured grids or physically positioned Freeform rooms with clockwise, counterclockwise, and free-drag rotation, collision handling, groups, layers, alignment, history, minimap, and room audits.' },
   { title: 'Manual and keyboard placement', text: 'Drag, swap, lock, clear, or keyboard-place students while preserving anchors, reserved seats, and intentional Freeform geometry.' },
   { title: 'Review and integrity checks', text: 'Inspect unassigned students, rule outcomes, duplicate assignments, invalid locks, overlaps, hidden objects, and other room or data problems.' },
   { title: 'Encrypted saving and recovery', text: 'Use encrypted browser autosave, linked working files, downloaded backups, snapshots, selective restore, guarded startup recovery, and an optional separately stored password-recovery package.' },
@@ -6377,10 +6384,21 @@ const PROJECT_FEATURES = [
 
 const RELEASE_HISTORY = [
   {
+    version: '6.3.5',
+    date: 'July 14, 2026',
+    title: 'Direct Freeform rotation controls',
+    current: true,
+    changes: [
+      'Added a counterclockwise rotation handle to the top-left corner of every Freeform object while retaining clockwise rotation in the top-right.',
+      'Made either corner handle clickable for a 15-degree step and draggable for continuous pointer-based rotation around the object center.',
+      'Added Shift-drag 15-degree snapping, live collision checks, grouped-selection rotation, keyboard-accessible click controls, and reliable one-step Undo restoration.'
+    ]
+  },
+  {
     version: '6.3.4',
     date: 'July 14, 2026',
     title: 'Roster and Freeform workspace fixes',
-    current: true,
+    current: false,
     changes: [
       'Kept student Edit actions visible on desktop and corrected student-context access checks.',
       'Removed redundant Student List section chrome in Class Setup and made the Add Student panel collapse into a narrow rail so the roster uses the reclaimed space.',
@@ -6773,6 +6791,8 @@ const uiState = {
   pageLockSecretForSession: '',
   freeformSelectedObjectIds: new Set(),
   freeformDrag: null,
+  freeformRotation: null,
+  suppressFreeformRotateClick: null,
   freeformGeometryCache: new Map(),
   freeformGeometryCacheReady: false,
   durableSavePromptActive: false,
@@ -9975,12 +9995,23 @@ function renderFreeformLayout() {
     if (groupDisplay?.primaryColor) node.style.borderColor = groupDisplay.primaryColor;
     node.style.transform = `rotate(${Number(obj.rotation) || 0}deg)`;
     node.title = `${freeformObjectLabel(obj, lookups)} · x ${Math.round(obj.x)}, y ${Math.round(obj.y)}${obj.rotation ? ` · ${obj.rotation}°` : ''}${groupDisplay?.titleText ? ` · ${groupDisplay.titleText}` : ''}`;
-    node.innerHTML = `${freeformObjectInnerHtml(obj, lookups)}<button class="freeform-rotate-handle no-print" data-freeform-rotate="${escapeHtml(obj.id)}" title="Rotate 15°">⟳</button><span class="freeform-resize-handle no-print" data-freeform-resize="${escapeHtml(obj.id)}" title="Resize"></span>`;
+    node.innerHTML = `${freeformObjectInnerHtml(obj, lookups)}<button type="button" class="freeform-rotate-handle freeform-rotate-counterclockwise no-print" data-freeform-rotate="${escapeHtml(obj.id)}" data-freeform-rotate-direction="-1" aria-label="Rotate counterclockwise. Click for 15 degrees or drag for free rotation." title="Rotate counterclockwise 15°; drag for free rotation">⟲</button><button type="button" class="freeform-rotate-handle freeform-rotate-clockwise no-print" data-freeform-rotate="${escapeHtml(obj.id)}" data-freeform-rotate-direction="1" aria-label="Rotate clockwise. Click for 15 degrees or drag for free rotation." title="Rotate clockwise 15°; drag for free rotation">⟳</button><span class="freeform-resize-handle no-print" data-freeform-resize="${escapeHtml(obj.id)}" title="Resize"></span>`;
     node.addEventListener('pointerdown', event => {
       if (isMobileViewport() && uiState.mobileCarryItem) return;
       beginFreeformPointerDrag(event, obj.id);
     });
     node.addEventListener('click', event => {
+      const rotateControl = event.target.closest('[data-freeform-rotate]');
+      if (rotateControl) {
+        event.preventDefault();
+        event.stopPropagation();
+        const suppression = uiState.suppressFreeformRotateClick;
+        uiState.suppressFreeformRotateClick = null;
+        if (suppression && suppression.id === obj.id && suppression.until >= Date.now()) return;
+        const direction = Number(rotateControl.dataset.freeformRotateDirection) < 0 ? -1 : 1;
+        rotateFreeformObject(obj.id, direction * 15);
+        return;
+      }
       if (isMobileViewport() && uiState.mobileCarryItem && obj.type === 'seat') {
         event.preventDefault();
         event.stopImmediatePropagation();
@@ -9988,7 +10019,7 @@ function renderFreeformLayout() {
         applyMobileCarryToFreeformObject(obj.id);
         return;
       }
-      if (event.target.closest('[data-freeform-clear-seat], [data-freeform-lock], [data-freeform-delete], [data-freeform-rotate]')) return;
+      if (event.target.closest('[data-freeform-clear-seat], [data-freeform-lock], [data-freeform-delete]')) return;
       event.stopPropagation();
       selectFreeformObject(obj.id, event.shiftKey, event.altKey);
     });
@@ -10043,17 +10074,171 @@ function renderFreeformLayout() {
   ModernizationSuite?.enhanceRenderedWorkspace?.();
 }
 
+function freeformRotationTargets(id) {
+  restoreFreeformGeometryFromCache();
+  const objects = state.freeformLayout?.objects || [];
+  const selected = objects.filter(item => uiState.freeformSelectedObjectIds?.has(item.id) && !item.locked);
+  return selected.length && selected.some(item => item.id === id)
+    ? selected
+    : objects.filter(item => item.id === id && !item.locked);
+}
+
+function freeformPointerAngle(event, center) {
+  return Math.atan2(event.clientY - center.y, event.clientX - center.x) * 180 / Math.PI;
+}
+
+function shortestRotationDelta(from, to) {
+  return ((to - from + 540) % 360) - 180;
+}
+
+function normalizedRotation(value) {
+  const rotation = Number(value) || 0;
+  const normalized = ((rotation % 360) + 360) % 360;
+  return Math.round(normalized * 10) / 10;
+}
+
+function beginFreeformPointerRotation(event, id, direction = 1) {
+  if (event.button !== 0 || eyeModeBlocksRoomEditing()) return;
+  const targets = freeformRotationTargets(id);
+  if (!targets.length) {
+    setLiveStatusMessage('Unlock the Freeform object before rotating it.');
+    return;
+  }
+  const objectNode = event.currentTarget;
+  const handle = event.target.closest('[data-freeform-rotate]');
+  if (!objectNode || !handle) return;
+  const rect = objectNode.getBoundingClientRect();
+  const center = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+  const startAngle = freeformPointerAngle(event, center);
+  const originals = new Map(targets.map(item => [item.id, Number(item.rotation) || 0]));
+  const targetIds = new Set(targets.map(item => item.id));
+  uiState.freeformRotation = {
+    id,
+    direction: direction < 0 ? -1 : 1,
+    pointerId: event.pointerId,
+    handle,
+    center,
+    startX: event.clientX,
+    startY: event.clientY,
+    lastPointerAngle: startAngle,
+    accumulatedDelta: 0,
+    originals,
+    targetIds,
+    active: false,
+    changed: false,
+    undoCaptured: false,
+    blocked: false
+  };
+  event.preventDefault();
+  event.stopPropagation();
+  handle.setPointerCapture?.(event.pointerId);
+  const move = moveEvent => updateFreeformPointerRotation(moveEvent);
+  const finish = finishEvent => finishFreeformPointerRotation(finishEvent);
+  document.addEventListener('pointermove', move);
+  document.addEventListener('pointerup', finish, { once: true });
+  document.addEventListener('pointercancel', finish, { once: true });
+  uiState.freeformRotation.cleanup = () => {
+    document.removeEventListener('pointermove', move);
+    document.removeEventListener('pointerup', finish);
+    document.removeEventListener('pointercancel', finish);
+  };
+}
+
+function updateFreeformPointerRotation(event) {
+  const rotation = uiState.freeformRotation;
+  if (!rotation || event.pointerId !== rotation.pointerId) return;
+  const distance = Math.hypot(event.clientX - rotation.startX, event.clientY - rotation.startY);
+  const currentAngle = freeformPointerAngle(event, rotation.center);
+  const delta = shortestRotationDelta(rotation.lastPointerAngle, currentAngle);
+  rotation.lastPointerAngle = currentAngle;
+  rotation.accumulatedDelta += delta;
+  if (!rotation.active && distance < 4 && Math.abs(rotation.accumulatedDelta) < 2) return;
+  rotation.active = true;
+  event.preventDefault();
+  const objects = state.freeformLayout?.objects || [];
+  const targets = objects.filter(item => rotation.targetIds.has(item.id));
+  const external = objects.filter(item => !rotation.targetIds.has(item.id));
+  const requestedDelta = event.shiftKey
+    ? Math.round(rotation.accumulatedDelta / 15) * 15
+    : rotation.accumulatedDelta;
+  const candidates = new Map(targets.map(item => [item.id, {
+    rotation: normalizedRotation((rotation.originals.get(item.id) || 0) + requestedDelta)
+  }]));
+  const overlap = targets.find(item => findFreeformOverlap(item, candidates.get(item.id), external, {
+    phase: 'drop',
+    excludeIds: rotation.targetIds
+  }));
+  if (overlap) {
+    rotation.blocked = true;
+    if (!rotation.lastOverlapMessageAt || Date.now() - rotation.lastOverlapMessageAt > 900) {
+      rotation.lastOverlapMessageAt = Date.now();
+      setLiveStatusMessage('Free rotation is blocked because the new angle would overlap another room object.');
+    }
+    return;
+  }
+  if (!rotation.undoCaptured) {
+    pushUndoSnapshot('Before freeform rotation');
+    rotation.undoCaptured = true;
+  }
+  rotation.blocked = false;
+  rotation.changed = true;
+  targets.forEach(item => {
+    item.rotation = candidates.get(item.id).rotation;
+    const node = document.querySelector(`.freeform-object[data-object-id="${cssEscape(item.id)}"]`);
+    if (node) {
+      node.classList.add('freeform-rotating');
+      node.style.transform = `rotate(${item.rotation}deg)`;
+    }
+  });
+  ModernizationSuite?.updateFreeformMinimap?.();
+}
+
+function finishFreeformPointerRotation(event) {
+  const rotation = uiState.freeformRotation;
+  if (!rotation || event.pointerId !== rotation.pointerId) return;
+  rotation.cleanup?.();
+  rotation.handle?.releasePointerCapture?.(event.pointerId);
+  document.querySelectorAll('.freeform-object.freeform-rotating').forEach(node => node.classList.remove('freeform-rotating'));
+  uiState.freeformRotation = null;
+  if (!rotation.active) {
+    if (event.type === 'pointercancel') return;
+    event.preventDefault();
+    const suppression = { id: rotation.id, until: Date.now() + 700 };
+    uiState.suppressFreeformRotateClick = suppression;
+    setTimeout(() => { if (uiState.suppressFreeformRotateClick === suppression) uiState.suppressFreeformRotateClick = null; }, 0);
+    rotateFreeformObject(rotation.id, rotation.direction * 15);
+    return;
+  }
+  event.preventDefault();
+  const suppression = { id: rotation.id, until: Date.now() + 700 };
+  uiState.suppressFreeformRotateClick = suppression;
+  setTimeout(() => { if (uiState.suppressFreeformRotateClick === suppression) uiState.suppressFreeformRotateClick = null; }, 0);
+  if (!rotation.changed) {
+    setLiveStatusMessage(rotation.blocked
+      ? 'The object stayed at its previous angle because the requested rotation would overlap another room object.'
+      : 'Free rotation ended without changing the object angle.');
+    renderFreeformLayout();
+    return;
+  }
+  const targets = (state.freeformLayout?.objects || []).filter(item => rotation.targetIds.has(item.id));
+  rememberFreeformGeometry(targets);
+  persistFreeformGeometrySession('freeform-rotate-finish');
+  commitFreeformLayoutChange('freeform-rotate-object', { render: true, syncToGrid: false });
+  const primary = targets.find(item => item.id === rotation.id) || targets[0];
+  setLiveStatusMessage(`${targets.length === 1 ? 'Object' : `${targets.length} objects`} rotated to ${Math.round(Number(primary?.rotation) || 0)}°.`);
+}
+
 function beginFreeformPointerDrag(event, id) {
   if (event.button !== 0 || eyeModeBlocksRoomEditing()) return;
   restoreFreeformGeometryFromCache();
   const obj = (state.freeformLayout?.objects || []).find(item => item.id === id);
   if (!obj) return;
-  if (event.target.closest('button') && event.target.dataset.freeformRotate !== id) return;
-  if (event.target.dataset.freeformRotate === id) {
-    event.preventDefault();
-    rotateFreeformObject(id, event.shiftKey ? -15 : 15);
+  const rotateControl = event.target.closest('[data-freeform-rotate]');
+  if (rotateControl?.dataset.freeformRotate === id) {
+    beginFreeformPointerRotation(event, id, Number(rotateControl.dataset.freeformRotateDirection) < 0 ? -1 : 1);
     return;
   }
+  if (event.target.closest('button')) return;
   const resize = event.target.dataset.freeformResize === id;
   const alreadySelected = uiState.freeformSelectedObjectIds?.has(id);
   const groupedIds = obj.groupId
@@ -10348,9 +10533,7 @@ Students, groups, zones, saved room history, and the Standard Grid layout are ke
 }
 
 function rotateFreeformObject(id, degrees = 15) {
-  restoreFreeformGeometryFromCache();
-  const selected = (state.freeformLayout?.objects || []).filter(item => uiState.freeformSelectedObjectIds?.has(item.id) && !item.locked);
-  const targets = selected.length && selected.some(item => item.id === id) ? selected : (state.freeformLayout?.objects || []).filter(item => item.id === id && !item.locked);
+  const targets = freeformRotationTargets(id);
   if (!targets.length) return;
   pushUndoSnapshot('Before freeform rotation');
   const originals = new Map(targets.map(item => [item.id, Number(item.rotation) || 0]));
@@ -11388,7 +11571,7 @@ function persistActiveClass() {
   Object.assign(cls, snapshotCurrentClassData());
 }
 
-function applyClassToState(classId) {
+function applyClassToState(classId, { restoreGeometrySession = true } = {}) {
   const cls = (state.classes || []).find(item => item.id === classId) || state.classes?.[0];
   if (!cls) return;
   state.activeClassId = cls.id;
@@ -11406,7 +11589,7 @@ function applyClassToState(classId) {
   state.todaySession = normalizeTodaySession(cls.todaySession);
   state.seatingPlans = deepClone(cls.seatingPlans || []);
   state.importProfiles = deepClone(cls.importProfiles || []);
-  restoreFreeformGeometrySessionForCurrentClass();
+  if (restoreGeometrySession) restoreFreeformGeometrySessionForCurrentClass();
   resetFreeformGeometryCache();
   ensureGrid();
   if (uiState?.selectedCellKeys) {
@@ -17186,7 +17369,7 @@ const HELP_GUIDE_SECTIONS = [
       "Practice classes are isolated from real classes and can be kept, restarted, or deleted when a lesson finishes."
     ],
     "examples": [
-      "Open Guide me beside Freeform tools to practice movement, resizing, rotation, grouping, locking, student placement, and Undo.",
+      "Open Guide me beside Freeform tools to practice movement, resizing, click or drag rotation, grouping, locking, student placement, and Undo.",
       "Open the Best-Fit Seating lesson to create rules, generate candidates, compare explanations, generate unique alternatives, and apply a plan."
     ]
   },
@@ -17400,12 +17583,13 @@ const HELP_GUIDE_SECTIONS = [
     "id": "freeform-editing",
     "category": "Layout",
     "title": "Freeform Room Editing, Keyboard Controls, and Snapping",
-    "keywords": "freeform keyboard arrows shift alt option drag snap magnetic guides align distribute marquee pan fit room fit selected presets inspector collision overlap group layer",
+    "keywords": "freeform keyboard arrows shift alt option drag rotate clockwise counterclockwise free rotation snap magnetic guides align distribute marquee pan fit room fit selected presets inspector collision overlap group layer",
     "intro": "Freeform Room is a visual editor for irregular rooms, pods, tables, pathways, and precisely positioned seats. Primary tools share the Layout Mode row; More tools opens over the canvas without taking workspace away.",
     "items": [
       { "title": "Move and select", "text": "Drag objects, shift-click to extend a selection, drag across blank canvas, or turn on Box Select to sweep across several seats and room objects." },
       { "title": "Keyboard movement", "text": "Use Arrow keys to move selected objects by the grid step, Shift+Arrow for a larger step, and Alt/Option+Arrow for one-pixel movement." },
       { "title": "Drag modifiers", "text": "Hold Shift while dragging to lock movement to one axis. Hold Alt/Option while dragging to temporarily bypass grid snapping." },
+      { "title": "Rotate objects", "text": "Use the top-left handle for counterclockwise rotation and the top-right handle for clockwise rotation. Click for a 15-degree step, drag either handle for free rotation, or hold Shift while dragging to snap the angle to 15-degree increments." },
       { "title": "Snap and guides", "text": "Grid snap keeps coordinates consistent. Magnetic guides align edges and centers. Use Group to make selected seats and room objects move as one unit; Lock Group freezes the entire group until it is unlocked." },
       { "title": "Fit, pan, and presets", "text": "Fit Room shows the whole canvas, Fit Selected centers the current selection, Pan moves the viewport, and Presets inserts reusable room groups." },
       { "title": "More tools", "text": "Canvas size, zoom, movement rules, view controls, alignment, distribution, object dimensions, conversion, Room tools, and Audit room are available in the More tools overlay." }
@@ -17894,8 +18078,9 @@ function restoreHistorySnapshot(snapshotText) {
       uiState.designMode = !!parsed.ui.designMode;
       uiState.designCellSize = clampNumber(parsed.ui.designCellSize || uiState.designCellSize, 20, 72);
     }
-    applyClassToState(state.activeClassId);
+    applyClassToState(state.activeClassId, { restoreGeometrySession: false });
     renderAll();
+    persistFreeformGeometrySession('history-restore');
   } finally {
     uiState.historyPaused = false;
   }
@@ -30178,7 +30363,7 @@ const GuidedLearning = (() => {
         simpleStep('add-object', 'Add a room object', 'Boards, doors, tables, walkways, and teacher areas make the layout understandable and improve location rules.', 'Add one non-seat room object.', '#freeformObjectTool', { workflow: 'room', expandLayoutTools: true, check: CHECKS.freeformObjectAdded }),
         simpleStep('move', 'Move an object', 'Drag an unlocked object or use the arrow keys after selecting it.', 'Move any Freeform object to a new position.', '#seatGrid', { workflow: 'room', check: CHECKS.freeformMoved }),
         simpleStep('resize', 'Resize an object', 'Resize handles and the object inspector change width and height precisely.', 'Resize the selected seat or room object.', '#freeformObjectInspector', { workflow: 'room', expandLayoutTools: true, check: CHECKS.freeformResized }),
-        simpleStep('rotate', 'Rotate an object', 'Rotation helps model angled tables, boards, doors, and irregular furniture.', 'Use Rotate or enter a rotation value in the inspector.', '#rotateFreeformObjectBtn', { workflow: 'room', expandLayoutTools: true, check: CHECKS.freeformRotated }),
+        simpleStep('rotate', 'Rotate an object', 'Rotation helps model angled tables, boards, doors, and irregular furniture.', 'Click either corner rotation handle for a 15-degree step, drag a handle for free rotation, or enter a precise value in the inspector.', '#rotateFreeformObjectBtn', { workflow: 'room', expandLayoutTools: true, check: CHECKS.freeformRotated }),
         simpleStep('duplicate', 'Duplicate an object', 'Duplicate is faster than repeatedly rebuilding identical seats or tables.', 'Duplicate the selected object.', '#duplicateFreeformObjectBtn', { workflow: 'room', expandLayoutTools: true, check: CHECKS.freeformDuplicated }),
         simpleStep('multi-select', 'Select several objects', 'Box Select, marquee selection, Shift-click, and group selection let tools operate on several objects.', 'Select at least two Freeform objects.', '#toggleFreeformMarqueeBtn', { workflow: 'room', expandLayoutTools: true, check: CHECKS.freeformMultiSelected }),
         simpleStep('arrange', 'Align or distribute the selection', 'Alignment creates clean rows, columns, and evenly spaced pods without hand-tuning every coordinate.', 'Use any Align or Distribute command.', '#freeformMultiSelectionTools', { workflow: 'room', expandLayoutTools: true, check: CHECKS.freeformArranged }),
