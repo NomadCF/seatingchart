@@ -5,7 +5,7 @@
   <meta name="license" content="MIT License" />
   <meta name="spdx-license-identifier" content="MIT" />
   <meta name="copyright" content="Copyright (c) 2026 Chris L. Franklin" />
-  <meta name="app-version" content="6.4.2" />
+  <meta name="app-version" content="6.4.3" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com https://www.paypalobjects.com blob:; style-src 'self' 'unsafe-inline'; connect-src 'self' https://www.googleapis.com https://classroom.googleapis.com https://accounts.google.com https://www.paypal.com https://www.paypalobjects.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://www.paypal.com; img-src 'self' data: blob: https://www.paypalobjects.com; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'self' https://www.paypal.com" />
   <meta name="application-name" content="Classroom Seating Planner" />
@@ -754,7 +754,7 @@ button[data-delete-note-category]{width:30px;min-width:30px;flex:0 0 30px;text-a
 .help-guide-search-row button{white-space:normal;text-align:center
 }.help-guide-card{align-content:start
 }.help-guide-card strong{line-height:1.25
-}#saveLoadMenu{min-width:238px;max-width:min(270px, calc(100vw - 24px))
+}#saveLoadMenu{z-index:9200;min-width:238px;max-width:min(270px, calc(100vw - 24px));max-height:calc(100dvh - 16px);overflow-y:auto
 }#saveLoadMenu .save-menu-note{color:var(--muted);font-size:11px;line-height:1.35;padding:5px 8px 7px;border-bottom:1px solid var(--border);margin-bottom:4px
 }#saveLoadMenu button.primary-save-action{background:#eff6ff;border-color:#bfdbfe;color:var(--accent-dark);font-weight:900
 }.save-health-grid.compact{display:grid;grid-template-columns:repeat(auto-fit, minmax(190px, 1fr));gap:8px;margin:8px 0 10px
@@ -6129,7 +6129,7 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
 const APP_CONFIG = Object.freeze({
   name: 'Classroom Seating Planner',
   shortName: 'Seating Planner',
-  version: '6.4.2',
+  version: '6.4.3',
   copyrightHolder: 'Chris L. Franklin',
   copyrightYear: '2026',
   releaseDate: '2026-07-14',
@@ -6372,10 +6372,22 @@ const PROJECT_FEATURES = [
 
 const RELEASE_HISTORY = [
   {
+    version: '6.4.3',
+    date: 'July 14, 2026',
+    title: 'Protected read-only packages and menu layering',
+    current: true,
+    changes: [
+      'Raised the compact Save menu above the application header and workflow shell while retaining viewport-aware positioning and scrolling.',
+      'Added an optional viewer password and confirmation directly to the Read-only Classroom HTML export.',
+      'Encrypted protected HTML package contents with PBKDF2-SHA-256 and AES-256-GCM so classroom names, students, notes, and room markup are not stored as readable HTML.',
+      'Unified encrypted HTML downloads with the faithful Grid and Freeform read-only renderer introduced in 6.4.2.'
+    ]
+  },
+  {
     version: '6.4.2',
     date: 'July 14, 2026',
     title: 'Faithful read-only classroom packages',
-    current: true,
+    current: false,
     changes: [
       'Corrected read-only Grid exports to use the same 1-based cell keys as the classroom editor.',
       'Preserved Grid dimensions, room-object styling, coordinates, and assigned student names in static classroom packages.',
@@ -28416,7 +28428,17 @@ const DistrictIntegrationsV57 = (() => {
     if (safeBody && !node('downloadReadOnlyClassroomBtn')) {
       const section = document.createElement('section');
       section.className='section';
-      section.innerHTML='<h3>Read-only classroom package</h3><div class="hint">Creates a standalone HTML file with only the selected privacy profile. It contains no editing controls, passwords, Settings, save credentials, or hidden source data.</div><div class="field"><label for="readOnlyPackagePreset">Package profile</label><select id="readOnlyPackagePreset"><option value="student">Student-facing names only</option><option value="substitute">Substitute chart and approved notes</option><option value="anonymous">Anonymous numbered chart</option><option value="room">Room layout only</option></select></div><button id="downloadReadOnlyClassroomBtn" type="button">Download Read-only Classroom HTML</button>';
+      section.innerHTML = `
+        <h3>Read-only classroom package</h3>
+        <div class="hint">Creates a standalone HTML file with only the selected privacy profile. Add a separate viewer password to encrypt the included classroom data inside the HTML file.</div>
+        <div class="field"><label for="readOnlyPackagePreset">Package profile</label><select id="readOnlyPackagePreset"><option value="student">Student-facing names only</option><option value="substitute">Substitute chart and approved notes</option><option value="anonymous">Anonymous numbered chart</option><option value="room">Room layout only</option></select></div>
+        <label class="checkline"><input id="readOnlyPackagePasswordToggle" type="checkbox" /> Password-protect and encrypt this HTML package</label>
+        <div id="readOnlyPackagePasswordFields" class="row" hidden>
+          <div class="field"><label for="readOnlyPackagePassword">Viewer password</label><input id="readOnlyPackagePassword" type="password" autocomplete="new-password" minlength="10" /></div>
+          <div class="field"><label for="readOnlyPackagePasswordConfirm">Confirm password</label><input id="readOnlyPackagePasswordConfirm" type="password" autocomplete="new-password" minlength="10" /></div>
+        </div>
+        <div id="readOnlyPackageStatus" class="muted">Unprotected packages open immediately. Protected packages require the viewer password and keep the classroom data encrypted at rest.</div>
+        <button id="downloadReadOnlyClassroomBtn" type="button">Download Read-only Classroom HTML</button>`;
       safeBody.insertBefore(section,node('safeSharePreview'));
     }
   }
@@ -28935,16 +28957,81 @@ const DistrictIntegrationsV57 = (() => {
     return `:root{color-scheme:light;--readonly-cell-width:112px;--readonly-cell-height:133px;--readonly-border:#c9d3e3;--readonly-text:#172033;--readonly-muted:#607089}*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#eef2f7;color:var(--readonly-text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}body{padding:20px}header,.readonly-content{width:min(100%,1800px);margin:0 auto}header{margin-bottom:14px}h1{margin:0;font-size:clamp(22px,3vw,34px);letter-spacing:-.035em}.readonly-summary{margin:5px 0 0;color:var(--readonly-muted);font-size:12px}.readonly-notice{padding:9px 11px;border:1px solid #bfdbfe;background:#eff6ff;border-radius:10px;margin:10px 0 0;color:#1e3a8a;font-size:12px;line-height:1.4}.readonly-room-viewport{width:100%;overflow:auto;padding:14px;background-color:#f8fafc;background-image:linear-gradient(rgba(120,137,163,.075) 1px,transparent 1px),linear-gradient(90deg,rgba(120,137,163,.075) 1px,transparent 1px);background-size:24px 24px;border:1px solid #d7deea;border-radius:14px;box-shadow:0 10px 24px rgba(15,23,42,.08)}.readonly-grid{display:grid;grid-template-columns:repeat(var(--readonly-cols),var(--readonly-cell-width));grid-auto-rows:minmax(var(--readonly-cell-height),auto);gap:7px;width:max-content;min-width:0;margin:0 auto}.readonly-cell{position:relative;width:var(--readonly-cell-width);min-height:var(--readonly-cell-height);display:flex;flex-direction:column;justify-content:flex-start;overflow:hidden;padding:7px;border:1px dashed #c9d3e3;border-radius:11px;background:#fbfcff;box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 1px 2px rgba(15,23,42,.04)}.readonly-cell-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:5px;color:#607089;font-size:9.5px;font-weight:850;line-height:1.15}.readonly-cell-heading span:last-child{text-align:right}.readonly-cell-content{display:grid;place-items:center;flex:1 1 auto;min-height:48px;padding:6px 3px;color:#475467;font-size:10.8px;font-weight:750;line-height:1.22;text-align:center;overflow-wrap:anywhere}.readonly-cell-content.assigned{color:#14213d;font-size:11.2px;font-weight:850}.cell.seat{background:linear-gradient(180deg,#eff6ff 0%,#dbeafe 100%);border-color:#9db7ef}.cell.blocked{color:#fff;background:repeating-linear-gradient(135deg,#313846,#313846 8px,#3f4859 8px,#3f4859 16px);border-color:#222a36}.cell.blocked .readonly-cell-heading,.cell.blocked .readonly-cell-content{color:rgba(255,255,255,.88)}.cell.teacher{background:#fff3d6;border-color:#ffd074}.cell.table{background:#e8f7ec;border-color:#9ce0b2}.cell.door{background:#fce8ee;border-color:#f6a3bb}.cell.wall{color:#344054;background:repeating-linear-gradient(90deg,#d9dee8,#d9dee8 6px,#c7cfdb 6px,#c7cfdb 12px);border-color:#9aa7b8}.cell.walkway{color:#475467;background:repeating-linear-gradient(45deg,#fff,#fff 8px,#edf2f7 8px,#edf2f7 16px);border-style:dashed;border-color:#aab7c8}.cell.window{color:#075985;background:linear-gradient(135deg,#e0f2fe,#f0f9ff);border-color:#7dd3fc}.cell.projector{color:#3730a3;background:linear-gradient(135deg,#eef2ff,#f8fafc);border-color:#a5b4fc}.cell.board{color:#166534;background:linear-gradient(135deg,#dcfce7,#f0fdf4);border-color:#86efac}.cell.carpet{color:#7c4a03;background:repeating-linear-gradient(45deg,#f5e8d3,#f5e8d3 8px,#eed7b6 8px,#eed7b6 16px);border-color:#d6a45f}.cell.ada{color:#155e75;background:repeating-linear-gradient(135deg,#ecfeff,#ecfeff 8px,#cffafe 8px,#cffafe 16px);border-color:#67e8f9}.readonly-freeform-viewport{padding:14px}.readonly-freeform-stage{position:relative;min-width:max-content;min-height:max-content;margin:0 auto}.readonly-freeform{position:relative;background-color:#f8fafc;background-image:linear-gradient(to right,rgba(148,163,184,.22) 1px,transparent 1px),linear-gradient(to bottom,rgba(148,163,184,.22) 1px,transparent 1px),radial-gradient(circle at top left,rgba(255,255,255,.95),rgba(248,250,252,.86) 45%,rgba(241,245,249,.76) 100%);border:1px solid rgba(148,163,184,.55);border-radius:16px;box-shadow:inset 0 1px 0 rgba(255,255,255,.92),0 10px 30px rgba(15,23,42,.07);overflow:visible}.readonly-object{position:absolute;display:grid;place-items:center;align-content:center;justify-items:center;gap:5px;min-width:0;padding:9px;border:1px solid rgba(15,23,42,.14);border-radius:16px;color:#0f172a;box-shadow:0 8px 20px rgba(15,23,42,.08),inset 0 1px 0 rgba(255,255,255,.84);transform-origin:center center;overflow:hidden}.readonly-object.seat{min-width:160px;min-height:100px;align-content:start;padding:11px 10px 9px;background:linear-gradient(180deg,rgba(255,255,255,.92) 0%,rgba(248,250,252,.9) 100%)}.readonly-object.seat.assigned{border-color:rgba(96,165,250,.55)}.readonly-object.seat.unassigned{border-style:dashed;border-color:rgba(148,163,184,.52)}.readonly-object.blocked{color:#fff}.readonly-object.wall{border-radius:8px}.readonly-object.walkway{border-style:dashed;opacity:.88}.readonly-object.locked{border-style:dashed}.readonly-object.grouped{border-style:double}.readonly-object-title{width:100%;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;color:inherit;font-size:12px;font-weight:900;line-height:1.2;letter-spacing:-.01em;text-align:center;overflow-wrap:anywhere}.readonly-object-title.placeholder{color:#475569;font-weight:800}.readonly-object-meta{display:flex;justify-content:center;gap:5px;flex-wrap:wrap;width:100%;font-size:10px;color:#475569;line-height:1.1}.readonly-pill{display:inline-flex;align-items:center;padding:2px 6px;border:1px solid #cfe0ff;border-radius:999px;background:#edf3ff;color:#1e55bd;font-size:10px;font-weight:800}.readonly-pill.subtle{border-color:#d7deea;background:#f8fafc;color:#475569}.readonly-room-marker{position:absolute;z-index:0;display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border:1px solid rgba(59,130,246,.18);border-radius:999px;background:rgba(255,255,255,.88);color:#1d4ed8;font-size:10px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;box-shadow:0 3px 12px rgba(15,23,42,.07);pointer-events:none}.readonly-room-marker.side-top{top:8px;left:50%;transform:translateX(-50%)}.readonly-room-marker.side-bottom{right:auto;bottom:8px;left:50%;transform:translateX(-50%)}.readonly-room-marker.side-left{top:50%;left:8px;transform:translateY(-50%) rotate(-90deg)}.readonly-room-marker.side-right{top:50%;right:8px;transform:translateY(-50%) rotate(90deg)}.readonly-notes{width:min(100%,1800px);margin:16px auto 0;padding:12px;background:#fff;border:1px solid #cbd5e1;border-radius:12px}.readonly-notes h2{margin:0 0 10px;font-size:16px}.readonly-notes ul{display:grid;gap:8px;margin:0;padding:0;list-style:none}.readonly-notes li{display:grid;grid-template-columns:minmax(120px,.6fr) minmax(0,1fr);gap:8px;padding:8px;border:1px solid #e2e8f0;border-radius:8px}.readonly-notes span{white-space:pre-wrap;overflow-wrap:anywhere}@media(max-width:700px){body{padding:10px}.readonly-room-viewport{padding:8px}.readonly-notes li{grid-template-columns:1fr}}@media print{body{padding:0;background:#fff}.readonly-notice{display:none}.readonly-room-viewport{overflow:visible;padding:0;border:0;box-shadow:none;background:#fff}.readonly-grid{margin:0 auto}.readonly-freeform-viewport{overflow:visible}.readonly-notes{border-color:#94a3b8;break-before:auto}}`;
   }
 
-  function readOnlyHtml(preset) {
+  function readOnlyDocumentParts(preset) {
     const cls = safeStudentPackage(preset);
     const title = `${cls.name || 'Classroom'} · Read-only`;
     const room = readOnlyRoomMarkup(cls);
     const notes = readOnlyNotesMarkup(cls, preset);
     const mode = cls.layoutMode === 'freeform' ? 'Freeform room' : `${Math.max(1, Number(cls.rows) || 1)} × ${Math.max(1, Number(cls.cols) || 1)} Grid`;
-    return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'"><meta name="robots" content="noindex,nofollow"><title>${escapeHtml(title)}</title><style>${readOnlyViewerStyles()}</style></head><body><header><h1>${escapeHtml(title)}</h1><p class="readonly-summary">${escapeHtml(mode)} · ${cls.students?.length || 0} included student${cls.students?.length === 1 ? '' : 's'}</p><div class="readonly-notice">Read-only classroom package generated ${escapeHtml(new Date().toLocaleString())}. It contains no editing controls, passwords, Settings, cloud credentials, or hidden source records.</div></header><main class="readonly-content">${room}</main>${notes}</body></html>`;
+    const body = `<header><h1>${escapeHtml(title)}</h1><p class="readonly-summary">${escapeHtml(mode)} · ${cls.students?.length || 0} included student${cls.students?.length === 1 ? '' : 's'}</p><div class="readonly-notice">Read-only classroom package generated ${escapeHtml(new Date().toLocaleString())}. It contains no editing controls, Settings, cloud credentials, or hidden source records.</div></header><main class="readonly-content">${room}</main>${notes}`;
+    return { title, body };
   }
 
-  function downloadReadOnlyPackage(){const preset=node('readOnlyPackagePreset')?.value||'student';downloadText(`${String(activeClassName()||'class').replace(/[^a-z0-9]+/gi,'-').toLowerCase()}-read-only-${preset}.html`,readOnlyHtml(preset),'text/html');setLiveStatusMessage('Read-only classroom HTML package downloaded.');}
+  function readOnlyHtml(preset) {
+    const { title, body } = readOnlyDocumentParts(preset);
+    return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'"><meta name="robots" content="noindex,nofollow"><title>${escapeHtml(title)}</title><style>${readOnlyViewerStyles()}</style></head><body>${body}</body></html>`;
+  }
+
+  function encryptedReadOnlyHtmlShell(envelope) {
+    const encoded = JSON.stringify(envelope).replace(/</g, '\\u003c');
+    const unlockStyles = `.readonly-unlock{width:min(520px,calc(100% - 24px));margin:10vh auto;padding:24px;background:#fff;border:1px solid #cbd5e1;border-radius:16px;box-shadow:0 20px 60px rgba(15,23,42,.16)}.readonly-unlock h1{font-size:24px}.readonly-unlock p{color:#607089;line-height:1.45}.readonly-unlock input{width:100%;min-height:42px;padding:10px;border:1px solid #94a3b8;border-radius:9px;font:inherit}.readonly-unlock button{min-height:40px;margin-top:10px;padding:9px 14px;border:0;border-radius:9px;background:#2563eb;color:#fff;font:inherit;font-weight:800;cursor:pointer}.readonly-unlock-error{min-height:20px;color:#b42318;font-size:12px;font-weight:750}.readonly-protected-view[hidden],.readonly-unlock[hidden]{display:none}`;
+    return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'"><title>Encrypted read-only classroom package</title><style>${readOnlyViewerStyles()}${unlockStyles}</style></head><body><section id="readonlyUnlock" class="readonly-unlock"><h1>Encrypted read-only classroom package</h1><p>Enter the viewer password supplied separately. The classroom name, students, notes, and room layout remain encrypted until the password is accepted.</p><label for="readonlyViewerPassword">Viewer password</label><input id="readonlyViewerPassword" type="password" autocomplete="current-password"><button id="readonlyOpenButton" type="button">Open classroom</button><p id="readonlyUnlockError" class="readonly-unlock-error" role="alert"></p></section><div id="readonlyProtectedView" class="readonly-protected-view" hidden></div><script>const envelope=${encoded};const b64=value=>Uint8Array.from(atob(String(value||'')),character=>character.charCodeAt(0));async function openReadOnlyPackage(){const error=document.getElementById('readonlyUnlockError');error.textContent='';try{if(!globalThis.crypto?.subtle)throw new Error('Web Crypto unavailable');const encryption=envelope.encryption||{};const password=document.getElementById('readonlyViewerPassword').value;const baseKey=await crypto.subtle.importKey('raw',new TextEncoder().encode(password),'PBKDF2',false,['deriveKey']);const key=await crypto.subtle.deriveKey({name:'PBKDF2',salt:b64(encryption.salt),iterations:Number(encryption.iterations),hash:'SHA-256'},baseKey,{name:'AES-GCM',length:256},false,['decrypt']);const plain=await crypto.subtle.decrypt({name:'AES-GCM',iv:b64(encryption.iv)},key,b64(encryption.ciphertext));const payload=JSON.parse(new TextDecoder().decode(plain));if(!payload||payload.format!=='classroom-seating-planner-read-only-html-v1'||typeof payload.body!=='string')throw new Error('Invalid payload');document.title=payload.title||'Read-only classroom';const viewer=document.getElementById('readonlyProtectedView');viewer.innerHTML=payload.body;viewer.hidden=false;document.getElementById('readonlyUnlock').hidden=true;}catch(_){error.textContent='Could not decrypt this package. Check the viewer password and try again.'}}document.getElementById('readonlyOpenButton').addEventListener('click',openReadOnlyPackage);document.getElementById('readonlyViewerPassword').addEventListener('keydown',event=>{if(event.key==='Enter')openReadOnlyPackage()});<\/script></body></html>`;
+  }
+
+  async function buildEncryptedReadOnlyHtml(password, preset = 'student') {
+    const secret = String(password || '');
+    if (secret.length < 10) throw new Error('Use a viewer password with at least 10 characters.');
+    const parts = readOnlyDocumentParts(preset);
+    const payload = JSON.stringify({
+      format: 'classroom-seating-planner-read-only-html-v1',
+      app: APP_NAME,
+      version: APP_REVISION,
+      createdAt: new Date().toISOString(),
+      preset,
+      title: parts.title,
+      body: parts.body
+    });
+    const envelope = JSON.parse(await encryptTextWithSecret(payload, secret, 'shared-viewer', {
+      payloadKind: 'read-only-classroom-html',
+      viewerFormat: 'classroom-seating-planner-read-only-html-v1',
+      readOnly: true,
+      preset
+    }));
+    return encryptedReadOnlyHtmlShell(envelope);
+  }
+
+  function syncReadOnlyPackageProtectionUi() {
+    const enabled = Boolean(node('readOnlyPackagePasswordToggle')?.checked);
+    const fields = node('readOnlyPackagePasswordFields');
+    if (fields) fields.hidden = !enabled;
+    const status = node('readOnlyPackageStatus');
+    if (status) status.textContent = enabled
+      ? 'Protected package: classroom data will be encrypted inside the HTML file. Send the viewer password separately.'
+      : 'Unprotected package: opens immediately and contains the selected privacy profile as readable HTML.';
+  }
+
+  async function downloadReadOnlyPackage() {
+    const preset = node('readOnlyPackagePreset')?.value || 'student';
+    const protectedPackage = Boolean(node('readOnlyPackagePasswordToggle')?.checked);
+    let html = '';
+    let suffix = `read-only-${preset}`;
+    if (protectedPackage) {
+      const password = String(node('readOnlyPackagePassword')?.value || '');
+      const confirmation = String(node('readOnlyPackagePasswordConfirm')?.value || '');
+      if (password.length < 10) throw new Error('Use a viewer password with at least 10 characters.');
+      if (password !== confirmation) throw new Error('The viewer passwords do not match.');
+      html = await buildEncryptedReadOnlyHtml(password, preset);
+      suffix = `read-only-${preset}-protected`;
+    } else {
+      html = readOnlyHtml(preset);
+    }
+    downloadText(`${String(activeClassName() || 'class').replace(/[^a-z0-9]+/gi, '-').toLowerCase()}-${suffix}.html`, html, 'text/html');
+    const status = node('readOnlyPackageStatus');
+    if (status) status.textContent = protectedPackage
+      ? 'Protected read-only classroom HTML downloaded. Send the viewer password through a separate channel.'
+      : 'Read-only classroom HTML downloaded without password protection.';
+    setLiveStatusMessage(protectedPackage ? 'Protected read-only classroom HTML downloaded.' : 'Read-only classroom HTML package downloaded.');
+  }
 
   function openClassSetupImport() {
     node('closeSettingsBtn')?.click();
@@ -28986,7 +29073,13 @@ const DistrictIntegrationsV57 = (() => {
     node('settingsGoogleDriveManageBtn')?.addEventListener('click',()=>void openDriveManager());node('closeDriveManagerBtn')?.addEventListener('click',closeDriveManager);node('driveManagerRefreshBtn')?.addEventListener('click',()=>void refreshDriveManager());node('driveManagerPickerBtn')?.addEventListener('click',()=>void openGooglePicker({direct:false}));
     node('closeDriveRevisionBtn')?.addEventListener('click',()=>node('driveRevisionModal')?.classList.remove('show'));
     node('closeDistrictRosterBtn')?.addEventListener('click',()=>node('districtRosterModal')?.classList.remove('show'));node('cancelDistrictRosterBtn')?.addEventListener('click',()=>node('districtRosterModal')?.classList.remove('show'));node('applyDistrictRosterBtn')?.addEventListener('click',applyRosterDraft);
-    node('downloadReadOnlyClassroomBtn')?.addEventListener('click',downloadReadOnlyPackage);
+    node('readOnlyPackagePasswordToggle')?.addEventListener('change', syncReadOnlyPackageProtectionUi);
+    node('downloadReadOnlyClassroomBtn')?.addEventListener('click', () => void downloadReadOnlyPackage().catch(error => {
+      const status = node('readOnlyPackageStatus');
+      if (status) status.textContent = error.message;
+      setLiveStatusMessage(error.message);
+    }));
+    syncReadOnlyPackageProtectionUi();
   }
 
   function resetForFactoryReset(){
@@ -29019,6 +29112,7 @@ const DistrictIntegrationsV57 = (() => {
     loadClassroomRoster,
     downloadReadOnlyPackage,
     buildReadOnlyHtml: readOnlyHtml,
+    buildEncryptedReadOnlyHtml,
     buildRosterDraft,
     parseSisCsvText,
     syncGoogleSettingsHub,
@@ -30312,20 +30406,14 @@ const SharedDriveCollaborationV64 = (() => {
     return created;
   }
 
-  function viewerHtmlTemplate(envelope, title) {
-    const encoded = JSON.stringify(envelope).replace(/</g, '\\u003c');
-    return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'"><title>${escapeHtml(title)}</title><style>body{font-family:system-ui,sans-serif;margin:0;background:#eef2f7;color:#172033}.unlock{max-width:520px;margin:10vh auto;padding:24px;background:#fff;border:1px solid #cbd5e1;border-radius:16px;box-shadow:0 20px 60px #0f172a22}.unlock input{width:100%;box-sizing:border-box;padding:11px;border:1px solid #94a3b8;border-radius:9px;margin:8px 0}.unlock button{padding:10px 14px;border:0;border-radius:9px;background:#2563eb;color:#fff;font-weight:700}.error{color:#b42318}.viewer{display:none;padding:20px}.notice{padding:10px;border:1px solid #bfdbfe;background:#eff6ff;border-radius:10px;margin-bottom:14px}.grid{display:grid;gap:8px}.cell,.object{box-sizing:border-box;border:1px solid #94a3b8;border-radius:10px;background:#fff;padding:8px;display:grid;place-items:center;text-align:center;min-height:72px;overflow-wrap:anywhere}.cell.seat{background:#dbeafe}.freeform{position:relative;background:#fff;border:1px solid #cbd5e1;overflow:auto}.object{position:absolute}.notes{margin-top:18px;padding:12px;background:#fff;border:1px solid #cbd5e1;border-radius:12px}.notes li{margin:8px 0}@media print{.notice{display:none}.viewer{padding:0}}</style></head><body><section class="unlock" id="unlock"><h1>${escapeHtml(title)}</h1><p>This is an encrypted, view-only classroom package. Enter the viewer password supplied separately.</p><input id="pw" type="password" autocomplete="current-password" aria-label="Viewer password"><button id="open" type="button">Open view-only file</button><p id="error" class="error" role="alert"></p></section><main id="viewer" class="viewer"></main><script>const envelope=${encoded};const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));const esc=s=>String(s??'').replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));async function openViewer(){const error=document.getElementById('error');error.textContent='';try{const e=envelope.encryption;const base=await crypto.subtle.importKey('raw',new TextEncoder().encode(document.getElementById('pw').value),'PBKDF2',false,['deriveKey']);const key=await crypto.subtle.deriveKey({name:'PBKDF2',salt:b64(e.salt),iterations:e.iterations,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['decrypt']);const plain=await crypto.subtle.decrypt({name:'AES-GCM',iv:b64(e.iv)},key,b64(e.ciphertext));render(JSON.parse(new TextDecoder().decode(plain)));document.getElementById('unlock').style.display='none';document.getElementById('viewer').style.display='block';}catch(_){error.textContent='Could not decrypt. Check the viewer password and try again.'}}function render(doc){const c=doc.class||{},students=new Map((c.students||[]).map(s=>[String(s.id),s])),name=s=>[s.nickname||s.firstName,s.lastName].filter(Boolean).join(' '),label=id=>students.has(String(id||''))?name(students.get(String(id))):'';let room='';if(c.layoutMode==='freeform'){const cv=c.freeformLayout?.canvas||{width:1200,height:760};room='<div class="freeform" style="width:min(100%,'+(+cv.width||1200)+'px);height:'+(+cv.height||760)+'px">'+(c.freeformLayout?.objects||[]).map(o=>'<div class="object" style="left:'+(+o.x||0)+'px;top:'+(+o.y||0)+'px;width:'+(+o.width||120)+'px;height:'+(+o.height||80)+'px;transform:rotate('+(+o.rotation||0)+'deg)">'+esc(label(o.assignedStudentId)||o.label||o.type||'Object')+'</div>').join('')+'</div>'}else{const cells=[];for(let r=0;r<(c.rows||1);r++)for(let col=0;col<(c.cols||1);col++){const x=c.cells?.[(r+1)+'-'+(col+1)]||c.cells?.[r+'-'+col]||{};cells.push('<div class="cell '+esc(x.type||'empty')+'">'+esc(label(x.assignedStudentId)||x.label||x.type||'')+'</div>')}room='<div class="grid" style="grid-template-columns:repeat('+(c.cols||1)+',minmax(90px,1fr))">'+cells.join('')+'</div>'}const notes=(c.students||[]).filter(s=>s.notesSubstitute).map(s=>'<li><strong>'+esc(name(s))+'</strong>: '+esc(s.notesSubstitute)+'</li>').join('');document.getElementById('viewer').innerHTML='<h1>'+esc(c.name||'Classroom')+'</h1><div class="notice">View-only encrypted classroom package. Editing, saving, cloud credentials, and hidden records are not included.</div>'+room+(notes?'<section class="notes"><h2>Substitute notes</h2><ul>'+notes+'</ul></section>':'')}document.title=(c.name||'Classroom')+' · View only'}document.getElementById('open').addEventListener('click',openViewer);document.getElementById('pw').addEventListener('keydown',e=>{if(e.key==='Enter')openViewer()});<\/script></body></html>`;
-  }
-
   async function downloadEncryptedViewerHtml() {
     const password = String(node('sharedViewerPassword')?.value || '');
     const confirm = String(node('sharedViewerPasswordConfirm')?.value || '');
     const preset = String(node('sharedViewerPreset')?.value || 'substitute');
     if (password.length < 10) throw new Error('Use a viewer password with at least 10 characters.');
     if (password !== confirm) throw new Error('The viewer passwords do not match.');
-    const envelope = JSON.parse(await encryptedViewerPayload(password, preset));
-    const title = `${activeClassName() || 'Classroom'} · Encrypted view only`;
-    downloadText(`${String(activeClassName() || 'class').replace(/[^a-z0-9]+/gi, '-').toLowerCase()}-encrypted-viewer.html`, viewerHtmlTemplate(envelope, title), 'text/html');
+    const html = await DistrictIntegrationsV57.buildEncryptedReadOnlyHtml(password, preset);
+    downloadText(`${String(activeClassName() || 'class').replace(/[^a-z0-9]+/gi, '-').toLowerCase()}-encrypted-viewer.html`, html, 'text/html');
     setLiveStatusMessage('Encrypted view-only HTML downloaded. Send its password separately.');
   }
 
@@ -30528,7 +30616,7 @@ const SharedDriveCollaborationV64 = (() => {
     applyDriveCapabilities(uiState.googleDriveCapabilities);
   }
 
-  return Object.freeze({ install, openManager, applyDriveCapabilities, assertCanWriteCurrentDriveFile, captureBaseFromCurrent, tryOpenEncryptedViewerPayload, mergeRemoteDriveChanges, mergeThreeWay, viewerClassData, encryptedViewerPayload, viewerHtmlTemplate });
+  return Object.freeze({ install, openManager, applyDriveCapabilities, assertCanWriteCurrentDriveFile, captureBaseFromCurrent, tryOpenEncryptedViewerPayload, mergeRemoteDriveChanges, mergeThreeWay, viewerClassData, encryptedViewerPayload });
 })();
 
 async function registerHostedServiceWorker() {
