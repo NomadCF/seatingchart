@@ -5,13 +5,13 @@
   <meta name="license" content="MIT License" />
   <meta name="spdx-license-identifier" content="MIT" />
   <meta name="copyright" content="Copyright (c) 2026 Chris L. Franklin" />
-  <meta name="app-version" content="6.3.0" />
+  <meta name="app-version" content="6.3.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com blob:; style-src 'self' 'unsafe-inline'; connect-src 'self' https://www.googleapis.com https://classroom.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com; img-src 'self' data: blob:; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'self'" />
   <meta name="application-name" content="Classroom Seating Planner" />
   <meta name="theme-color" content="#1e3a8a" />
   
-  <meta name="build-date" content="2026-07-14T06:30:00Z" />
+  <meta name="build-date" content="2026-07-13T00:00:00Z" />
   <title>Classroom Seating Planner</title>
   <style>@layer app-base, app-priority;@layer app-base{:root{--bg:#f6f7fb;--panel-2:#f0f3f8;--text:#172033;--muted:#607089;--border:#d8deea;--accent:#2f6fed;--accent-dark:#1e55bd;--seat:#e8f0ff;--seat-border:#9db7ef;--teacher:#fff3d6;--table:#e8f7ec;--door:#fce8ee;--empty:#fbfcff;--shadow:0 12px 30px rgba(29, 39, 61, 0.08);--radius:14px;font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif
 }*{box-sizing:border-box
@@ -131,7 +131,6 @@ textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(47, 111, 237
 }.student-name > span:first-child,
 .group-name > span:first-child{min-width:0
 }.group-members{max-height:160px;overflow:auto;border:1px solid var(--border);border-radius:10px;padding:7px;display:grid;gap:5px;background:#fbfcff
-}.group-member-list{display:grid;gap:6px;margin-top:7px
 }.group-member-chip{display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px;padding:6px 8px;border:1px solid var(--border);border-radius:10px;background:#f8fafc;min-width:0
 }.group-member-chip .member-text{min-width:0;overflow-wrap:anywhere;font-size:12px;color:var(--text)
 }.group-member-chip .member-text .muted{font-size:11px
@@ -880,28 +879,14 @@ body[data-theme="linux"] .settings-page-header{background:var(--panel-2);color:v
 }.settings-modal .settings-page-nav{position:sticky;top:0
 }.settings-modal .settings-page-content{padding-right:2px
 }.welcome-security-body{display:grid;gap:12px
-}.welcome-hero{display:grid;grid-template-columns:58px minmax(0, 1fr);gap:12px;align-items:start;border:1px solid #bfdbfe;border-radius:16px;background:#eff6ff;color:#1e3a8a;padding:14px
-}.welcome-hero-icon{width:54px;height:54px;display:grid;place-items:center;border-radius:18px;background:#ffffff;border:1px solid #bfdbfe;font-size:28px
-}.welcome-hero h3{margin:0 0 6px;color:#172554;font-size:19px;letter-spacing:-0.02em
-}.welcome-hero p{margin:0;color:#1e3a8a;line-height:1.45
-}.welcome-card-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(190px, 1fr));gap:8px
-}.welcome-card{border:1px solid var(--border);border-radius:13px;background:#f8fafc;padding:10px;display:grid;gap:4px
-}.welcome-card strong{color:var(--text);font-size:13px
-}.welcome-card span{color:var(--muted);font-size:12px;line-height:1.38
 }.password-reveal-field{position:relative
 }.password-reveal-btn{position:absolute;right:6px;bottom:5px;border-radius:7px;line-height:1;z-index:2
-}.welcome-load-card{border:1px dashed #bfdbfe;border-radius:13px;background:#f8fbff;padding:10px;display:grid;gap:7px
-}.welcome-load-card strong{color:var(--text)
-}.welcome-load-card span{color:var(--muted);font-size:12px;line-height:1.38
 }body.welcome-security-active{overflow:hidden
 }.settings-page-tab{display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;gap:2px;padding:10px 10px 11px
 }.settings-page-tab .settings-page-title{display:block;margin:0;color:inherit;font-size:12.5px;font-weight:950;line-height:1.18
 }.settings-page-tab .settings-page-desc{display:block;margin:0;color:var(--muted);font-size:10.5px;font-weight:750;line-height:1.25
 }.settings-page-tab.active .settings-page-desc,
 .settings-page-tab[aria-selected="true"] .settings-page-desc{color:#31508a
-}@media (max-width: 700px){.welcome-hero{grid-template-columns:1fr
-  }.welcome-hero-icon{margin:0 auto
-  }
 }.password-strength-meter{display:grid;gap:5px;margin-top:7px;padding:8px;border:1px solid var(--border);border-radius:11px;background:#f8fafc;font-size:11.5px;line-height:1.35;color:var(--muted)
 }.password-strength-bar{height:7px;border-radius:999px;background:#e2e8f0;overflow:hidden;border:1px solid rgba(148, 163, 184, 0.45)
 }.password-strength-fill{display:block;height:100%;width:var(--strength-width, 8%);background:var(--strength-color, #ef4444);transition:width 140ms ease
@@ -923,16 +908,12 @@ body[data-theme="linux"] .settings-page-header{background:var(--panel-2);color:v
 }.settings-search-shell label{margin:0
 }.settings-search-shell input{width:100%
 }.settings-page-tab mark{background:#fef08a;color:#111827;border-radius:4px;padding:0 2px
-}.workflow-card-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:9px
 }.workflow-card{border:1px solid var(--border);border-radius:13px;background:#ffffff;padding:10px;display:grid;gap:6px;align-content:start
 }.workflow-card strong{font-size:13px
 }.workflow-card span,
 .workflow-card p{color:var(--muted);font-size:12px;line-height:1.35;margin:0
 }.workflow-stepper{display:grid;gap:8px
 }.workflow-step{display:grid;grid-template-columns:28px minmax(0, 1fr);gap:8px;align-items:start;border:1px solid var(--border);border-radius:12px;padding:9px;background:#f8fafc
-}.workflow-step-number{width:26px;height:26px;border-radius:999px;display:grid;place-items:center;background:#eff6ff;color:#1d4ed8;font-weight:950;border:1px solid #bfdbfe
-}.workflow-step.done .workflow-step-number{background:#ecfdf5;color:#047857;border-color:#bbf7d0
-}.workflow-step.warn .workflow-step-number{background:#fffbeb;color:#92400e;border-color:#fed7aa
 }.workflow-step h3{margin:0 0 3px;font-size:13px
 }.workflow-step p{margin:0;color:var(--muted);font-size:12px;line-height:1.35
 }.timeline-list{display:grid;gap:8px;position:relative
@@ -954,26 +935,18 @@ body[data-theme="linux"] .settings-page-header{background:var(--panel-2);color:v
 }.health-finding.bad{border-color:#fecaca;background:#fff1f2;color:#991b1b
 }.privacy-mode-buttons{display:grid;grid-template-columns:repeat(auto-fit, minmax(160px, 1fr));gap:7px
 }.privacy-mode-buttons button{justify-content:flex-start;text-align:left;white-space:normal
-}.print-security-warning{border:1px solid #fed7aa;background:#fffbeb;color:#92400e;border-radius:12px;padding:9px;font-size:12px;line-height:1.35
 }.csv-wizard-stage{border:1px solid #bfdbfe;background:#eff6ff;color:#1e3a8a;border-radius:12px;padding:8px 9px;font-size:12px;font-weight:800;line-height:1.35;margin-bottom:8px
 }.setting-inline-warning{border:1px solid #fed7aa;background:#fffbeb;color:#92400e;border-radius:10px;padding:8px;font-size:12px;line-height:1.35
 }.security-wizard-layout{display:grid;gap:12px
-}.security-wizard-panel{border:1px solid var(--border);border-radius:14px;background:#f8fafc;padding:11px;display:grid;gap:9px
-}.security-wizard-panel h3{margin:0;font-size:14px
-}.security-wizard-grid{display:grid;grid-template-columns:repeat(2, minmax(0, 1fr));gap:10px
-}.security-wizard-full{grid-column:1 / -1
 }.security-wizard-actions{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;align-items:center;margin-top:10px
 }.security-wizard-actions .button-row{margin-left:auto
-}.security-wizard-status-title{font-weight:900;color:var(--text);margin:2px 0 0
-}@media (max-width: 760px){.security-wizard-grid{grid-template-columns:1fr
-  }.security-wizard-actions{justify-content:stretch
+}@media (max-width: 760px){.security-wizard-actions{justify-content:stretch
   }.security-wizard-actions .button-row,
   .security-wizard-actions button{width:100%;margin-left:0
   }
 }@media (max-width: 760px){.snapshot-timeline-row{grid-template-columns:18px minmax(0, 1fr)
   }.snapshot-timeline-row .button-row{grid-column:1 / -1
   }
-}.security-wizard-advanced-note{border:1px solid #bfdbfe;background:#eff6ff;color:#1e3a8a;border-radius:12px;padding:8px 9px;font-size:12px;line-height:1.35
 }.settings-modal .modal-body.settings-body{background:#ffffff
 }.security-wizard-intro{border:1px solid #bfdbfe;background:#eff6ff;color:#1e3a8a;border-radius:12px;padding:9px 10px;font-size:12px;line-height:1.35
 }.security-wizard-checklist{display:grid;gap:8px;min-height:0;overflow:auto;padding-right:2px
@@ -1035,8 +1008,6 @@ body[data-theme="linux"] .settings-page-header{background:var(--panel-2);color:v
 }.freeform-tools .freeform-zoom-field input[type=range]{width:96px
 }.freeform-check-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center
 }.freeform-check-row .checkline{min-height:32px;padding:4px 8px;border:1px solid var(--border);border-radius:10px;background:#fff
-}.freeform-view-group{margin-left:auto
-}.freeform-utility-group .freeform-utility-btn{white-space:nowrap
 }.freeform-layout-conversion .freeform-inline-group{flex-wrap:nowrap
 }.freeform-layout-conversion button{min-width:max-content
 }.freeform-layout-conversion{margin-left:auto;flex:0 0 auto;min-width:max-content
@@ -1102,8 +1073,7 @@ body[data-theme="linux"] .settings-page-header{background:var(--panel-2);color:v
   }.freeform-status-block{flex:1 1 100%;border-right:0;border-bottom:1px solid var(--border);padding:0 0 7px
   }.freeform-command-group{flex:1 1 auto
   }.freeform-command-group + .freeform-command-group{padding-left:0;border-left:0
-  }.freeform-view-group,
-  .freeform-layout-conversion{margin-left:0
+  }.freeform-layout-conversion{margin-left:0
   }.freeform-advanced-tools{flex-basis:100%;width:100%
   }.freeform-advanced-tools[open]{order:10
   }.freeform-advanced-panel,
@@ -1112,8 +1082,6 @@ body[data-theme="linux"] .settings-page-header{background:var(--panel-2);color:v
   }.freeform-object{min-width:54px;min-height:42px
   }.freeform-object.seat{min-width:172px;min-height:108px
   }
-}.welcome-load-card .button-row{justify-content:flex-start
-}.welcome-load-card .button-row button{white-space:normal;text-align:center
 }.settings-page-tab strong,
 .settings-page-tab span{hyphens:auto
 }.generation-controls{display:flex;flex-wrap:wrap;align-items:end;gap:8px;padding:8px;border:1px solid var(--border);border-radius:12px;background:#f8fafc
@@ -1147,7 +1115,6 @@ body[data-theme="linux"] .settings-page-header{background:var(--panel-2);color:v
 }.keyboard-carry-banner{display:none;position:fixed;left:50%;transform:translateX(-50%);bottom:16px;z-index:32000;max-width:min(680px,calc(100vw - 24px));border:1px solid #93c5fd;border-radius:14px;background:#eff6ff;color:#1e3a8a;padding:9px 12px;box-shadow:0 18px 44px rgba(15,23,42,.24);font-weight:800
 }body.keyboard-carry-active .keyboard-carry-banner{display:flex;align-items:center;justify-content:space-between;gap:10px
 }.keyboard-seat-target{outline-offset:2px
-}.archived-class-option{color:var(--muted);font-style:italic
 }.save-conflict-box{border:1px solid #fed7aa;background:#fffbeb;color:#92400e;border-radius:12px;padding:10px;line-height:1.4
 }@media (max-width:700px){.diagnostic-row,
   .candidate-metrics{grid-template-columns:1fr
@@ -1742,7 +1709,6 @@ body.product-v4.workspace-v41.product-v42 .v4-share-card p{font-size:10.5px;line
 }.v44-onboarding-modal .panel-header > div{min-width:0
 }.v44-onboarding-modal .panel-header h2{margin:2px 0 0
 }.v44-modal-eyebrow{display:block;color:var(--v4-muted, #667085);font-size:9px;font-weight:850;letter-spacing:.08em;text-transform:uppercase
-}.v43-step-number{width:27px;height:27px;display:grid;place-items:center;color:var(--v4-primary, #2558d8);background:var(--v4-primary-soft, #edf3ff);border:1px solid color-mix(in srgb, var(--v4-primary, #2558d8) 28%, transparent);border-radius:9px;font-size:11px;font-weight:900
 }.v43-theme-grid{display:grid;grid-template-columns:repeat(4, minmax(0, 1fr));gap:7px;margin-top:9px
 }body.product-v4 .v43-theme-choice{min-width:0;min-height:62px;display:grid;grid-template-columns:36px minmax(0, 1fr);align-items:center;gap:7px;color:var(--v4-ink);background:var(--v4-surface);border:1px solid var(--v4-border);box-shadow:none;text-align:left
 }body.product-v4 .v43-theme-choice:hover{color:var(--v4-primary);background:var(--v4-surface-subtle);border-color:var(--v4-primary);transform:none
@@ -2101,8 +2067,6 @@ textarea{min-width:0;max-width:100%
 }.freeform-object-meta .pill{white-space:normal;overflow-wrap:anywhere;text-align:center;line-height:1.1;max-width:100%
 }.freeform-canvas-chrome{display:none;flex-wrap:wrap;gap:7px;align-items:center;padding:7px 9px;margin-top:2px;border:1px solid var(--border);border-radius:11px;background:#f8fafc;min-width:0
 }body.freeform-layout-mode .freeform-canvas-chrome{display:flex
-}.freeform-chrome-group{display:flex;flex-wrap:wrap;gap:5px;align-items:center;min-width:0
-}.freeform-chrome-group + .freeform-chrome-group{padding-left:8px;border-left:1px solid var(--border)
 }.freeform-canvas-chrome button{min-height:30px;padding:5px 9px
 }.freeform-object-inspector{display:flex;align-items:center;flex-wrap:wrap;gap:5px;min-width:0;margin-left:auto
 }.freeform-inspector-name{max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;font-weight:850
@@ -2188,12 +2152,10 @@ summary{min-width:0
 .ui51-menu-item strong,
 .ui51-menu-item small{overflow-wrap:anywhere
 }.button-row > button,
-.freeform-command-group > button,
-.freeform-chrome-group > button{white-space:normal;line-height:1.15
+.freeform-command-group > button{white-space:normal;line-height:1.15
 }.toolbar-body,
 .toolbar-body > *{min-width:0
 }@media (max-width: 980px){.freeform-canvas-chrome{align-items:stretch;max-height:260px;overflow:auto
-  }.freeform-chrome-group + .freeform-chrome-group{border-left:0;padding-left:0
   }.freeform-object-inspector{margin-left:0;width:100%
   }.freeform-object-inspector label{flex:1 1 90px
   }.freeform-object-inspector input{width:100%
@@ -2726,10 +2688,6 @@ body[data-theme="linux"] .class-setup-review-row{background:var(--panel-bg, #0f1
 }.help-guide-view-tabs button.active{border-color:color-mix(in srgb, var(--accent) 45%, var(--border));background:color-mix(in srgb, var(--accent) 12%, var(--panel));color:var(--accent-dark)
 }.help-guide-view[hidden]{display:none
 }.help-guide-view.active{display:grid;gap:12px;min-width:0
-}.guided-learning-intro{display:grid;grid-template-columns:minmax(0, 1fr) auto;gap:12px;align-items:center;padding:13px;border:1px solid color-mix(in srgb, var(--accent) 30%, var(--border));border-radius:15px;background:color-mix(in srgb, var(--accent) 7%, var(--panel))
-}.guided-learning-intro h3{margin:0 0 5px;color:var(--text);font-size:17px
-}.guided-learning-intro p{margin:0;color:var(--muted);font-size:12.5px;line-height:1.42
-}.guided-learning-intro-actions{display:flex;flex-wrap:wrap;gap:7px;justify-content:flex-end
 }.guided-lesson-catalog{display:grid;grid-template-columns:repeat(auto-fit, minmax(270px, 1fr));gap:10px;min-width:0
 }.guided-lesson-card{display:grid;gap:8px;align-content:start;min-width:0;padding:12px;border:1px solid var(--border);border-radius:14px;background:var(--panel);box-shadow:0 5px 16px rgba(15, 23, 42, 0.06)
 }.guided-lesson-card.complete{border-color:#86efac;background:color-mix(in srgb, #dcfce7 28%, var(--panel))
@@ -2768,13 +2726,10 @@ body[data-theme="linux"] .guided-learning-status.waiting{border-color:var(--bord
   }.guided-learning-actions,
   .guided-learning-actions-left,
   .guided-learning-actions-right,
-  .guided-learning-completion-actions,
-  .guided-learning-intro-actions{align-items:stretch;justify-content:stretch
+  .guided-learning-completion-actions{align-items:stretch;justify-content:stretch
   }.guided-learning-actions button,
-  .guided-learning-completion-actions button,
-  .guided-learning-intro-actions button{flex:1 1 auto
-  }.guided-learning-intro,
-  .guided-lesson-catalog{grid-template-columns:1fr
+  .guided-learning-completion-actions button{flex:1 1 auto
+  }.guided-lesson-catalog{grid-template-columns:1fr
   }.guided-progress-row{grid-template-columns:auto minmax(0, 1fr)
   }.guided-progress-row > button{grid-column:1 / -1;width:100%
   }
@@ -3442,8 +3397,7 @@ body[data-theme="linux"] .note-editor-row.sensitive-note-hidden{background:var(-
 }.security-setup-modal{width:min(860px, 96vw);max-width:860px
 }.security-wizard-layout{display:grid;grid-template-rows:auto minmax(0, 1fr) auto;gap:10px;overflow:hidden
 }.security-wizard-check-body .security-card,
-.security-wizard-check-body .auto-lock-card,
-.security-wizard-check-body .security-wizard-panel{margin:0
+.security-wizard-check-body .auto-lock-card{margin:0
 }@media (max-width: 860px){.settings-modal{width:calc(100vw - 12px);height:calc(100dvh - 12px);max-height:calc(100dvh - 12px)
   }.settings-modal .modal-body.settings-body{grid-template-columns:1fr;grid-template-rows:auto auto minmax(0, 1fr)
   }.settings-modal .settings-search-shell{grid-column:1;grid-row:1
@@ -3481,8 +3435,7 @@ body[data-theme="linux"] .note-editor-row.sensitive-note-hidden{background:var(-
   }#securityWizardSteps .security-wizard-check-body{padding:8px;gap:7px
   }#securityWizardSteps .security-card,
   #securityWizardSteps .auto-lock-card{padding:8px
-  }#securityWizardSteps .auto-lock-grid,
-  #securityWizardSteps .security-wizard-grid{grid-template-columns:1fr;gap:7px
+  }#securityWizardSteps .auto-lock-grid{grid-template-columns:1fr;gap:7px
   }#securitySetupWizardModal .security-wizard-actions{display:grid;grid-template-columns:1fr;gap:7px;padding-top:7px
   }#securitySetupWizardModal #securityWizardMessage{font-size:10.5px;line-height:1.25
   }#securitySetupWizardModal .security-wizard-actions .button-row{display:grid;grid-template-columns:repeat(2, minmax(0, 1fr));gap:6px;width:100%;margin-left:0
@@ -6152,12 +6105,12 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
 const APP_CONFIG = Object.freeze({
   name: 'Classroom Seating Planner',
   shortName: 'Seating Planner',
-  version: '6.3.0',
+  version: '6.3.1',
   copyrightHolder: 'Chris L. Franklin',
   copyrightYear: '2026',
-  releaseDate: '2026-07-14',
-  releaseDateDisplay: 'July 14, 2026',
-  buildDate: '2026-07-14T06:30:00Z',
+  releaseDate: '2026-07-13',
+  releaseDateDisplay: 'July 13, 2026',
+  buildDate: '2026-07-13T00:00:00Z',
   commit: 'local',
   environment: 'production',
   dataSchemaVersion: 13,
@@ -6385,10 +6338,23 @@ const PROJECT_FEATURES = [
 
 const RELEASE_HISTORY = [
   {
+    version: '6.3.1',
+    date: 'July 13, 2026',
+    title: 'Data integrity and cleanup hardening',
+    current: true,
+    changes: [
+      'Made destructive confirmations fail closed when the custom confirmation dialog is unavailable.',
+      'Made selective restore atomic by rolling back the complete document when an apply step fails.',
+      'Prevented delayed browser autosaves from recreating data after Clear Local Data, Start Fresh, or Factory Reset.',
+      'Limited reset workflows to planner-owned browser storage so other applications on the same origin are not erased.',
+      'Consolidated repeated credential, notes-summary, and file-download helpers and removed verified unused CSS selectors.'
+    ]
+  },
+  {
     version: '6.3.0',
     date: 'July 14, 2026',
     title: 'Complete Groups migration and manager interaction repair',
-    current: true,
+    current: false,
     changes: [
       'Completed the Groups terminology migration across the interface, runtime state, functions, selectors, exports, and current save fields.',
       'Repaired the Student / Group / Zone Manager with pointer-based desktop drag-and-drop, native drag fallback, and correct nested member payload handling.',
@@ -6709,6 +6675,7 @@ const uiState = {
   linkedSaveMaxTimer: null,
   autosaveDirtySince: 0,
   autosaveInProgress: false,
+  browserSaveEpoch: 0,
   googleDriveAccessToken: '',
   googleDriveTokenExpiresAt: 0,
   googleDriveTokenClient: null,
@@ -6779,6 +6746,39 @@ function safeStorageSet(storageName, key, value) {
 function safeStorageRemove(storageName, key) {
   try { window[storageName]?.removeItem(key); return true; }
   catch (err) { recordStorageFailure(storageName, 'removeItem', key, err); return false; }
+}
+
+const PLANNER_STORAGE_KEY_PREFIXES = Object.freeze([
+  'classroom-seating-planner',
+  'classroomSeatingPlanner',
+  'seating-chart-'
+]);
+
+function isPlannerStorageKey(key) {
+  const value = String(key || '');
+  return PLANNER_STORAGE_KEY_PREFIXES.some(prefix => value.startsWith(prefix));
+}
+
+function clearPlannerWebStorage(storageName) {
+  const removed = [];
+  const failed = [];
+  try {
+    const storage = window[storageName];
+    if (!storage) return { removed, failed };
+    const keys = [];
+    for (let index = 0; index < storage.length; index += 1) {
+      const key = storage.key(index);
+      if (isPlannerStorageKey(key)) keys.push(key);
+    }
+    keys.forEach(key => {
+      if (safeStorageRemove(storageName, key)) removed.push(key);
+      else failed.push(key);
+    });
+  } catch (err) {
+    recordStorageFailure(storageName, 'enumerate', 'planner keys', err);
+    failed.push('planner keys');
+  }
+  return { removed, failed };
 }
 const keyOf = (row, col) => `${row}-${col}`;
 const uid = (prefix) => `${prefix}-${(crypto.randomUUID ? crypto.randomUUID() : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`)}`;
@@ -7924,7 +7924,10 @@ function showInAppConfirm(message, onConfirm, options = {}) {
   const cancelBtn = el('confirmCancelBtn');
   const topCancelBtn = el('confirmCancelTopBtn');
   if (!modal || !messageBox || !confirmBtn || !cancelBtn) {
-    if (typeof onConfirm === 'function') onConfirm();
+    const approved = typeof window.confirm === 'function' && window.confirm(String(message || 'Continue?'));
+    if (approved) {
+      if (typeof onConfirm === 'function') onConfirm();
+    } else if (typeof options.onCancel === 'function') options.onCancel();
     return;
   }
   const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
@@ -7974,15 +7977,7 @@ function showInAppConfirm(message, onConfirm, options = {}) {
 
 
 function getLockCredential() {
-  try {
-    const raw = safeStorageGet('localStorage', PAGE_LOCK_CREDENTIAL_KEY);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw);
-    if (!parsed || !parsed.salt || !parsed.hash || !parsed.iterations) return null;
-    return parsed;
-  } catch (err) {
-    return null;
-  }
+  return getHashedCredential(PAGE_LOCK_CREDENTIAL_KEY);
 }
 
 function timingSafeEqual(a, b) {
@@ -8009,26 +8004,15 @@ async function hashPageLockSecret(secret, saltBytes, iterations = 180000) {
 }
 
 async function savePageLockCredential(secret) {
-  const salt = crypto.getRandomValues(new Uint8Array(16));
-  const iterations = encryptionIterationsForNewData();
-  const hash = await hashPageLockSecret(secret, salt, iterations);
-  const saved = safeStorageSet('localStorage', PAGE_LOCK_CREDENTIAL_KEY, JSON.stringify({
-    version: 1,
-    algorithm: 'PBKDF2-SHA-256',
-    iterations,
-    salt: bytesToBase64(salt),
-    hash,
-    createdAt: new Date().toISOString()
-  }));
-  if (!saved) throw new Error('The Lock PIN/password could not be stored in this browser. Check storage permissions or available space.');
+  return saveHashedCredential(
+    PAGE_LOCK_CREDENTIAL_KEY,
+    secret,
+    'The Lock PIN/password could not be stored in this browser. Check storage permissions or available space.'
+  );
 }
 
 async function verifyPageLockSecret(secret) {
-  const credential = getLockCredential();
-  if (!credential) return false;
-  const salt = base64ToBytes(credential.salt);
-  const testHash = await hashPageLockSecret(secret, salt, Number(credential.iterations) || 180000);
-  return timingSafeEqual(testHash, credential.hash);
+  return verifyHashedCredential(PAGE_LOCK_CREDENTIAL_KEY, secret);
 }
 
 function getHashedCredential(storageKey) {
@@ -8043,7 +8027,7 @@ function getHashedCredential(storageKey) {
   }
 }
 
-async function saveHashedCredential(storageKey, secret) {
+async function saveHashedCredential(storageKey, secret, storageErrorMessage = 'The credential could not be stored in this browser. Check storage permissions or available space.') {
   const salt = crypto.getRandomValues(new Uint8Array(16));
   const iterations = encryptionIterationsForNewData();
   const hash = await hashPageLockSecret(secret, salt, iterations);
@@ -8055,7 +8039,7 @@ async function saveHashedCredential(storageKey, secret) {
     hash,
     createdAt: new Date().toISOString()
   }));
-  if (!saved) throw new Error('The credential could not be stored in this browser. Check storage permissions or available space.');
+  if (!saved) throw new Error(storageErrorMessage);
 }
 
 async function verifyHashedCredential(storageKey, secret) {
@@ -8568,18 +8552,20 @@ function noteDraftSummaryText(draft) {
   return parts.length ? parts.join(' · ') : 'No notes defined.';
 }
 
+function refreshStudentNotesSummary(fieldPrefix, countId, summaryId) {
+  const draft = noteDraftFromFields(fieldPrefix);
+  const countNode = el(countId);
+  const summaryNode = el(summaryId);
+  if (countNode) countNode.textContent = noteDraftCount(draft);
+  if (summaryNode) summaryNode.textContent = noteDraftSummaryText(draft);
+}
+
 function refreshAddStudentNotesSummary() {
-  const draft = noteDraftFromFields('studentNotes');
-  const count = noteDraftCount(draft);
-  if (el('addStudentNotesCount')) el('addStudentNotesCount').textContent = count;
-  if (el('addStudentNotesSummary')) el('addStudentNotesSummary').textContent = noteDraftSummaryText(draft);
+  refreshStudentNotesSummary('studentNotes', 'addStudentNotesCount', 'addStudentNotesSummary');
 }
 
 function refreshEditStudentNotesSummary() {
-  const draft = noteDraftFromFields('editStudentNotes');
-  const count = noteDraftCount(draft);
-  if (el('editStudentNotesCount')) el('editStudentNotesCount').textContent = count;
-  if (el('editStudentNotesSummary')) el('editStudentNotesSummary').textContent = noteDraftSummaryText(draft);
+  refreshStudentNotesSummary('editStudentNotes', 'editStudentNotesCount', 'editStudentNotesSummary');
 }
 
 function renderNotesEditor() {
@@ -14820,20 +14806,7 @@ function restoreEntireImportedFile() {
   renderAll();
 }
 
-async function applySelectiveRestore() {
-  const draft = uiState.restoreImportDraft;
-  if (!draft) return;
-  const source = restoreSourceClass();
-  if (!source) return;
-  pushUndoSnapshot('Before selective file restore');
-  await createAutoLockSnapshot('Before selective file restore');
-  if (el('restoreAllClassesToggle')?.checked) {
-    restoreEntireImportedFile();
-    closeSelectiveRestoreModal();
-    updateSaveHealthPanel();
-    setLiveStatusMessage('Entire file restored.');
-    return;
-  }
+function applySelectedRestoreChanges(draft, source) {
   const studentIds = new Set(selectedRestoreIds('students'));
   const groupIds = new Set(selectedRestoreIds('groups'));
   const zoneIds = new Set(selectedRestoreIds('zones'));
@@ -14870,9 +14843,43 @@ async function applySelectiveRestore() {
   sanitizeActiveStateReferences();
   persistActiveClass();
   renderAll();
-  closeSelectiveRestoreModal();
-  updateSaveHealthPanel();
-  setLiveStatusMessage('Selected file contents restored.');
+}
+
+async function applySelectiveRestore() {
+  const draft = uiState.restoreImportDraft;
+  if (!draft) return;
+  const source = restoreSourceClass();
+  if (!source) return;
+  const rollbackDocument = exportState('all');
+  let snapshotCreated = false;
+  try {
+    pushUndoSnapshot('Before selective file restore');
+    snapshotCreated = Boolean(await createAutoLockSnapshot('Before selective file restore'));
+    if (el('restoreAllClassesToggle')?.checked) restoreEntireImportedFile();
+    else applySelectedRestoreChanges(draft, source);
+    closeSelectiveRestoreModal();
+    updateSaveHealthPanel();
+    setLiveStatusMessage(el('restoreAllClassesToggle')?.checked ? 'Entire file restored.' : 'Selected file contents restored.');
+  } catch (error) {
+    let rollbackError = null;
+    try {
+      importStateCore(rollbackDocument);
+    } catch (failure) {
+      rollbackError = failure;
+    }
+    const restored = !rollbackError;
+    WorkflowRecoveryV62.reportFailure({
+      operation: 'Restore Imported Data',
+      source: draft.sourceLabel || 'selected save file',
+      error: rollbackError || error,
+      dataChanged: !restored,
+      snapshotCreated,
+      remedy: restored
+        ? 'The restore was rolled back safely. Review the selected sections and source file, then retry.'
+        : 'The automatic rollback also failed. Do not save over existing backups; reload the page and restore the pre-restore snapshot or a downloaded backup.',
+      retry: restored ? () => applySelectiveRestore() : null
+    });
+  }
 }
 
 
@@ -15927,6 +15934,7 @@ async function loadFromLinkedSaveFile() {
 
 async function writeLocalBrowserSave(options = {}) {
   if (!CrossTabCoordinator.canWrite({ announce: options.announce !== false })) return false;
+  const saveEpoch = uiState.browserSaveEpoch;
   const reason = options.reason || 'auto';
   const announce = options.announce === true;
   if (uiState.startupRecoveryPending) {
@@ -15935,6 +15943,7 @@ async function writeLocalBrowserSave(options = {}) {
   }
   try {
     const preparedSave = options.preparedSave || await prepareExportPayload('all');
+    if (saveEpoch !== uiState.browserSaveEpoch) return false;
     if (!await BrowserDataStore.setPrimarySave(preparedSave.payload)) throw new Error('Browser storage is unavailable or full. No local save was written. Choose a linked file, Google Drive, or download a backup.');
     commitPreparedSave(preparedSave);
     const now = new Date().toISOString();
@@ -16234,15 +16243,20 @@ function backupFilename(kind = 'backup', extension = 'json') {
   return `seating-chart-${kind}-${stamp}.${extension}`;
 }
 
-function downloadBlob(filename, blob) {
+function triggerBlobDownload(filename, blob) {
   const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
+  const anchor = document.createElement('a');
+  anchor.href = url;
+  anchor.download = filename;
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+   
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function downloadBlob(filename, blob) {
+  triggerBlobDownload(filename, blob);
 }
 
 function utf8Bytes(value) {
@@ -17581,15 +17595,7 @@ function importStateCore(json) {
 }
 
 function downloadText(filename, text, mime = 'text/plain') {
-  const blob = new Blob([text], { type: mime });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
+  triggerBlobDownload(filename, new Blob([text], { type: mime }));
 }
 
 function loadSample() {
@@ -18836,25 +18842,27 @@ function installAutoLockActivityTracking() {
 function clearAllLocalData() {
   closeSettingsModal();
   showInAppConfirm('Clear local saved chart data, snapshots, session keys, lock PIN, eye PIN, save prompts, dismissed hints, and local app preferences from this browser? Export first if you need a copy.', async () => {
+    uiState.browserSaveEpoch += 1;
+    clearAutosaveSchedule();
+    clearTimeout(uiState.pageSettingsPersistTimer);
+    uiState.pageSettingsPersistTimer = null;
     await BrowserDataStore.removePrimarySave();
     await BrowserDataStore.removeSnapshotIndex();
-    safeStorageRemove('localStorage', PAGE_LOCK_CREDENTIAL_KEY);
-    safeStorageRemove('localStorage', VISIBILITY_CREDENTIAL_KEY);
-    safeStorageRemove('localStorage', SAVE_META_STORAGE_KEY);
-    safeStorageRemove('localStorage', SAVE_SETUP_STORAGE_KEY);
-    safeStorageRemove('localStorage', HINT_DISMISS_STORAGE_KEY);
+    const localResult = clearPlannerWebStorage('localStorage');
+    const sessionResult = clearPlannerWebStorage('sessionStorage');
     uiState.appSnapshotsCache = [];
     uiState.appSnapshotsLoaded = true;
-    safeStorageRemove('sessionStorage', PAGE_LOCK_SESSION_KEY);
-    safeStorageRemove('sessionStorage', PAGE_LOCK_DATA_SESSION_KEY);
     clearFreeformGeometrySession();
-    safeStorageRemove('sessionStorage', TAB_TAKEOVER_BACKUP_SESSION_KEY);
     clearWrappedSessionEncryptionKeys();
     clearCachedPageLockSecretForSession();
     uiState.encryptionKey = '';
     uiState.encryptionEnabled = false;
+    uiState.linkedSaveLastSignature = currentSaveSignature();
     uiState.linkedSaveStatus = uiState.linkedSaveHandle ? uiState.linkedSaveStatus : 'No linked file selected.';
-    setLiveStatusMessage('Local browser data, snapshots, and saved PIN hashes cleared. The current open chart remains in memory until you reset or reload.');
+    const blockedCount = localResult.failed.length + sessionResult.failed.length;
+    setLiveStatusMessage(blockedCount
+      ? `Local browser data was cleared where permitted, but ${blockedCount} storage item${blockedCount === 1 ? '' : 's'} could not be removed. The current open chart remains in memory until you reset or reload.`
+      : 'Local browser data, snapshots, saved PIN hashes, and planner preferences cleared. The current open chart remains in memory until you reset or reload.');
     updatePinStatus();
     updateSaveHealthPanel();
   }, { title: 'Clear Local Browser Data?', confirmText: 'Clear Local Data', cancelText: 'Cancel' });
@@ -19038,10 +19046,13 @@ function resetInMemoryAppToFactory() {
 
 function factoryResetEverything() {
   closeSettingsModal();
-  showInAppConfirm('This resets the entire app from scratch in this browser. It clears classes, settings, snapshots, room templates, localStorage, sessionStorage, saved file permission metadata, and cookies this page can access. Export a backup first if you need anything. Continue?', async () => {
+  showInAppConfirm('This resets the entire app from scratch in this browser. It clears planner classes, settings, snapshots, room templates, planner entries in browser storage, saved file permission metadata, and cookies this page can access. Other applications on the same site are left alone. Export a backup first if you need anything. Continue?', async () => {
     const failures = [];
-    try { localStorage.clear(); } catch { failures.push('local browser storage'); }
-    try { sessionStorage.clear(); } catch { failures.push('session storage'); }
+    uiState.browserSaveEpoch += 1;
+    const localStorageResult = clearPlannerWebStorage('localStorage');
+    const sessionStorageResult = clearPlannerWebStorage('sessionStorage');
+    if (localStorageResult.failed.length) failures.push('local browser storage');
+    if (sessionStorageResult.failed.length) failures.push('session storage');
     window.AppAudit?.clearForFactoryReset?.();
     window.GuidedLearning?.clearForFactoryReset?.();
     DistrictIntegrationsV57?.resetForFactoryReset?.();
@@ -25600,33 +25611,6 @@ const StartupRecoveryV45 = (() => {
   let pendingParseError = '';
   let mode = 'fresh';
 
-  const appLocalKeys = [
-    STORAGE_KEY,
-    LOCAL_AUTOSAVE_SNAPSHOT_KEY,
-    PAGE_LOCK_CREDENTIAL_KEY,
-    VISIBILITY_CREDENTIAL_KEY,
-    SAVE_META_STORAGE_KEY,
-    SAVE_SETUP_STORAGE_KEY,
-    HINT_DISMISS_STORAGE_KEY,
-    WELCOME_SETUP_STORAGE_KEY,
-    APP_DEVICE_ID_KEY,
-    'classroomSeatingPlannerWorkspaceLayoutV6',
-    'classroomSeatingPlannerGettingStartedV6'
-  ];
-
-  const appSessionKeys = [
-    PAGE_LOCK_SESSION_KEY,
-    PAGE_LOCK_DATA_SESSION_KEY,
-    PAGE_LOCK_WRAPPED_KEY_SESSION_KEY,
-    VISIBILITY_WRAPPED_KEY_SESSION_KEY,
-    VISIBILITY_DATA_SESSION_KEY,
-    SAME_TAB_RELOAD_WRAPPED_KEY_SESSION_KEY,
-    SAME_TAB_RELOAD_SECRET_SESSION_KEY,
-    FREEFORM_GEOMETRY_SESSION_KEY,
-    LOCAL_DURABLE_SAVE_PROMPT_SESSION_KEY,
-    TAB_TAKEOVER_BACKUP_SESSION_KEY
-  ];
-
   function hasPendingSave() {
     return Boolean(pendingPayload || pendingParseError);
   }
@@ -25829,18 +25813,18 @@ const StartupRecoveryV45 = (() => {
     return true;
   }
 
-  function removeStorageKeys() {
-    appLocalKeys.forEach(key => safeStorageRemove('localStorage', key));
-    appSessionKeys.forEach(key => safeStorageRemove('sessionStorage', key));
-  }
-
   async function clearPersistedPlannerData() {
     uiState.startupRecoveryPending = true;
+    uiState.browserSaveEpoch += 1;
+    clearAutosaveSchedule();
+    clearTimeout(uiState.pageSettingsPersistTimer);
+    uiState.pageSettingsPersistTimer = null;
     try { await BrowserDataStore.removePrimarySave(); } catch (_) {}
     try { await BrowserDataStore.removeSnapshotIndex(); } catch (_) {}
     try { await BrowserDataStore.clearDatabase(); } catch (_) {}
     try { await deleteLinkedSaveDatabase(); } catch (_) {}
-    removeStorageKeys();
+    clearPlannerWebStorage('localStorage');
+    clearPlannerWebStorage('sessionStorage');
     window.AppAudit?.clearForFactoryReset?.();
     DistrictIntegrationsV57?.resetForFactoryReset?.();
     clearWrappedSessionEncryptionKeys();
@@ -25879,7 +25863,7 @@ const StartupRecoveryV45 = (() => {
   async function prepareFreshKeySetup() {
      
     [PAGE_LOCK_CREDENTIAL_KEY, VISIBILITY_CREDENTIAL_KEY, SAVE_META_STORAGE_KEY, SAVE_SETUP_STORAGE_KEY, WELCOME_SETUP_STORAGE_KEY].forEach(key => safeStorageRemove('localStorage', key));
-    appSessionKeys.forEach(key => safeStorageRemove('sessionStorage', key));
+    clearPlannerWebStorage('sessionStorage');
     clearWrappedSessionEncryptionKeys();
     clearSameTabReloadSessionKey();
     clearCachedPageLockSecretForSession();
