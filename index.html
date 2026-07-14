@@ -5,7 +5,7 @@
   <meta name="license" content="MIT License" />
   <meta name="spdx-license-identifier" content="MIT" />
   <meta name="copyright" content="Copyright (c) 2026 Chris L. Franklin" />
-  <meta name="app-version" content="6.2.0" />
+  <meta name="app-version" content="6.2.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com blob:; style-src 'self' 'unsafe-inline'; connect-src 'self' https://www.googleapis.com https://classroom.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com; img-src 'self' data: blob:; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'self'" />
   <meta name="application-name" content="Classroom Seating Planner" />
@@ -481,7 +481,7 @@ body.names-only-layout #layoutNamesOnlyBtn{background:#e7efff;color:var(--accent
 }.side-tab-panel{display:none
 }.side-tab-panel.active{display:block
 }.side-tab-panel.side-subsection{border:0;border-radius:0;background:transparent;padding:0;margin:0
-}.bubble-manager-modal{max-width:min(1180px, 96vw)
+}.bubble-manager-modal{width:min(1180px, calc(100vw - 24px));max-width:1180px
 }.bubble-manager-grid{display:grid;grid-template-columns:minmax(250px, .9fr) minmax(320px, 1.4fr);gap:12px;min-height:min(650px, 72vh)
 }.bubble-manager-column{border:1px solid var(--line);border-radius:14px;background:var(--soft);padding:10px;min-height:280px;overflow:auto
 }.bubble-manager-column-header{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px
@@ -608,7 +608,7 @@ body.design-mode #designModeBtn{background:#e7efff;color:var(--accent-dark);bord
 }.zone-list-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px
 }.zone-swatch{width:13px;height:13px;border-radius:999px;border:1px solid rgba(15, 23, 42, .14);display:inline-block;flex:0 0 auto
 }.zone-member-row{display:flex;align-items:center;justify-content:space-between;gap:8px;border:1px solid rgba(15,23,42,.08);border-radius:10px;background:var(--soft, #f8fafc);padding:5px 6px;font-size:12px;margin-top:5px
-}.bubble-manager-modal{max-width:min(1360px, 98vw)
+}.bubble-manager-modal{width:min(1360px, calc(100vw - 24px));max-width:1360px
 }.bubble-manager-grid.three-column,
 .bubble-manager-grid{grid-template-columns:minmax(220px, .85fr) minmax(280px, 1fr) minmax(280px, 1fr)
 }.bubble-manager-zone{border:2px solid var(--manager-zone-color, var(--border-strong));border-radius:14px;background:#fff;padding:9px;margin-bottom:10px;transition:.15s ease;box-shadow:0 0 0 1px rgba(15,23,42,.04), 0 8px 22px rgba(15,23,42,.08)
@@ -1686,10 +1686,10 @@ body.product-v4.workspace-v41.product-v42 .v4-share-card p{font-size:10.5px;line
 }#welcomeSecurityModal .welcome-password-strength .password-strength-tips,
 #welcomeSecurityModal .welcome-password-strength > div:last-child:not(.password-strength-bar){display:none
 }#welcomeSecurityModal .welcome-primary-action{width:100%;min-height:38px;margin-top:1px;border-radius:9px
-}#welcomeSecurityModal .welcome-existing-row{display:grid;grid-template-columns:minmax(0, 1fr) auto;align-items:center;gap:10px;padding:10px 11px
+}#welcomeSecurityModal .welcome-existing-row{display:grid;grid-template-columns:minmax(0, 1fr);align-items:start;gap:9px;padding:10px 11px
 }#welcomeSecurityModal .welcome-existing-row > div:first-child{min-width:0;display:grid;gap:2px
-}#welcomeSecurityModal .welcome-existing-row .button-row{flex-wrap:nowrap;gap:6px
-}#welcomeSecurityModal .welcome-existing-row button{min-height:32px;padding:5px 8px;font-size:10px
+}#welcomeSecurityModal .welcome-existing-row .button-row{width:100%;flex-wrap:wrap;align-items:stretch;gap:6px
+}#welcomeSecurityModal .welcome-existing-row button{min-width:0;min-height:32px;flex:1 1 150px;padding:5px 8px;font-size:10px;white-space:normal;overflow-wrap:anywhere
 }#welcomeSecurityModal .welcome-footnote{margin:0;padding:0 2px;color:#6b7587;font-size:9.5px;line-height:1.35;text-align:center
 }@media (max-width: 1040px){body.product-v4.workspace-v41.product-v42 .v4-brand{min-width:34px
   }body.product-v4.workspace-v41.product-v42 .v4-brand > div,
@@ -4309,6 +4309,29 @@ body.header-collapsed .header-settings-slot #snapshotQuickBtn{width:30px;min-wid
   }.operation-recovery-history-row{grid-template-columns:1fr
   }.operation-recovery-history-row b{white-space:normal
   }
+}.modal-backdrop{overflow:hidden
+}.modal{min-width:0;max-height:calc(100dvh - 24px);overflow:hidden
+}.modal > .panel-header{flex:0 0 auto;min-width:0
+}.modal > .panel-header > *{min-width:0
+}.modal > .panel-header h2{overflow-wrap:anywhere
+}.modal > .modal-body{width:100%;min-width:0;max-width:100%;min-height:0;flex:1 1 auto;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable
+}.modal > .modal-body > *,
+.modal .section,
+.modal .workflow-card,
+.modal .settings-grid,
+.modal .row,
+.modal .button-row{min-width:0;max-width:100%
+}.modal .button-row{flex-wrap:wrap
+}.modal .button-row > button{min-width:0;max-width:100%;white-space:normal;overflow-wrap:anywhere
+}#welcomeSecurityModal .welcome-existing-row{grid-template-columns:minmax(0, 1fr)
+}#welcomeSecurityModal .welcome-existing-row .button-row{width:100%;flex-wrap:wrap
+}#welcomeSecurityModal .welcome-existing-row button{flex:1 1 150px
+}.bubble-manager-modal{width:min(1360px, calc(100vw - 24px));max-width:1360px
+}@media (max-width: 700px){.modal-backdrop{align-items:flex-start;padding:6px
+  }.modal{width:calc(100vw - 12px);max-width:calc(100vw - 12px);max-height:calc(100dvh - 12px)
+  }.modal .button-row > button:not(.icon-button){flex:1 1 min(170px, 100%)
+  }.modal .button-row > .icon-button{flex:0 0 34px
+  }
 }body.visibility-mode.vis-hide-wizard #guidedLearningBtn,
 body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
 }
@@ -6113,12 +6136,12 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
 const APP_CONFIG = Object.freeze({
   name: 'Classroom Seating Planner',
   shortName: 'Seating Planner',
-  version: '6.2.0',
+  version: '6.2.1',
   copyrightHolder: 'Chris L. Franklin',
   copyrightYear: '2026',
   releaseDate: '2026-07-13',
   releaseDateDisplay: 'July 13, 2026',
-  buildDate: '2026-07-13T23:30:00Z',
+  buildDate: '2026-07-14T04:00:00Z',
   commit: 'local',
   environment: 'production',
   dataSchemaVersion: 12,
@@ -6332,10 +6355,22 @@ const PROJECT_FEATURES = [
 
 const RELEASE_HISTORY = [
   {
+    version: '6.2.1',
+    date: 'July 14, 2026',
+    title: 'Responsive dialog fit repair',
+    current: true,
+    changes: [
+      'Repaired the startup unlock and recovery dialog so explanatory text retains full width and every recovery action wraps beneath it.',
+      'Hardened the shared modal shell so dialog bodies remain inside the viewport, scroll vertically, and no longer create horizontal page-sized overflow.',
+      'Restored the intended responsive width of the three-column Student / Group / Zone Manager.',
+      'Added regression checks for modal overflow guards and recovery-action wrapping.'
+    ]
+  },
+  {
     version: '6.2.0',
     date: 'July 13, 2026',
     title: 'Conflict insight, class merging, and recovery workflows',
-    current: true,
+    current: false,
     changes: [
       'Added a rule-conflict preflight inspector that explains blocking geometry, capacity, zone, accessibility, lock, and opposing-rule problems before candidate generation.',
       'Added an atomic class comparison and selective merge workflow with student matching, reference remapping, optional encrypted snapshots, and rollback on failure.',
