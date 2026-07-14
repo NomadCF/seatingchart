@@ -5,7 +5,7 @@
   <meta name="license" content="MIT License" />
   <meta name="spdx-license-identifier" content="MIT" />
   <meta name="copyright" content="Copyright (c) 2026 Chris L. Franklin" />
-  <meta name="app-version" content="6.3.5" />
+  <meta name="app-version" content="6.4.0" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com https://www.paypalobjects.com blob:; style-src 'self' 'unsafe-inline'; connect-src 'self' https://www.googleapis.com https://classroom.googleapis.com https://accounts.google.com https://www.paypal.com https://www.paypalobjects.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://www.paypal.com; img-src 'self' data: blob: https://www.paypalobjects.com; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'self' https://www.paypal.com" />
   <meta name="application-name" content="Classroom Seating Planner" />
@@ -6133,7 +6133,7 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
 
   <div id="backupVerificationModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="backupVerificationTitle"><div class="modal"><div class="panel-header"><h2 id="backupVerificationTitle">Backup Verification</h2><button id="closeBackupVerificationBtn" class="tiny secondary" type="button">Close</button></div><div class="modal-body"><div id="backupVerificationBody" class="confirm-message"></div></div></div></div>
 
-  <div id="saveConflictModal" class="modal-backdrop" role="alertdialog" aria-modal="true" aria-labelledby="saveConflictTitle"><div class="modal"><div class="panel-header"><h2 id="saveConflictTitle">Save Conflict Detected</h2></div><div class="modal-body"><div id="saveConflictMessage" class="save-conflict-box"></div><div class="button-row" style="margin-top:12px;"><button id="saveConflictReviewBtn" class="secondary" type="button">Download Current Copy</button><button id="saveConflictOverwriteBtn" class="danger" type="button">Overwrite Newer File</button><button id="saveConflictCopyBtn" type="button">Save as New Copy</button><button id="saveConflictCancelBtn" class="secondary" type="button">Cancel</button></div></div></div></div>
+  <div id="saveConflictModal" class="modal-backdrop" role="alertdialog" aria-modal="true" aria-labelledby="saveConflictTitle"><div class="modal"><div class="panel-header"><h2 id="saveConflictTitle">Save Conflict Detected</h2></div><div class="modal-body"><div id="saveConflictMessage" class="save-conflict-box"></div><div class="button-row" style="margin-top:12px;"><button id="saveConflictReviewBtn" class="secondary" type="button">Download Current Copy</button><button id="saveConflictOverwriteBtn" class="danger" type="button">Overwrite Newer File</button><button id="saveConflictCopyBtn" type="button">Save as New Copy</button><button id="saveConflictMergeBtn" class="secondary" type="button">Merge Changes</button><button id="saveConflictCancelBtn" class="secondary" type="button">Cancel</button></div></div></div></div>
 
   <div id="deploymentDiagnosticsModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="deploymentDiagnosticsTitle"><div class="modal modern-modal"><div class="panel-header"><h2 id="deploymentDiagnosticsTitle">Deployment &amp; Storage Diagnostics</h2><button id="closeDeploymentDiagnosticsBtn" class="tiny secondary" type="button">Close</button></div><div class="modal-body"><div id="deploymentDiagnosticsGrid" class="deployment-grid"></div><div class="button-row" style="margin-top:12px;"><button id="requestPersistentStorageBtn" class="secondary" type="button">Request Persistent Browser Storage</button><button id="refreshDeploymentDiagnosticsBtn" class="secondary" type="button">Refresh</button></div></div></div></div>
   <script>'use strict';
@@ -6141,7 +6141,7 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
 const APP_CONFIG = Object.freeze({
   name: 'Classroom Seating Planner',
   shortName: 'Seating Planner',
-  version: '6.3.5',
+  version: '6.4.0',
   copyrightHolder: 'Chris L. Franklin',
   copyrightYear: '2026',
   releaseDate: '2026-07-14',
@@ -6778,6 +6778,12 @@ const uiState = {
   googleDriveFiles: [],
   googleDriveSelectedFileId: '',
   googleDriveChooserContext: null,
+  googleDriveCapabilities: null,
+  googleDriveAccessRole: 'unknown',
+  sharedDriveBaseDocument: null,
+  sharedDriveBaseFileId: '',
+  sharedDriveMergePending: null,
+  sharedViewerDocument: null,
   saveFallbackWarning: '',
   pageSettingsPersistTimer: null,
   restoreImportDraft: null,
@@ -15835,8 +15841,8 @@ async function uploadGoogleDriveCurrentSave(payload, folderId) {
   const { boundary, body } = googleDriveMultipartBody(metadata, payload, 'application/json');
   const isUpdate = !!cfg.fileId;
   const url = isUpdate
-    ? `https://www.googleapis.com/upload/drive/v3/files/${encodeURIComponent(cfg.fileId)}?uploadType=multipart&fields=id,name,modifiedTime,webViewLink,version,md5Checksum,headRevisionId`
-    : 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,modifiedTime,webViewLink,version,md5Checksum,headRevisionId';
+    ? `https://www.googleapis.com/upload/drive/v3/files/${encodeURIComponent(cfg.fileId)}?uploadType=multipart&fields=id,name,modifiedTime,webViewLink,version,md5Checksum,headRevisionId,capabilities(canEdit,canShare)`
+    : 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,modifiedTime,webViewLink,version,md5Checksum,headRevisionId,capabilities(canEdit,canShare)';
   const response = await googleDriveFetch(url, {
     method: isUpdate ? 'PATCH' : 'POST',
     headers: { 'Content-Type': `multipart/related; boundary=${boundary}` },
@@ -15894,6 +15900,7 @@ async function writeGoogleDriveSaveFile(options = {}) {
     updateGoogleDriveStatus('Saving encrypted copy to Google Drive...');
     const folderId = await ensureGoogleDriveAppFolder();
     const cfg = googleDriveConfig();
+    SharedDriveCollaborationV64.assertCanWriteCurrentDriveFile();
     if (!options.forceOverwrite && cfg.fileId && pageSettings().googleDriveConflictPolicy !== 'overwrite') {
       const conflict = await ModernizationSuite.googleDriveConflict(cfg.fileId, cfg);
       if (conflict) {
@@ -15904,6 +15911,7 @@ async function writeGoogleDriveSaveFile(options = {}) {
           return ModernizationSuite.saveConflict(`The Google Drive copy changed after this tab's last confirmed save. ${conflict.reasons?.join(' ') || `Remote modified time: ${new Date(conflict.modifiedTime).toLocaleString()}.`}`, {
             overwrite: () => writeGoogleDriveSaveFile({ ...options, forceOverwrite: true, announce: true }),
             copy: () => { updateGoogleDriveSettings({ googleDriveFileId: '', googleDriveFileName: '' }, { persist: false }); return writeGoogleDriveSaveFile({ ...options, forceOverwrite: true, announce: true }); },
+            merge: () => SharedDriveCollaborationV64.mergeRemoteDriveChanges(options),
             cancel: () => setLiveStatusMessage('Google Drive save canceled. The newer remote copy was preserved.')
           });
         }
@@ -15933,6 +15941,8 @@ async function writeGoogleDriveSaveFile(options = {}) {
     updateSaveSetupDismissed(true);
     updateSaveHealthPanel();
     await writeLocalBrowserSave({ reason: 'google-drive-mirror', announce: false, preparedSave });
+    SharedDriveCollaborationV64.captureBaseFromCurrent(saved.id || pageSettings().googleDriveFileId || '');
+    SharedDriveCollaborationV64.applyDriveCapabilities(saved.capabilities || uiState.googleDriveCapabilities);
     return true;
   } catch (err) {
     const fallbackMessage = `Google Drive save failed: ${err.message}. Saved an encrypted browser fallback for now. The warning will clear after the next successful Google Drive save.`;
@@ -15972,7 +15982,7 @@ async function listGoogleDriveFilesForQuery(q) {
   do {
     const params = new URLSearchParams({
       q,
-      fields: 'nextPageToken,files(id,name,modifiedTime,createdTime,size,mimeType,parents,appProperties,webViewLink,version,md5Checksum,headRevisionId,ownedByMe,capabilities(canEdit,canTrash,canRename,canCopy))',
+      fields: 'nextPageToken,files(id,name,modifiedTime,createdTime,size,mimeType,parents,appProperties,webViewLink,version,md5Checksum,headRevisionId,ownedByMe,capabilities(canEdit,canShare,canTrash,canRename,canCopy),permissionIds)',
       spaces: 'drive',
       pageSize: '100',
       orderBy: 'modifiedTime desc'
@@ -16104,19 +16114,25 @@ async function loadGoogleDriveFileById(file, options = {}) {
   if (!file?.id) throw new Error('Choose a Google Drive save first.');
   if (!file.version || !file.modifiedTime || !file.headRevisionId) {
     try {
-      const metadataResponse = await googleDriveFetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(file.id)}?fields=id,name,modifiedTime,size,mimeType,webViewLink,version,md5Checksum,headRevisionId`, { method: 'GET' });
+      const metadataResponse = await googleDriveFetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(file.id)}?fields=id,name,modifiedTime,size,mimeType,webViewLink,version,md5Checksum,headRevisionId,capabilities(canEdit,canShare,canCopy),permissionIds`, { method: 'GET' });
       file = { ...file, ...(await metadataResponse.json()) };
     } catch (_) {   }
   }
   updateGoogleDriveStatus(`Downloading encrypted save from Google Drive: ${file.name || 'selected save'}...`);
   const response = await googleDriveFetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(file.id)}?alt=media`, { method: 'GET' });
   const text = await response.text();
+  const viewerHandled = await SharedDriveCollaborationV64.tryOpenEncryptedViewerPayload(text, file);
+  if (viewerHandled) {
+    SharedDriveCollaborationV64.applyDriveCapabilities(file.capabilities || null);
+    return true;
+  }
   if (options.fromWelcome) {
     closeGoogleDriveFileChooser({ returnToWelcome: false });
     closeWelcomeSecurityModal();
   }
   if (options.direct) await importStateDirectFromText(text, `Google Drive save ${file.name || ''}`.trim());
   else await importStateFromText(text, `Google Drive save ${file.name || ''}`.trim());
+  SharedDriveCollaborationV64.applyDriveCapabilities(file.capabilities || null);
   updateGoogleDriveSettings({
     preferredStorage: 'googleDrive',
     googleDriveFileId: file.id,
@@ -16131,6 +16147,7 @@ async function loadGoogleDriveFileById(file, options = {}) {
   setLiveStatusMessage(options.direct ? `Google Drive save loaded: ${file.name || 'selected save'}.` : 'Google Drive save downloaded. Choose what to restore.');
   updateSaveSetupDismissed(true);
   updateSaveHealthPanel();
+  SharedDriveCollaborationV64.captureBaseFromCurrent(file.id);
   if (options.fromWelcome && options.direct) {
     if (typeof StartupRecoveryV45 !== 'undefined') StartupRecoveryV45.completeExternalLoad();
     safeStorageSet('localStorage', WELCOME_SETUP_STORAGE_KEY, 'true');
@@ -23839,6 +23856,8 @@ The schema-compatible payload parsed successfully${encrypted ? ' and decrypted w
   function saveConflict(message, callbacks = {}) {
     uiState.pendingSaveConflict = callbacks;
     if (el('saveConflictMessage')) el('saveConflictMessage').textContent = message;
+    const mergeButton = el('saveConflictMergeBtn');
+    if (mergeButton) mergeButton.hidden = typeof callbacks.merge !== 'function';
     el('saveConflictModal')?.classList.add('show');
     return false;
   }
@@ -24253,6 +24272,7 @@ The schema-compatible payload parsed successfully${encrypted ? ' and decrypted w
     el('saveConflictCancelBtn')?.addEventListener('click',()=>{uiState.pendingSaveConflict?.cancel?.();uiState.pendingSaveConflict=null;el('saveConflictModal')?.classList.remove('show');});
     el('saveConflictOverwriteBtn')?.addEventListener('click',()=>{const cb=uiState.pendingSaveConflict?.overwrite;uiState.pendingSaveConflict=null;el('saveConflictModal')?.classList.remove('show');cb?.();});
     el('saveConflictCopyBtn')?.addEventListener('click',()=>{const cb=uiState.pendingSaveConflict?.copy;uiState.pendingSaveConflict=null;el('saveConflictModal')?.classList.remove('show');cb?.();});
+    el('saveConflictMergeBtn')?.addEventListener('click',()=>{const cb=uiState.pendingSaveConflict?.merge;uiState.pendingSaveConflict=null;el('saveConflictModal')?.classList.remove('show');cb?.();});
     el('saveConflictReviewBtn')?.addEventListener('click',()=>{exportAndDownload('all');});
     el('deploymentDiagnosticsBtn')?.addEventListener('click',()=>{el('deploymentDiagnosticsModal')?.classList.add('show');renderDeploymentDiagnostics();}); el('closeDeploymentDiagnosticsBtn')?.addEventListener('click',()=>el('deploymentDiagnosticsModal')?.classList.remove('show')); el('refreshDeploymentDiagnosticsBtn')?.addEventListener('click',renderDeploymentDiagnostics); el('requestPersistentStorageBtn')?.addEventListener('click',requestPersistentStorage);
     el('openFreeformWorkspaceBtn')?.addEventListener('click',openFreeformWorkspaceTools);
@@ -29941,6 +29961,385 @@ const WorkflowRecoveryV62 = (() => {
   });
 })();
 
+
+
+const SharedDriveCollaborationV64 = (() => {
+  const VIEWER_KIND = 'shared-viewer';
+  const VIEWER_FORMAT = 'classroom-seating-planner-encrypted-viewer-v1';
+  let installed = false;
+  let permissionRows = [];
+
+  const node = id => document.getElementById(id);
+  const clone = value => value === undefined ? undefined : JSON.parse(JSON.stringify(value));
+  const equal = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+  async function copyTextSafe(value) {
+    const text = String(value || '');
+    if (!text) return false;
+    if (navigator.clipboard?.writeText) { await navigator.clipboard.writeText(text); return true; }
+    const area = document.createElement('textarea'); area.value = text; area.setAttribute('readonly', ''); area.style.position = 'fixed'; area.style.opacity = '0'; document.body.appendChild(area); area.select(); const ok = document.execCommand('copy'); area.remove(); return ok;
+  }
+
+  function applyDriveCapabilities(capabilities = null) {
+    uiState.googleDriveCapabilities = capabilities && typeof capabilities === 'object' ? { ...capabilities } : null;
+    uiState.googleDriveAccessRole = capabilities?.canEdit === false ? 'reader' : capabilities?.canEdit === true ? 'writer' : 'unknown';
+    document.body.dataset.driveAccessRole = uiState.googleDriveAccessRole;
+    const badge = node('sharedDriveRoleBadge');
+    if (badge) badge.textContent = uiState.googleDriveAccessRole === 'reader' ? 'View only' : uiState.googleDriveAccessRole === 'writer' ? 'Can edit' : 'Role unknown';
+    document.querySelectorAll('[data-drive-write-action]').forEach(button => {
+      button.disabled = uiState.googleDriveAccessRole === 'reader';
+      button.title = button.disabled ? 'Google Drive granted view-only access to this file.' : '';
+    });
+    let banner = node('driveReadOnlyBanner');
+    if (!banner) {
+      banner = document.createElement('div');
+      banner.id = 'driveReadOnlyBanner';
+      banner.className = 'drive-read-only-banner';
+      banner.setAttribute('role', 'status');
+      banner.textContent = 'View-only Google Drive access: editing and saving are disabled for this shared file.';
+      document.body.appendChild(banner);
+    }
+    banner.hidden = uiState.googleDriveAccessRole !== 'reader';
+  }
+
+  function assertCanWriteCurrentDriveFile() {
+    if (googleDriveConfig().fileId && uiState.googleDriveAccessRole === 'reader') {
+      throw new Error('This Google Drive file is shared with view-only permission. Ask the owner for Editor access or save a separate copy.');
+    }
+  }
+
+  function captureBaseFromCurrent(fileId = '') {
+    try {
+      uiState.sharedDriveBaseDocument = JSON.parse(exportState('all'));
+      uiState.sharedDriveBaseFileId = String(fileId || googleDriveConfig().fileId || '');
+    } catch (_) {
+      uiState.sharedDriveBaseDocument = null;
+      uiState.sharedDriveBaseFileId = '';
+    }
+  }
+
+  async function driveMetadata(fileId) {
+    const response = await googleDriveFetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(fileId)}?fields=id,name,modifiedTime,webViewLink,version,md5Checksum,headRevisionId,capabilities(canEdit,canShare,canCopy),permissions(id,type,role,emailAddress,displayName,domain,deleted,pendingOwner)`, { method: 'GET' });
+    return response.json();
+  }
+
+  async function listPermissions() {
+    const fileId = googleDriveConfig().fileId;
+    if (!fileId) throw new Error('Save or load a Google Drive file before managing sharing.');
+    const meta = await driveMetadata(fileId);
+    applyDriveCapabilities(meta.capabilities || null);
+    permissionRows = Array.isArray(meta.permissions) ? meta.permissions : [];
+    renderPermissions(meta);
+    return meta;
+  }
+
+  function renderPermissions(meta = {}) {
+    const status = node('sharedDriveStatus');
+    const list = node('sharedDrivePermissionList');
+    if (status) status.textContent = `${meta.name || googleDriveConfig().fileName || 'Current Drive file'} · ${meta.capabilities?.canShare === false ? 'Sharing changes are not permitted for this account.' : 'Sharing can be managed here.'}`;
+    if (!list) return;
+    list.innerHTML = permissionRows.length ? permissionRows.map(permission => {
+      const identity = permission.emailAddress || permission.displayName || permission.domain || permission.type || 'Unknown collaborator';
+      const own = permission.role === 'owner';
+      return `<div class="shared-drive-permission-row"><div><strong>${escapeHtml(identity)}</strong><span>${escapeHtml(permission.type || 'user')} · ${escapeHtml(permission.role || 'unknown')}</span></div><div class="button-row">${own ? '<span class="pill">Owner</span>' : `<select data-share-role="${escapeHtml(permission.id)}" aria-label="Access role for ${escapeHtml(identity)}"><option value="reader"${permission.role === 'reader' ? ' selected' : ''}>Viewer</option><option value="writer"${permission.role === 'writer' ? ' selected' : ''}>Editor</option></select><button type="button" class="tiny danger" data-remove-permission="${escapeHtml(permission.id)}">Remove</button>`}</div></div>`;
+    }).join('') : '<div class="hint">No collaborator permissions were returned. The owner permission may be hidden by account policy.</div>';
+  }
+
+  async function addPermission() {
+    const fileId = googleDriveConfig().fileId;
+    const email = String(node('sharedDriveEmail')?.value || '').trim();
+    const role = node('sharedDriveRole')?.value === 'writer' ? 'writer' : 'reader';
+    if (!fileId) throw new Error('Save or load a Google Drive file first.');
+    if (!/^\S+@\S+\.\S+$/.test(email)) throw new Error('Enter a valid email address.');
+    const params = new URLSearchParams({ fields: 'id,type,role,emailAddress,displayName', sendNotificationEmail: node('sharedDriveNotify')?.checked ? 'true' : 'false' });
+    const message = String(node('sharedDriveMessage')?.value || '').trim();
+    if (message && node('sharedDriveNotify')?.checked) params.set('emailMessage', message.slice(0, 1000));
+    await googleDriveFetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(fileId)}/permissions?${params.toString()}`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'user', role, emailAddress: email })
+    });
+    if (node('sharedDriveEmail')) node('sharedDriveEmail').value = '';
+    await listPermissions();
+    setLiveStatusMessage(`${email} was added as ${role === 'writer' ? 'an editor' : 'a viewer'}.`);
+  }
+
+  async function updatePermission(permissionId, role) {
+    const fileId = googleDriveConfig().fileId;
+    await googleDriveFetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(fileId)}/permissions/${encodeURIComponent(permissionId)}?fields=id,role`, {
+      method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ role: role === 'writer' ? 'writer' : 'reader' })
+    });
+    await listPermissions();
+  }
+
+  async function removePermission(permissionId) {
+    const fileId = googleDriveConfig().fileId;
+    await googleDriveFetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(fileId)}/permissions/${encodeURIComponent(permissionId)}`, { method: 'DELETE' });
+    await listPermissions();
+  }
+
+  function viewerClassData(preset = 'substitute') {
+    persistActiveClass();
+    const source = clone(activeClassRecord() || {});
+    const includeNames = preset !== 'anonymous' && preset !== 'room';
+    const includeSubNotes = preset === 'substitute';
+    const students = preset === 'room' ? [] : (source.students || []).map((student, index) => ({
+      id: String(student.id || `student-${index + 1}`),
+      firstName: includeNames ? String(student.firstName || '') : `Student ${index + 1}`,
+      lastName: includeNames ? String(student.lastName || '') : '',
+      nickname: includeNames ? String(student.nickname || '') : '',
+      grade: '', studentId: '', notesPublic: '', notesPrivate: '',
+      notesSubstitute: includeSubNotes ? String(student.notesSubstitute || '') : ''
+    }));
+    return {
+      format: VIEWER_FORMAT, app: APP_NAME, version: APP_REVISION, createdAt: new Date().toISOString(), preset,
+      class: {
+        id: source.id, name: source.name, rows: source.rows, cols: source.cols, layoutMode: source.layoutMode,
+        cells: clone(source.cells || {}), freeformLayout: clone(source.freeformLayout || {}), students
+      }
+    };
+  }
+
+  async function encryptedViewerPayload(password, preset) {
+    const plain = JSON.stringify(viewerClassData(preset));
+    return encryptTextWithSecret(plain, password, 'shared-viewer', { payloadKind: VIEWER_KIND, viewerFormat: VIEWER_FORMAT, readOnly: true, preset });
+  }
+
+  async function uploadViewerFile() {
+    const password = String(node('sharedViewerPassword')?.value || '');
+    const confirm = String(node('sharedViewerPasswordConfirm')?.value || '');
+    const preset = String(node('sharedViewerPreset')?.value || 'substitute');
+    if (password.length < 10) throw new Error('Use a viewer password with at least 10 characters.');
+    if (password !== confirm) throw new Error('The viewer passwords do not match.');
+    const folderId = await ensureGoogleDriveAppFolder();
+    const payload = await encryptedViewerPayload(password, preset);
+    const classPart = String(activeClassName() || 'class').replace(/[^a-z0-9._ -]+/gi, '-').replace(/\s+/g, '-').slice(0, 50);
+    const metadata = { name: `${classPart}-encrypted-viewer.json`, mimeType: 'application/json', parents: folderId ? [folderId] : undefined, appProperties: { app: GOOGLE_DRIVE_APP_PROPERTY, kind: VIEWER_KIND, encrypted: 'true', viewerFormat: VIEWER_FORMAT, appVersion: APP_REVISION } };
+    if (!metadata.parents) delete metadata.parents;
+    const { boundary, body } = googleDriveMultipartBody(metadata, payload, 'application/json');
+    const response = await googleDriveFetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,webViewLink,capabilities(canEdit,canShare)', { method: 'POST', headers: { 'Content-Type': `multipart/related; boundary=${boundary}` }, body });
+    const created = await response.json();
+    node('sharedViewerResult').textContent = `Created ${created.name || 'encrypted viewer file'}. Share it with Drive Viewer permission and send the password separately.`;
+    setLiveStatusMessage('Separate encrypted viewer file created in Google Drive.');
+    return created;
+  }
+
+  function viewerHtmlTemplate(envelope, title) {
+    const encoded = JSON.stringify(envelope).replace(/</g, '\\u003c');
+    return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'"><title>${escapeHtml(title)}</title><style>body{font-family:system-ui,sans-serif;margin:0;background:#eef2f7;color:#172033}.unlock{max-width:520px;margin:10vh auto;padding:24px;background:#fff;border:1px solid #cbd5e1;border-radius:16px;box-shadow:0 20px 60px #0f172a22}.unlock input{width:100%;box-sizing:border-box;padding:11px;border:1px solid #94a3b8;border-radius:9px;margin:8px 0}.unlock button{padding:10px 14px;border:0;border-radius:9px;background:#2563eb;color:#fff;font-weight:700}.error{color:#b42318}.viewer{display:none;padding:20px}.notice{padding:10px;border:1px solid #bfdbfe;background:#eff6ff;border-radius:10px;margin-bottom:14px}.grid{display:grid;gap:8px}.cell,.object{box-sizing:border-box;border:1px solid #94a3b8;border-radius:10px;background:#fff;padding:8px;display:grid;place-items:center;text-align:center;min-height:72px;overflow-wrap:anywhere}.cell.seat{background:#dbeafe}.freeform{position:relative;background:#fff;border:1px solid #cbd5e1;overflow:auto}.object{position:absolute}.notes{margin-top:18px;padding:12px;background:#fff;border:1px solid #cbd5e1;border-radius:12px}.notes li{margin:8px 0}@media print{.notice{display:none}.viewer{padding:0}}</style></head><body><section class="unlock" id="unlock"><h1>${escapeHtml(title)}</h1><p>This is an encrypted, view-only classroom package. Enter the viewer password supplied separately.</p><input id="pw" type="password" autocomplete="current-password" aria-label="Viewer password"><button id="open" type="button">Open view-only file</button><p id="error" class="error" role="alert"></p></section><main id="viewer" class="viewer"></main><script>const envelope=${encoded};const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));const esc=s=>String(s??'').replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));async function openViewer(){const error=document.getElementById('error');error.textContent='';try{const e=envelope.encryption;const base=await crypto.subtle.importKey('raw',new TextEncoder().encode(document.getElementById('pw').value),'PBKDF2',false,['deriveKey']);const key=await crypto.subtle.deriveKey({name:'PBKDF2',salt:b64(e.salt),iterations:e.iterations,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['decrypt']);const plain=await crypto.subtle.decrypt({name:'AES-GCM',iv:b64(e.iv)},key,b64(e.ciphertext));render(JSON.parse(new TextDecoder().decode(plain)));document.getElementById('unlock').style.display='none';document.getElementById('viewer').style.display='block';}catch(_){error.textContent='Could not decrypt. Check the viewer password and try again.'}}function render(doc){const c=doc.class||{},students=new Map((c.students||[]).map(s=>[String(s.id),s])),name=s=>[s.nickname||s.firstName,s.lastName].filter(Boolean).join(' '),label=id=>students.has(String(id||''))?name(students.get(String(id))):'';let room='';if(c.layoutMode==='freeform'){const cv=c.freeformLayout?.canvas||{width:1200,height:760};room='<div class="freeform" style="width:min(100%,'+(+cv.width||1200)+'px);height:'+(+cv.height||760)+'px">'+(c.freeformLayout?.objects||[]).map(o=>'<div class="object" style="left:'+(+o.x||0)+'px;top:'+(+o.y||0)+'px;width:'+(+o.width||120)+'px;height:'+(+o.height||80)+'px;transform:rotate('+(+o.rotation||0)+'deg)">'+esc(label(o.assignedStudentId)||o.label||o.type||'Object')+'</div>').join('')+'</div>'}else{const cells=[];for(let r=0;r<(c.rows||1);r++)for(let col=0;col<(c.cols||1);col++){const x=c.cells?.[(r+1)+'-'+(col+1)]||c.cells?.[r+'-'+col]||{};cells.push('<div class="cell '+esc(x.type||'empty')+'">'+esc(label(x.assignedStudentId)||x.label||x.type||'')+'</div>')}room='<div class="grid" style="grid-template-columns:repeat('+(c.cols||1)+',minmax(90px,1fr))">'+cells.join('')+'</div>'}const notes=(c.students||[]).filter(s=>s.notesSubstitute).map(s=>'<li><strong>'+esc(name(s))+'</strong>: '+esc(s.notesSubstitute)+'</li>').join('');document.getElementById('viewer').innerHTML='<h1>'+esc(c.name||'Classroom')+'</h1><div class="notice">View-only encrypted classroom package. Editing, saving, cloud credentials, and hidden records are not included.</div>'+room+(notes?'<section class="notes"><h2>Substitute notes</h2><ul>'+notes+'</ul></section>':'')}document.title=(c.name||'Classroom')+' · View only'}document.getElementById('open').addEventListener('click',openViewer);document.getElementById('pw').addEventListener('keydown',e=>{if(e.key==='Enter')openViewer()});<\/script></body></html>`;
+  }
+
+  async function downloadEncryptedViewerHtml() {
+    const password = String(node('sharedViewerPassword')?.value || '');
+    const confirm = String(node('sharedViewerPasswordConfirm')?.value || '');
+    const preset = String(node('sharedViewerPreset')?.value || 'substitute');
+    if (password.length < 10) throw new Error('Use a viewer password with at least 10 characters.');
+    if (password !== confirm) throw new Error('The viewer passwords do not match.');
+    const envelope = JSON.parse(await encryptedViewerPayload(password, preset));
+    const title = `${activeClassName() || 'Classroom'} · Encrypted view only`;
+    downloadText(`${String(activeClassName() || 'class').replace(/[^a-z0-9]+/gi, '-').toLowerCase()}-encrypted-viewer.html`, viewerHtmlTemplate(envelope, title), 'text/html');
+    setLiveStatusMessage('Encrypted view-only HTML downloaded. Send its password separately.');
+  }
+
+  async function tryOpenEncryptedViewerPayload(text, file = {}) {
+    let parsed;
+    try { parsed = JSON.parse(text); } catch (_) { return false; }
+    if (parsed?.payloadKind !== VIEWER_KIND && parsed?.viewerFormat !== VIEWER_FORMAT) return false;
+    const password = await requestEncryptionKey('This is an encrypted view-only classroom file. Enter its viewer password.');
+    if (!password) throw new Error('Encrypted viewer load canceled.');
+    const plain = await decryptTextEnvelope(parsed, password);
+    const viewer = JSON.parse(plain);
+    if (viewer?.format !== VIEWER_FORMAT || !viewer.class) throw new Error('The encrypted viewer file is not valid.');
+    uiState.sharedViewerDocument = viewer;
+    showViewerModal(viewer, file.name || 'Shared classroom view');
+    return true;
+  }
+
+  function showViewerModal(viewer, sourceName) {
+    const cls = viewer.class || {};
+    const students = new Map((cls.students || []).map(student => [String(student.id), student]));
+    const name = student => [student.nickname || student.firstName, student.lastName].filter(Boolean).join(' ');
+    const assigned = id => students.get(String(id || ''));
+    let room = '';
+    if (cls.layoutMode === 'freeform') {
+      const canvas = cls.freeformLayout?.canvas || { width: 1200, height: 760 };
+      room = `<div class="shared-viewer-canvas" style="width:${Number(canvas.width) || 1200}px;height:${Number(canvas.height) || 760}px">${(cls.freeformLayout?.objects || []).map(object => `<div class="shared-viewer-object" style="left:${Number(object.x)||0}px;top:${Number(object.y)||0}px;width:${Number(object.width)||120}px;height:${Number(object.height)||80}px;transform:rotate(${Number(object.rotation)||0}deg)">${escapeHtml(assigned(object.assignedStudentId) ? name(assigned(object.assignedStudentId)) : object.label || object.type || 'Object')}</div>`).join('')}</div>`;
+    } else {
+      const cells = [];
+      for (let row = 1; row <= Number(cls.rows || 1); row += 1) for (let col = 1; col <= Number(cls.cols || 1); col += 1) {
+        const cell = cls.cells?.[`${row}-${col}`] || {};
+        cells.push(`<div class="shared-viewer-cell ${escapeHtml(cell.type || 'empty')}">${escapeHtml(assigned(cell.assignedStudentId) ? name(assigned(cell.assignedStudentId)) : cell.label || cell.type || '')}</div>`);
+      }
+      room = `<div class="shared-viewer-grid" style="grid-template-columns:repeat(${Number(cls.cols)||1},minmax(90px,1fr))">${cells.join('')}</div>`;
+    }
+    const notes = (cls.students || []).filter(student => student.notesSubstitute).map(student => `<li><strong>${escapeHtml(name(student))}</strong><span>${escapeHtml(student.notesSubstitute)}</span></li>`).join('');
+    node('sharedViewerModalTitle').textContent = `${cls.name || sourceName} · View only`;
+    node('sharedViewerModalBody').innerHTML = `<div class="hint">This encrypted file is open in view-only mode. It cannot modify the planner or overwrite the Drive file.</div>${room}${notes ? `<section class="section"><h3>Substitute notes</h3><ul>${notes}</ul></section>` : ''}`;
+    node('sharedViewerModal').classList.add('show');
+    DialogManager.synchronize();
+  }
+
+  function mergeThreeWay(base, local, remote, path = '$', conflicts = []) {
+    if (equal(local, remote)) return clone(local);
+    if (equal(local, base)) return clone(remote);
+    if (equal(remote, base)) return clone(local);
+    if (Array.isArray(base) || Array.isArray(local) || Array.isArray(remote)) {
+      const arrays = [base, local, remote].every(Array.isArray);
+      const keyed = arrays && [base, local, remote].every(list => list.every(item => item && typeof item === 'object' && !Array.isArray(item) && item.id !== undefined));
+      if (keyed) {
+        const b = new Map(base.map(item => [String(item.id), item]));
+        const l = new Map(local.map(item => [String(item.id), item]));
+        const r = new Map(remote.map(item => [String(item.id), item]));
+        const result = [];
+        for (const id of new Set([...b.keys(), ...l.keys(), ...r.keys()])) {
+          const merged = mergeThreeWay(b.get(id), l.get(id), r.get(id), `${path}[id=${id}]`, conflicts);
+          if (merged !== undefined) result.push(merged);
+        }
+        return result;
+      }
+      conflicts.push({ path, base: clone(base), local: clone(local), remote: clone(remote), choice: 'local' });
+      return clone(local);
+    }
+    const objects = [base, local, remote].every(value => value && typeof value === 'object' && !Array.isArray(value));
+    if (objects) {
+      const result = {};
+      for (const key of new Set([...Object.keys(base), ...Object.keys(local), ...Object.keys(remote)])) {
+        const merged = mergeThreeWay(base[key], local[key], remote[key], `${path}.${key}`, conflicts);
+        if (merged !== undefined) result[key] = merged;
+      }
+      return result;
+    }
+    conflicts.push({ path, base: clone(base), local: clone(local), remote: clone(remote), choice: 'local' });
+    return clone(local);
+  }
+
+  function setPath(root, path, value) {
+    const tokens = path.replace(/^\$\.?/, '').split('.').filter(Boolean);
+    let current = root;
+    for (let index = 0; index < tokens.length - 1; index += 1) {
+      const token = tokens[index];
+      const match = token.match(/^(.+)\[id=(.+)\]$/);
+      if (match) current = (current[match[1]] || []).find(item => String(item.id) === match[2]);
+      else current = current[token];
+      if (!current) return;
+    }
+    const last = tokens[tokens.length - 1];
+    if (last) current[last] = clone(value);
+  }
+
+  async function remotePlainDocument(fileId) {
+    const response = await googleDriveFetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(fileId)}?alt=media`, { method: 'GET' });
+    const text = await response.text();
+    let parsed = JSON.parse(text);
+    if (parsed?.encrypted) parsed = JSON.parse(await decryptTextEnvelope(parsed, currentSessionEncryptionKey()));
+    assertSupportedSaveDocument(parsed, 'remote Google Drive save');
+    return parsed;
+  }
+
+  async function mergeRemoteDriveChanges(saveOptions = {}) {
+    const fileId = googleDriveConfig().fileId;
+    if (!fileId) throw new Error('No linked Google Drive file is available to merge.');
+    assertCanWriteCurrentDriveFile();
+    const base = uiState.sharedDriveBaseFileId === fileId && uiState.sharedDriveBaseDocument ? clone(uiState.sharedDriveBaseDocument) : null;
+    if (!base) throw new Error('This tab does not have a base revision for three-way merge. Reload the Drive file, then retry.');
+    const local = JSON.parse(exportState('all'));
+    const remote = await remotePlainDocument(fileId);
+    const conflicts = [];
+    const merged = mergeThreeWay(base, local, remote, '$', conflicts);
+    if (!conflicts.length) return applyMergedDocument(merged, saveOptions);
+    uiState.sharedDriveMergePending = { merged, conflicts, saveOptions };
+    node('driveMergeConflictList').innerHTML = conflicts.map((conflict, index) => `<div class="drive-merge-conflict"><strong>${escapeHtml(conflict.path)}</strong><select data-merge-choice="${index}"><option value="local">Use my change</option><option value="remote">Use remote change</option></select><details><summary>Compare values</summary><pre>Mine: ${escapeHtml(JSON.stringify(conflict.local, null, 2))}\n\nRemote: ${escapeHtml(JSON.stringify(conflict.remote, null, 2))}</pre></details></div>`).join('');
+    node('driveMergeModal').classList.add('show');
+    DialogManager.synchronize();
+    return false;
+  }
+
+  async function applyMergedDocument(documentToApply, saveOptions = {}) {
+    const rollback = createHistorySnapshot();
+    try {
+      await importStateDirectFromText(JSON.stringify(documentToApply), 'three-way merged Google Drive save');
+      const saved = await writeGoogleDriveSaveFile({ ...saveOptions, forceOverwrite: true, announce: true });
+      if (!saved) throw new Error('The merged document could not be saved to Google Drive.');
+      captureBaseFromCurrent(googleDriveConfig().fileId);
+      setLiveStatusMessage('Remote and local Google Drive changes were merged and saved.');
+      return true;
+    } catch (error) {
+      restoreHistorySnapshot(rollback);
+      throw error;
+    }
+  }
+
+  async function commitMergeChoices() {
+    const pending = uiState.sharedDriveMergePending;
+    if (!pending) return false;
+    node('driveMergeConflictList').querySelectorAll('[data-merge-choice]').forEach(select => {
+      const conflict = pending.conflicts[Number(select.dataset.mergeChoice)];
+      if (conflict && select.value === 'remote') setPath(pending.merged, conflict.path, conflict.remote);
+    });
+    node('driveMergeModal').classList.remove('show');
+    uiState.sharedDriveMergePending = null;
+    return applyMergedDocument(pending.merged, pending.saveOptions);
+  }
+
+  function readOnlyInteractionGuard(event) {
+    if (uiState.googleDriveAccessRole !== 'reader') return;
+    const target = event.target instanceof Element ? event.target : null;
+    if (!target) return;
+    const allowed = target.closest('#sharedDriveModal,#sharedViewerModal,#driveMergeModal,#printOptionsModal,#printPreviewBanner,#saveLoadMenu,[data-workflow-step],#v4WorkflowNav,#printBtn,[data-v4-action="print"],[data-save-menu-action="google-drive-load"],[data-save-menu-action="drive-share-manager"],#settingsBtn,#closeSettingsBtn');
+    if (allowed) return;
+    const mutating = target.closest('.app button,.app input,.app select,.app textarea,.app [contenteditable="true"],.app [draggable="true"],.toolbar button,.toolbar input,.toolbar select');
+    if (!mutating) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    setLiveStatusMessage('This Drive file is view only. Ask the owner for Editor access to make changes.');
+  }
+
+  function appendMarkup() {
+    const style = document.createElement('style');
+    style.textContent = `.shared-drive-modal{max-width:min(980px,96vw)}.shared-drive-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.shared-drive-permission-list{display:grid;gap:7px;max-height:300px;overflow:auto}.shared-drive-permission-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px;border:1px solid var(--border);border-radius:10px;background:#fff}.shared-drive-permission-row>div:first-child{display:grid;gap:2px;min-width:0}.shared-drive-permission-row span{color:var(--muted);font-size:11px}.shared-drive-permission-row select{min-width:110px}.shared-viewer-grid{display:grid;gap:8px}.shared-viewer-cell,.shared-viewer-object{box-sizing:border-box;border:1px solid var(--border);border-radius:10px;background:#fff;padding:8px;display:grid;place-items:center;text-align:center;min-height:72px}.shared-viewer-cell.seat{background:#dbeafe}.shared-viewer-canvas{position:relative;background:#fff;border:1px solid var(--border);overflow:auto}.shared-viewer-object{position:absolute}.drive-merge-conflict{display:grid;gap:7px;padding:9px;border:1px solid #fed7aa;border-radius:10px;background:#fffbeb}.drive-merge-conflict pre{max-height:180px;overflow:auto;white-space:pre-wrap;font-size:11px}@media(max-width:760px){.shared-drive-grid,.shared-drive-permission-row{grid-template-columns:1fr}}body[data-drive-access-role="reader"] [data-drive-write-action]{display:none!important}.drive-read-only-banner{position:fixed;left:50%;bottom:14px;z-index:39000;transform:translateX(-50%);max-width:min(680px,calc(100vw - 28px));padding:9px 12px;border:1px solid #f2ca83;border-radius:12px;background:#fffbeb;color:#7c2d12;box-shadow:0 12px 34px rgba(15,23,42,.22);font-size:12px;font-weight:800}.drive-read-only-banner[hidden]{display:none}body[data-drive-access-role="reader"] .app button,body[data-drive-access-role="reader"] .app input,body[data-drive-access-role="reader"] .app select,body[data-drive-access-role="reader"] .app textarea,body[data-drive-access-role="reader"] .app [draggable="true"]{cursor:not-allowed}`;
+    document.head.appendChild(style);
+    document.body.insertAdjacentHTML('beforeend', `<div id="sharedDriveModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="sharedDriveTitle"><div class="modal shared-drive-modal"><div class="panel-header"><div><span class="v44-modal-eyebrow">Google Drive</span><h2 id="sharedDriveTitle">Share and collaborate</h2></div><button id="closeSharedDriveBtn" type="button" class="tiny secondary">Close</button></div><div class="modal-body"><div class="button-row"><span id="sharedDriveRoleBadge" class="pill">Role unknown</span><button id="refreshSharedDriveBtn" type="button" class="secondary">Refresh access</button><button id="copySharedDriveLinkBtn" type="button" class="secondary">Copy Drive link</button></div><p id="sharedDriveStatus" class="hint">Connect Google Drive and save or load a file first.</p><div class="shared-drive-grid"><section class="section"><h3>Add collaborator</h3><div class="field"><label for="sharedDriveEmail">Google account email</label><input id="sharedDriveEmail" type="email" autocomplete="off"></div><div class="field"><label for="sharedDriveRole">Access</label><select id="sharedDriveRole"><option value="reader">Viewer</option><option value="writer">Editor</option></select></div><label class="checkline"><input id="sharedDriveNotify" type="checkbox" checked> Send Google notification</label><div class="field"><label for="sharedDriveMessage">Optional message</label><textarea id="sharedDriveMessage" rows="3"></textarea></div><button id="addSharedDrivePermissionBtn" type="button" data-drive-write-action>Add collaborator</button></section><section class="section"><h3>Encrypted viewer file</h3><div class="field"><label for="sharedViewerPreset">Viewer profile</label><select id="sharedViewerPreset"><option value="substitute">Substitute chart and substitute notes</option><option value="student">Student-facing names only</option><option value="anonymous">Anonymous numbered chart</option><option value="room">Room layout only</option></select></div><div class="row"><div class="field"><label for="sharedViewerPassword">Viewer password</label><input id="sharedViewerPassword" type="password" autocomplete="new-password"></div><div class="field"><label for="sharedViewerPasswordConfirm">Confirm</label><input id="sharedViewerPasswordConfirm" type="password" autocomplete="new-password"></div></div><div class="button-row"><button id="createDriveViewerFileBtn" type="button" data-drive-write-action>Create in Drive</button><button id="downloadEncryptedViewerHtmlBtn" type="button" class="secondary">Download encrypted HTML</button></div><p id="sharedViewerResult" class="muted">The viewer password is never uploaded separately. Send it through another channel.</p></section></div><section class="section"><h3>Current Drive permissions</h3><div id="sharedDrivePermissionList" class="shared-drive-permission-list"></div></section></div></div></div><div id="sharedViewerModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="sharedViewerModalTitle"><div class="modal shared-drive-modal"><div class="panel-header"><h2 id="sharedViewerModalTitle">Shared classroom view</h2><button id="closeSharedViewerBtn" type="button" class="tiny secondary">Close</button></div><div id="sharedViewerModalBody" class="modal-body"></div></div></div><div id="driveMergeModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="driveMergeTitle"><div class="modal shared-drive-modal"><div class="panel-header"><h2 id="driveMergeTitle">Resolve Drive merge conflicts</h2><button id="cancelDriveMergeBtn" type="button" class="tiny secondary">Cancel</button></div><div class="modal-body"><div class="hint">Non-conflicting local and remote changes were merged automatically. Choose which value wins for each overlapping edit.</div><div id="driveMergeConflictList" class="list" style="margin-top:10px"></div><div class="button-row" style="margin-top:10px"><button id="commitDriveMergeBtn" type="button">Merge and save</button></div></div></div></div>`);
+  }
+
+  function openManager() {
+    node('sharedDriveModal')?.classList.add('show');
+    DialogManager.synchronize();
+    void listPermissions().catch(error => { if (node('sharedDriveStatus')) node('sharedDriveStatus').textContent = error.message; });
+  }
+
+  function installEntryPoint() {
+    const shareGrid = document.querySelector('.v4-share-grid');
+    if (shareGrid && !node('openSharedDriveManagerBtn')) shareGrid.insertAdjacentHTML('afterbegin', `<article class="v4-share-card v4-share-card-primary"><div class="v4-share-icon">☁</div><span class="v4-eyebrow">Google Drive collaboration</span><h3>Share Drive save</h3><p>Add viewers or editors, create encrypted viewer copies, and merge concurrent edits safely.</p><button id="openSharedDriveManagerBtn" type="button" class="secondary">Share and collaborate</button></article>`);
+    const saveMenu = node('saveLoadMenu');
+    if (saveMenu && !saveMenu.querySelector('[data-save-menu-action="drive-share-manager"]')) saveMenu.insertAdjacentHTML('beforeend', '<button type="button" data-save-menu-action="drive-share-manager">Share Drive Save...</button>');
+  }
+
+  function installEvents() {
+    node('openSharedDriveManagerBtn')?.addEventListener('click', openManager);
+    node('closeSharedDriveBtn')?.addEventListener('click', () => { node('sharedDriveModal')?.classList.remove('show'); DialogManager.synchronize(); });
+    node('refreshSharedDriveBtn')?.addEventListener('click', () => void listPermissions().catch(error => { node('sharedDriveStatus').textContent = error.message; }));
+    node('addSharedDrivePermissionBtn')?.addEventListener('click', () => void addPermission().catch(error => { node('sharedDriveStatus').textContent = error.message; }));
+    node('createDriveViewerFileBtn')?.addEventListener('click', () => void uploadViewerFile().catch(error => { node('sharedViewerResult').textContent = error.message; }));
+    node('downloadEncryptedViewerHtmlBtn')?.addEventListener('click', () => void downloadEncryptedViewerHtml().catch(error => { node('sharedViewerResult').textContent = error.message; }));
+    node('copySharedDriveLinkBtn')?.addEventListener('click', async () => { try { const meta = await driveMetadata(googleDriveConfig().fileId); await copyTextSafe(meta.webViewLink || ''); setLiveStatusMessage('Google Drive link copied.'); } catch (error) { node('sharedDriveStatus').textContent = error.message; } });
+    node('sharedDrivePermissionList')?.addEventListener('change', event => { const select = event.target.closest('[data-share-role]'); if (select) void updatePermission(select.dataset.shareRole, select.value).catch(error => { node('sharedDriveStatus').textContent = error.message; }); });
+    node('sharedDrivePermissionList')?.addEventListener('click', event => { const button = event.target.closest('[data-remove-permission]'); if (button) showInAppConfirm('Remove this collaborator from the Google Drive file?', () => void removePermission(button.dataset.removePermission).catch(error => { node('sharedDriveStatus').textContent = error.message; }), { title: 'Remove Drive Access', confirmText: 'Remove Access', cancelText: 'Cancel', danger: true }); });
+    node('closeSharedViewerBtn')?.addEventListener('click', () => { node('sharedViewerModal')?.classList.remove('show'); uiState.sharedViewerDocument = null; DialogManager.synchronize(); });
+    node('commitDriveMergeBtn')?.addEventListener('click', () => void commitMergeChoices().catch(error => setLiveStatusMessage(`Drive merge failed: ${error.message}`)));
+    node('cancelDriveMergeBtn')?.addEventListener('click', () => { node('driveMergeModal')?.classList.remove('show'); uiState.sharedDriveMergePending = null; DialogManager.synchronize(); });
+    document.addEventListener('click', event => { const action = event.target.closest('[data-save-menu-action="drive-share-manager"]'); if (action) { node('saveLoadMenu')?.classList.remove('show'); openManager(); } });
+    ['click','change','input','pointerdown','dragstart','drop'].forEach(type => document.addEventListener(type, readOnlyInteractionGuard, true));
+  }
+
+  function install() {
+    if (installed) return;
+    installed = true;
+    appendMarkup();
+    installEntryPoint();
+    installEvents();
+    applyDriveCapabilities(uiState.googleDriveCapabilities);
+  }
+
+  return Object.freeze({ install, openManager, applyDriveCapabilities, assertCanWriteCurrentDriveFile, captureBaseFromCurrent, tryOpenEncryptedViewerPayload, mergeRemoteDriveChanges, mergeThreeWay, viewerClassData, encryptedViewerPayload, viewerHtmlTemplate });
+})();
+
 async function registerHostedServiceWorker() {
   if (!('serviceWorker' in navigator)) return false;
   if (!/^https?:$/.test(location.protocol) || location.hostname === 'example.test') return false;
@@ -29982,6 +30381,7 @@ async function initializeApp() {
   ClassSetupWorkspaceV54.install();
   DistrictIntegrationsV57.install();
   WorkflowRecoveryV62.install();
+  SharedDriveCollaborationV64.install();
   await BrowserDataStore.initialize();
   uiState.appDatabaseReady = true;
   uiState.pageSettings = mergePageSettings(null);
