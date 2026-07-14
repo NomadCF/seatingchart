@@ -5,13 +5,13 @@
   <meta name="license" content="MIT License" />
   <meta name="spdx-license-identifier" content="MIT" />
   <meta name="copyright" content="Copyright (c) 2026 Chris L. Franklin" />
-  <meta name="app-version" content="6.1.3" />
+  <meta name="app-version" content="6.2.0" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com blob:; style-src 'self' 'unsafe-inline'; connect-src 'self' https://www.googleapis.com https://classroom.googleapis.com https://accounts.google.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com; img-src 'self' data: blob:; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'self'" />
   <meta name="application-name" content="Classroom Seating Planner" />
   <meta name="theme-color" content="#1e3a8a" />
   
-  <meta name="build-date" content="2026-07-13T19:00:00Z" />
+  <meta name="build-date" content="2026-07-13T23:30:00Z" />
   <title>Classroom Seating Planner</title>
   <style>@layer app-base, app-priority;@layer app-base{:root{--bg:#f6f7fb;--panel-2:#f0f3f8;--text:#172033;--muted:#607089;--border:#d8deea;--accent:#2f6fed;--accent-dark:#1e55bd;--seat:#e8f0ff;--seat-border:#9db7ef;--teacher:#fff3d6;--table:#e8f7ec;--door:#fce8ee;--empty:#fbfcff;--shadow:0 12px 30px rgba(29, 39, 61, 0.08);--radius:14px;font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif
 }*{box-sizing:border-box
@@ -4224,6 +4224,91 @@ body.header-collapsed .header-settings-slot #snapshotQuickBtn{width:30px;min-wid
   body.header-collapsed .header-settings-slot #settingsBtn,
   body.header-collapsed .header-settings-slot #pageLockBtn{width:25px;min-width:25px;flex-basis:25px;height:25px;min-height:25px;font-size:11px
   }
+}.rule-conflict-modal{width:min(880px, 96vw)
+}.rule-conflict-body,
+.class-merge-body,
+.operation-recovery-body,
+.password-recovery-restore-body{display:grid;gap:12px
+}.rule-conflict-head{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px;border:1px solid var(--border);border-radius:13px;background:#fff
+}.rule-conflict-head > div:first-child{min-width:0;display:grid;gap:3px
+}.rule-conflict-head strong{color:var(--text);font-size:14px;line-height:1.3
+}.rule-conflict-head span{color:var(--muted);font-size:11.5px
+}.rule-conflict-head.bad{border-color:#fecaca;background:#fff7f7
+}.rule-conflict-head.warn{border-color:#fed7aa;background:#fffbeb
+}.rule-conflict-head.good{border-color:#bbf7d0;background:#f0fdf4
+}.rule-conflict-counts{flex:0 0 auto;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:5px
+}.rule-conflict-counts span{padding:4px 7px;border:1px solid var(--border);border-radius:999px;color:var(--muted);background:#fff;font-weight:850;white-space:nowrap
+}.rule-conflict-counts span.bad{color:#991b1b;border-color:#fecaca;background:#fff1f2
+}.rule-conflict-counts span.warn{color:#92400e;border-color:#fed7aa;background:#fffbeb
+}.rule-conflict-list{display:grid;gap:8px;max-height:min(58vh, 590px);overflow:auto;padding-right:2px
+}.rule-conflict-item{display:grid;grid-template-columns:28px minmax(0, 1fr);gap:9px;align-items:start;padding:10px;border:1px solid var(--border);border-radius:12px;background:#fff
+}.rule-conflict-item.error{border-color:#fecaca;background:#fff7f7
+}.rule-conflict-item.warning{border-color:#fed7aa;background:#fffbeb
+}.rule-conflict-item.info{border-color:#bfdbfe;background:#eff6ff
+}.rule-conflict-icon{width:26px;height:26px;display:grid;place-items:center;border:1px solid currentColor;border-radius:999px;color:var(--muted);font-weight:950
+}.rule-conflict-item.error .rule-conflict-icon{color:#b42318
+}.rule-conflict-item.warning .rule-conflict-icon{color:#b45309
+}.rule-conflict-item.info .rule-conflict-icon{color:#1d4ed8
+}.rule-conflict-item > div:last-child{min-width:0;display:grid;gap:5px
+}.rule-conflict-item strong{color:var(--text);line-height:1.25
+}.rule-conflict-item p,
+.rule-conflict-item span{margin:0;color:var(--muted);font-size:12px;line-height:1.4;overflow-wrap:anywhere
+}.rule-conflict-item button{justify-self:start;margin-top:2px
+}.rule-conflict-actions{justify-content:flex-end
+}.candidate-preflight-context{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 10px;margin-bottom:9px;border:1px solid var(--border);border-radius:11px;background:#fff
+}.candidate-preflight-context > div{min-width:0
+}.candidate-preflight-context strong,
+.candidate-preflight-context span{display:block
+}.candidate-preflight-context strong{color:var(--text);font-size:12px
+}.candidate-preflight-context span{margin-top:2px;color:var(--muted);font-size:11px;line-height:1.3;overflow-wrap:anywhere
+}.candidate-preflight-context.bad{border-color:#fecaca;background:#fff7f7
+}.candidate-preflight-context.warn{border-color:#fed7aa;background:#fffbeb
+}.candidate-preflight-context.good{border-color:#bbf7d0;background:#f0fdf4
+}.class-merge-modal{width:min(1080px, 97vw)
+}.class-merge-source-row{display:grid;grid-template-columns:minmax(230px, 1fr) auto;gap:10px;align-items:end
+}.class-merge-source-row .field{margin:0
+}.class-merge-summary{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 10px;border:1px solid var(--border);border-bottom:0;border-radius:10px 10px 0 0;background:#f8fafc
+}.class-merge-summary span{color:var(--muted);font-size:12px
+}.class-merge-comparison .csv-preview-table{max-height:310px;border-radius:0 0 10px 10px
+}.class-merge-comparison th:first-child{position:sticky;left:0;z-index:1;background:#f8fafc
+}.class-merge-options{margin:0
+}.class-merge-option-grid{display:grid;grid-template-columns:repeat(3, minmax(0, 1fr));gap:7px;margin:9px 0
+}.class-merge-option-grid .checkline,
+.class-merge-source-wins{min-height:48px;align-items:flex-start;padding:8px;border:1px solid var(--border);border-radius:10px;background:#fff;line-height:1.3
+}.class-merge-option-grid input,
+.class-merge-source-wins input{margin-top:2px;flex:0 0 auto
+}.class-merge-policy-grid{align-items:end;margin:8px 0
+}.operation-recovery-modal{width:min(900px, 96vw)
+}.operation-recovery-current{display:grid;gap:10px;padding:12px;border:1px solid var(--border);border-radius:13px;background:#fff
+}.operation-recovery-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:10px
+}.operation-recovery-heading h3{margin:3px 0 0;font-size:16px
+}.operation-recovery-history{display:grid;gap:6px;max-height:min(42vh, 420px);overflow:auto
+}.operation-recovery-history-row{width:100%;min-width:0;display:grid;grid-template-columns:minmax(0, 1fr) auto;gap:9px;align-items:center;padding:8px 9px;color:var(--text);background:#fff;border:1px solid var(--border);box-shadow:none;text-align:left
+}.operation-recovery-history-row:hover{color:var(--text);background:#f8fafc;border-color:#a9bdf3;transform:none
+}.operation-recovery-history-row span{min-width:0;display:grid;gap:2px
+}.operation-recovery-history-row strong,
+.operation-recovery-history-row small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap
+}.operation-recovery-history-row small{color:var(--muted);font-size:10.5px
+}.operation-recovery-history-row b{color:#991b1b;font-size:10px;white-space:nowrap
+}.password-recovery-card{margin-top:12px
+}.password-recovery-code-panel{display:grid;gap:8px;margin-top:9px;padding:10px;border:1px solid #fed7aa;border-radius:12px;background:#fffbeb
+}.password-recovery-code-panel[hidden]{display:none
+}.password-recovery-code-panel code{display:block;padding:9px;border:1px solid var(--border);border-radius:9px;background:#fff;color:var(--text);font-size:12px;font-weight:850;line-height:1.4;overflow-wrap:anywhere;user-select:all
+}.password-recovery-restore-modal{width:min(570px, 95vw)
+}.password-recovery-restore-body .field{margin:0
+}@media (max-width: 780px){.rule-conflict-head,
+  .candidate-preflight-context,
+  .class-merge-summary,
+  .operation-recovery-heading{align-items:stretch;flex-direction:column
+  }.rule-conflict-counts{justify-content:flex-start
+  }.class-merge-source-row,
+  .class-merge-option-grid{grid-template-columns:1fr
+  }.class-merge-source-row .button-row,
+  .class-merge-source-row button,
+  .candidate-preflight-context button{width:100%
+  }.operation-recovery-history-row{grid-template-columns:1fr
+  }.operation-recovery-history-row b{white-space:normal
+  }
 }body.visibility-mode.vis-hide-wizard #guidedLearningBtn,
 body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
 }
@@ -5749,7 +5834,7 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
 
         <div class="welcome-password-card">
           <div class="welcome-card-heading">
-            <div><strong>Create your encryption password</strong><span>Use a memorable passphrase. This password cannot be recovered.</span></div>
+            <div><strong>Create your encryption password</strong><span>Use a memorable passphrase. The app cannot recover it unless you later create and separately store an optional recovery package.</span></div>
             <span class="welcome-required-badge">Required</span>
           </div>
           <div class="settings-grid two-col welcome-password-grid">
@@ -6028,12 +6113,12 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
 const APP_CONFIG = Object.freeze({
   name: 'Classroom Seating Planner',
   shortName: 'Seating Planner',
-  version: '6.1.3',
+  version: '6.2.0',
   copyrightHolder: 'Chris L. Franklin',
   copyrightYear: '2026',
   releaseDate: '2026-07-13',
   releaseDateDisplay: 'July 13, 2026',
-  buildDate: '2026-07-13T19:00:00Z',
+  buildDate: '2026-07-13T23:30:00Z',
   commit: 'local',
   environment: 'production',
   dataSchemaVersion: 12,
@@ -6228,18 +6313,18 @@ const APP_LICENSE = {
 
 const PROJECT_FEATURES = [
   { title: 'Five-stage planning workflow', text: 'Move from Class Setup to Room Design, Seat Students, Review, and Save & Share without exposing every advanced control at once.' },
-  { title: 'Roster and class management', text: 'Maintain multiple classes, import or reconcile CSV rosters, preserve notes and requirements, archive classes, and roll classes into a new term.' },
+  { title: 'Roster and class management', text: 'Maintain multiple classes, compare and merge class records, import or reconcile CSV rosters, preserve notes and requirements, archive classes, and roll classes into a new term.' },
   { title: 'Seating rules and student needs', text: 'Model together, avoid, anchored, spread, location, zone, object-distance, accessibility, and individual student requirements.' },
-  { title: 'Explainable seating options', text: 'Compare visual seating options using rule matches, required conflicts, individual needs, and student movement before applying a chart.' },
+  { title: 'Explainable seating options', text: 'Run a preflight conflict inspector, then compare visual seating options using rule matches, required conflicts, individual needs, and student movement before applying a chart.' },
   { title: 'Grid and Freeform rooms', text: 'Design structured grids or physically positioned Freeform rooms with rotation-aware collision, groups, layers, alignment, history, minimap, and room audits.' },
   { title: 'Manual and keyboard placement', text: 'Drag, swap, lock, clear, or keyboard-place students while preserving anchors, reserved seats, and intentional Freeform geometry.' },
   { title: 'Review and integrity checks', text: 'Inspect unassigned students, rule outcomes, duplicate assignments, invalid locks, overlaps, hidden objects, and other room or data problems.' },
-  { title: 'Encrypted saving and recovery', text: 'Use encrypted browser autosave, linked working files, downloaded backups, snapshots, selective restore, and guarded startup recovery.' },
+  { title: 'Encrypted saving and recovery', text: 'Use encrypted browser autosave, linked working files, downloaded backups, snapshots, selective restore, guarded startup recovery, and an optional separately stored password-recovery package.' },
   { title: 'Optional Google Drive', text: 'Save and load encrypted working files through Google Drive with conflict detection, reconnect status, and deployment-controlled OAuth configuration.' },
   { title: 'Purpose-limited sharing', text: 'Create teacher, substitute, student-facing, support-team, anonymous, and room-only outputs with a privacy summary before export.' },
   { title: 'Printing and room output', text: 'Prepare names-only, substitute, or detailed charts with selectable fields, notes, configuration details, paper sizes, scale, tiling, and crop marks.' },
   { title: 'Security and privacy controls', text: 'Protect Settings, use Lock and Eye PINs, auto-lock the page, reveal sensitive notes deliberately, and erase browser-resident data through explicit recovery workflows.' },
-  { title: 'Maintenance and diagnostics', text: 'Review build/schema information, storage health, privacy-safe activity/errors, deployment readiness, repair tools, sample data, cleanup, and Factory Reset.' },
+  { title: 'Maintenance and diagnostics', text: 'Review build/schema information, storage health, privacy-safe activity/errors, import and integration recovery, deployment readiness, repair tools, sample data, cleanup, and Factory Reset.' },
   { title: 'Accessible responsive workspace', text: 'Use keyboard navigation, focus-managed dialogs, live announcements, skip navigation, focus mode, collapsible regions, mobile workflows, and reduced-motion support.' },
   { title: 'Themes and customization', text: 'Choose complete accessible themes including Default, Gradient Sky, Shimmer, Aurora Focus, High Contrast, Windows XP, Windows 11, macOS Frosted, and Linux Terminal.' },
   { title: 'Offline and portable deployment', text: 'Run the self-contained HTML release or deploy the same application as a same-origin installable PWA with offline support and build verification.' }
@@ -6247,10 +6332,23 @@ const PROJECT_FEATURES = [
 
 const RELEASE_HISTORY = [
   {
+    version: '6.2.0',
+    date: 'July 13, 2026',
+    title: 'Conflict insight, class merging, and recovery workflows',
+    current: true,
+    changes: [
+      'Added a rule-conflict preflight inspector that explains blocking geometry, capacity, zone, accessibility, lock, and opposing-rule problems before candidate generation.',
+      'Added an atomic class comparison and selective merge workflow with student matching, reference remapping, optional encrypted snapshots, and rollback on failure.',
+      'Added an operation Recovery Center for failed imports and Google integrations, including privacy-safe support reports, retry actions, and rejected-row downloads.',
+      'Added an optional encryption-password recovery package protected by a separately stored 192-bit recovery code, including first-run unlock support and package self-verification.',
+      'Alphabetized Settings navigation and its mobile selector while keeping About at the bottom.'
+    ]
+  },
+  {
     version: '6.1.3',
     date: 'July 13, 2026',
     title: 'Verified cleanup and render optimization',
-    current: true,
+    current: false,
     changes: [
       'Consolidated immutable room-object and seating-rule lookup tables so render and analysis paths no longer recreate identical objects on every call.',
       'Removed duplicate per-card drag handlers and retained the existing delegated drag workflow, including student-to-rule and zone-to-rule drops.',
@@ -14943,6 +15041,15 @@ async function connectGoogleDriveFromUi() {
   } catch (err) {
     updateGoogleDriveStatus(`Google Drive connection failed: ${err.message}`);
     setLiveStatusMessage(`Google Drive connection failed: ${err.message}`);
+    WorkflowRecoveryV62.reportFailure({
+      operation: 'Connect Google Drive',
+      source: 'Google Drive OAuth and application folder',
+      error: err,
+      dataChanged: false,
+      snapshotCreated: false,
+      remedy: 'Confirm the deployment client ID, pop-up permissions, network access, and Google account authorization, then retry.',
+      retry: () => connectGoogleDriveFromUi()
+    });
     return false;
   }
 }
@@ -15013,7 +15120,18 @@ async function writeGoogleDriveSaveFile(options = {}) {
     updateGoogleDriveStatus(`Google Drive save failed: ${err.message}`);
     await writeLocalBrowserSave({ reason: 'google-drive-fallback', announce: false, preserveFallbackWarning: true, preparedSave });
     setSaveFallbackWarning(fallbackMessage);
-    if (announce || reason !== 'auto') setLiveStatusMessage(fallbackMessage);
+    if (announce || reason !== 'auto') {
+      setLiveStatusMessage(fallbackMessage);
+      WorkflowRecoveryV62.reportFailure({
+        operation: 'Save to Google Drive',
+        source: googleDriveCurrentSaveFileName(),
+        error: err,
+        dataChanged: false,
+        snapshotCreated: false,
+        remedy: 'The browser fallback remains available. Reconnect Google Drive, review any remote conflict, and retry the save.',
+        retry: () => writeGoogleDriveSaveFile({ ...options, announce: true })
+      });
+    }
     updateSaveHealthPanel();
     return false;
   } finally {
@@ -15226,6 +15344,17 @@ async function openSelectedGoogleDriveFile() {
       const status = el('googleDriveFileStatus');
       if (status) status.textContent = `Could not load the selected file: ${err.message}`;
     }
+    if (err.message !== 'Encrypted load canceled.') {
+      WorkflowRecoveryV62.reportFailure({
+        operation: 'Load Google Drive Save',
+        source: file.name || file.id,
+        error: err,
+        dataChanged: false,
+        snapshotCreated: false,
+        remedy: 'Reconnect Google Drive, confirm access to the file, and enter the matching encryption password. A canceled password prompt is not treated as data loss.',
+        retry: () => loadGoogleDriveFileById(file, context)
+      });
+    }
     return false;
   } finally {
     if (button && el('googleDriveFileModal')?.classList.contains('show')) button.disabled = false;
@@ -15240,6 +15369,17 @@ async function loadFromGoogleDriveFile(options = {}) {
     catch (err) {
       updateGoogleDriveStatus(`Google Drive load failed: ${err.message}`);
       setLiveStatusMessage(`Google Drive load failed: ${err.message}`);
+      if (err.message !== 'Encrypted load canceled.') {
+        WorkflowRecoveryV62.reportFailure({
+          operation: 'Load Linked Google Drive Save',
+          source: file.name || file.id,
+          error: err,
+          dataChanged: false,
+          snapshotCreated: false,
+          remedy: 'Reconnect Google Drive, verify the linked file still exists, and retry with the matching encryption password.',
+          retry: () => loadGoogleDriveFileById(file, options)
+        });
+      }
       return false;
     }
   }
@@ -16149,6 +16289,10 @@ const HELP_GUIDE_SECTIONS = [
         "text": "Copies the current class, including layout and setup details. This is helpful when multiple sections share a room."
       },
       {
+        "title": "Compare & Merge Class",
+        "text": "Compares the active class with another class or a compatible save file, then merges selected categories. Student references are remapped, the destination class identity is preserved, and an optional snapshot protects the original state."
+      },
+      {
         "title": "Trash",
         "text": "Deletes the current class. At least one class must remain."
       }
@@ -16207,6 +16351,14 @@ const HELP_GUIDE_SECTIONS = [
       {
         "title": "Offline Recovery Kit",
         "text": "Creates an encrypted recovery backup and a separate recovery key. Store the two files in different secure locations; anyone with both can open the backup."
+      },
+      {
+        "title": "Password Recovery Package",
+        "text": "Optional security tool that wraps the active encryption password with a separate one-time recovery code. Keep the package and code in different secure locations. Either item alone is useless."
+      },
+      {
+        "title": "Operation Recovery Center",
+        "text": "Records privacy-safe details for failed imports and Google operations, explains whether data changed, offers retries when available, and can download rejected CSV rows or a sanitized support report."
       },
       {
         "title": "PDF / SVG in Print Options",
@@ -16284,7 +16436,7 @@ const HELP_GUIDE_SECTIONS = [
       "Use Substitute notes for information a substitute should see; keep Private notes for staff-only context."
     ],
     "warnings": [
-      "There is no recovery for encrypted exports without the correct key."
+      "Encrypted exports still require the correct password unless you previously created and separately stored the optional Password Recovery Package and its recovery code. Losing all three means the data cannot be recovered."
     ],
     "examples": [
       "For a substitute copy, print first and last names with Substitute notes and Public notes only."
@@ -16683,8 +16835,12 @@ const HELP_GUIDE_SECTIONS = [
         "text": "In the Seat Students or Room Design stage, select a bubble and assign one or more visible seats as reserved anchors. The roster-only screen no longer tells users to drag onto a chart they cannot see."
       },
       {
+        "title": "Rule Conflict Inspector",
+        "text": "Checks room capacity, required front or accessible seating, excluded zones, minimum-distance geometry, locks, anchors, and contradictory rules before generation. Blocking findings must be fixed before candidate generation continues."
+      },
+      {
         "title": "Generate Chart",
-        "text": "Seats students using current rules while preserving locks."
+        "text": "Seats students using current rules while preserving locks. Candidate cards include the pre-generation feasibility context so differences are explained instead of reduced to an unexplained score."
       },
       {
         "title": "Randomize + Seat Everyone",
@@ -16701,6 +16857,7 @@ const HELP_GUIDE_SECTIONS = [
     ],
     "tips": [
       "Lock students who must stay in a specific seat before generating.",
+      "Run the Rule Conflict Inspector before generation when requirements overlap or the room has limited front, accessible, or zone-qualified seats.",
       "Clear Anchors if old bubble reservations are forcing unexpected placements."
     ],
     "examples": [
@@ -17920,7 +18077,7 @@ function guessCsvColumn(headers, names) {
 
 function openCsvMappingWizard(text) {
   const matrix = parseCsvMatrix(text);
-  if (matrix.length < 2) { setLiveStatusMessage('CSV import needs a header row and at least one student row.'); return; }
+  if (matrix.length < 2) throw new Error('CSV import needs a header row and at least one student row.');
   const headers = matrix[0];
   uiState.csvImportDraft = { headers, rows: matrix.slice(1) };
   renderCsvMappingWizard();
@@ -17946,13 +18103,17 @@ function renderCsvMappingWizardCore() {
   renderCsvPreview();
 }
 
-function mappedStudentFromCsvRow(row) {
+function mappedCsvValues(row) {
   const get = key => {
     const select = el(`csvMap_${key}`);
     const index = select && select.value !== '' ? Number(select.value) : -1;
-    return index >= 0 ? row[index] || '' : '';
+    return index >= 0 ? String(row[index] || '').trim() : '';
   };
-  return normalizeStudent({ firstName:get('firstName'), lastName:get('lastName'), nickName:get('nickName'), grade:get('grade'), id:get('id'), notesPrivate:get('notesPrivate'), notesSubstitute:get('notesSubstitute'), notesPublic:get('notesPublic') });
+  return { firstName:get('firstName'), lastName:get('lastName'), nickName:get('nickName'), grade:get('grade'), id:get('id'), notesPrivate:get('notesPrivate'), notesSubstitute:get('notesSubstitute'), notesPublic:get('notesPublic') };
+}
+
+function mappedStudentFromCsvRow(row) {
+  return normalizeStudent(mappedCsvValues(row));
 }
 
 function renderCsvPreview() {
@@ -18578,9 +18739,21 @@ function wireEvents() {
   el('csvFile').addEventListener('change', async event => {
     const file = event.target.files[0];
     if (!file) return;
-    const text = await file.text();
-    event.target.value = '';
-    openCsvMappingWizard(text);
+    try {
+      openCsvMappingWizard(await file.text());
+    } catch (err) {
+      WorkflowRecoveryV62.reportFailure({
+        operation: 'Open CSV Roster Import',
+        source: file.name,
+        error: err,
+        dataChanged: false,
+        snapshotCreated: false,
+        remedy: 'Confirm the file is a valid comma-separated roster with one header row and at least one student row.',
+        retry: async () => openCsvMappingWizard(await file.text())
+      });
+    } finally {
+      event.target.value = '';
+    }
   });
 
   el('addBubbleBtn').addEventListener('click', () => {
@@ -19264,11 +19437,18 @@ function wireEvents() {
   el('importJson').addEventListener('change', async event => {
     const file = event.target.files[0];
     if (!file) return;
-    const text = await file.text();
     try {
-      await importStateFromText(text, 'uploaded file');
+      await importStateFromText(await file.text(), `uploaded file ${file.name}`);
     } catch (err) {
-      setLiveStatusMessage(`Could not upload classes file: ${err.message}`);
+      WorkflowRecoveryV62.reportFailure({
+        operation: 'Open Classes Save File',
+        source: file.name,
+        error: err,
+        dataChanged: false,
+        snapshotCreated: false,
+        remedy: 'Use a current schema-compatible Classroom Seating Planner save and enter the matching encryption password when prompted.',
+        retry: async () => importStateFromText(await file.text(), `uploaded file ${file.name}`)
+      });
     } finally {
       event.target.value = '';
     }
@@ -20373,23 +20553,59 @@ const WorkflowExpansion = (() => {
     if (!draft) return;
     const mode = csvDuplicateModeForCurrentImport();
     const makeSnapshot = !!el('csvImportSnapshotBefore')?.checked;
-    if (makeSnapshot) await createAppSnapshotWithName(`Before CSV import - ${new Date().toLocaleString()}`, { silent: true, reason: 'before-import' });
-    pushUndoSnapshot('Before CSV import');
-    let added = 0, updated = 0, skipped = 0;
-    draft.rows.forEach(row => {
-      const student = mappedStudentFromCsvRow(row);
-      if (!(student.firstName || student.lastName || student.id)) return;
-      const incomingName = studentFullName(student).trim().toLowerCase();
-      const match = state.students.find(existing => String(existing.id || '') === String(student.id || '') || (incomingName && studentFullName(existing).trim().toLowerCase() === incomingName));
-      if (match && mode === 'skip') { skipped++; return; }
-      if (match && mode === 'update') { updateStudentRecord(match.id, { ...match, ...student, id: match.id }); updated++; return; }
-      if (match && mode === 'create') student.id = uid('student');
-      addStudent(student); added++;
-    });
-    uiState.csvImportDraft = null;
-    el('csvMapModal')?.classList.remove('show');
-    renderAll();
-    setLiveStatusMessage(`CSV import complete: ${added} added, ${updated} updated, ${skipped} skipped.`);
+    const previousStudents = deepClone(state.students);
+    let added = 0;
+    let updated = 0;
+    let skipped = 0;
+    const rejectedRows = [];
+    try {
+      if (makeSnapshot) await createAppSnapshotWithName(`Before CSV import - ${new Date().toLocaleString()}`, { silent: true, reason: 'before-import' });
+      pushUndoSnapshot('Before CSV import');
+      draft.rows.forEach((row, index) => {
+        const values = mappedCsvValues(row);
+        if (!(values.firstName || values.lastName || values.id)) {
+          const source = Object.fromEntries(draft.headers.slice(0, 40).map((header, column) => [String(header || `Column ${column + 1}`).slice(0, 80), String(row[column] || '').slice(0, 500)]));
+          rejectedRows.push({ rowNumber: index + 2, reason: 'No mapped first name, last name, or student ID.', ...source });
+          return;
+        }
+        const student = normalizeStudent(values);
+        const incomingName = studentFullName(student).trim().toLowerCase();
+        const match = state.students.find(existing => (values.id && String(existing.id || '') === String(values.id)) || (incomingName && studentFullName(existing).trim().toLowerCase() === incomingName));
+        if (match && mode === 'skip') { skipped++; return; }
+        if (match && mode === 'update') { updateStudentRecord(match.id, { ...match, ...student, id: match.id }); updated++; return; }
+        if (match && mode === 'create') student.id = uid('student');
+        addStudent(student);
+        added++;
+      });
+      uiState.csvImportDraft = null;
+      el('csvMapModal')?.classList.remove('show');
+      renderAll();
+      const summary = `CSV import complete: ${added} added, ${updated} updated, ${skipped} skipped${rejectedRows.length ? `, ${rejectedRows.length} rejected` : ''}.`;
+      setLiveStatusMessage(summary);
+      if (rejectedRows.length) {
+        WorkflowRecoveryV62.reportFailure({
+          operation: 'CSV Roster Import Completed With Rejected Rows',
+          source: 'mapped CSV roster',
+          error: new Error(`${rejectedRows.length} row${rejectedRows.length === 1 ? '' : 's'} did not contain a mapped name or student ID and were not imported.`),
+          dataChanged: added + updated > 0,
+          snapshotCreated: makeSnapshot,
+          rejectedRows,
+          remedy: 'Download the rejected-row report, correct the source data or column mapping, and import only the corrected rows.'
+        });
+      }
+    } catch (err) {
+      state.students = previousStudents.map(normalizeStudent);
+      renderAll();
+      WorkflowRecoveryV62.reportFailure({
+        operation: 'Apply CSV Roster Import',
+        source: 'mapped CSV roster',
+        error: err,
+        dataChanged: false,
+        snapshotCreated: makeSnapshot,
+        rejectedRows,
+        remedy: 'The roster was restored to its pre-import state. Review the mapping, source rows, and encryption snapshot settings before retrying.'
+      });
+    }
   }
 
   function renderChangeLog() {
@@ -22503,15 +22719,29 @@ const ModernizationSuite = (() => {
     const matrix = parseCsvMatrix(text);
     if (!matrix.length || matrix.length < 2) throw new Error('The CSV does not contain a header row and student records.');
     const headers = matrix[0].map(value => String(value || '').trim());
+    const toIndex = value => value === '' ? -1 : Number(value);
     const index = {
-      firstName: guessCsvColumn(headers,['first name','firstname','first']),
-      lastName: guessCsvColumn(headers,['last name','lastname','last']),
-      nickName: guessCsvColumn(headers,['nickname','nick name','preferred name']),
-      grade: guessCsvColumn(headers,['grade','level']),
-      id: guessCsvColumn(headers,['student id','studentid','id'])
+      firstName: toIndex(guessCsvColumn(headers,['first name','firstname','first'])),
+      lastName: toIndex(guessCsvColumn(headers,['last name','lastname','last'])),
+      nickName: toIndex(guessCsvColumn(headers,['nickname','nick name','preferred name'])),
+      grade: toIndex(guessCsvColumn(headers,['grade','level'])),
+      id: toIndex(guessCsvColumn(headers,['student id','studentid','id']))
     };
+    if (index.firstName < 0 && index.lastName < 0 && index.id < 0) throw new Error('No recognized first-name or last-name column, or student-ID column, was found.');
     const value = (row,key) => index[key] >= 0 ? String(row[index[key]] || '').trim() : '';
-    const incoming = matrix.slice(1).filter(row => row.some(cell => String(cell || '').trim())).map(row => normalizeStudent({ firstName:value(row,'firstName'), lastName:value(row,'lastName'), nickName:value(row,'nickName'), grade:value(row,'grade'), id:value(row,'id') || undefined }));
+    const incoming = [];
+    const rejectedRows = [];
+    matrix.slice(1).forEach((row, rowIndex) => {
+      if (!row.some(cell => String(cell || '').trim())) return;
+      const values = { firstName:value(row,'firstName'), lastName:value(row,'lastName'), nickName:value(row,'nickName'), grade:value(row,'grade'), id:value(row,'id') };
+      if (!(values.firstName || values.lastName || values.id)) {
+        const source = Object.fromEntries(headers.slice(0, 40).map((header, column) => [String(header || `Column ${column + 1}`).slice(0, 80), String(row[column] || '').slice(0, 500)]));
+        rejectedRows.push({ rowNumber: rowIndex + 2, reason: 'No recognized name or student ID.', ...source });
+        return;
+      }
+      incoming.push(normalizeStudent({ ...values, id: values.id || undefined }));
+    });
+    if (!incoming.length) throw new Error('No usable student rows were found after validation.');
     const existingById = new Map(state.students.map(student => [String(student.id),student]));
     const nameKey = student => `${String(student.firstName||'').trim().toLowerCase()}|${String(student.lastName||'').trim().toLowerCase()}`;
     const existingByName = new Map(state.students.map(student => [nameKey(student),student]));
@@ -22524,15 +22754,16 @@ const ModernizationSuite = (() => {
       if (existing) matched.push({ existing, incoming:item, changed: ['firstName','lastName','nickName','grade'].some(field => String(existing[field]||'') !== String(item[field]||'')) });
       else added.push(item);
     });
+    duplicates.forEach((student, indexValue) => rejectedRows.push({ rowNumber: '', reason: 'Duplicate incoming student record.', firstName: student.firstName, lastName: student.lastName, studentId: student.id, duplicateNumber: indexValue + 1 }));
     const matchedIds = new Set(matched.map(item => String(item.existing.id)));
     const missing = state.students.filter(student => !matchedIds.has(String(student.id)));
-    return { headers, incoming, matched, added, missing, duplicates };
+    return { headers, incoming, matched, added, missing, duplicates, rejectedRows };
   }
 
   function renderReconcileDraft() {
     if (!reconcileDraft) return;
     const cards = [
-      ['Matched',reconcileDraft.matched.length],['New',reconcileDraft.added.length],['Missing',reconcileDraft.missing.length],['Duplicates',reconcileDraft.duplicates.length],['Changed names/details',reconcileDraft.matched.filter(item=>item.changed).length]
+      ['Matched',reconcileDraft.matched.length],['New',reconcileDraft.added.length],['Missing',reconcileDraft.missing.length],['Duplicates',reconcileDraft.duplicates.length],['Rejected',reconcileDraft.rejectedRows?.length || 0],['Changed names/details',reconcileDraft.matched.filter(item=>item.changed).length]
     ];
     if (el('reconcileSummary')) el('reconcileSummary').innerHTML = cards.map(([label,count]) => `<div class="workflow-card"><strong>${count}</strong><span>${escapeHtml(label)}</span></div>`).join('');
     const rows = [
@@ -22546,8 +22777,32 @@ const ModernizationSuite = (() => {
 
   async function openRosterReconcileFile(file) {
     if (!file) return;
-    try { reconcileDraft = parseReconcileCsv(await file.text()); renderReconcileDraft(); el('rosterReconcileModal')?.classList.add('show'); }
-    catch (err) { setLiveStatusMessage(`Roster reconciliation failed: ${err.message}`); }
+    try {
+      reconcileDraft = parseReconcileCsv(await file.text());
+      renderReconcileDraft();
+      el('rosterReconcileModal')?.classList.add('show');
+      if (reconcileDraft.rejectedRows?.length) {
+        WorkflowRecoveryV62.reportFailure({
+          operation: 'Roster Reconciliation Loaded With Rejected Rows',
+          source: file.name,
+          error: new Error(`${reconcileDraft.rejectedRows.length} row${reconcileDraft.rejectedRows.length === 1 ? '' : 's'} need review before the roster is applied.`),
+          dataChanged: false,
+          snapshotCreated: false,
+          rejectedRows: reconcileDraft.rejectedRows,
+          remedy: 'Download the rejected-row report. You may continue reconciling the valid rows, then correct and re-import only the rejected records.'
+        });
+      }
+    } catch (err) {
+      WorkflowRecoveryV62.reportFailure({
+        operation: 'Open Roster Reconciliation File',
+        source: file.name,
+        error: err,
+        dataChanged: false,
+        snapshotCreated: false,
+        remedy: 'Confirm the file is a valid CSV with a recognized name or student-ID column.',
+        retry: async () => { reconcileDraft = parseReconcileCsv(await file.text()); renderReconcileDraft(); el('rosterReconcileModal')?.classList.add('show'); }
+      });
+    }
   }
 
   function cleanupStudentReferences(studentId) {
@@ -23184,6 +23439,7 @@ The schema-compatible payload parsed successfully${encrypted ? ' and decrypted w
     studentRequirementPills,
     requirementScore,
     startCandidateGeneration,
+    buildGeneratorSeats,
     generatorWorkerSource,
     openPlacementWhy,
     enhanceRenderedWorkspace,
@@ -24988,7 +25244,7 @@ const StartupRecoveryV45 = (() => {
     if (n.headingStrong) n.headingStrong.textContent = recovery ? 'Enter the existing encryption password' : 'Create your encryption password';
     if (n.headingSpan) n.headingSpan.textContent = recovery
       ? 'A wrong password does not erase or replace the saved data. You can retry as many times as needed.'
-      : 'Use a memorable passphrase. This password cannot be recovered.';
+      : 'Use a memorable passphrase. The app cannot recover it unless you later create and separately store an optional recovery package.';
     if (n.required) n.required.textContent = recovery ? 'Existing password' : 'Required';
     if (n.input) {
       n.input.autocomplete = recovery ? 'current-password' : 'new-password';
@@ -27235,43 +27491,67 @@ const DistrictIntegrationsV57 = (() => {
       if (!options.silent) setLiveStatusMessage('Google Picker is not enabled for this deployment. Use the planner Drive save list instead.');
       return false;
     }
-    const token = await ensureGoogleDriveToken(true);
-    await loadGooglePickerScript();
-    await new Promise((resolve, reject) => window.gapi.load('picker', {
-      callback: resolve,
-      onerror: () => reject(new Error('Google Picker library did not initialize.'))
-    }));
-    return new Promise(resolve => {
-      const view = new google.picker.DocsView(google.picker.ViewId.DOCS)
-        .setMimeTypes('application/json')
-        .setIncludeFolders(false)
-        .setSelectFolderEnabled(false);
-      const builder = new google.picker.PickerBuilder()
-        .setOAuthToken(token)
-        .setDeveloperKey(cfg.pickerApiKey)
-        .setAppId(cfg.pickerAppId)
-        .setTitle('Choose a Classroom Seating Planner save')
-        .addView(view)
-        .setCallback(async data => {
-          if (data.action === google.picker.Action.PICKED) {
-            const doc = data.docs?.[0];
-            if (!doc?.id) { resolve(false); return; }
-            try {
-              await loadGoogleDriveFileById({ id: doc.id, name: doc.name || 'Selected Drive file' }, options);
-              resolve(true);
-            } catch (err) {
-              setLiveStatusMessage(`Picker load failed: ${err.message}`);
+    try {
+      const token = await ensureGoogleDriveToken(true);
+      await loadGooglePickerScript();
+      await new Promise((resolve, reject) => window.gapi.load('picker', {
+        callback: resolve,
+        onerror: () => reject(new Error('Google Picker library did not initialize.'))
+      }));
+      return await new Promise(resolve => {
+        const view = new google.picker.DocsView(google.picker.ViewId.DOCS)
+          .setMimeTypes('application/json')
+          .setIncludeFolders(false)
+          .setSelectFolderEnabled(false);
+        const builder = new google.picker.PickerBuilder()
+          .setOAuthToken(token)
+          .setDeveloperKey(cfg.pickerApiKey)
+          .setAppId(cfg.pickerAppId)
+          .setTitle('Choose a Classroom Seating Planner save')
+          .addView(view)
+          .setCallback(async data => {
+            if (data.action === google.picker.Action.PICKED) {
+              const doc = data.docs?.[0];
+              if (!doc?.id) { resolve(false); return; }
+              try {
+                await loadGoogleDriveFileById({ id: doc.id, name: doc.name || 'Selected Drive file' }, options);
+                resolve(true);
+              } catch (err) {
+                WorkflowRecoveryV62.reportFailure({
+                  operation: 'Load Google Drive File From Picker',
+                  source: doc.name || 'Selected Drive file',
+                  error: err,
+                  dataChanged: false,
+                  snapshotCreated: false,
+                  remedy: 'Reconnect Google Drive, verify access to the selected planner save, and retry.',
+                  retry: () => loadGoogleDriveFileById({ id: doc.id, name: doc.name || 'Selected Drive file' }, options)
+                });
+                resolve(false);
+              }
+            } else if (data.action === google.picker.Action.CANCEL) {
               resolve(false);
             }
-          } else if (data.action === google.picker.Action.CANCEL) {
-            resolve(false);
-          }
+          });
+        if (location.protocol === 'https:' && typeof builder.setOrigin === 'function') builder.setOrigin(location.origin);
+        if (google.picker.Feature?.SUPPORT_DRIVES && typeof builder.enableFeature === 'function') builder.enableFeature(google.picker.Feature.SUPPORT_DRIVES);
+        builder.build().setVisible(true);
+      });
+    } catch (err) {
+      if (!options.silent) {
+        WorkflowRecoveryV62.reportFailure({
+          operation: 'Open Google Drive Picker',
+          source: 'Google Picker',
+          error: err,
+          dataChanged: false,
+          snapshotCreated: false,
+          remedy: 'Confirm the deployment has a valid Picker API key and App ID, allow the Google API script in the content security policy, reconnect, and retry.',
+          retry: () => openGooglePicker(options)
         });
-      if (location.protocol === 'https:' && typeof builder.setOrigin === 'function') builder.setOrigin(location.origin);
-      if (google.picker.Feature?.SUPPORT_DRIVES && typeof builder.enableFeature === 'function') builder.enableFeature(google.picker.Feature.SUPPORT_DRIVES);
-      builder.build().setVisible(true);
-    });
+      }
+      return false;
+    }
   }
+
 
 
   async function fetchDriveFileMetadata(fileId) {
@@ -27281,26 +27561,150 @@ const DistrictIntegrationsV57 = (() => {
 
   async function openDriveManager() { injectCloudModals(); node('driveManagerModal')?.classList.add('show'); await refreshDriveManager(); }
   function closeDriveManager(){node('driveManagerModal')?.classList.remove('show');}
-  async function refreshDriveManager(){
-    const status=node('driveManagerStatus'), list=node('driveManagerList'); if(status)status.textContent='Loading Drive saves…'; if(list)list.innerHTML='';
-    try{const files=await listGoogleDriveSaveFiles(); uiState.googleDriveFiles=files; if(status)status.textContent=`${files.length} planner save${files.length===1?'':'s'} available.`; if(list)list.innerHTML=files.length?files.map(file=>`<article class="drive-manager-row" data-drive-file-id="${escapeHtml(file.id)}"><div><strong>${escapeHtml(file.name||'Unnamed save')}</strong><span>Modified ${escapeHtml(file.modifiedTime?new Date(file.modifiedTime).toLocaleString():'unknown')} · version ${escapeHtml(file.version||'unknown')}</span></div><div class="drive-manager-actions"><button class="tiny secondary" data-drive-action="active" type="button">Use</button><button class="tiny secondary" data-drive-action="revisions" type="button">Revisions</button><button class="tiny secondary" data-drive-action="rename" type="button">Rename</button><button class="tiny secondary" data-drive-action="copy" type="button">Duplicate</button><button class="tiny secondary" data-drive-action="open" type="button">Drive</button><button class="tiny danger" data-drive-action="trash" type="button">Trash</button></div></article>`).join(''):'<div class="restore-empty">No planner saves are currently visible to this app.</div>';}
-    catch(err){if(status)status.textContent=`Drive manager failed: ${err.message}`;}
+  async function refreshDriveManager() {
+    const status = node('driveManagerStatus');
+    const list = node('driveManagerList');
+    if (status) status.textContent = 'Loading Drive saves…';
+    if (list) list.innerHTML = '';
+    try {
+      const files = await listGoogleDriveSaveFiles();
+      uiState.googleDriveFiles = files;
+      if (status) status.textContent = `${files.length} planner save${files.length === 1 ? '' : 's'} available.`;
+      if (list) list.innerHTML = files.length ? files.map(file => `<article class="drive-manager-row" data-drive-file-id="${escapeHtml(file.id)}"><div><strong>${escapeHtml(file.name||'Unnamed save')}</strong><span>Modified ${escapeHtml(file.modifiedTime?new Date(file.modifiedTime).toLocaleString():'unknown')} · version ${escapeHtml(file.version||'unknown')}</span></div><div class="drive-manager-actions"><button class="tiny secondary" data-drive-action="active" type="button">Use</button><button class="tiny secondary" data-drive-action="revisions" type="button">Revisions</button><button class="tiny secondary" data-drive-action="rename" type="button">Rename</button><button class="tiny secondary" data-drive-action="copy" type="button">Duplicate</button><button class="tiny secondary" data-drive-action="open" type="button">Drive</button><button class="tiny danger" data-drive-action="trash" type="button">Trash</button></div></article>`).join('') : '<div class="restore-empty">No planner saves are currently visible to this app.</div>';
+      return files;
+    } catch (err) {
+      if (status) status.textContent = `Drive manager failed: ${err.message}`;
+      WorkflowRecoveryV62.reportFailure({
+        operation: 'Refresh Google Drive Save Manager',
+        source: 'Google Drive',
+        error: err,
+        dataChanged: false,
+        snapshotCreated: false,
+        remedy: 'Reconnect Google Drive, confirm network access and OAuth deployment settings, then refresh the save list.',
+        retry: refreshDriveManager
+      });
+      return [];
+    }
   }
 
-  async function handleDriveManagerAction(button){
-    const row=button.closest('[data-drive-file-id]'), id=row?.dataset.driveFileId, action=button.dataset.driveAction; if(!id)return;
-    const file=(uiState.googleDriveFiles||[]).find(item=>item.id===id)||await fetchDriveFileMetadata(id);
-    if(action==='active'){const meta=await fetchDriveFileMetadata(id);updateGoogleDriveSettings({preferredStorage:'googleDrive',googleDriveFileId:id,googleDriveFileName:meta.name||'',googleDriveLastSavedAt:meta.modifiedTime||'',googleDriveFileVersion:String(meta.version||''),googleDriveHeadRevisionId:String(meta.headRevisionId||''),googleDriveRemoteMd5:String(meta.md5Checksum||'')});setLiveStatusMessage(`${meta.name||'Drive save'} is now the active Drive save.`);return;}
-    if(action==='open'){if(file.webViewLink)window.open(file.webViewLink,'_blank','noopener');return;}
-    if(action==='revisions'){await openRevisionBrowser(file);return;}
-    if(action==='rename'){const name=window.prompt('New Google Drive filename',file.name||'seating-chart-save.json');if(!name)return;await googleDriveFetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(id)}?fields=id,name,modifiedTime,version,headRevisionId,md5Checksum`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:String(name).trim().slice(0,180)})});await refreshDriveManager();return;}
-    if(action==='copy'){await googleDriveFetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(id)}/copy?fields=id,name,modifiedTime,version,headRevisionId,md5Checksum`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:`Copy of ${file.name||'planner save'}`})});await refreshDriveManager();return;}
-    if(action==='trash'){showInAppConfirm(`Move ${file.name||'this Drive save'} to Google Drive Trash?`,()=>void(async()=>{await googleDriveFetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(id)}?fields=id,trashed`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({trashed:true})});if(pageSettings().googleDriveFileId===id)updateGoogleDriveSettings({googleDriveFileId:'',googleDriveFileName:'',googleDriveLastSavedAt:'',googleDriveFileVersion:'',googleDriveHeadRevisionId:'',googleDriveRemoteMd5:''});await refreshDriveManager();})(),{title:'Trash Drive Save?',confirmText:'Move to Trash',cancelText:'Cancel'});}
+
+  async function handleDriveManagerAction(button) {
+    const row = button.closest('[data-drive-file-id]');
+    const id = row?.dataset.driveFileId;
+    const action = button.dataset.driveAction;
+    if (!id) return;
+    let file = null;
+    try {
+      file = (uiState.googleDriveFiles || []).find(item => item.id === id) || await fetchDriveFileMetadata(id);
+      if (action === 'active') {
+        const meta = await fetchDriveFileMetadata(id);
+        updateGoogleDriveSettings({ preferredStorage:'googleDrive', googleDriveFileId:id, googleDriveFileName:meta.name||'', googleDriveLastSavedAt:meta.modifiedTime||'', googleDriveFileVersion:String(meta.version||''), googleDriveHeadRevisionId:String(meta.headRevisionId||''), googleDriveRemoteMd5:String(meta.md5Checksum||'') });
+        setLiveStatusMessage(`${meta.name || 'Drive save'} is now the active Drive save.`);
+        return;
+      }
+      if (action === 'open') {
+        if (file.webViewLink) window.open(file.webViewLink, '_blank', 'noopener');
+        return;
+      }
+      if (action === 'revisions') {
+        await openRevisionBrowser(file);
+        return;
+      }
+      if (action === 'rename') {
+        const name = window.prompt('New Google Drive filename', file.name || 'seating-chart-save.json');
+        if (!name) return;
+        await googleDriveFetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(id)}?fields=id,name,modifiedTime,version,headRevisionId,md5Checksum`, { method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify({name:String(name).trim().slice(0,180)}) });
+        await refreshDriveManager();
+        return;
+      }
+      if (action === 'copy') {
+        await googleDriveFetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(id)}/copy?fields=id,name,modifiedTime,version,headRevisionId,md5Checksum`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({name:`Copy of ${file.name || 'planner save'}`}) });
+        await refreshDriveManager();
+        return;
+      }
+      if (action === 'trash') {
+        showInAppConfirm(`Move ${file.name || 'this Drive save'} to Google Drive Trash?`, () => void (async () => {
+          try {
+            await googleDriveFetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(id)}?fields=id,trashed`, { method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify({trashed:true}) });
+            if (pageSettings().googleDriveFileId === id) updateGoogleDriveSettings({googleDriveFileId:'',googleDriveFileName:'',googleDriveLastSavedAt:'',googleDriveFileVersion:'',googleDriveHeadRevisionId:'',googleDriveRemoteMd5:''});
+            await refreshDriveManager();
+          } catch (err) {
+            WorkflowRecoveryV62.reportFailure({ operation:'Move Google Drive Save to Trash', source:file.name || id, error:err, dataChanged:false, snapshotCreated:false, remedy:'Confirm that the connected Google account can edit this file, then retry.', retry:() => handleDriveManagerAction(button) });
+          }
+        })(), {title:'Trash Drive Save?',confirmText:'Move to Trash',cancelText:'Cancel'});
+      }
+    } catch (err) {
+      WorkflowRecoveryV62.reportFailure({
+        operation: `Google Drive ${action || 'file'} action`,
+        source: file?.name || id,
+        error: err,
+        dataChanged: false,
+        snapshotCreated: false,
+        remedy: 'Reconnect Google Drive, confirm permission to the selected file, and retry the action.',
+        retry: () => handleDriveManagerAction(button)
+      });
+    }
   }
 
-  async function openRevisionBrowser(file){revisionContext=file;node('driveRevisionModal')?.classList.add('show');const status=node('driveRevisionStatus'),list=node('driveRevisionList');if(status)status.textContent=`Loading revisions for ${file.name||'Drive save'}…`;if(list)list.innerHTML='';try{const response=await googleDriveFetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(file.id)}/revisions?pageSize=100&fields=nextPageToken,revisions(id,modifiedTime,size,originalFilename,md5Checksum,keepForever,published)`,{method:'GET'});const data=await response.json();const revisions=data.revisions||[];if(status)status.textContent=`${revisions.length} revision${revisions.length===1?'':'s'} available. Google may return only the accessible portion of very large histories.`;if(list)list.innerHTML=revisions.length?revisions.slice().reverse().map(rev=>`<article class="drive-revision-row" data-revision-id="${escapeHtml(rev.id)}"><div><strong>${escapeHtml(rev.originalFilename||file.name||'Revision')}</strong><span>${escapeHtml(rev.modifiedTime?new Date(rev.modifiedTime).toLocaleString():'Unknown date')} · ${escapeHtml(googleDriveFileSizeLabel(rev.size))}${rev.keepForever?' · kept forever':''}</span></div><div class="button-row"><button class="tiny secondary" data-revision-action="restore" type="button">Open Restore</button><button class="tiny secondary" data-revision-action="download" type="button">Download</button></div></article>`).join(''):'<div class="restore-empty">No downloadable revisions were returned.</div>'; }catch(err){if(status)status.textContent=`Could not load revisions: ${err.message}`;}}
-  async function fetchRevisionText(revisionId){if(!revisionContext?.id)throw new Error('No Drive file is selected.');const response=await googleDriveFetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(revisionContext.id)}/revisions/${encodeURIComponent(revisionId)}?alt=media`,{method:'GET'});return response.text();}
-  async function handleRevisionAction(button){const revisionId=button.closest('[data-revision-id]')?.dataset.revisionId;if(!revisionId)return;const text=await fetchRevisionText(revisionId);if(button.dataset.revisionAction==='download'){downloadText(backupFilename('drive-revision','json'),text,'application/json');return;}await importStateFromText(text,`Google Drive revision ${revisionId}`);}
+
+  async function openRevisionBrowser(file) {
+    revisionContext = file;
+    node('driveRevisionModal')?.classList.add('show');
+    const status = node('driveRevisionStatus');
+    const list = node('driveRevisionList');
+    if (status) status.textContent = `Loading revisions for ${file.name || 'Drive save'}…`;
+    if (list) list.innerHTML = '';
+    try {
+      const response = await googleDriveFetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(file.id)}/revisions?pageSize=100&fields=nextPageToken,revisions(id,modifiedTime,size,originalFilename,md5Checksum,keepForever,published)`, {method:'GET'});
+      const data = await response.json();
+      const revisions = data.revisions || [];
+      if (status) status.textContent = `${revisions.length} revision${revisions.length === 1 ? '' : 's'} available. Google may return only the accessible portion of very large histories.`;
+      if (list) list.innerHTML = revisions.length ? revisions.slice().reverse().map(rev => `<article class="drive-revision-row" data-revision-id="${escapeHtml(rev.id)}"><div><strong>${escapeHtml(rev.originalFilename||file.name||'Revision')}</strong><span>${escapeHtml(rev.modifiedTime?new Date(rev.modifiedTime).toLocaleString():'Unknown date')} · ${escapeHtml(googleDriveFileSizeLabel(rev.size))}${rev.keepForever?' · kept forever':''}</span></div><div class="button-row"><button class="tiny secondary" data-revision-action="restore" type="button">Open Restore</button><button class="tiny secondary" data-revision-action="download" type="button">Download</button></div></article>`).join('') : '<div class="restore-empty">No downloadable revisions were returned.</div>';
+      return revisions;
+    } catch (err) {
+      if (status) status.textContent = `Could not load revisions: ${err.message}`;
+      WorkflowRecoveryV62.reportFailure({
+        operation: 'Load Google Drive Revision History',
+        source: file.name || file.id,
+        error: err,
+        dataChanged: false,
+        snapshotCreated: false,
+        remedy: 'Confirm access to the selected Drive file and reconnect before retrying the revision list.',
+        retry: () => openRevisionBrowser(file)
+      });
+      return [];
+    }
+  }
+
+  async function fetchRevisionText(revisionId) {
+    if (!revisionContext?.id) throw new Error('No Drive file is selected.');
+    const response = await googleDriveFetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(revisionContext.id)}/revisions/${encodeURIComponent(revisionId)}?alt=media`, {method:'GET'});
+    return response.text();
+  }
+
+  async function handleRevisionAction(button) {
+    const revisionId = button.closest('[data-revision-id]')?.dataset.revisionId;
+    if (!revisionId) return;
+    try {
+      const text = await fetchRevisionText(revisionId);
+      if (button.dataset.revisionAction === 'download') {
+        downloadText(backupFilename('drive-revision','json'), text, 'application/json');
+        return;
+      }
+      await importStateFromText(text, `Google Drive revision ${revisionId}`);
+    } catch (err) {
+      WorkflowRecoveryV62.reportFailure({
+        operation: button.dataset.revisionAction === 'download' ? 'Download Google Drive Revision' : 'Open Google Drive Revision Restore',
+        source: revisionContext?.name || revisionId,
+        error: err,
+        dataChanged: false,
+        snapshotCreated: false,
+        remedy: 'Reconnect Google Drive, confirm the revision is still available, and retry.',
+        retry: () => handleRevisionAction(button)
+      });
+    }
+  }
+
 
   async function ensureClassroomToken(interactive=true){
     if(classroomToken&&Date.now()<classroomTokenExpiresAt-60000)return classroomToken;
@@ -27329,6 +27733,15 @@ const DistrictIntegrationsV57 = (() => {
       classroomCourses = [];
       populateClassroomCourseSelects([]);
       updateClassroomStatus(`Classroom connection failed: ${err.message}`);
+      WorkflowRecoveryV62.reportFailure({
+        operation: 'Connect to Google Classroom',
+        source: 'Google Classroom course list',
+        error: err,
+        dataChanged: false,
+        snapshotCreated: false,
+        remedy: 'Reconnect with an account that can read the classroom roster, confirm the OAuth scopes and network access, then retry.',
+        retry: refreshClassroomCourses
+      });
       return [];
     }
   }
@@ -27366,6 +27779,15 @@ const DistrictIntegrationsV57 = (() => {
       updateClassroomStatus(`Loaded ${records.length} students for reconciliation.`);
     } catch (err) {
       updateClassroomStatus(`Classroom roster load failed: ${err.message}`);
+      WorkflowRecoveryV62.reportFailure({
+        operation: 'Load Google Classroom Roster',
+        source: courseId,
+        error: err,
+        dataChanged: false,
+        snapshotCreated: false,
+        remedy: 'Confirm the course still exists, the signed-in account can view its students, and the Classroom roster scope is approved.',
+        retry: () => loadClassroomRoster(courseId)
+      });
     }
   }
 
@@ -27388,22 +27810,31 @@ const DistrictIntegrationsV57 = (() => {
       grade: toIndex(guessCsvColumn(headers, ['grade', 'grade level', 'level'])),
       id: toIndex(guessCsvColumn(headers, ['sourcedid', 'sis id', 'student id', 'local id', 'student number', 'identifier']))
     };
-    if (index.firstName < 0 && index.lastName < 0) throw new Error('No recognized first-name or last-name column was found.');
+    if (index.firstName < 0 && index.lastName < 0 && index.id < 0) throw new Error('No recognized first-name or last-name column, or student-ID column, was found.');
     const value = (row, key) => Number.isInteger(index[key]) && index[key] >= 0 ? String(row[index[key]] || '').trim() : '';
-    const records = matrix.slice(1)
-      .filter(row => row.some(cell => String(cell || '').trim()))
-      .map(row => normalizeStudent({
+    const records = [];
+    const rejectedRows = [];
+    matrix.slice(1).forEach((row, rowIndex) => {
+      if (!row.some(cell => String(cell || '').trim())) return;
+      const values = {
         firstName: value(row, 'firstName'),
         lastName: value(row, 'lastName'),
         nickName: value(row, 'nickName'),
         grade: value(row, 'grade'),
-        id: value(row, 'id') || undefined,
-        sourceSystem: 'sis-csv'
-      }))
-      .filter(student => student.firstName || student.lastName);
-    if (!records.length) throw new Error('No student rows with recognized names were found.');
+        id: value(row, 'id')
+      };
+      if (!(values.firstName || values.lastName || values.id)) {
+        const source = Object.fromEntries(headers.slice(0, 40).map((header, column) => [String(header || `Column ${column + 1}`).slice(0, 80), String(row[column] || '').slice(0, 500)]));
+        rejectedRows.push({ rowNumber: rowIndex + 2, reason: 'No recognized name or student ID.', ...source });
+        return;
+      }
+      records.push(normalizeStudent({ ...values, id: values.id || undefined, sourceSystem: 'sis-csv' }));
+    });
+    if (!records.length) throw new Error('No usable student rows with recognized names or IDs were found.');
+    Object.defineProperty(records, 'rejectedRows', { value: rejectedRows, enumerable: false });
     return records;
   }
+
 
   async function importSisCsv(file) {
     if (!file) return;
@@ -27411,9 +27842,30 @@ const DistrictIntegrationsV57 = (() => {
     try {
       const records = parseSisCsvText(await file.text());
       openRosterDraft(records, 'SIS CSV');
-      if (status) status.textContent = `Loaded ${records.length} SIS records for reconciliation.`;
+      const rejectedRows = records.rejectedRows || [];
+      if (status) status.textContent = `Loaded ${records.length} SIS records for reconciliation${rejectedRows.length ? `; ${rejectedRows.length} row${rejectedRows.length === 1 ? '' : 's'} rejected` : ''}.`;
+      if (rejectedRows.length) {
+        WorkflowRecoveryV62.reportFailure({
+          operation: 'SIS CSV Loaded With Rejected Rows',
+          source: file.name,
+          error: new Error(`${rejectedRows.length} row${rejectedRows.length === 1 ? '' : 's'} did not contain a recognized name or student ID.`),
+          dataChanged: false,
+          snapshotCreated: false,
+          rejectedRows,
+          remedy: 'Download the rejected-row report. Continue with the valid reconciliation draft, then correct and re-import the rejected records.'
+        });
+      }
     } catch (err) {
       if (status) status.textContent = `SIS import failed: ${err.message}`;
+      WorkflowRecoveryV62.reportFailure({
+        operation: 'Open SIS CSV Import',
+        source: file.name,
+        error: err,
+        dataChanged: false,
+        snapshotCreated: false,
+        remedy: 'Confirm the file is valid CSV and includes a recognizable first name, last name, or student-ID column.',
+        retry: () => importSisCsv(file)
+      });
     } finally {
       if (node('classSetupSisCsvInput')) node('classSetupSisCsvInput').value = '';
     }
@@ -27504,6 +27956,1133 @@ const DistrictIntegrationsV57 = (() => {
   });
 })();
 
+
+
+const WorkflowRecoveryV62 = (() => {
+  const PASSWORD_RECOVERY_KIND = 'encryption-password-recovery';
+  const PASSWORD_RECOVERY_FORMAT = 'classroom-seating-planner-password-recovery-v1';
+  const MAX_FAILURE_RECORDS = 30;
+  let installed = false;
+  let pendingGenerationMode = '';
+  let classMergeExternalClasses = [];
+  let currentMergeSourceLabel = '';
+  let failureSequence = 0;
+  let pendingPasswordRecoveryFile = null;
+  let candidateObserver = null;
+  let settingsObserver = null;
+  const failureRecords = [];
+
+  const node = id => document.getElementById(id);
+  const text = value => String(value || '').trim();
+  const same = (a, b) => stableJsonStringify(a) === stableJsonStringify(b);
+
+  function appendModalMarkup() {
+    if (node('ruleConflictModal')) return;
+    const shell = document.createElement('div');
+    shell.innerHTML = `
+      <div id="ruleConflictModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="ruleConflictTitle">
+        <div class="modal modern-modal rule-conflict-modal">
+          <div class="panel-header"><h2 id="ruleConflictTitle">Rule Conflict Inspector</h2><button id="closeRuleConflictBtn" class="tiny secondary" type="button">Close</button></div>
+          <div class="modal-body rule-conflict-body">
+            <div id="ruleConflictSummary" class="rule-conflict-summary"></div>
+            <div id="ruleConflictList" class="rule-conflict-list"></div>
+            <div class="button-row rule-conflict-actions"><button id="ruleConflictGenerateAnywayBtn" type="button" hidden>Generate Anyway</button><button id="ruleConflictRecheckBtn" class="secondary" type="button">Check Again</button><button id="ruleConflictCloseBottomBtn" class="secondary" type="button">Close</button></div>
+          </div>
+        </div>
+      </div>
+      <div id="classMergeModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="classMergeTitle">
+        <div class="modal modern-modal class-merge-modal">
+          <div class="panel-header"><h2 id="classMergeTitle">Compare &amp; Merge Class</h2><button id="closeClassMergeBtn" class="tiny secondary" type="button">Close</button></div>
+          <div class="modal-body class-merge-body">
+            <div class="class-merge-source-row">
+              <div class="field"><label for="classMergeSourceSelect">Source class</label><select id="classMergeSourceSelect"></select></div>
+              <div class="button-row"><button id="classMergeLoadFileBtn" class="secondary" type="button">Load Classes File</button><input id="classMergeFileInput" type="file" accept="application/json,.json,.txt" hidden /></div>
+            </div>
+            <div id="classMergeSourceStatus" class="hint">Choose another class in this save or load an encrypted classes file.</div>
+            <div id="classMergeComparison" class="class-merge-comparison"></div>
+            <section class="section class-merge-options"><h3>Choose what the source may update</h3>
+              <div class="class-merge-option-grid">
+                <label class="checkline"><input data-class-merge-category="roster" type="checkbox" checked /> <span>Roster and student identity fields</span></label>
+                <label class="checkline"><input data-class-merge-category="notes" type="checkbox" checked /> <span>Student notes</span></label>
+                <label class="checkline"><input data-class-merge-category="requirements" type="checkbox" checked /> <span>Individual seating requirements</span></label>
+                <label class="checkline"><input data-class-merge-category="rules" type="checkbox" checked /> <span>Groups and rules</span></label>
+                <label class="checkline"><input data-class-merge-category="zones" type="checkbox" checked /> <span>Zones and seat-zone membership</span></label>
+                <label class="checkline"><input data-class-merge-category="room" type="checkbox" checked /> <span>Room layout and objects</span></label>
+                <label class="checkline"><input data-class-merge-category="assignments" type="checkbox" checked /> <span>Student assignments and locks</span></label>
+                <label class="checkline"><input data-class-merge-category="plans" type="checkbox" checked /> <span>Named seating plans</span></label>
+                <label class="checkline"><input data-class-merge-category="details" type="checkbox" /> <span>Chart details, academic year, and term</span></label>
+              </div>
+              <div class="settings-grid two-col class-merge-policy-grid">
+                <div class="field"><label for="classMergeRosterMode">Roster behavior</label><select id="classMergeRosterMode"><option value="merge">Merge source students into current class</option><option value="replace">Replace current roster with source roster</option></select></div>
+                <label class="checkline class-merge-source-wins"><input id="classMergeSourceWins" type="checkbox" checked /> <span>Source values win when both classes contain the student</span></label>
+              </div>
+              <label class="checkline"><input id="classMergeSnapshotBefore" type="checkbox" checked /> <span>Create an encrypted snapshot before applying the merge</span></label>
+              <div class="warningbox">The current class remains the destination. Its class name and ID are never replaced. Review the comparison and selected categories before applying.</div>
+            </section>
+            <div class="button-row"><button id="applyClassMergeBtn" type="button">Apply Selected Merge</button><button id="cancelClassMergeBtn" class="secondary" type="button">Cancel</button></div>
+          </div>
+        </div>
+      </div>
+      <div id="passwordRecoveryRestoreModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="passwordRecoveryRestoreTitle">
+        <div class="modal modern-modal password-recovery-restore-modal">
+          <div class="panel-header"><h2 id="passwordRecoveryRestoreTitle">Restore Encryption Password</h2><button id="closePasswordRecoveryRestoreBtn" class="tiny secondary" type="button">Close</button></div>
+          <div class="modal-body password-recovery-restore-body">
+            <div id="passwordRecoveryRestoreFile" class="hint">Choose a password recovery package first.</div>
+            <div class="field"><label for="passwordRecoveryCodeInput">One-time recovery code</label><input id="passwordRecoveryCodeInput" type="password" autocomplete="off" spellcheck="false" placeholder="XXXXXXXX-XXXXXXXX-XXXXXXXX-XXXXXXXX-XXXXXXXX-XXXXXXXX" /></div>
+            <div id="passwordRecoveryRestoreError" class="warning" hidden></div>
+            <div class="button-row"><button id="continuePasswordRecoveryRestoreBtn" type="button">Recover Password</button><button id="cancelPasswordRecoveryRestoreBtn" class="secondary" type="button">Cancel</button></div>
+          </div>
+        </div>
+      </div>
+      <div id="operationRecoveryModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="operationRecoveryTitle">
+        <div class="modal modern-modal operation-recovery-modal">
+          <div class="panel-header"><h2 id="operationRecoveryTitle">Operation Recovery Center</h2><button id="closeOperationRecoveryBtn" class="tiny secondary" type="button">Close</button></div>
+          <div class="modal-body operation-recovery-body">
+            <div id="operationRecoveryCurrent"></div>
+            <section class="section"><div class="section-header-row"><h3>Recent operation failures</h3><button id="clearOperationFailureHistoryBtn" class="tiny secondary" type="button">Clear History</button></div><div id="operationRecoveryHistory" class="operation-recovery-history"></div></section>
+          </div>
+        </div>
+      </div>`;
+    while (shell.firstElementChild) document.body.appendChild(shell.firstElementChild);
+  }
+
+  function installEntryPoints() {
+    const generation = document.querySelector('.generation-controls');
+    if (generation && !node('ruleConflictInspectorBtn')) {
+      const button = document.createElement('button');
+      button.id = 'ruleConflictInspectorBtn';
+      button.className = 'secondary';
+      button.type = 'button';
+      button.textContent = 'Check Rule Conflicts';
+      generation.appendChild(button);
+    }
+    const classGrid = node('classToolsModal')?.querySelector('.class-tools-grid');
+    if (classGrid && !node('compareMergeClassBtn')) {
+      const section = document.createElement('section');
+      section.className = 'workflow-card';
+      section.innerHTML = '<h3>Compare &amp; Merge</h3><p class="muted">Compare this class with another class or an encrypted classes file, then choose which categories the source may update.</p><button id="compareMergeClassBtn" class="secondary" type="button">Compare / Merge Class</button>';
+      classGrid.appendChild(section);
+    }
+    const maintenance = node('settingsMaintenanceTools');
+    if (maintenance && !node('openOperationRecoveryCenterBtn')) {
+      const section = document.createElement('section');
+      section.className = 'section settings-section';
+      section.innerHTML = '<h3>Import &amp; Integration Recovery</h3><div class="hint">Review failed imports and cloud operations, retry a supported operation, copy a privacy-safe technical report, or download rejected rows when available.</div><div class="button-row"><button id="openOperationRecoveryCenterBtn" class="secondary" type="button">Open Recovery Center</button></div>';
+      maintenance.after(section);
+    }
+    installEncryptionRecoveryControls();
+  }
+
+  function installEncryptionRecoveryControls() {
+    const securityPage = node('settingsPageSecurity');
+    if (securityPage && !node('openPasswordRecoveryPackageBtn')) {
+      const section = document.createElement('section');
+      section.className = 'section settings-section';
+      section.innerHTML = `
+        <h3>Optional Encryption Password Recovery</h3>
+        <div class="hint">Create a separate package that wraps the current encryption password with a one-time recovery code. Store the package and code in different secure locations. This does not change or weaken ordinary saves.</div>
+        <div class="button-row"><button id="openPasswordRecoveryPackageBtn" class="secondary" type="button">Create Password Recovery Package</button><button id="restorePasswordRecoveryPackageBtn" class="secondary" type="button">Restore Password from Package</button><input id="passwordRecoveryPackageInput" type="file" accept="application/json,.json" hidden /></div>
+        <div id="passwordRecoverySettingsStatus" class="muted">No recovery action performed in this session.</div>`;
+      const firstSection = securityPage.querySelector('.settings-section');
+      if (firstSection) firstSection.before(section);
+      else securityPage.appendChild(section);
+    }
+    const welcomeActions = node('welcomeLoadExistingBtn')?.closest('.button-row');
+    if (welcomeActions && !node('welcomeRecoverPasswordBtn')) {
+      const button = document.createElement('button');
+      button.id = 'welcomeRecoverPasswordBtn';
+      button.className = 'secondary';
+      button.type = 'button';
+      button.textContent = 'Recover encryption password';
+      button.title = 'Use an optional password recovery package and its separately stored one-time code';
+      welcomeActions.insertBefore(button, node('welcomeStartFreshBtn'));
+    }
+    const recoveryBody = node('recoveryKitModal')?.querySelector('.modal-body');
+    if (recoveryBody && !node('passwordRecoveryPackageCard')) {
+      const card = document.createElement('section');
+      card.id = 'passwordRecoveryPackageCard';
+      card.className = 'section password-recovery-card';
+      card.innerHTML = `
+        <h3>Recover the normal encryption password</h3>
+        <p class="muted">This creates a small recovery package containing the current encryption password wrapped by a new one-time code. It is separate from the full offline recovery backup above.</p>
+        <div class="button-row"><button id="createPasswordRecoveryPackageBtn" type="button">Create Password Recovery Package</button><button id="choosePasswordRecoveryPackageBtn" class="secondary" type="button">Restore Existing Package</button></div>
+        <div id="passwordRecoveryCodePanel" class="password-recovery-code-panel" hidden><strong>One-time recovery code</strong><code id="passwordRecoveryCodeValue"></code><div class="button-row"><button id="copyPasswordRecoveryCodeBtn" class="secondary tiny" type="button">Copy Code</button></div><div class="warningbox">The code is shown only for this session. Keep it separate from the recovery package. Anyone with both can recover the encryption password.</div></div>
+        <div id="passwordRecoveryPackageStatus" class="muted">No password recovery package created.</div>`;
+      recoveryBody.appendChild(card);
+    }
+  }
+
+  function settingsTitle(button) {
+    return text(button.querySelector('.settings-page-title')?.textContent || button.textContent);
+  }
+
+  function refreshSortedSettingsMobileSelect(buttons) {
+    const select = node('settingsMobilePageSelect');
+    if (!select) return;
+    const current = uiState.activeSettingsPage || select.value || buttons[0]?.dataset.settingsNav || '';
+    const options = buttons.map(button => ({ value: button.dataset.settingsNav, title: settingsTitle(button) }));
+    select.innerHTML = options.map(option => `<option value="${escapeHtml(option.value)}">${escapeHtml(option.title)}</option>`).join('');
+    select.value = options.some(option => option.value === current) ? current : (options[0]?.value || '');
+  }
+
+  function sortSettingsNavigation() {
+    const nav = node('settingsPageNav');
+    if (!nav) return;
+    const currentButtons = Array.from(nav.querySelectorAll('.settings-page-tab[data-settings-nav]'));
+    if (!currentButtons.length) return;
+    const buttons = [...currentButtons].sort((a, b) => {
+      const aAbout = a.dataset.settingsNav === 'about';
+      const bAbout = b.dataset.settingsNav === 'about';
+      if (aAbout !== bAbout) return aAbout ? 1 : -1;
+      return settingsTitle(a).localeCompare(settingsTitle(b), undefined, { sensitivity: 'base', numeric: true });
+    });
+    const order = buttons.map(button => button.dataset.settingsNav);
+    const currentOrder = currentButtons.map(button => button.dataset.settingsNav);
+    if (order.some((value, index) => value !== currentOrder[index])) buttons.forEach(button => nav.appendChild(button));
+    SETTINGS_PAGE_IDS.splice(0, SETTINGS_PAGE_IDS.length, ...order);
+    refreshSortedSettingsMobileSelect(buttons);
+  }
+
+  function generatorDistance(a, b) {
+    return Math.hypot(Number(a?.ruleX || 0) - Number(b?.ruleX || 0), Number(a?.ruleY || 0) - Number(b?.ruleY || 0));
+  }
+
+  function requirementSeatMatch(student, seat) {
+    const req = student.requirements || {};
+    const zones = new Set((seat.zoneIds || []).map(String));
+    const failures = [];
+    if (req.front === 'require' && Number(seat.frontRatio || 0) > 0.42) failures.push('required front area');
+    if (req.ada && !seat.nearAda) failures.push('ADA/accessibility area');
+    if ((req.excludedZoneIds || []).some(id => zones.has(String(id)))) failures.push('excluded zone');
+    return failures;
+  }
+
+  function addConflict(findings, severity, title, explanation, remedy, action = '') {
+    findings.push({ id: `rule-conflict-${findings.length + 1}`, severity, title, explanation, remedy, action });
+  }
+
+  function analyzeRuleConflicts() {
+    const findings = [];
+    const students = seatingStudents();
+    const seats = ModernizationSuite.buildGeneratorSeats();
+    const seatByKey = new Map(seats.map(seat => [String(seat.key), seat]));
+    const studentById = new Map(students.map(student => [String(student.id), student]));
+    const label = student => student ? studentDisplay(student) : 'Unknown student';
+    const requiredFront = students.filter(student => student.requirements?.front === 'require');
+    const requiredAda = students.filter(student => student.requirements?.ada);
+    const lockedSeats = seats.filter(seat => seat.manual && seat.assignedStudentId);
+    const lockedStudentIds = new Set(lockedSeats.map(seat => String(seat.assignedStudentId)));
+
+    if (!students.length) addConflict(findings, 'info', 'No active students', 'The generator has no active students to place.', 'Add or restore a roster before generating seating options.', 'students');
+    if (!seats.length) addConflict(findings, 'error', 'No usable seats', 'The current room does not contain a usable Grid or Freeform seat.', 'Add seats in Room Design before generating.', 'room');
+    if (students.length > seats.length) addConflict(findings, 'error', 'Not enough seats', `${students.length} active students need seats, but the room has only ${seats.length} usable seats. At least ${students.length - seats.length} student${students.length - seats.length === 1 ? '' : 's'} cannot be assigned.`, 'Add seats, mark absent students in Today Mode, or reduce the active roster.', 'room');
+
+    const frontSeats = seats.filter(seat => Number(seat.frontRatio || 0) <= 0.42);
+    const frontDemandRemaining = requiredFront.filter(student => !lockedStudentIds.has(String(student.id))).length;
+    const frontCapacityRemaining = frontSeats.filter(seat => !seat.manual || !seat.assignedStudentId).length;
+    if (frontDemandRemaining > frontCapacityRemaining) addConflict(findings, 'error', 'Required front-seat capacity is too small', `${requiredFront.length} students require the front area, but locked placements and room geometry leave only ${frontCapacityRemaining} open qualifying front seats for ${frontDemandRemaining} still-unlocked students.`, 'Unlock or move a conflicting placement, add front seats, or change some requirements from Required to Preferred.', 'requirements');
+
+    const adaSeats = seats.filter(seat => seat.nearAda);
+    const adaDemandRemaining = requiredAda.filter(student => !lockedStudentIds.has(String(student.id))).length;
+    const adaCapacityRemaining = adaSeats.filter(seat => !seat.manual || !seat.assignedStudentId).length;
+    if (requiredAda.length && !adaSeats.length) addConflict(findings, 'error', 'No ADA/accessibility seat area exists', `${requiredAda.length} student${requiredAda.length === 1 ? '' : 's'} require an ADA/accessibility area, but no seat is near an ADA room object.`, 'Add an ADA Space near qualifying seats or revise the requirements.', 'room');
+    else if (adaDemandRemaining > adaCapacityRemaining) addConflict(findings, 'error', 'ADA/accessibility capacity is too small', `${requiredAda.length} students require accessible seating, but only ${adaCapacityRemaining} open qualifying seats remain for ${adaDemandRemaining} unlocked students.`, 'Add accessible seats, move locked placements, or review the requirements.', 'requirements');
+
+    let maximumSeatDistance = 0;
+    for (let i = 0; i < seats.length; i++) for (let j = i + 1; j < seats.length; j++) maximumSeatDistance = Math.max(maximumSeatDistance, generatorDistance(seats[i], seats[j]));
+
+    students.forEach(student => {
+      const req = student.requirements || {};
+      const excluded = new Set((req.excludedZoneIds || []).map(String));
+      const hasHardSeatRequirement = req.front === 'require' || Boolean(req.ada) || excluded.size > 0;
+      const studentIsLocked = lockedStudentIds.has(String(student.id));
+      if (hasHardSeatRequirement && !studentIsLocked) {
+        const openSeats = seats.filter(seat => !seat.manual || !seat.assignedStudentId);
+        const matchingSeats = openSeats.filter(seat => requirementSeatMatch(student, seat).length === 0);
+        if (!matchingSeats.length) {
+          const constraints = [req.front === 'require' ? 'front-area seating' : '', req.ada ? 'ADA/accessibility seating' : '', excluded.size ? `${excluded.size} excluded zone${excluded.size === 1 ? '' : 's'}` : ''].filter(Boolean);
+          addConflict(findings, 'error', `${label(student)} has no seat satisfying all hard requirements`, `The available seats were checked against ${constraints.join(', ')} together, and none satisfies the complete combination. Individual capacity totals can look sufficient even when their overlap is empty.`, 'Change one hard requirement, free or add a qualifying seat, or adjust the room and zone geometry.', 'requirements');
+        }
+      }
+      if (excluded.size) {
+        const allowed = seats.filter(seat => !(seat.zoneIds || []).some(id => excluded.has(String(id))));
+        if (!allowed.length) addConflict(findings, 'error', `${label(student)} has no allowed seat`, 'Every usable seat belongs to at least one zone excluded for this student.', 'Remove an excluded zone, change seat-zone membership, or add an allowed seat.', 'requirements');
+        if (req.front === 'require' && !allowed.some(seat => Number(seat.frontRatio || 0) <= 0.42)) addConflict(findings, 'error', `${label(student)} has incompatible front and zone requirements`, 'No front-area seat remains after the student’s excluded zones are applied.', 'Change the excluded zones, add a front seat outside them, or relax the front requirement.', 'requirements');
+      }
+      (req.minDistanceStudentIds || []).forEach(otherId => {
+        if (String(student.id).localeCompare(String(otherId)) >= 0) return;
+        const other = studentById.get(String(otherId));
+        if (!other) return;
+        if (maximumSeatDistance < 3) addConflict(findings, 'error', `${label(student)} and ${label(other)} cannot reach the required distance`, `The room’s farthest two usable seats are only ${maximumSeatDistance.toFixed(1)} seat units apart, while the rule requires at least 3.`, 'Increase room spacing in Freeform, add farther-apart Grid seats, or remove the minimum-distance rule.', 'room');
+      });
+    });
+
+    lockedSeats.forEach(seat => {
+      const student = studentById.get(String(seat.assignedStudentId));
+      if (!student) return;
+      const failures = requirementSeatMatch(student, seat);
+      if (failures.length) addConflict(findings, 'error', `Locked placement conflicts with ${label(student)}`, `${seat.label} is locked but violates: ${failures.join(', ')}. Generated options preserve this placement, so the conflict cannot be repaired automatically.`, 'Unlock the seat or move the student before generating.', 'requirements');
+    });
+
+    const pairRules = new Map();
+    const locationMembership = new Map();
+    (state.bubbles || []).forEach(bubble => {
+      const members = (bubble.studentIds || []).map(String).filter(id => studentById.has(id));
+      if (!members.length) addConflict(findings, 'warning', `${bubble.name} has no active members`, 'This rule does not currently affect candidate generation.', 'Add active students to the rule or remove the unused rule.', 'rules');
+      if (bubble.type === 'special') {
+        const validAnchors = (bubble.anchorSeats || []).filter(key => seatByKey.has(String(key)));
+        if (!validAnchors.length) addConflict(findings, 'warning', `${bubble.name} has no usable reserved seats`, 'The special/reserved rule has members but no anchor seat that exists in the current room.', 'Reserve seats for this rule or change its type.', 'rules');
+        else if (validAnchors.length < members.length) addConflict(findings, 'warning', `${bubble.name} has fewer reserved seats than members`, `${members.length} active members share ${validAnchors.length} reserved seat${validAnchors.length === 1 ? '' : 's'}. Some members must be placed outside the reserved seats.`, 'Reserve more seats or reduce the rule membership.', 'rules');
+      }
+      if (bubble.type === 'zone') {
+        const zone = (state.zones || []).find(item => String(item.id) === String(bubble.zoneId));
+        if (!zone) addConflict(findings, 'error', `${bubble.name} references a missing zone`, 'The preferred-zone rule cannot be evaluated because its zone no longer exists.', 'Choose an existing zone or recreate the missing zone.', 'zones');
+        else if (!seats.some(seat => (seat.zoneIds || []).map(String).includes(String(zone.id)))) addConflict(findings, 'warning', `${bubble.name} points to an empty zone`, `${zone.name} exists, but no usable seat belongs to it.`, 'Assign seats to the zone in Room Design or select another zone.', 'zones');
+      }
+      if (['front', 'back'].includes(bubble.type)) members.forEach(id => {
+        if (!locationMembership.has(id)) locationMembership.set(id, new Set());
+        locationMembership.get(id).add(bubble.type);
+      });
+      if (['together', 'special', 'avoid', 'spread'].includes(bubble.type)) {
+        for (let i = 0; i < members.length; i++) for (let j = i + 1; j < members.length; j++) {
+          const key = [members[i], members[j]].sort().join('|');
+          if (!pairRules.has(key)) pairRules.set(key, []);
+          pairRules.get(key).push(bubble);
+        }
+      }
+    });
+
+    pairRules.forEach((rules, key) => {
+      const close = rules.filter(rule => ['together', 'special'].includes(rule.type));
+      const apart = rules.filter(rule => ['avoid', 'spread'].includes(rule.type));
+      if (!close.length || !apart.length) return;
+      const [a, b] = key.split('|').map(id => studentById.get(id));
+      addConflict(findings, 'warning', `${label(a)} and ${label(b)} have opposing group rules`, `${close.map(rule => rule.name).join(', ')} asks them to sit nearby, while ${apart.map(rule => rule.name).join(', ')} asks them to sit apart. The generator must trade one rule against the other.`, 'Remove one rule, change membership, or lower the less-important rule priority.', 'rules');
+    });
+
+    locationMembership.forEach((types, studentId) => {
+      if (types.has('front') && types.has('back')) {
+        const student = studentById.get(studentId);
+        addConflict(findings, 'warning', `${label(student)} is in both front and back rules`, 'The generator receives opposing location preferences for this student.', 'Remove the student from one location rule or lower its priority.', 'rules');
+      }
+    });
+
+    const roomChecks = [
+      ['nearTeacher', 'teacherDistance', 'teacher desk', 'near-teacher'],
+      ['awayDoor', 'doorDistance', 'door', 'away-door'],
+      ['awayWindow', 'windowDistance', 'window', 'away-window']
+    ];
+    roomChecks.forEach(([requirement, distanceField, objectName]) => {
+      if (!students.some(student => student.requirements?.[requirement])) return;
+      if (!seats.some(seat => Number(seat[distanceField]) < 999)) addConflict(findings, 'warning', `No ${objectName} object exists for an active requirement`, `At least one student uses a requirement based on the ${objectName}, but the room has no matching object. The generator cannot measure that preference meaningfully.`, `Add a ${objectName} room object or remove the related requirement.`, 'room');
+    });
+
+    const rank = { error: 0, warning: 1, info: 2 };
+    findings.sort((a, b) => rank[a.severity] - rank[b.severity] || a.title.localeCompare(b.title));
+    return {
+      findings,
+      errors: findings.filter(item => item.severity === 'error').length,
+      warnings: findings.filter(item => item.severity === 'warning').length,
+      info: findings.filter(item => item.severity === 'info').length,
+      students: students.length,
+      seats: seats.length
+    };
+  }
+
+  function conflictSummaryHtml(report) {
+    const status = report.errors ? 'bad' : report.warnings ? 'warn' : 'good';
+    const headline = report.errors ? 'Generation has conflicts that cannot be solved automatically.' : report.warnings ? 'Generation can continue, but some rules compete or lack room support.' : 'No obvious rule-capacity conflict was found.';
+    return `<div class="rule-conflict-head ${status}"><div><strong>${escapeHtml(headline)}</strong><span>${report.students} active students · ${report.seats} usable seats</span></div><div class="rule-conflict-counts"><span class="bad">${report.errors} blocking</span><span class="warn">${report.warnings} warning</span><span>${report.info} information</span></div></div>`;
+  }
+
+  function renderRuleConflictReport(report = analyzeRuleConflicts()) {
+    const summary = node('ruleConflictSummary');
+    const list = node('ruleConflictList');
+    if (summary) summary.innerHTML = conflictSummaryHtml(report);
+    if (list) list.innerHTML = report.findings.length ? report.findings.map(item => `
+      <article class="rule-conflict-item ${escapeHtml(item.severity)}">
+        <div class="rule-conflict-icon" aria-hidden="true">${item.severity === 'error' ? '!' : item.severity === 'warning' ? '△' : 'i'}</div>
+        <div><strong>${escapeHtml(item.title)}</strong><p>${escapeHtml(item.explanation)}</p><span>${escapeHtml(item.remedy)}</span>${item.action ? `<button class="tiny secondary" type="button" data-rule-conflict-action="${escapeHtml(item.action)}">Open related tools</button>` : ''}</div>
+      </article>`).join('') : '<div class="successbox">No obvious rule-capacity or contradictory-rule conflict was found. Candidate generation may still trade soft preferences against one another.</div>';
+    const generate = node('ruleConflictGenerateAnywayBtn');
+    if (generate) {
+      generate.hidden = !pendingGenerationMode;
+      generate.textContent = report.errors ? 'Generate Anyway With Conflicts' : 'Continue to Generate';
+    }
+    return report;
+  }
+
+  function openRuleConflictInspector(options = {}) {
+    if (options.pendingMode) pendingGenerationMode = options.pendingMode;
+    renderRuleConflictReport();
+    node('ruleConflictModal')?.classList.add('show');
+    DialogManager.synchronize();
+  }
+
+  function closeRuleConflictInspector() {
+    node('ruleConflictModal')?.classList.remove('show');
+    pendingGenerationMode = '';
+    DialogManager.synchronize();
+  }
+
+  function openConflictTools(action) {
+    closeRuleConflictInspector();
+    if (action === 'room') ProductExperience?.setWorkflow?.('room');
+    else {
+      ProductExperience?.setWorkflow?.('setup');
+      const section = action === 'requirements' ? 'requirements' : action === 'zones' ? 'zones' : action === 'students' ? 'students' : 'rules';
+      ClassSetupWorkspaceV54?.setSection?.(section);
+    }
+  }
+
+  function candidateRuleContextHtml() {
+    const report = analyzeRuleConflicts();
+    if (!report.findings.length) return '<section class="candidate-preflight-context good"><strong>Pre-generation feasibility</strong><span>No obvious capacity or contradictory-rule conflict was detected.</span><button class="tiny secondary" type="button" data-open-rule-conflict-inspector>Review rule check</button></section>';
+    const top = report.findings.slice(0, 3);
+    return `<section class="candidate-preflight-context ${report.errors ? 'bad' : 'warn'}"><div><strong>Pre-generation feasibility: ${report.errors} blocking, ${report.warnings} warning</strong><span>${escapeHtml(top.map(item => item.title).join(' · '))}${report.findings.length > top.length ? ` · ${report.findings.length - top.length} more` : ''}</span></div><button class="tiny secondary" type="button" data-open-rule-conflict-inspector>Explain conflicts</button></section>`;
+  }
+
+  function decorateCandidateDetail() {
+    const detail = node('seatingCandidateDetail');
+    if (!detail || !detail.innerHTML || detail.querySelector('.candidate-preflight-context')) return;
+    detail.insertAdjacentHTML('afterbegin', candidateRuleContextHtml());
+  }
+
+  function interceptGeneratorButton(button, mode) {
+    button?.addEventListener('click', event => {
+      const report = analyzeRuleConflicts();
+      if (!report.errors) {
+        if (report.warnings) setLiveStatusMessage(`Rule check found ${report.warnings} warning${report.warnings === 1 ? '' : 's'}. Generation will compare the tradeoffs in each option.`);
+        return;
+      }
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      pendingGenerationMode = mode;
+      openRuleConflictInspector({ pendingMode: mode });
+    }, true);
+  }
+
+  function classStudentKey(student) {
+    const id = text(student?.id);
+    const source = text(student?.sourceUserId);
+    const name = `${text(student?.firstName).toLowerCase()}|${text(student?.lastName).toLowerCase()}`;
+    return { id, source, name };
+  }
+
+  function buildUniqueStudentIndex(students, selector) {
+    const buckets = new Map();
+    students.forEach(student => {
+      const key = text(selector(student));
+      if (!key) return;
+      if (!buckets.has(key)) buckets.set(key, []);
+      buckets.get(key).push(student);
+    });
+    return new Map(Array.from(buckets.entries()).filter(([, values]) => values.length === 1).map(([key, values]) => [key, values[0]]));
+  }
+
+  function buildStudentMatch(sourceStudents, targetStudents) {
+    const byId = buildUniqueStudentIndex(targetStudents, student => student.id);
+    const bySource = buildUniqueStudentIndex(targetStudents, student => student.sourceUserId);
+    const byName = buildUniqueStudentIndex(targetStudents, student => classStudentKey(student).name === '|' ? '' : classStudentKey(student).name);
+    const map = new Map();
+    const matchedTargetIds = new Set();
+    sourceStudents.forEach(source => {
+      const key = classStudentKey(source);
+      const candidates = [key.id && byId.get(key.id), key.source && bySource.get(key.source), key.name !== '|' && byName.get(key.name)].filter(Boolean);
+      const target = candidates.find(candidate => !matchedTargetIds.has(String(candidate.id))) || null;
+      if (target) {
+        map.set(String(source.id), String(target.id));
+        matchedTargetIds.add(String(target.id));
+      }
+    });
+    return { map, matchedTargetIds };
+  }
+
+  function mergeSourceOptions() {
+    const targetId = String(state.activeClassId || '');
+    const current = (state.classes || []).filter(item => String(item.id) !== targetId).map(item => ({ value: `class:${item.id}`, label: `${item.name} · current save`, classRecord: item }));
+    const external = classMergeExternalClasses.map((item, index) => ({ value: `file:${index}`, label: `${item.name} · loaded file`, classRecord: item }));
+    return [...current, ...external];
+  }
+
+  function selectedMergeSource() {
+    const value = node('classMergeSourceSelect')?.value || '';
+    if (value.startsWith('class:')) return (state.classes || []).find(item => String(item.id) === value.slice(6)) || null;
+    if (value.startsWith('file:')) return classMergeExternalClasses[Number(value.slice(5))] || null;
+    return null;
+  }
+
+  function renderClassMergeSources(preferred = '') {
+    persistActiveClass();
+    const select = node('classMergeSourceSelect');
+    if (!select) return;
+    const options = mergeSourceOptions();
+    select.innerHTML = options.length ? options.map(item => `<option value="${escapeHtml(item.value)}">${escapeHtml(item.label)}</option>`).join('') : '<option value="">No source class available</option>';
+    if (preferred && options.some(item => item.value === preferred)) select.value = preferred;
+    currentMergeSourceLabel = select.selectedOptions?.[0]?.textContent || '';
+    renderClassMergeComparison();
+  }
+
+  function countAssignments(cls) {
+    const grid = Object.values(cls.cells || {}).filter(cell => cell?.assignedStudentId).length;
+    const freeform = (cls.freeformLayout?.objects || []).filter(item => item.type === 'seat' && item.assignedStudentId).length;
+    return Math.max(grid, freeform);
+  }
+
+  function classComparisonRows(target, source) {
+    const match = buildStudentMatch(source.students || [], target.students || []);
+    const targetById = new Map((target.students || []).map(student => [String(student.id), student]));
+    let fieldChanges = 0;
+    let noteChanges = 0;
+    let requirementChanges = 0;
+    (source.students || []).forEach(sourceStudent => {
+      const targetId = match.map.get(String(sourceStudent.id));
+      const targetStudent = targetById.get(String(targetId || ''));
+      if (!targetStudent) return;
+      if (['firstName', 'lastName', 'nickName', 'grade', 'sourceSystem', 'sourceCourseId', 'sourceUserId'].some(key => text(sourceStudent[key]) !== text(targetStudent[key]))) fieldChanges += 1;
+      if (!same([sourceStudent.notesPrivate, sourceStudent.notesSubstitute, sourceStudent.notesPublic], [targetStudent.notesPrivate, targetStudent.notesSubstitute, targetStudent.notesPublic])) noteChanges += 1;
+      if (!same(sourceStudent.requirements, targetStudent.requirements)) requirementChanges += 1;
+    });
+    const sourceOnly = (source.students || []).length - match.map.size;
+    const targetOnly = (target.students || []).length - match.matchedTargetIds.size;
+    return [
+      ['Roster', `${target.students.length} students`, `${source.students.length} students`, `${match.map.size} matched · ${sourceOnly} source-only · ${targetOnly} current-only · ${fieldChanges} field changes`],
+      ['Notes', `${target.students.filter(student => student.notesPrivate || student.notesSubstitute || student.notesPublic).length} students with notes`, `${source.students.filter(student => student.notesPrivate || student.notesSubstitute || student.notesPublic).length} students with notes`, `${noteChanges} matched students differ`],
+      ['Student needs', `${target.students.filter(student => !same(student.requirements, normalizeStudent({}).requirements)).length} configured`, `${source.students.filter(student => !same(student.requirements, normalizeStudent({}).requirements)).length} configured`, `${requirementChanges} matched students differ`],
+      ['Groups & rules', `${target.bubbles.length} rules`, `${source.bubbles.length} rules`, same(target.bubbles, source.bubbles) ? 'No structural difference' : 'Rule definitions differ'],
+      ['Zones', `${target.zones.length} zones`, `${source.zones.length} zones`, same(target.zones, source.zones) ? 'No structural difference' : 'Zone definitions or memberships differ'],
+      ['Room', `${target.layoutMode} · ${target.rows}×${target.cols}`, `${source.layoutMode} · ${source.rows}×${source.cols}`, same([target.rows, target.cols, target.layoutMode, target.cells, target.freeformLayout, target.customObjects], [source.rows, source.cols, source.layoutMode, source.cells, source.freeformLayout, source.customObjects]) ? 'No structural difference' : 'Room layout differs'],
+      ['Assignments', `${countAssignments(target)} placed`, `${countAssignments(source)} placed`, countAssignments(target) === countAssignments(source) ? 'Counts match; positions may still differ' : 'Placed-student counts differ'],
+      ['Named plans', `${target.seatingPlans.length} plans`, `${source.seatingPlans.length} plans`, same(target.seatingPlans, source.seatingPlans) ? 'No structural difference' : 'Plan history differs']
+    ];
+  }
+
+  function renderClassMergeComparison() {
+    const box = node('classMergeComparison');
+    const status = node('classMergeSourceStatus');
+    const source = selectedMergeSource();
+    const target = normalizeClassRecord(activeClassRecord());
+    if (!box) return;
+    if (!source) {
+      box.innerHTML = '<div class="restore-empty">Choose another class or load a classes file to compare.</div>';
+      if (status) status.textContent = classMergeExternalClasses.length ? 'Choose a loaded class.' : 'No other class is available in the current save. Load a classes file to continue.';
+      return;
+    }
+    const normalizedSource = normalizeClassRecord(source);
+    const rows = classComparisonRows(target, normalizedSource);
+    box.innerHTML = `<div class="class-merge-summary"><strong>Current: ${escapeHtml(target.name)}</strong><span>Source: ${escapeHtml(normalizedSource.name)}</span></div><div class="csv-preview-table"><table><thead><tr><th>Category</th><th>Current</th><th>Source</th><th>Difference</th></tr></thead><tbody>${rows.map(row => `<tr><th>${escapeHtml(row[0])}</th><td>${escapeHtml(row[1])}</td><td>${escapeHtml(row[2])}</td><td>${escapeHtml(row[3])}</td></tr>`).join('')}</tbody></table></div>`;
+    if (status) status.textContent = `Comparing ${normalizedSource.name} with the current class. Nothing changes until Apply Selected Merge is confirmed.`;
+  }
+
+  function openClassMerge() {
+    classMergeExternalClasses = [];
+    node('classToolsModal')?.classList.remove('show');
+    renderClassMergeSources();
+    node('classMergeModal')?.classList.add('show');
+    DialogManager.synchronize();
+  }
+
+  function closeClassMerge() {
+    node('classMergeModal')?.classList.remove('show');
+    classMergeExternalClasses = [];
+    DialogManager.synchronize();
+  }
+
+  function mergeCategories() {
+    return Object.fromEntries(Array.from(document.querySelectorAll('[data-class-merge-category]')).map(input => [input.dataset.classMergeCategory, Boolean(input.checked)]));
+  }
+
+  function sourceStudentToMergedId(sourceStudent, mapping, mergedStudents) {
+    const existing = mapping.get(String(sourceStudent.id));
+    if (existing) return existing;
+    let nextId = String(sourceStudent.id || uid('student'));
+    const used = new Set(mergedStudents.map(student => String(student.id)));
+    if (used.has(nextId)) nextId = uid('student');
+    mapping.set(String(sourceStudent.id), nextId);
+    return nextId;
+  }
+
+  function applyStudentCategory(targetStudent, sourceStudent, categories, sourceWins) {
+    const next = deepClone(targetStudent);
+    const emptyValue = value => value === undefined || value === null || value === '' || (Array.isArray(value) && !value.length) || (typeof value === 'object' && !Array.isArray(value) && !Object.keys(value).length);
+    const copy = (field, allowBlank = false) => {
+      const sourceValue = sourceStudent[field];
+      if (sourceWins ? (allowBlank || sourceValue !== undefined) : emptyValue(next[field])) next[field] = deepClone(sourceValue);
+    };
+    if (categories.roster) {
+      ['firstName', 'lastName', 'nickName', 'grade', 'archived', 'sourceSystem', 'sourceCourseId', 'sourceUserId', 'sourceIdentifiers'].forEach(field => copy(field, true));
+    }
+    if (categories.notes) {
+      ['notesPrivate', 'notesSubstitute', 'notesPublic', 'noteCategories'].forEach(field => copy(field, true));
+    }
+    if (categories.requirements) copy('requirements', true);
+    return normalizeStudent({ ...next, id: targetStudent.id });
+  }
+
+  function remapClassAssignments(record, studentMap) {
+    const next = deepClone(record);
+    Object.values(next.cells || {}).forEach(cell => {
+      if (!cell.assignedStudentId) return;
+      cell.assignedStudentId = studentMap.get(String(cell.assignedStudentId)) || null;
+      if (!cell.assignedStudentId) cell.manual = false;
+    });
+    (next.freeformLayout?.objects || []).forEach(item => {
+      if (item.type !== 'seat' || !item.assignedStudentId) return;
+      item.assignedStudentId = studentMap.get(String(item.assignedStudentId)) || null;
+      if (!item.assignedStudentId) { item.manual = false; item.locked = false; }
+    });
+    return next;
+  }
+
+  function clearClassAssignments(record) {
+    Object.values(record.cells || {}).forEach(cell => { cell.assignedStudentId = null; cell.manual = false; });
+    (record.freeformLayout?.objects || []).forEach(item => { if (item.type === 'seat') { item.assignedStudentId = null; item.manual = false; item.locked = false; } });
+  }
+
+  function applySourceAssignmentsToExistingRoom(merged, source, studentMap) {
+    clearClassAssignments(merged);
+    Object.entries(source.cells || {}).forEach(([key, sourceCell]) => {
+      const targetCell = merged.cells?.[key];
+      if (!targetCell || targetCell.type !== 'seat' || !sourceCell.assignedStudentId) return;
+      targetCell.assignedStudentId = studentMap.get(String(sourceCell.assignedStudentId)) || null;
+      targetCell.manual = Boolean(targetCell.assignedStudentId && sourceCell.manual);
+    });
+    const sourceFreeByKey = new Map((source.freeformLayout?.objects || []).filter(item => item.type === 'seat').map(item => [String(item.cellKey || item.id), item]));
+    (merged.freeformLayout?.objects || []).filter(item => item.type === 'seat').forEach(targetSeat => {
+      const sourceSeat = sourceFreeByKey.get(String(targetSeat.cellKey || targetSeat.id));
+      if (!sourceSeat?.assignedStudentId) return;
+      targetSeat.assignedStudentId = studentMap.get(String(sourceSeat.assignedStudentId)) || null;
+      targetSeat.manual = Boolean(targetSeat.assignedStudentId && sourceSeat.manual);
+      targetSeat.locked = Boolean(targetSeat.assignedStudentId && sourceSeat.locked);
+    });
+  }
+
+  function mergeClassRecords(targetRecord, sourceRecord, categories, options = {}) {
+    const target = normalizeClassRecord(deepClone(targetRecord));
+    const source = normalizeClassRecord(deepClone(sourceRecord));
+    const sourceWins = options.sourceWins !== false;
+    const rosterMode = options.rosterMode === 'replace' ? 'replace' : 'merge';
+    const initialMatch = buildStudentMatch(source.students, target.students);
+    const studentMap = new Map(initialMatch.map);
+    let mergedStudents = rosterMode === 'replace' && categories.roster ? [] : target.students.map(student => deepClone(student));
+    const mergedById = () => new Map(mergedStudents.map(student => [String(student.id), student]));
+
+    source.students.forEach(sourceStudent => {
+      let targetId = studentMap.get(String(sourceStudent.id));
+      let targetStudent = targetId ? mergedById().get(String(targetId)) : null;
+      if (!targetStudent && categories.roster) {
+        targetId = sourceStudentToMergedId(sourceStudent, studentMap, mergedStudents);
+        targetStudent = normalizeStudent({ ...deepClone(sourceStudent), id: targetId });
+        mergedStudents.push(targetStudent);
+      }
+      if (!targetStudent) return;
+      const updated = applyStudentCategory(targetStudent, sourceStudent, categories, sourceWins);
+      const index = mergedStudents.findIndex(student => String(student.id) === String(targetStudent.id));
+      if (index >= 0) mergedStudents[index] = updated;
+    });
+    target.students = mergedStudents.map(normalizeStudent);
+
+    if (categories.rules) {
+      target.bubbles = source.bubbles.map((bubble, index) => normalizeBubbleRecord({ ...deepClone(bubble), studentIds: (bubble.studentIds || []).map(id => studentMap.get(String(id))).filter(Boolean) }, index));
+    }
+    if (categories.zones) {
+      target.zones = source.zones.map((zone, index) => normalizeZoneRecord({ ...deepClone(zone), studentIds: (zone.studentIds || []).map(id => studentMap.get(String(id))).filter(Boolean) }, index));
+    }
+    if (categories.room) {
+      target.rows = source.rows;
+      target.cols = source.cols;
+      target.cells = deepClone(source.cells);
+      target.layoutMode = source.layoutMode;
+      target.freeformLayout = deepClone(source.freeformLayout);
+      target.customObjects = deepClone(source.customObjects);
+      if (!categories.rules) {
+        Object.values(target.cells || {}).forEach(cell => { cell.anchorBubbleIds = []; });
+        (target.freeformLayout?.objects || []).forEach(item => { if (item.type === 'seat') item.anchorBubbleIds = []; });
+      }
+      if (!categories.zones) {
+        Object.values(target.cells || {}).forEach(cell => { cell.zoneIds = []; });
+        (target.freeformLayout?.objects || []).forEach(item => { if (item.type === 'seat') item.zoneIds = []; });
+      }
+    } else if (categories.zones) {
+      Object.values(target.cells || {}).forEach(cell => { cell.zoneIds = []; });
+      Object.entries(source.cells || {}).forEach(([key, sourceCell]) => { if (target.cells?.[key]) target.cells[key].zoneIds = deepClone(sourceCell.zoneIds || []); });
+      const sourceFreeByKey = new Map((source.freeformLayout?.objects || []).filter(item => item.type === 'seat').map(item => [String(item.cellKey || item.id), item]));
+      (target.freeformLayout?.objects || []).filter(item => item.type === 'seat').forEach(item => { item.zoneIds = deepClone(sourceFreeByKey.get(String(item.cellKey || item.id))?.zoneIds || []); });
+    }
+
+    if (categories.assignments) {
+      if (categories.room) {
+        const remapped = remapClassAssignments(target, studentMap);
+        target.cells = remapped.cells;
+        target.freeformLayout = remapped.freeformLayout;
+      } else applySourceAssignmentsToExistingRoom(target, source, studentMap);
+    } else if (categories.room) clearClassAssignments(target);
+
+    if (categories.rules && !categories.room) {
+      const validSeats = new Set(Object.entries(target.cells || {}).filter(([, cell]) => cell.type === 'seat').map(([key]) => String(key)));
+      (target.freeformLayout?.objects || []).filter(item => item.type === 'seat').forEach(item => validSeats.add(String(item.cellKey || item.id)));
+      target.bubbles.forEach(bubble => { bubble.anchorSeats = (bubble.anchorSeats || []).filter(key => validSeats.has(String(key))); });
+    }
+
+    if (categories.plans) {
+      const existing = new Map(target.seatingPlans.map(plan => [String(plan.id), plan]));
+      source.seatingPlans.map(plan => remapClassAssignments(normalizeSeatingPlan(plan), studentMap)).forEach(plan => existing.set(String(plan.id), normalizeSeatingPlan(plan)));
+      target.seatingPlans = Array.from(existing.values());
+    }
+    if (categories.details) {
+      target.chartMeta = deepClone(source.chartMeta);
+      target.academicYear = source.academicYear;
+      target.term = source.term;
+    }
+    target.id = targetRecord.id;
+    target.name = targetRecord.name;
+    target.updatedAt = new Date().toISOString();
+    return normalizeClassRecord(target);
+  }
+
+  function requestClassMerge() {
+    const source = selectedMergeSource();
+    if (!source) {
+      setLiveStatusMessage('Choose a source class before merging.');
+      return;
+    }
+    const categories = mergeCategories();
+    const selected = Object.entries(categories).filter(([, enabled]) => enabled).map(([name]) => name);
+    if (!selected.length) {
+      setLiveStatusMessage('Select at least one category to merge.');
+      return;
+    }
+    const rosterMode = node('classMergeRosterMode')?.value === 'replace' && categories.roster ? ' The current roster will be replaced by the source roster.' : '';
+    const snapshot = node('classMergeSnapshotBefore')?.checked ? ' An encrypted restore snapshot will be created first.' : ' No encrypted restore snapshot was requested.';
+    showInAppConfirm(
+      `Merge ${selected.join(', ')} from “${source.name}” into the current class?${rosterMode}${snapshot}`,
+      () => void applyClassMerge(),
+      { title: 'Apply Class Merge?', confirmText: 'Apply Merge', cancelText: 'Review Again' }
+    );
+  }
+
+  async function applyClassMerge() {
+    const source = selectedMergeSource();
+    if (!source) {
+      setLiveStatusMessage('Choose a source class before merging.');
+      return;
+    }
+    const categories = mergeCategories();
+    if (!Object.values(categories).some(Boolean)) {
+      setLiveStatusMessage('Select at least one category to merge.');
+      return;
+    }
+    persistActiveClass();
+    const target = normalizeClassRecord(activeClassRecord());
+    const sourceRecord = normalizeClassRecord(source);
+    const sourceLabel = currentMergeSourceLabel || sourceRecord.name;
+    const beforeClasses = deepClone(state.classes || []);
+    const beforeActiveId = state.activeClassId;
+    const snapshotRequested = Boolean(node('classMergeSnapshotBefore')?.checked);
+    let snapshotCreated = false;
+    let commitStarted = false;
+    try {
+      const merged = mergeClassRecords(target, sourceRecord, categories, {
+        rosterMode: node('classMergeRosterMode')?.value,
+        sourceWins: Boolean(node('classMergeSourceWins')?.checked)
+      });
+      if (snapshotRequested) {
+        await createAppSnapshotWithName(`Before class merge from ${sourceRecord.name} - ${new Date().toLocaleString()}`, { silent: true, reason: 'before-class-merge' });
+        snapshotCreated = true;
+      }
+      pushUndoSnapshot('Before class comparison merge');
+      const index = state.classes.findIndex(item => String(item.id) === String(target.id));
+      if (index < 0) throw new Error('The destination class is no longer available.');
+      commitStarted = true;
+      state.classes[index] = merged;
+      state.activeClassId = merged.id;
+      applyClassToState(merged.id);
+      persistActiveClass();
+      renderAll();
+      closeClassMerge();
+      setLiveStatusMessage(`Merged selected categories from ${sourceRecord.name} into ${target.name}. A restore point was ${snapshotCreated ? 'created' : 'not requested'}.`);
+    } catch (error) {
+      if (commitStarted) {
+        state.classes = beforeClasses.map(normalizeClassRecord);
+        state.activeClassId = beforeActiveId;
+        applyClassToState(beforeActiveId);
+        renderAll();
+      }
+      reportFailure({
+        operation: 'Compare & Merge Class',
+        source: sourceLabel,
+        error,
+        dataChanged: false,
+        snapshotCreated,
+        remedy: 'The destination class was restored to its pre-merge state. Review the selected categories and source class, then retry.',
+        retry: () => applyClassMerge()
+      });
+    }
+  }
+
+  async function loadClassMergeFile(file) {
+    if (!file) return;
+    try {
+      const payload = await file.text();
+      const { parsed } = await parseSupportedPayloadText(payload, `class merge file ${file.name}`);
+      classMergeExternalClasses = parsed.classes.map(normalizeClassRecord);
+      renderClassMergeSources(classMergeExternalClasses.length ? 'file:0' : '');
+      const status = node('classMergeSourceStatus');
+      if (status) status.textContent = `Loaded ${classMergeExternalClasses.length} class${classMergeExternalClasses.length === 1 ? '' : 'es'} from ${file.name}. Choose a source and review the comparison.`;
+    } catch (error) {
+      reportFailure({ operation: 'Load Class Merge File', source: file.name, error, dataChanged: false, snapshotCreated: false, remedy: 'Use a current schema-compatible encrypted or plain Classroom Seating Planner classes file.', retry: () => loadClassMergeFile(file) });
+    } finally {
+      if (node('classMergeFileInput')) node('classMergeFileInput').value = '';
+    }
+  }
+
+  function generatedRecoveryCode() {
+    const bytes = new Uint8Array(24);
+    crypto.getRandomValues(bytes);
+    return Array.from(bytes, value => value.toString(16).padStart(2, '0')).join('').match(/.{1,8}/g).join('-').toUpperCase();
+  }
+
+  function normalizeRecoveryCode(value) {
+    return String(value || '').replace(/[^a-fA-F0-9]/g, '').toLowerCase();
+  }
+
+  async function createPasswordRecoveryPackage() {
+    const status = node('passwordRecoveryPackageStatus');
+    const settingsStatus = node('passwordRecoverySettingsStatus');
+    const activeKey = currentSessionEncryptionKey();
+    try {
+      if (!activeKey) throw new Error('Set or unlock the current encryption password before creating a password recovery package.');
+      if (!window.crypto?.subtle) throw new Error('This browser does not support the required Web Crypto functions.');
+      if (status) status.textContent = 'Validating the active password and creating the recovery package…';
+      const stored = await BrowserDataStore.getPrimarySaveDetailed();
+      if (stored.status === 'ok' && stored.payload) {
+        const storedDocument = JSON.parse(stored.payload);
+        if (storedDocument?.encrypted) {
+          await decryptTextEnvelope(storedDocument, activeKey);
+        }
+      }
+      const recoveryCode = generatedRecoveryCode();
+      const normalizedCode = normalizeRecoveryCode(recoveryCode);
+      const wrappedText = await encryptTextWithSecret(activeKey, normalizedCode, PASSWORD_RECOVERY_KIND, {
+        payloadKind: PASSWORD_RECOVERY_KIND,
+        recoveryFormat: PASSWORD_RECOVERY_FORMAT,
+        createdAt: new Date().toISOString()
+      });
+      const parsed = JSON.parse(wrappedText);
+      const verification = await decryptTextEnvelope(parsed, normalizedCode);
+      if (verification !== activeKey) throw new Error('The recovery package verification failed before download.');
+      const date = new Date().toISOString().slice(0, 10);
+      downloadText(`classroom-seating-planner-password-recovery-${date}.json`, wrappedText, 'application/json');
+      downloadText(`classroom-seating-planner-password-recovery-code-${date}.txt`, `Classroom Seating Planner Encryption Password Recovery Code\n\n${recoveryCode}\n\nStore this code separately from the password recovery package. Anyone with both can recover the planner encryption password. Test the package before relying on it.\n`, 'text/plain');
+      const panel = node('passwordRecoveryCodePanel');
+      const codeNode = node('passwordRecoveryCodeValue');
+      if (panel) panel.hidden = false;
+      if (codeNode) codeNode.textContent = recoveryCode;
+      if (status) status.textContent = 'Recovery package self-test passed. Package and code downloads were requested; confirm both files exist and store them separately.';
+      if (settingsStatus) settingsStatus.textContent = 'A password recovery package was created and verified in this session.';
+    } catch (error) {
+      if (status) status.textContent = `Password recovery package failed: ${error.message}`;
+      if (settingsStatus) settingsStatus.textContent = `Recovery package failed: ${error.message}`;
+      reportFailure({ operation: 'Create Encryption Password Recovery Package', source: 'current session encryption password', error, dataChanged: false, snapshotCreated: false, remedy: 'Unlock the current encryption password, confirm Web Crypto is available, and retry.' });
+    }
+  }
+
+  function closePasswordRecoveryRestore() {
+    node('passwordRecoveryRestoreModal')?.classList.remove('show');
+    pendingPasswordRecoveryFile = null;
+    const input = node('passwordRecoveryCodeInput');
+    if (input) input.value = '';
+    const errorBox = node('passwordRecoveryRestoreError');
+    if (errorBox) { errorBox.hidden = true; errorBox.textContent = ''; }
+    DialogManager.synchronize();
+  }
+
+  async function preparePasswordRecoveryRestore(file) {
+    if (!file) return;
+    try {
+      const raw = await file.text();
+      assertImportTextWithinLimits(raw, 'password recovery package', 2 * 1024 * 1024);
+      const parsed = JSON.parse(raw);
+      assertSupportedEncryptedEnvelope(parsed, 'password recovery package', PASSWORD_RECOVERY_KIND);
+      if (parsed.recoveryFormat !== PASSWORD_RECOVERY_FORMAT || parsed.payloadKind !== PASSWORD_RECOVERY_KIND) throw new Error('The selected file is not a supported encryption password recovery package.');
+      pendingPasswordRecoveryFile = file;
+      const label = node('passwordRecoveryRestoreFile');
+      if (label) label.textContent = `Package: ${file.name}. Enter the separately stored one-time recovery code.`;
+      const errorBox = node('passwordRecoveryRestoreError');
+      if (errorBox) { errorBox.hidden = true; errorBox.textContent = ''; }
+      node('passwordRecoveryRestoreModal')?.classList.add('show');
+      DialogManager.synchronize();
+      setTimeout(() => node('passwordRecoveryCodeInput')?.focus(), 0);
+    } catch (error) {
+      reportFailure({ operation: 'Open Encryption Password Recovery Package', source: file.name, error, dataChanged: false, snapshotCreated: false, remedy: 'Choose a password recovery package created by this application. A full offline recovery kit is a different file type.', retry: () => preparePasswordRecoveryRestore(file) });
+    } finally {
+      if (node('passwordRecoveryPackageInput')) node('passwordRecoveryPackageInput').value = '';
+    }
+  }
+
+  async function restorePasswordRecoveryPackage(file = pendingPasswordRecoveryFile, enteredCode = node('passwordRecoveryCodeInput')?.value || '') {
+    if (!file) return;
+    const errorBox = node('passwordRecoveryRestoreError');
+    try {
+      const normalizedCode = normalizeRecoveryCode(enteredCode);
+      if (normalizedCode.length !== 48) throw new Error('Enter the complete one-time recovery code from the separate code file.');
+      const raw = await file.text();
+      assertImportTextWithinLimits(raw, 'password recovery package', 2 * 1024 * 1024);
+      const parsed = JSON.parse(raw);
+      assertSupportedEncryptedEnvelope(parsed, 'password recovery package', PASSWORD_RECOVERY_KIND);
+      if (parsed.recoveryFormat !== PASSWORD_RECOVERY_FORMAT || parsed.payloadKind !== PASSWORD_RECOVERY_KIND) throw new Error('The selected file is not a supported encryption password recovery package.');
+      const recoveredKey = await decryptTextEnvelope(parsed, normalizedCode);
+      if (!recoveredKey) throw new Error('The password recovery package did not contain a usable encryption password.');
+      setSessionEncryptionKey(recoveredKey);
+      let validation = 'The recovered password is active for this session.';
+      const stored = await BrowserDataStore.getPrimarySaveDetailed();
+      if (stored.status === 'ok' && stored.payload) {
+        try {
+          const storedParsed = JSON.parse(stored.payload);
+          if (storedParsed?.encrypted) {
+            await decryptTextEnvelope(storedParsed, recoveredKey);
+            validation = 'The recovered password successfully unlocked the current encrypted browser save and is active for this session.';
+          }
+        } catch (_) {
+          validation = 'The package was valid, but the recovered password did not match the current browser save. It may belong to another downloaded save.';
+        }
+      }
+      const status = node('passwordRecoveryPackageStatus');
+      const settingsStatus = node('passwordRecoverySettingsStatus');
+      if (StartupRecoveryV45.hasPendingSave()) {
+        const welcomeInput = node('welcomeEncryptionKeyInput');
+        if (welcomeInput) welcomeInput.value = recoveredKey;
+        const unlocked = await StartupRecoveryV45.handlePrimaryAction();
+        if (!unlocked) {
+          clearSessionEncryptionKeyFromMemory();
+          throw new Error('The package was valid, but the recovered password did not unlock the browser save currently waiting at startup. The package may belong to another save.');
+        }
+        validation = 'The recovery package unlocked and restored the encrypted browser save. The recovered password is active for this session.';
+      }
+      if (status) status.textContent = validation;
+      if (settingsStatus) settingsStatus.textContent = validation;
+      closePasswordRecoveryRestore();
+      setLiveStatusMessage(validation);
+    } catch (error) {
+      if (errorBox) { errorBox.hidden = false; errorBox.textContent = error.message; }
+      reportFailure({ operation: 'Restore Encryption Password Recovery Package', source: file.name, error, dataChanged: false, snapshotCreated: false, remedy: 'Verify that the package and one-time recovery code are the matching pair. Capitalization and dashes in the code are ignored.', retry: () => preparePasswordRecoveryRestore(file) });
+    }
+  }
+
+  function failureCode(operation, error) {
+    const base = text(error?.code || error?.name || 'ERROR').replace(/[^A-Z0-9]+/gi, '-').toUpperCase();
+    const op = text(operation).replace(/[^A-Z0-9]+/gi, '-').replace(/^-|-$/g, '').toUpperCase().slice(0, 28) || 'OPERATION';
+    return `${op}-${base}-${String(++failureSequence).padStart(3, '0')}`;
+  }
+
+  function reportFailure(options = {}) {
+    const error = options.error instanceof Error ? options.error : new Error(text(options.error) || 'Unknown operation failure.');
+    const record = {
+      id: uid('operation-failure'),
+      time: new Date().toISOString(),
+      operation: text(options.operation) || 'Operation',
+      source: text(options.source) || 'Not specified',
+      message: text(error.message) || 'The operation failed.',
+      code: options.code || failureCode(options.operation, error),
+      dataChanged: Boolean(options.dataChanged),
+      snapshotCreated: Boolean(options.snapshotCreated),
+      rejectedRows: Array.isArray(options.rejectedRows) ? deepClone(options.rejectedRows).slice(0, 5000) : [],
+      remedy: text(options.remedy) || 'Review the message, confirm the source data and connection, then retry.',
+      retry: typeof options.retry === 'function' ? options.retry : null
+    };
+    failureRecords.unshift(record);
+    if (failureRecords.length > MAX_FAILURE_RECORDS) failureRecords.length = MAX_FAILURE_RECORDS;
+    renderOperationRecovery(record);
+    node('operationRecoveryModal')?.classList.add('show');
+    DialogManager.synchronize();
+    setLiveStatusMessage(`${record.operation} failed. Opened the Recovery Center with code ${record.code}.`);
+    return record;
+  }
+
+  function supportReport(record) {
+    return [
+      `Classroom Seating Planner ${APP_REVISION}`,
+      `Operation: ${record.operation}`,
+      `Time: ${record.time}`,
+      `Source label: ${record.source}`,
+      `Failure code: ${record.code}`,
+      `Message: ${record.message}`,
+      `Data changed: ${record.dataChanged ? 'yes' : 'no'}`,
+      `Recovery snapshot created: ${record.snapshotCreated ? 'yes' : 'no'}`,
+      `Rejected row count: ${record.rejectedRows.length}`,
+      `Suggested remedy: ${record.remedy}`,
+      `Browser: ${navigator.userAgent}`,
+      '',
+      'This report excludes student records, notes, OAuth tokens, passwords, encryption keys, and rejected-row contents.'
+    ].join('\n');
+  }
+
+  async function copyText(value) {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(value);
+      return;
+    }
+    const textarea = document.createElement('textarea');
+    textarea.value = value;
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand('copy');
+    textarea.remove();
+  }
+
+  function rejectedRowsCsv(record) {
+    const rows = record.rejectedRows || [];
+    const headers = Array.from(new Set(rows.flatMap(item => Object.keys(item || {}))));
+    if (!headers.length) return 'reason\nNo rejected-row details were recorded.\n';
+    const quote = value => `"${String(value ?? '').replace(/"/g, '""')}"`;
+    return [headers.map(quote).join(','), ...rows.map(row => headers.map(header => quote(row?.[header])).join(','))].join('\n');
+  }
+
+  function renderOperationRecovery(current = failureRecords[0] || null) {
+    const currentBox = node('operationRecoveryCurrent');
+    const history = node('operationRecoveryHistory');
+    if (currentBox) currentBox.innerHTML = current ? `
+      <section class="operation-recovery-current">
+        <div class="operation-recovery-heading"><div><span class="candidate-option-kicker">${escapeHtml(new Date(current.time).toLocaleString())}</span><h3>${escapeHtml(current.operation)}</h3></div><span class="save-method-badge bad">${escapeHtml(current.code)}</span></div>
+        <div class="save-health-grid compact"><div class="save-health-card"><strong>Source</strong><span>${escapeHtml(current.source)}</span></div><div class="save-health-card"><strong>Data changed</strong><span>${current.dataChanged ? 'Possibly. Review the operation result.' : 'No change was committed.'}</span></div><div class="save-health-card"><strong>Recovery snapshot</strong><span>${current.snapshotCreated ? 'Created or requested.' : 'Not created.'}</span></div><div class="save-health-card"><strong>Rejected rows</strong><span>${current.rejectedRows.length}</span></div></div>
+        <div class="warningbox"><strong>${escapeHtml(current.message)}</strong><br>${escapeHtml(current.remedy)}</div>
+        <div class="button-row"><button class="secondary" type="button" data-operation-copy="${escapeHtml(current.id)}">Copy Safe Report</button>${current.retry ? `<button type="button" data-operation-retry="${escapeHtml(current.id)}">Retry Operation</button>` : ''}${current.rejectedRows.length ? `<button class="secondary" type="button" data-operation-rejected="${escapeHtml(current.id)}">Download Rejected Rows</button>` : ''}</div>
+      </section>` : '<div class="successbox">No import or integration failure has been recorded in this page session.</div>';
+    if (history) history.innerHTML = failureRecords.length ? failureRecords.map(record => `<button type="button" class="operation-recovery-history-row" data-operation-open="${escapeHtml(record.id)}"><span><strong>${escapeHtml(record.operation)}</strong><small>${escapeHtml(new Date(record.time).toLocaleString())} · ${escapeHtml(record.source)}</small></span><b>${escapeHtml(record.code)}</b></button>`).join('') : '<div class="restore-empty">No recent failures.</div>';
+  }
+
+  function openOperationRecovery(record = failureRecords[0] || null) {
+    renderOperationRecovery(record);
+    node('operationRecoveryModal')?.classList.add('show');
+    DialogManager.synchronize();
+  }
+
+  function operationRecord(id) {
+    return failureRecords.find(record => String(record.id) === String(id));
+  }
+
+  function installEvents() {
+    node('ruleConflictInspectorBtn')?.addEventListener('click', () => openRuleConflictInspector());
+    node('closeRuleConflictBtn')?.addEventListener('click', closeRuleConflictInspector);
+    node('ruleConflictCloseBottomBtn')?.addEventListener('click', closeRuleConflictInspector);
+    node('ruleConflictRecheckBtn')?.addEventListener('click', () => renderRuleConflictReport());
+    node('ruleConflictGenerateAnywayBtn')?.addEventListener('click', () => {
+      const mode = pendingGenerationMode || 'generate';
+      closeRuleConflictInspector();
+      ModernizationSuite.startCandidateGeneration(mode);
+    });
+    node('ruleConflictList')?.addEventListener('click', event => {
+      const button = event.target.closest('[data-rule-conflict-action]');
+      if (button) openConflictTools(button.dataset.ruleConflictAction);
+    });
+    document.addEventListener('click', event => {
+      if (event.target.closest('[data-open-rule-conflict-inspector]')) openRuleConflictInspector();
+    });
+    interceptGeneratorButton(node('generateBtn'), 'generate');
+    interceptGeneratorButton(node('randomizeAllBtn'), 'randomize');
+
+    node('compareMergeClassBtn')?.addEventListener('click', openClassMerge);
+    node('closeClassMergeBtn')?.addEventListener('click', closeClassMerge);
+    node('cancelClassMergeBtn')?.addEventListener('click', closeClassMerge);
+    node('classMergeSourceSelect')?.addEventListener('change', () => { currentMergeSourceLabel = node('classMergeSourceSelect')?.selectedOptions?.[0]?.textContent || ''; renderClassMergeComparison(); });
+    node('classMergeLoadFileBtn')?.addEventListener('click', () => node('classMergeFileInput')?.click());
+    node('classMergeFileInput')?.addEventListener('change', event => void loadClassMergeFile(event.target.files?.[0]));
+    node('applyClassMergeBtn')?.addEventListener('click', requestClassMerge);
+    document.querySelectorAll('[data-class-merge-category],#classMergeRosterMode,#classMergeSourceWins').forEach(input => input.addEventListener('change', renderClassMergeComparison));
+
+    node('openPasswordRecoveryPackageBtn')?.addEventListener('click', () => { node('settingsModal')?.classList.remove('show'); node('recoveryKitModal')?.classList.add('show'); node('passwordRecoveryPackageCard')?.scrollIntoView({ block: 'center' }); DialogManager.synchronize(); });
+    node('createPasswordRecoveryPackageBtn')?.addEventListener('click', () => void createPasswordRecoveryPackage());
+    node('choosePasswordRecoveryPackageBtn')?.addEventListener('click', () => node('passwordRecoveryPackageInput')?.click());
+    node('restorePasswordRecoveryPackageBtn')?.addEventListener('click', () => node('passwordRecoveryPackageInput')?.click());
+    node('welcomeRecoverPasswordBtn')?.addEventListener('click', () => node('passwordRecoveryPackageInput')?.click());
+    node('passwordRecoveryPackageInput')?.addEventListener('change', event => void preparePasswordRecoveryRestore(event.target.files?.[0]));
+    node('continuePasswordRecoveryRestoreBtn')?.addEventListener('click', () => void restorePasswordRecoveryPackage());
+    node('closePasswordRecoveryRestoreBtn')?.addEventListener('click', closePasswordRecoveryRestore);
+    node('cancelPasswordRecoveryRestoreBtn')?.addEventListener('click', closePasswordRecoveryRestore);
+    node('passwordRecoveryCodeInput')?.addEventListener('keydown', event => { if (event.key === 'Enter') void restorePasswordRecoveryPackage(); if (event.key === 'Escape') closePasswordRecoveryRestore(); });
+    node('copyPasswordRecoveryCodeBtn')?.addEventListener('click', () => void copyText(node('passwordRecoveryCodeValue')?.textContent || '').then(() => setLiveStatusMessage('Recovery code copied. Store it separately from the package.')));
+
+    node('openOperationRecoveryCenterBtn')?.addEventListener('click', () => openOperationRecovery());
+    node('closeOperationRecoveryBtn')?.addEventListener('click', () => { node('operationRecoveryModal')?.classList.remove('show'); DialogManager.synchronize(); });
+    node('clearOperationFailureHistoryBtn')?.addEventListener('click', () => { failureRecords.length = 0; renderOperationRecovery(null); });
+    node('operationRecoveryModal')?.addEventListener('click', event => {
+      const open = event.target.closest('[data-operation-open]');
+      const retry = event.target.closest('[data-operation-retry]');
+      const copy = event.target.closest('[data-operation-copy]');
+      const rejected = event.target.closest('[data-operation-rejected]');
+      if (open) renderOperationRecovery(operationRecord(open.dataset.operationOpen));
+      if (retry) {
+        const record = operationRecord(retry.dataset.operationRetry);
+        node('operationRecoveryModal')?.classList.remove('show');
+        Promise.resolve(record?.retry?.()).catch(error => reportFailure({ operation: record?.operation || 'Retry operation', source: record?.source || '', error, remedy: record?.remedy || '' }));
+      }
+      if (copy) {
+        const record = operationRecord(copy.dataset.operationCopy);
+        if (record) void copyText(supportReport(record)).then(() => setLiveStatusMessage('Privacy-safe operation report copied.'));
+      }
+      if (rejected) {
+        const record = operationRecord(rejected.dataset.operationRejected);
+        if (record) downloadText(`classroom-seating-planner-rejected-rows-${new Date().toISOString().slice(0, 10)}.csv`, rejectedRowsCsv(record), 'text/csv');
+      }
+    });
+  }
+
+  function installObservers() {
+    const detail = node('seatingCandidateDetail');
+    if (detail) {
+      candidateObserver?.disconnect();
+      candidateObserver = new MutationObserver(() => decorateCandidateDetail());
+      candidateObserver.observe(detail, { childList: true });
+    }
+    const nav = node('settingsPageNav');
+    if (nav) {
+      settingsObserver?.disconnect();
+      let sorting = false;
+      settingsObserver = new MutationObserver(() => {
+        if (sorting) return;
+        sorting = true;
+        sortSettingsNavigation();
+        queueMicrotask(() => { sorting = false; });
+      });
+      settingsObserver.observe(nav, { childList: true });
+    }
+  }
+
+  function install() {
+    if (installed) return;
+    installed = true;
+    appendModalMarkup();
+    installEntryPoints();
+    sortSettingsNavigation();
+    installEvents();
+    installObservers();
+    document.body.dataset.workflowRecovery = APP_REVISION;
+  }
+
+  function afterReady() {
+    sortSettingsNavigation();
+    decorateCandidateDetail();
+  }
+
+  return Object.freeze({
+    install,
+    afterReady,
+    analyzeRuleConflicts,
+    openRuleConflictInspector,
+    renderCandidateRuleContext: candidateRuleContextHtml,
+    mergeClassRecords,
+    openClassMerge,
+    reportFailure,
+    openOperationRecovery,
+    createPasswordRecoveryPackage,
+    preparePasswordRecoveryRestore,
+    restorePasswordRecoveryPackage,
+    sortSettingsNavigation
+  });
+})();
+
 async function registerHostedServiceWorker() {
   if (!('serviceWorker' in navigator)) return false;
   if (!/^https?:$/.test(location.protocol) || location.hostname === 'example.test') return false;
@@ -27544,6 +29123,7 @@ async function initializeApp() {
   ClassroomWorkflowV53.install();
   ClassSetupWorkspaceV54.install();
   DistrictIntegrationsV57.install();
+  WorkflowRecoveryV62.install();
   await BrowserDataStore.initialize();
   uiState.appDatabaseReady = true;
   uiState.pageSettings = mergePageSettings(null);
@@ -27622,6 +29202,7 @@ async function initializeApp() {
   ClassroomWorkflowV53.afterReady();
   ClassSetupWorkspaceV54.afterReady();
   DistrictIntegrationsV57.afterReady();
+  WorkflowRecoveryV62.afterReady();
   void registerHostedServiceWorker();
 }
 
