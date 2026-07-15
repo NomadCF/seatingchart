@@ -5,9 +5,9 @@
   <meta name="license" content="MIT License" />
   <meta name="spdx-license-identifier" content="MIT" />
   <meta name="copyright" content="Copyright (c) 2026 Chris L. Franklin" />
-  <meta name="app-version" content="6.4.8" />
+  <meta name="app-version" content="6.5.0" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com https://www.paypalobjects.com blob:; style-src 'self' 'unsafe-inline'; connect-src 'self' https://www.googleapis.com https://classroom.googleapis.com https://accounts.google.com https://www.paypal.com https://www.paypalobjects.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://www.paypal.com; img-src 'self' data: blob: https://www.paypalobjects.com; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'self' https://www.paypal.com" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com https://www.paypalobjects.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://www.googleapis.com https://classroom.googleapis.com https://accounts.google.com https://www.paypal.com https://www.paypalobjects.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://www.paypal.com; img-src 'self' data: blob: https://www.paypalobjects.com; font-src 'self' data:; worker-src 'self' blob:; manifest-src 'self'; media-src 'none'; object-src 'none'; base-uri 'none'; form-action 'self' https://www.paypal.com" />
   <meta name="application-name" content="Classroom Seating Planner" />
   <meta name="theme-color" content="#1e3a8a" />
   
@@ -5572,14 +5572,14 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
                       <div class="settings-grid two-col">
                         <div class="security-card">
                           <h4>Lock / Unlock PIN</h4>
-                          <div class="field"><label for="settingsLockPin">New lock PIN/password</label><input id="settingsLockPin" type="password" autocomplete="new-password" /></div>
-                          <div class="field"><label for="settingsLockPinConfirm">Confirm lock PIN/password</label><input id="settingsLockPinConfirm" type="password" autocomplete="new-password" /></div>
+                          <div class="field"><label for="settingsLockPin">New lock PIN/password</label><input id="settingsLockPin" type="password" minlength="6" maxlength="256" autocomplete="new-password" /></div>
+                          <div class="field"><label for="settingsLockPinConfirm">Confirm lock PIN/password</label><input id="settingsLockPinConfirm" type="password" minlength="6" maxlength="256" autocomplete="new-password" /></div>
                           <button id="settingsSaveLockPinBtn" class="secondary" type="button">Save Lock PIN</button>
                         </div>
                         <div class="security-card">
                           <h4>Eye Mode Exit PIN</h4>
-                          <div class="field"><label for="settingsVisibilityPin">New eye mode PIN/password</label><input id="settingsVisibilityPin" type="password" autocomplete="new-password" /></div>
-                          <div class="field"><label for="settingsVisibilityPinConfirm">Confirm eye mode PIN/password</label><input id="settingsVisibilityPinConfirm" type="password" autocomplete="new-password" /></div>
+                          <div class="field"><label for="settingsVisibilityPin">New eye mode PIN/password</label><input id="settingsVisibilityPin" type="password" minlength="6" maxlength="256" autocomplete="new-password" /></div>
+                          <div class="field"><label for="settingsVisibilityPinConfirm">Confirm eye mode PIN/password</label><input id="settingsVisibilityPinConfirm" type="password" minlength="6" maxlength="256" autocomplete="new-password" /></div>
                           <button id="settingsSaveVisibilityPinBtn" class="secondary" type="button">Save Eye PIN</button>
                         </div>
                       </div>
@@ -6092,11 +6092,11 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
         <div class="hint" style="margin-bottom:10px;">Create the PIN/password that will be required to unlock this page. It will be stored only as a salted cryptographic hash, not as plain text.</div>
         <div class="field">
           <label for="pageLockSetupInput">PIN/password</label>
-          <input id="pageLockSetupInput" type="password" autocomplete="new-password" />
+          <input id="pageLockSetupInput" type="password" minlength="6" maxlength="256" autocomplete="new-password" />
         </div>
         <div class="field">
           <label for="pageLockSetupConfirmInput">Confirm PIN/password</label>
-          <input id="pageLockSetupConfirmInput" type="password" autocomplete="new-password" />
+          <input id="pageLockSetupConfirmInput" type="password" minlength="6" maxlength="256" autocomplete="new-password" />
         </div>
         <div id="pageLockSetupError" class="warning" style="display:none; margin-top:8px;"></div>
         <div class="button-row" style="margin-top:10px;">
@@ -6155,8 +6155,8 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
       </div>
       <div class="modal-body">
         <div class="hint" style="margin-bottom:10px;">No visibility PIN, lock PIN, or encryption key is currently available. Create an eye mode PIN/password. It is stored only as a salted cryptographic hash.</div>
-        <div class="field"><label for="visibilitySetupInput">Eye mode PIN/password</label><input id="visibilitySetupInput" type="password" autocomplete="new-password" /></div>
-        <div class="field"><label for="visibilitySetupConfirmInput">Confirm eye mode PIN/password</label><input id="visibilitySetupConfirmInput" type="password" autocomplete="new-password" /></div>
+        <div class="field"><label for="visibilitySetupInput">Eye mode PIN/password</label><input id="visibilitySetupInput" type="password" minlength="6" maxlength="256" autocomplete="new-password" /></div>
+        <div class="field"><label for="visibilitySetupConfirmInput">Confirm eye mode PIN/password</label><input id="visibilitySetupConfirmInput" type="password" minlength="6" maxlength="256" autocomplete="new-password" /></div>
         <div id="visibilitySetupError" class="warning" style="display:none; margin-top:8px;"></div>
         <div class="button-row" style="margin-top:10px;">
           <button id="visibilitySetupCancelBtn" class="secondary" type="button">Cancel</button>
@@ -6199,7 +6199,7 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
 
   <div id="classToolsModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="classToolsTitle"><div class="modal modern-modal"><div class="panel-header"><h2 id="classToolsTitle">Class Rollover &amp; Archive</h2><button id="closeClassToolsBtn" class="tiny secondary" type="button">Close</button></div><div class="modal-body"><div id="classToolsSummary" class="hint"></div><div class="class-tools-grid" style="margin-top:10px;"><section class="workflow-card"><h3>Class Details</h3><div class="field"><label for="classAcademicYearInput">Academic year</label><input id="classAcademicYearInput" maxlength="20" placeholder="2026–2027" /></div><div class="field"><label for="classTermInput">Term</label><input id="classTermInput" maxlength="40" placeholder="Fall / Semester 1" /></div><button id="saveClassDetailsBtn" class="secondary" type="button">Save Details</button></section><section class="workflow-card"><h3>Archive</h3><p class="muted">Archived classes stay in the save but are hidden from the normal class list unless “Show archived” is enabled.</p><button id="toggleArchiveClassBtn" class="secondary" type="button">Archive Current Class</button><label class="checkline"><input id="showArchivedClassesToggle" type="checkbox" /> Show archived classes</label></section><section class="workflow-card"><h3>Rollover</h3><div class="field"><label for="rolloverClassNameInput">New class name</label><input id="rolloverClassNameInput" maxlength="80" /></div><label class="checkline"><input id="rolloverCopyRoster" type="checkbox" checked /> Copy roster</label><label class="checkline"><input id="rolloverCopyRules" type="checkbox" checked /> Copy groups and zones</label><label class="checkline"><input id="rolloverCopyLayout" type="checkbox" checked /> Copy room layout</label><label class="checkline"><input id="rolloverClearAssignments" type="checkbox" checked /> Clear student assignments</label><button id="createRolloverClassBtn" type="button">Create Rollover Class</button></section></div></div></div></div>
 
-  <div id="rosterReconcileModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="rosterReconcileTitle"><div class="modal modern-modal"><div class="panel-header"><h2 id="rosterReconcileTitle">Roster Reconciliation</h2><button id="closeRosterReconcileBtn" class="tiny secondary" type="button">Close</button></div><div class="modal-body"><div id="reconcileSummary" class="reconcile-summary-grid"></div><div id="reconcilePreview" class="csv-preview-table" style="margin-top:10px;"></div><section class="section" style="margin-top:10px;"><h3>Apply Changes</h3><label class="checkline"><input id="reconcileUpdateMatched" type="checkbox" checked /> Update names, grade, and nickname for matched students</label><label class="checkline"><input id="reconcileAddNew" type="checkbox" checked /> Add new students</label><label class="checkline"><input id="reconcileArchiveMissing" type="checkbox" /> Move students missing from the CSV into the class roster archive</label><label class="checkline"><input id="reconcilePreserveNotes" type="checkbox" checked /> Preserve existing notes and seating requirements</label><label class="checkline"><input id="reconcilePreserveMemberships" type="checkbox" checked /> Preserve group, zone, and seat references for matched students</label></section><div class="button-row"><button id="applyRosterReconcileBtn" type="button">Apply Reconciliation</button><button id="cancelRosterReconcileBtn" class="secondary" type="button">Cancel</button></div></div></div></div>
+  <div id="rosterReconcileModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="rosterReconcileTitle"><div class="modal modern-modal"><div class="panel-header"><h2 id="rosterReconcileTitle">Roster Reconciliation</h2><button id="closeRosterReconcileBtn" class="tiny secondary" type="button">Close</button></div><div class="modal-body"><div id="reconcileSummary" class="reconcile-summary-grid"></div><div id="reconcilePreview" class="csv-preview-table" style="margin-top:10px;"></div><section class="section" style="margin-top:10px;"><h3>Apply Changes</h3><label class="checkline"><input id="reconcileUpdateMatched" type="checkbox" checked /> Update names, grade, and nickname for matched students</label><label class="checkline"><input id="reconcileAddNew" type="checkbox" checked /> Add new students</label><label class="checkline"><input id="reconcileArchiveMissing" type="checkbox" /> Move students missing from the CSV into the class roster archive</label><label class="checkline"><input id="reconcilePreserveNotes" type="checkbox" checked /> Preserve existing notes and seating requirements</label></section><div class="button-row"><button id="applyRosterReconcileBtn" type="button">Apply Reconciliation</button><button id="cancelRosterReconcileBtn" class="secondary" type="button">Cancel</button></div></div></div></div>
 
   <div id="safeShareModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="safeShareTitle"><div class="modal modern-modal"><div class="panel-header"><h2 id="safeShareTitle">Safe Sharing Presets</h2><button id="closeSafeShareBtn" class="tiny secondary" type="button">Close</button></div><div class="modal-body"><div class="hint">Choose a preset. The preview states exactly which student information will leave the app before a file is created.</div><div id="safeShareGrid" class="safe-share-grid" style="margin-top:10px;"></div><section class="section"><h3>Support-Team Custom Fields</h3><div class="requirements-grid"><label class="checkline"><input id="shareIncludeIds" type="checkbox" /> Student IDs</label><label class="checkline"><input id="shareIncludeGrades" type="checkbox" checked /> Grades</label><label class="checkline"><input id="shareIncludePublicNotes" type="checkbox" checked /> Public notes</label><label class="checkline"><input id="shareIncludeSubNotes" type="checkbox" /> Substitute notes</label><label class="checkline"><input id="shareIncludePrivateNotes" type="checkbox" /> Private notes</label><label class="checkline"><input id="shareIncludeRequirements" type="checkbox" /> Seating requirements</label></div></section><div id="safeSharePreview" class="confirm-message">Select a preset to review its contents.</div></div></div></div>
 
@@ -6213,7 +6213,7 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
 const APP_CONFIG = Object.freeze({
   name: 'Classroom Seating Planner',
   shortName: 'Seating Planner',
-  version: '6.4.8',
+  version: '6.5.0',
   copyrightHolder: 'Chris L. Franklin',
   copyrightYear: '2026',
   releaseDate: '2026-07-14',
@@ -6279,6 +6279,13 @@ const GOOGLE_CLASSROOM_SCOPES = [
   'https://www.googleapis.com/auth/classroom.courses.readonly',
   'https://www.googleapis.com/auth/classroom.rosters.readonly'
 ].join(' ');
+const PBKDF2_MIN_ITERATIONS = 150000;
+const PBKDF2_MAX_ITERATIONS = 2000000;
+const NETWORK_TIMEOUT_MS = 60000;
+const MAX_API_PAGES = 200;
+const MIN_LOCAL_CREDENTIAL_LENGTH = 6;
+const MAX_LOCAL_CREDENTIAL_LENGTH = 256;
+
 const IMPORT_LIMITS = Object.freeze({
   saveBytes: 64 * 1024 * 1024,
   csvBytes: 10 * 1024 * 1024,
@@ -6477,10 +6484,24 @@ const PROJECT_FEATURES = [
 
 const RELEASE_HISTORY = [
   {
+    version: '6.5.0',
+    date: 'July 14, 2026',
+    title: 'Complete security, encryption, codebase, and interface audit',
+    current: true,
+    changes: [
+      'Bounded imported PBKDF2 work factors and stored lock credentials before any expensive key derivation, while retaining generation-6 encrypted-save compatibility.',
+      'Hardened password-protected read-only HTML by validating its envelope and sanitizing decrypted markup before insertion.',
+      'Scoped Factory Reset to planner-owned storage, neutralized spreadsheet formulas in rejected-row CSV exports, and made persisted diagnostic errors privacy-safe.',
+      'Consolidated Google API fetches and external script loading behind bounded timeout helpers, and restricted the hosted service worker to the declared application shell.',
+      'Consolidated object-URL downloads, tightened the portable Content Security Policy, refreshed deployment and security guidance, and added automated guards for the repaired boundaries.',
+      'Removed obsolete release-report clutter from the maintained source package and revalidated UI controls, Help, schemas, exports, collaboration, themes, encryption, recovery, and performance.'
+    ]
+  },
+  {
     version: '6.4.8',
     date: 'July 14, 2026',
     title: 'Per-collaborator interface access and one-page Freeform PDFs',
-    current: true,
+    current: false,
     changes: [
       'Added per-person planner access profiles to Google Drive sharing, with Hidden, View only, or Can edit modes for class setup, room design, seating, review/printing, saving, sharing, settings, and class management.',
       'Added Full editor, Seating assistant, Room designer, Roster and rules editor, Reviewer and printer, and Custom presets while keeping Google Drive Viewer as an overriding read-only role.',
@@ -7142,8 +7163,7 @@ function safeStorageRemove(storageName, key) {
 
 const PLANNER_STORAGE_KEY_PREFIXES = Object.freeze([
   'classroom-seating-planner',
-  'classroomSeatingPlanner',
-  'seating-chart-'
+  'classroomSeatingPlanner'
 ]);
 
 function isPlannerStorageKey(key) {
@@ -7173,7 +7193,17 @@ function clearPlannerWebStorage(storageName) {
   return { removed, failed };
 }
 const keyOf = (row, col) => `${row}-${col}`;
-const uid = (prefix) => `${prefix}-${(crypto.randomUUID ? crypto.randomUUID() : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`)}`;
+let fallbackIdCounter = 0;
+function secureRandomToken(byteLength = 16) {
+  const size = Math.max(8, Math.min(64, Number(byteLength) || 16));
+  if (window.crypto?.getRandomValues) {
+    const bytes = crypto.getRandomValues(new Uint8Array(size));
+    return Array.from(bytes, byte => byte.toString(16).padStart(2, '0')).join('');
+  }
+  fallbackIdCounter += 1;
+  return `${Date.now().toString(36)}-${fallbackIdCounter.toString(36)}`;
+}
+const uid = (prefix) => `${prefix}-${crypto.randomUUID ? crypto.randomUUID() : secureRandomToken(16)}`;
 const escapeHtml = (value) => String(value ?? '').replace(/[&<>'"]/g, ch => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#039;', '"':'&quot;' }[ch]));
 const cssEscape = (value) => (window.CSS && typeof window.CSS.escape === 'function') ? window.CSS.escape(String(value)) : String(value ?? '').replace(/[^a-zA-Z0-9_-]/g, '\\$&');
 const GROUP_COLORS = ['#2f6fed', '#e11d48', '#16a34a', '#f59e0b', '#7c3aed', '#0891b2', '#db2777', '#65a30d', '#ea580c', '#475569'];
@@ -7621,12 +7651,37 @@ function assertSupportedSnapshotIndex(document, sourceLabel = 'snapshot index') 
   return document;
 }
 
+function validateEncryptionEnvelopeParameters(encryption, sourceLabel = 'encrypted data') {
+  if (!encryption || typeof encryption !== 'object' || Array.isArray(encryption)) throw unsupportedFormatError(sourceLabel, 'The encryption parameters are missing.');
+  if (encryption.algorithm !== 'AES-GCM' || encryption.kdf !== 'PBKDF2-SHA-256') throw unsupportedFormatError(sourceLabel, 'The encryption algorithm or key derivation is not current.');
+  validatedPbkdf2IterationCount(encryption.iterations, sourceLabel, DEFAULT_PAGE_SETTINGS.pbkdf2Iterations);
+  for (const [field, maximumLength] of [['salt', 64], ['iv', 64], ['ciphertext', Math.ceil(IMPORT_LIMITS.saveBytes * 4 / 3) + 16]]) {
+    if (typeof encryption[field] !== 'string' || !encryption[field] || encryption[field].length > maximumLength) {
+      throw encryptionEnvelopeError(`The ${sourceLabel} contains invalid ${field} data.`);
+    }
+  }
+  let salt;
+  let iv;
+  let ciphertext;
+  try {
+    salt = base64ToBytes(encryption.salt);
+    iv = base64ToBytes(encryption.iv);
+    ciphertext = base64ToBytes(encryption.ciphertext);
+  } catch (error) {
+    throw encryptionEnvelopeError(`The ${sourceLabel} contains damaged Base64 encryption data.`, 'INVALID_ENCRYPTION_ENVELOPE', error);
+  }
+  if (salt.length !== 16 || iv.length !== 12 || ciphertext.length < 17 || ciphertext.length > IMPORT_LIMITS.saveBytes) {
+    throw encryptionEnvelopeError(`The ${sourceLabel} contains incomplete or oversized encryption data.`);
+  }
+  return { salt, iv, ciphertext };
+}
+
 function assertSupportedEncryptedEnvelope(document, sourceLabel = 'encrypted data', expectedPayloadKind = '') {
   assertSupportedPayloadMetadata(document, sourceLabel, ENCRYPTED_ENVELOPE_FORMAT);
   assertRequiredSupportedFields(document, ['exportedAt','encrypted','exportScope','payloadKind','encryption'], sourceLabel);
   if (document.encrypted !== true || !document.encryption || typeof document.encryption !== 'object' || Array.isArray(document.encryption)) throw unsupportedFormatError(sourceLabel, 'The encryption envelope is incomplete.');
   assertRequiredSupportedFields(document.encryption, ['algorithm','kdf','iterations','salt','iv','ciphertext'], sourceLabel);
-  if (document.encryption.algorithm !== 'AES-GCM' || document.encryption.kdf !== 'PBKDF2-SHA-256') throw unsupportedFormatError(sourceLabel, 'The encryption algorithm or key derivation is not current.');
+  validateEncryptionEnvelopeParameters(document.encryption, sourceLabel);
   if (expectedPayloadKind && document.payloadKind !== expectedPayloadKind) throw unsupportedFormatError(sourceLabel, `Expected encrypted payload kind ${expectedPayloadKind}.`);
   return document;
 }
@@ -8406,10 +8461,11 @@ function timingSafeEqual(a, b) {
 
 async function hashPageLockSecret(secret, saltBytes, iterations = 180000) {
   if (!window.crypto || !crypto.subtle) throw new Error('This browser does not support secure page locking.');
+  const iterationCount = validatedPbkdf2IterationCount(iterations, 'stored lock credential', 180000);
   const encoder = new TextEncoder();
   const baseKey = await crypto.subtle.importKey('raw', encoder.encode(String(secret || '')), 'PBKDF2', false, ['deriveBits']);
   const bits = await crypto.subtle.deriveBits(
-    { name: 'PBKDF2', salt: saltBytes, iterations, hash: 'SHA-256' },
+    { name: 'PBKDF2', salt: saltBytes, iterations: iterationCount, hash: 'SHA-256' },
     baseKey,
     256
   );
@@ -8431,16 +8487,33 @@ async function verifyPageLockSecret(secret) {
 function getHashedCredential(storageKey) {
   try {
     const raw = safeStorageGet('localStorage', storageKey);
-    if (!raw) return null;
+    if (!raw || raw.length > 4096) return null;
     const parsed = JSON.parse(raw);
-    if (!parsed || !parsed.salt || !parsed.hash || !parsed.iterations) return null;
-    return parsed;
-  } catch (err) {
+    if (parsed?.version !== 1 || parsed?.algorithm !== 'PBKDF2-SHA-256') throw new Error('Unsupported stored credential format.');
+    const iterations = validatedPbkdf2IterationCount(parsed.iterations, 'stored lock credential', 180000);
+    if (typeof parsed.salt !== 'string' || parsed.salt.length > 64 || typeof parsed.hash !== 'string' || parsed.hash.length > 128) {
+      throw new Error('Invalid stored credential encoding.');
+    }
+    const salt = base64ToBytes(parsed.salt);
+    const hash = base64ToBytes(parsed.hash);
+    if (salt.length !== 16 || hash.length !== 32) throw new Error('Invalid stored credential length.');
+    return { ...parsed, iterations };
+  } catch (error) {
+    safeStorageRemove('localStorage', storageKey);
     return null;
   }
 }
 
+function newLocalCredentialValidationMessage(secret, label = 'PIN/password') {
+  const value = String(secret || '');
+  if (value.length < MIN_LOCAL_CREDENTIAL_LENGTH) return `Use at least ${MIN_LOCAL_CREDENTIAL_LENGTH} characters for the ${label}.`;
+  if (value.length > MAX_LOCAL_CREDENTIAL_LENGTH) return `Use no more than ${MAX_LOCAL_CREDENTIAL_LENGTH} characters for the ${label}.`;
+  return '';
+}
+
 async function saveHashedCredential(storageKey, secret, storageErrorMessage = 'The credential could not be stored in this browser. Check storage permissions or available space.') {
+  const validationMessage = newLocalCredentialValidationMessage(secret);
+  if (validationMessage) throw new Error(validationMessage);
   const salt = crypto.getRandomValues(new Uint8Array(16));
   const iterations = encryptionIterationsForNewData();
   const hash = await hashPageLockSecret(secret, salt, iterations);
@@ -8780,8 +8853,9 @@ async function savePageLockSetupAndLock() {
   const confirmInput = el('pageLockSetupConfirmInput');
   const secret = String(input?.value || '');
   const confirmSecret = String(confirmInput?.value || '');
-  if (secret.length < 4) {
-    showPageLockSetupError('Use at least 4 characters for the PIN/password.');
+  const validationMessage = newLocalCredentialValidationMessage(secret);
+  if (validationMessage) {
+    showPageLockSetupError(validationMessage);
     if (input) input.focus();
     return;
   }
@@ -13630,7 +13704,7 @@ const CONTROL_TOOLTIPS = {
   clearZonesFromSelectionBtn: 'Remove zone labels from selected grid cells.',
   saveChartDetailsBtn: 'Save chart title, date, period, room, and teacher information for print/export.',
   clearLocalDataBtn: 'Clear local saves, saved PIN hashes, dismissed hints, saved snapshot data, and session lock data from this browser.',
-  factoryResetEverythingBtn: 'Factory reset the app from scratch by clearing browser storage available to this page, cookies available to this page, settings, classes, templates, snapshots, and saved file permission metadata.',
+  factoryResetEverythingBtn: 'Factory reset the app from scratch by clearing Classroom Seating Planner browser storage, settings, classes, templates, snapshots, and saved file permission metadata. Cookies and data owned by other applications on the same origin are not touched.',
   localSaveBannerInfoBtn: 'Open Save & Backup Options to choose a linked save file or download a durable backup copy.',
   importMappedCsvBtn: 'Import students using the selected CSV column mapping.',
   mobileActionPlaceBtn: 'Open Seat Students with the chart visible so the selected item can be placed.',
@@ -14100,25 +14174,14 @@ function setPayPalDonationStatus(target, message, state = 'waiting') {
 function loadPayPalDonationSdk() {
   if (window.PayPal?.Donation?.Button) return Promise.resolve(window.PayPal);
   if (paypalDonationSdkPromise) return paypalDonationSdkPromise;
-  paypalDonationSdkPromise = new Promise((resolve, reject) => {
-    const existing = document.querySelector(`script[src="${PAYPAL_DONATION_CONFIG.sdkUrl}"]`);
-    const script = existing || document.createElement('script');
-    const finish = () => {
-      if (window.PayPal?.Donation?.Button) resolve(window.PayPal);
-      else reject(new Error('PayPal donation controls did not become available.'));
-    };
-    script.addEventListener('load', finish, { once: true });
-    script.addEventListener('error', () => reject(new Error('PayPal donation controls could not be loaded.')), { once: true });
-    if (!existing) {
-      script.src = PAYPAL_DONATION_CONFIG.sdkUrl;
-      script.charset = 'UTF-8';
-      script.async = true;
-      script.dataset.paypalDonationSdk = 'true';
-      document.head.appendChild(script);
-    }
-  }).catch(error => {
+  paypalDonationSdkPromise = loadExternalScriptOnce({
+    src: PAYPAL_DONATION_CONFIG.sdkUrl,
+    markerAttribute: 'data-paypal-donation-sdk',
+    ready: () => Boolean(window.PayPal?.Donation?.Button),
+    errorMessage: 'PayPal donation controls could not be loaded.',
+    timeoutMs: 20000
+  }).then(() => window.PayPal).finally(() => {
     paypalDonationSdkPromise = null;
-    throw error;
   });
   return paypalDonationSdkPromise;
 }
@@ -14340,7 +14403,8 @@ function updatePinStatus(message = '') {
 async function saveLockPinFromSettings() {
   const pin = String(el('settingsLockPin')?.value || '');
   const confirm = String(el('settingsLockPinConfirm')?.value || '');
-  if (pin.length < 4) { updatePinStatus('Use at least 4 characters for the lock PIN/password.'); return; }
+  const validationMessage = newLocalCredentialValidationMessage(pin, 'lock PIN/password');
+  if (validationMessage) { updatePinStatus(validationMessage); return; }
   if (pin !== confirm) { updatePinStatus('Lock PIN/password entries do not match.'); return; }
   try {
     await savePageLockCredential(pin);
@@ -14359,7 +14423,8 @@ async function saveLockPinFromSettings() {
 async function saveVisibilityPinFromSettings() {
   const pin = String(el('settingsVisibilityPin')?.value || '');
   const confirm = String(el('settingsVisibilityPinConfirm')?.value || '');
-  if (pin.length < 4) { updatePinStatus('Use at least 4 characters for the eye mode PIN/password.'); return; }
+  const validationMessage = newLocalCredentialValidationMessage(pin, 'eye mode PIN/password');
+  if (validationMessage) { updatePinStatus(validationMessage); return; }
   if (pin !== confirm) { updatePinStatus('Eye mode PIN/password entries do not match.'); return; }
   try {
     await saveVisibilityCredential(pin);
@@ -14598,7 +14663,8 @@ async function saveVisibilitySetupAndEnter() {
   const confirmInput = el('visibilitySetupConfirmInput');
   const secret = String(input?.value || '');
   const confirmSecret = String(confirmInput?.value || '');
-  if (secret.length < 4) { showVisibilitySetupError('Use at least 4 characters for the eye mode PIN/password.'); return; }
+  const validationMessage = newLocalCredentialValidationMessage(secret, 'eye mode PIN/password');
+  if (validationMessage) { showVisibilitySetupError(validationMessage); return; }
   if (secret !== confirmSecret) { showVisibilitySetupError('The eye mode PIN/password entries do not match.'); return; }
   try {
     await saveVisibilityCredential(secret);
@@ -14826,8 +14892,16 @@ function base64ToBytes(base64) {
   return bytes;
 }
 
+function validatedPbkdf2IterationCount(iterations, label = 'encrypted data', fallback = DEFAULT_PAGE_SETTINGS.pbkdf2Iterations) {
+  const candidate = iterations === null || iterations === undefined || iterations === '' ? fallback : Number(iterations);
+  if (!Number.isInteger(candidate) || candidate < PBKDF2_MIN_ITERATIONS || candidate > PBKDF2_MAX_ITERATIONS) {
+    throw encryptionEnvelopeError(`${label} contains a PBKDF2 iteration count outside the supported ${PBKDF2_MIN_ITERATIONS.toLocaleString()}-${PBKDF2_MAX_ITERATIONS.toLocaleString()} range.`);
+  }
+  return candidate;
+}
+
 function encryptionIterationsForNewData() {
-  return clampNumber(pageSettings().pbkdf2Iterations || DEFAULT_PAGE_SETTINGS.pbkdf2Iterations, 150000, 2000000);
+  return validatedPbkdf2IterationCount(pageSettings().pbkdf2Iterations, 'encryption settings', DEFAULT_PAGE_SETTINGS.pbkdf2Iterations);
 }
 
 function encryptionEnvelopeError(message, code = 'INVALID_ENCRYPTION_ENVELOPE', cause = null) {
@@ -14838,12 +14912,7 @@ function encryptionEnvelopeError(message, code = 'INVALID_ENCRYPTION_ENVELOPE', 
 }
 
 function encryptionIterationCount(iterations = null) {
-  const explicit = iterations !== null && iterations !== undefined && iterations !== '';
-  const count = explicit ? Number(iterations) : encryptionIterationsForNewData();
-  if (!Number.isInteger(count) || count < 1000 || count > 5000000) {
-    throw encryptionEnvelopeError('The encrypted save contains an invalid PBKDF2 iteration count.');
-  }
-  return count;
+  return validatedPbkdf2IterationCount(iterations, 'The encrypted save', encryptionIterationsForNewData());
 }
 
 async function deriveEncryptionKey(secret, salt, iterations = null) {
@@ -14962,17 +15031,10 @@ async function decryptTextEnvelopeWithDetails(parsed, keyOverride = '') {
   const encryption = parsed.encryption;
   if (encryption.algorithm !== 'AES-GCM') throw encryptionEnvelopeError(`This data uses unsupported encryption algorithm ${String(encryption.algorithm || 'missing')}.`);
   if (encryption.kdf !== 'PBKDF2-SHA-256') throw encryptionEnvelopeError(`This data uses unsupported key derivation ${String(encryption.kdf || 'missing')}.`);
-  let salt;
-  let iv;
-  let cipherBytes;
-  try {
-    salt = base64ToBytes(encryption.salt);
-    iv = base64ToBytes(encryption.iv);
-    cipherBytes = base64ToBytes(encryption.ciphertext);
-  } catch (error) {
-    throw encryptionEnvelopeError('The encrypted data contains damaged or invalid encryption data.', 'INVALID_ENCRYPTION_ENVELOPE', error);
-  }
-  if (salt.length !== 16 || iv.length !== 12 || cipherBytes.length < 17) throw encryptionEnvelopeError('The encrypted data is incomplete or damaged.');
+  const validated = validateEncryptionEnvelopeParameters(encryption, 'encrypted data');
+  const salt = validated.salt;
+  const iv = validated.iv;
+  const cipherBytes = validated.ciphertext;
   const iterations = encryptionIterationCount(encryption.iterations);
   try {
     const key = await deriveEncryptionKey(supplied, salt, iterations);
@@ -16002,6 +16064,69 @@ function escapeDriveQueryString(value) {
   return String(value || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
 }
 
+
+async function fetchWithTimeout(url, options = {}, timeoutMs = NETWORK_TIMEOUT_MS) {
+  const duration = Math.max(1000, Math.min(180000, Number(timeoutMs) || NETWORK_TIMEOUT_MS));
+  const controller = new AbortController();
+  const externalSignal = options.signal;
+  let timedOut = false;
+  const abortFromCaller = () => controller.abort(externalSignal?.reason);
+  if (externalSignal) {
+    if (externalSignal.aborted) abortFromCaller();
+    else externalSignal.addEventListener('abort', abortFromCaller, { once: true });
+  }
+  const timer = window.setTimeout(() => {
+    timedOut = true;
+    controller.abort();
+  }, duration);
+  try {
+    return await fetch(url, { ...options, signal: controller.signal });
+  } catch (error) {
+    if (timedOut) {
+      const timeoutError = new Error(`Network request timed out after ${Math.ceil(duration / 1000)} seconds.`);
+      timeoutError.code = 'NETWORK_TIMEOUT';
+      timeoutError.cause = error;
+      throw timeoutError;
+    }
+    throw error;
+  } finally {
+    window.clearTimeout(timer);
+    externalSignal?.removeEventListener?.('abort', abortFromCaller);
+  }
+}
+
+function loadExternalScriptOnce({ src, markerAttribute, ready, errorMessage, timeoutMs = 20000 }) {
+  if (typeof ready === 'function' && ready()) return Promise.resolve(true);
+  return new Promise((resolve, reject) => {
+    let script = document.querySelector(`script[${markerAttribute}]`);
+    let settled = false;
+    let timer = 0;
+    const finish = (ok, error = null) => {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(timer);
+      script?.removeEventListener('load', onLoad);
+      script?.removeEventListener('error', onError);
+      if (ok && (!ready || ready())) resolve(true);
+      else reject(error || new Error(errorMessage));
+    };
+    const onLoad = () => finish(true);
+    const onError = () => finish(false, new Error(errorMessage));
+    timer = window.setTimeout(() => finish(false, new Error(`${errorMessage} The script load timed out.`)), timeoutMs);
+    const created = !script;
+    if (created) {
+      script = document.createElement('script');
+      script.src = src;
+      script.async = true;
+      script.defer = true;
+      script.setAttribute(markerAttribute, 'true');
+    }
+    script.addEventListener('load', onLoad, { once: true });
+    script.addEventListener('error', onError, { once: true });
+    if (created) document.head.appendChild(script);
+  });
+}
+
 function syncGoogleDriveInputsToSettings(source = 'settings') {
   const folderInput = el(source === 'saveOptions' ? 'saveOptionGoogleDriveFolderName' : 'settingGoogleDriveFolderName');
   const clientInput = source === 'settings' ? el('settingGoogleDriveClientId') : null;
@@ -16025,22 +16150,11 @@ function updateGoogleDriveStatus(message = '') {
 }
 
 function loadGoogleIdentityServicesScript() {
-  if (window.google?.accounts?.oauth2) return Promise.resolve(true);
-  return new Promise((resolve, reject) => {
-    const existing = document.querySelector('script[data-google-identity-services]');
-    if (existing) {
-      existing.addEventListener('load', () => resolve(true), { once: true });
-      existing.addEventListener('error', () => reject(new Error('Could not load Google Identity Services.')), { once: true });
-      return;
-    }
-    const script = document.createElement('script');
-    script.src = 'https://accounts.google.com/gsi/client';
-    script.async = true;
-    script.defer = true;
-    script.dataset.googleIdentityServices = 'true';
-    script.onload = () => resolve(true);
-    script.onerror = () => reject(new Error('Could not load Google Identity Services. Check internet access and content-blocking settings.'));
-    document.head.appendChild(script);
+  return loadExternalScriptOnce({
+    src: 'https://accounts.google.com/gsi/client',
+    markerAttribute: 'data-google-identity-services',
+    ready: () => Boolean(window.google?.accounts?.oauth2),
+    errorMessage: 'Could not load Google Identity Services. Check internet access and content-blocking settings.'
   });
 }
 
@@ -16120,13 +16234,14 @@ async function ensureGoogleDriveToken(interactive = true, forceConsent = false) 
 
 async function googleDriveFetch(url, options = {}, interactive = true) {
   let token = await ensureGoogleDriveToken(interactive);
-  const send = async () => fetch(url, {
-    ...options,
+  const { timeoutMs = NETWORK_TIMEOUT_MS, ...requestOptions } = options;
+  const send = async () => fetchWithTimeout(url, {
+    ...requestOptions,
     headers: {
-      ...(options.headers || {}),
+      ...(requestOptions.headers || {}),
       Authorization: `Bearer ${token}`
     }
-  });
+  }, timeoutMs);
   let response = await send();
   if (response.status === 401 && interactive) {
     uiState.googleDriveAccessToken = '';
@@ -16185,7 +16300,7 @@ async function ensureGoogleDriveAppFolder() {
 }
 
 function googleDriveMultipartBody(metadata, content, contentType = 'application/json') {
-  const boundary = `seating_chart_boundary_${Date.now().toString(36)}_${Math.random().toString(36).slice(2)}`;
+  const boundary = `seating_chart_boundary_${secureRandomToken(18)}`;
   const body = [
         `--${boundary}`,
         'Content-Type: application/json; charset=UTF-8',
@@ -16378,8 +16493,19 @@ function googleDriveFileSizeLabel(size) {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
+function nextBoundedPageToken(seenTokens, rawToken, completedPages, label, maximumPages = MAX_API_PAGES) {
+  const token = String(rawToken || '');
+  if (!token) return '';
+  if (completedPages >= maximumPages) throw new Error(`${label} exceeded the ${maximumPages.toLocaleString()}-page safety limit.`);
+  if (seenTokens.has(token)) throw new Error(`${label} returned a repeated pagination token.`);
+  seenTokens.add(token);
+  return token;
+}
+
 async function listGoogleDriveFilesForQuery(q) {
   const files = [];
+  const seenPageTokens = new Set();
+  let completedPages = 0;
   let pageToken = '';
   do {
     const params = new URLSearchParams({
@@ -16393,7 +16519,8 @@ async function listGoogleDriveFilesForQuery(q) {
     const response = await googleDriveFetch(`https://www.googleapis.com/drive/v3/files?${params.toString()}`, { method: 'GET' });
     const data = await response.json();
     if (Array.isArray(data.files)) files.push(...data.files);
-    pageToken = String(data.nextPageToken || '');
+    completedPages += 1;
+    pageToken = nextBoundedPageToken(seenPageTokens, data.nextPageToken, completedPages, 'Google Drive file listing');
   } while (pageToken);
   return files;
 }
@@ -17086,9 +17213,6 @@ function triggerBlobDownload(filename, blob) {
   window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-function downloadBlob(filename, blob) {
-  triggerBlobDownload(filename, blob);
-}
 
 function utf8Bytes(value) {
   return new TextEncoder().encode(String(value ?? ''));
@@ -17194,7 +17318,7 @@ async function downloadSavePackageCore() {
       { name: 'backup-info.json', content: JSON.stringify(meta, null, 2) },
       { name: 'README.txt', content: readme }
     ]);
-    downloadBlob(backupFilename('encrypted-package', 'zip'), zip);
+    triggerBlobDownload(backupFilename('encrypted-package', 'zip'), zip);
     await ModernizationSuite.recordBackupVerification(payload, 'Complete encrypted backup package');
     updateSaveMeta({ lastPackageAt: new Date().toISOString(), lastBackupAt: new Date().toISOString() });
     updateSaveSetupDismissed(true);
@@ -20213,14 +20337,7 @@ function exportChartPdfCore(options = readPrintOptionsFromModal()) {
   const pages = buildPrintVectorPages(options, { forceFreeformFit: true });
   const pdf = buildPrintPdfDocument(options, pages);
   const blob = new Blob([pdf], { type: 'application/pdf' });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = `seating-chart-${new Date().toISOString().slice(0,10)}.pdf`;
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 0);
+  triggerBlobDownload(`seating-chart-${new Date().toISOString().slice(0,10)}.pdf`, blob);
   setLiveStatusMessage(`PDF exported with the selected print options across ${pages.length} page${pages.length === 1 ? '' : 's'}. Freeform room layouts are fit onto one chart page.`);
 }
 
@@ -20422,17 +20539,6 @@ function clearAllLocalData() {
   }, { title: 'Clear Local Browser Data?', confirmText: 'Clear Local Data', cancelText: 'Cancel' });
 }
 
-function clearCookiesForThisPage() {
-  try {
-    document.cookie.split(';').forEach(cookie => {
-      const name = cookie.split('=')[0]?.trim();
-      if (!name) return;
-      document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
-      document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=${location.pathname || '/'}`;
-    });
-  } catch {   }
-}
-
 function deleteLinkedSaveDatabase() {
   return new Promise(resolve => {
     try {
@@ -20469,7 +20575,7 @@ async function deleteAllPlannerDatabasesForOrigin() {
   } catch (_) {
     return { supported: false, deleted: [], failed: [] };
   }
-  const plannerName = /^(?:classroom[-_ ]?seating[-_ ]?planner|classroomSeatingPlanner|seating[-_ ]?chart)/i;
+  const plannerName = /^(?:classroom[-_ ]?seating[-_ ]?planner|classroomSeatingPlanner)/i;
   const names = Array.from(new Set(databases.map(item => String(item?.name || '')).filter(name => name && plannerName.test(name))));
   const deleted = [];
   const failed = [];
@@ -20605,7 +20711,7 @@ function resetInMemoryAppToFactory() {
 
 function factoryResetEverything() {
   closeSettingsModal();
-  showInAppConfirm('This resets the entire app from scratch in this browser. It clears planner classes, settings, snapshots, room templates, planner entries in browser storage, saved file permission metadata, and cookies this page can access. Other applications on the same site are left alone. Export a backup first if you need anything. Continue?', async () => {
+  showInAppConfirm('This resets Classroom Seating Planner from scratch in this browser. It clears planner classes, settings, snapshots, room templates, planner-owned browser storage, and saved file permission metadata. It does not delete cookies or storage owned by other applications on the same origin. Export a backup first if you need anything. Continue?', async () => {
     const failures = [];
     uiState.browserSaveEpoch += 1;
     const localStorageResult = clearPlannerWebStorage('localStorage');
@@ -20615,7 +20721,6 @@ function factoryResetEverything() {
     window.AppAudit?.clearForFactoryReset?.();
     window.GuidedLearning?.clearForFactoryReset?.();
     DistrictIntegrationsV57?.resetForFactoryReset?.();
-    clearCookiesForThisPage();
     const databaseDeleted = await deleteLinkedSaveDatabase();
     if (!databaseDeleted && window.indexedDB) failures.push('linked-file permission database');
     BrowserDataStore.close();
@@ -21988,7 +22093,7 @@ const WorkflowExpansion = (() => {
     const pin = String(el(prefix)?.value || '');
     const confirm = String(el(`${prefix}Confirm`)?.value || '');
     const hasEntry = !!(pin || confirm);
-    const valid = hasEntry && pin.length >= 4 && pin === confirm;
+    const valid = hasEntry && !newLocalCredentialValidationMessage(pin) && pin === confirm;
     return { hasEntry, valid, done: !!existing || valid };
   }
 
@@ -22017,8 +22122,8 @@ const WorkflowExpansion = (() => {
     return [
       { key:'encryption', title:'Encryption password', done:activeKey, warn:!activeKey, text: activeKey ? 'Active session encryption key is present.' : 'Create or enter the encryption password before continuing.', staticOnly:true },
       { key:'settings', title:'Settings access requirement', done:requestedAccess !== 'none', warn:requestedAccess === 'none', text: requestedAccess === 'none' ? 'Settings will open without a prompt. Save only if this is intentional.' : `Settings will require: ${accessLabels[requestedAccess] || accessLabels.auto}.`, body:'settings' },
-      { key:'lock', title:'Lock PIN/password', done:lockState.done, warn:!lockState.done, text: lockState.valid ? 'Ready to save a valid Lock PIN/password.' : (getLockCredential() ? 'Lock PIN/password is already set.' : 'Enter matching Lock PIN/password values with at least 4 characters.'), body:'lock' },
-      { key:'eye', title:'Eye Mode PIN/password', done:eyeState.done, warn:!eyeState.done, text: eyeState.valid ? 'Ready to save a valid Eye Mode PIN/password.' : (getVisibilityCredential() ? 'Eye Mode PIN/password is already set.' : 'Enter matching Eye Mode PIN/password values with at least 4 characters.'), body:'eye' },
+      { key:'lock', title:'Lock PIN/password', done:lockState.done, warn:!lockState.done, text: lockState.valid ? 'Ready to save a valid Lock PIN/password.' : (getLockCredential() ? 'Lock PIN/password is already set.' : `Enter matching Lock PIN/password values with at least ${MIN_LOCAL_CREDENTIAL_LENGTH} characters.`), body:'lock' },
+      { key:'eye', title:'Eye Mode PIN/password', done:eyeState.done, warn:!eyeState.done, text: eyeState.valid ? 'Ready to save a valid Eye Mode PIN/password.' : (getVisibilityCredential() ? 'Eye Mode PIN/password is already set.' : `Enter matching Eye Mode PIN/password values with at least ${MIN_LOCAL_CREDENTIAL_LENGTH} characters.`), body:'eye' },
       { key:'autolock', title:'Auto-lock rules', done:autoLock, warn:!autoLock, text: autoLock ? 'At least one auto-lock trigger is configured.' : 'No auto-lock triggers are enabled yet.', body:'autolock' },
       { key:'storage', title:'Storage encryption', done:storageEncrypted, warn:!storageEncrypted, text: storageEncrypted ? 'Local browser save and snapshot index are encrypted or empty.' : 'Save once after setup to encrypt current browser storage.', staticOnly:true }
     ];
@@ -22114,13 +22219,15 @@ const WorkflowExpansion = (() => {
       const eyePin = String(el('securityWizardEyePin')?.value || '');
       const eyeConfirm = String(el('securityWizardEyePinConfirm')?.value || '');
       if (lockPin || lockConfirm) {
-        if (lockPin.length < 4) throw new Error('Use at least 4 characters for the Lock PIN/password.');
+        const lockValidationMessage = newLocalCredentialValidationMessage(lockPin, 'Lock PIN/password');
+        if (lockValidationMessage) throw new Error(lockValidationMessage);
         if (lockPin !== lockConfirm) throw new Error('Lock PIN/password entries do not match.');
         await savePageLockCredential(lockPin);
         cachePageLockSecretForSession(lockPin);
       }
       if (eyePin || eyeConfirm) {
-        if (eyePin.length < 4) throw new Error('Use at least 4 characters for the Eye Mode PIN/password.');
+        const eyeValidationMessage = newLocalCredentialValidationMessage(eyePin, 'Eye Mode PIN/password');
+        if (eyeValidationMessage) throw new Error(eyeValidationMessage);
         if (eyePin !== eyeConfirm) throw new Error('Eye Mode PIN/password entries do not match.');
         await saveVisibilityCredential(eyePin);
       }
@@ -27607,8 +27714,10 @@ const ProductionReadinessV50 = (() => {
   }
 
   function recordError(source, error) {
-    const message = error?.message || error?.reason?.message || error?.reason || error || 'Unknown error';
-    record(`error.${sanitizeText(source, 60)}`, sanitizeText(message), 'error');
+    const sourceLabel = sanitizeText(source, 60) || 'runtime';
+    const errorName = sanitizeText(error?.name || error?.reason?.name || 'Error', 60) || 'Error';
+    const errorCode = sanitizeText(error?.code || error?.reason?.code || '', 60);
+    record(`error.${sourceLabel}`, `${errorName}${errorCode ? ` (${errorCode})` : ''} occurred. Review the active workflow and retry.`, 'error');
   }
 
   function activityStatusLabel(status) {
@@ -27657,17 +27766,7 @@ const ProductionReadinessV50 = (() => {
   }
 
   function downloadJson(filename, data) {
-    const text = JSON.stringify(data, null, 2);
-    if (typeof downloadText === 'function') {
-      downloadText(filename, text, 'application/json');
-      return;
-    }
-    const url = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = filename;
-    link.click();
-    setTimeout(() => URL.revokeObjectURL(url), 0);
+    downloadText(filename, JSON.stringify(data, null, 2), 'application/json');
   }
 
   async function exportDiagnostics() {
@@ -29527,11 +29626,11 @@ const DistrictIntegrationsV57 = (() => {
 
 
   function loadGooglePickerScript() {
-    if (window.gapi?.load) return Promise.resolve(true);
-    return new Promise((resolve,reject)=>{
-      const existing=document.querySelector('script[data-google-picker-api]');
-      if(existing){existing.addEventListener('load',()=>resolve(true),{once:true});existing.addEventListener('error',()=>reject(new Error('Could not load Google Picker.')),{once:true});return;}
-      const script=document.createElement('script');script.src='https://apis.google.com/js/api.js';script.async=true;script.dataset.googlePickerApi='true';script.onload=()=>resolve(true);script.onerror=()=>reject(new Error('Could not load Google Picker. Check the network and content security policy.'));document.head.appendChild(script);
+    return loadExternalScriptOnce({
+      src: 'https://apis.google.com/js/api.js',
+      markerAttribute: 'data-google-picker-api',
+      ready: () => Boolean(window.gapi?.load),
+      errorMessage: 'Could not load Google Picker. Check the network and content security policy.'
     });
   }
 
@@ -29762,19 +29861,31 @@ const DistrictIntegrationsV57 = (() => {
     await loadGoogleIdentityServicesScript(); const clientId=googleDriveConfig().clientId; if(!clientId)throw new Error('Configure a Google OAuth Client ID under Saving first.');
     return new Promise((resolve,reject)=>{const client=google.accounts.oauth2.initTokenClient({client_id:clientId,scope:GOOGLE_CLASSROOM_SCOPES,prompt:'',callback:response=>{if(response?.error){reject(new Error(response.error_description||response.error));return;}classroomToken=response.access_token||'';classroomTokenExpiresAt=Date.now()+Number(response.expires_in||3600)*1000;updateGoogleDriveSettings({googleClassroomEnabled:true});resolve(classroomToken);}});client.requestAccessToken({prompt:'consent'});});
   }
-  async function classroomFetch(url){const token=await ensureClassroomToken(true);const response=await fetch(url,{headers:{Authorization:`Bearer ${token}`}});if(!response.ok){let detail='';try{detail=(await response.json())?.error?.message||'';}catch{}throw new Error(detail||`Google Classroom request failed (${response.status}).`);}return response;}
+  async function classroomFetch(url) {
+    const token = await ensureClassroomToken(true);
+    const response = await fetchWithTimeout(url, { headers: { Authorization: `Bearer ${token}` } });
+    if (!response.ok) {
+      let detail = '';
+      try { detail = (await response.json())?.error?.message || ''; } catch {   }
+      throw new Error(detail || `Google Classroom request failed (${response.status}).`);
+    }
+    return response;
+  }
   async function refreshClassroomCourses(){
     updateClassroomStatus('Loading active Google Classroom courses…');
     try {
       let token = '';
+      const seenPageTokens = new Set();
+      let completedPages = 0;
       const courses = [];
       do {
         const params = new URLSearchParams({ teacherId:'me', courseStates:'ACTIVE', pageSize:'100' });
         if (token) params.set('pageToken', token);
         const response = await classroomFetch(`https://classroom.googleapis.com/v1/courses?${params}`);
         const data = await response.json();
-        courses.push(...(data.courses || []));
-        token = data.nextPageToken || '';
+        if (Array.isArray(data.courses)) courses.push(...data.courses);
+        completedPages += 1;
+        token = nextBoundedPageToken(seenPageTokens, data.nextPageToken, completedPages, 'Google Classroom course listing');
       } while (token);
       populateClassroomCourseSelects(courses);
       updateClassroomStatus(`${courses.length} active course${courses.length === 1 ? '' : 's'} available.`);
@@ -29807,6 +29918,8 @@ const DistrictIntegrationsV57 = (() => {
     updateClassroomStatus('Loading course roster…');
     try {
       let token = '';
+      const seenPageTokens = new Set();
+      let completedPages = 0;
       const records = [];
       do {
         const params = new URLSearchParams({ pageSize:'100' });
@@ -29823,7 +29936,9 @@ const DistrictIntegrationsV57 = (() => {
           sourceCourseId: courseId,
           sourceUserId: item.userId || item.profile?.id || ''
         })));
-        token = data.nextPageToken || '';
+        if (records.length > IMPORT_LIMITS.maxStudentsPerClass) throw new Error(`Google Classroom returned more than ${IMPORT_LIMITS.maxStudentsPerClass.toLocaleString()} students.`);
+        completedPages += 1;
+        token = nextBoundedPageToken(seenPageTokens, data.nextPageToken, completedPages, 'Google Classroom roster');
       } while (token);
       openRosterDraft(records, 'Google Classroom');
       updateClassroomStatus(`Loaded ${records.length} students for reconciliation.`);
@@ -30160,14 +30275,73 @@ const DistrictIntegrationsV57 = (() => {
   }
 
   function encryptedReadOnlyHtmlShell(envelope) {
-    const encoded = JSON.stringify(envelope).replace(/</g, '\\u003c');
+    const encoded = JSON.stringify(envelope).replace(/</g, '\u003c');
     const unlockStyles = `.readonly-unlock{width:min(520px,calc(100% - 24px));margin:10vh auto;padding:24px;background:#fff;border:1px solid #cbd5e1;border-radius:16px;box-shadow:0 20px 60px rgba(15,23,42,.16)}.readonly-unlock h1{font-size:24px}.readonly-unlock p{color:#607089;line-height:1.45}.readonly-unlock input{width:100%;min-height:42px;padding:10px;border:1px solid #94a3b8;border-radius:9px;font:inherit}.readonly-unlock button{min-height:40px;margin-top:10px;padding:9px 14px;border:0;border-radius:9px;background:#2563eb;color:#fff;font:inherit;font-weight:800;cursor:pointer}.readonly-unlock-error{min-height:20px;color:#b42318;font-size:12px;font-weight:750}.readonly-protected-view[hidden],.readonly-unlock[hidden]{display:none}`;
-    return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'"><title>Encrypted read-only classroom package</title><style>${readOnlyViewerStyles()}${unlockStyles}</style></head><body><section id="readonlyUnlock" class="readonly-unlock"><h1>Encrypted read-only classroom package</h1><p>Enter the viewer password supplied separately. The classroom name, students, notes, and room layout remain encrypted until the password is accepted.</p><label for="readonlyViewerPassword">Viewer password</label><input id="readonlyViewerPassword" type="password" autocomplete="current-password"><button id="readonlyOpenButton" type="button">Open classroom</button><p id="readonlyUnlockError" class="readonly-unlock-error" role="alert"></p></section><div id="readonlyProtectedView" class="readonly-protected-view" hidden></div><script>const envelope=${encoded};const b64=value=>Uint8Array.from(atob(String(value||'')),character=>character.charCodeAt(0));async function openReadOnlyPackage(){const error=document.getElementById('readonlyUnlockError');error.textContent='';try{if(!globalThis.crypto?.subtle)throw new Error('Web Crypto unavailable');const encryption=envelope.encryption||{};const password=document.getElementById('readonlyViewerPassword').value;const baseKey=await crypto.subtle.importKey('raw',new TextEncoder().encode(password),'PBKDF2',false,['deriveKey']);const key=await crypto.subtle.deriveKey({name:'PBKDF2',salt:b64(encryption.salt),iterations:Number(encryption.iterations),hash:'SHA-256'},baseKey,{name:'AES-GCM',length:256},false,['decrypt']);const plain=await crypto.subtle.decrypt({name:'AES-GCM',iv:b64(encryption.iv)},key,b64(encryption.ciphertext));const payload=JSON.parse(new TextDecoder().decode(plain));if(!payload||payload.format!=='classroom-seating-planner-read-only-html-v1'||typeof payload.body!=='string')throw new Error('Invalid payload');document.title=payload.title||'Read-only classroom';const viewer=document.getElementById('readonlyProtectedView');viewer.innerHTML=payload.body;viewer.hidden=false;document.getElementById('readonlyUnlock').hidden=true;}catch(_){error.textContent='Could not decrypt this package. Check the viewer password and try again.'}}document.getElementById('readonlyOpenButton').addEventListener('click',openReadOnlyPackage);document.getElementById('readonlyViewerPassword').addEventListener('keydown',event=>{if(event.key==='Enter')openReadOnlyPackage()});<\/script></body></html>`;
+    const unlockScript = `
+      const envelope = ${encoded};
+      const MIN_ITERATIONS = ${PBKDF2_MIN_ITERATIONS};
+      const MAX_ITERATIONS = ${PBKDF2_MAX_ITERATIONS};
+      const MAX_CIPHERTEXT_BASE64 = ${Math.ceil(IMPORT_LIMITS.saveBytes * 4 / 3) + 16};
+      const b64 = value => Uint8Array.from(atob(String(value || '')), character => character.charCodeAt(0));
+      function sanitizedViewerFragment(html) {
+        const template = document.createElement('template');
+        template.innerHTML = String(html || '');
+        template.content.querySelectorAll('script,iframe,object,embed,form,link,meta,base,template,svg,math').forEach(node => node.remove());
+        template.content.querySelectorAll('*').forEach(node => {
+          Array.from(node.attributes).forEach(attribute => {
+            const name = attribute.name.toLowerCase();
+            const value = attribute.value.trim();
+            if (name.startsWith('on') || ['srcdoc','action','formaction','target'].includes(name)) node.removeAttribute(attribute.name);
+            else if (name === 'href' && !value.startsWith('#')) node.removeAttribute(attribute.name);
+            else if (name === 'src' && !/^data:image\\/(?:png|gif|jpeg|webp);base64,/i.test(value)) node.removeAttribute(attribute.name);
+            else if (name === 'style' && /url\\s*\\(|expression\\s*\\(|@import|behavior\\s*:|-moz-binding/i.test(value)) node.removeAttribute(attribute.name);
+          });
+        });
+        return template.content;
+      }
+      async function openReadOnlyPackage() {
+        const error = document.getElementById('readonlyUnlockError');
+        const passwordInput = document.getElementById('readonlyViewerPassword');
+        error.textContent = '';
+        try {
+          if (!globalThis.crypto?.subtle) throw new Error('Web Crypto unavailable');
+          if (envelope?.format !== 'classroom-seating-planner-encrypted-envelope-v6' || envelope?.encryptionEnvelopeVersion !== 3) throw new Error('Unsupported envelope');
+          const encryption = envelope.encryption || {};
+          if (encryption.algorithm !== 'AES-GCM' || encryption.kdf !== 'PBKDF2-SHA-256') throw new Error('Unsupported encryption');
+          const iterations = Number(encryption.iterations);
+          if (!Number.isInteger(iterations) || iterations < MIN_ITERATIONS || iterations > MAX_ITERATIONS) throw new Error('Invalid work factor');
+          if (typeof encryption.salt !== 'string' || encryption.salt.length > 64
+            || typeof encryption.iv !== 'string' || encryption.iv.length > 64
+            || typeof encryption.ciphertext !== 'string' || encryption.ciphertext.length > MAX_CIPHERTEXT_BASE64) throw new Error('Damaged envelope');
+          const salt = b64(encryption.salt);
+          const iv = b64(encryption.iv);
+          const ciphertext = b64(encryption.ciphertext);
+          if (salt.length !== 16 || iv.length !== 12 || ciphertext.length < 17) throw new Error('Damaged envelope');
+          const password = passwordInput.value;
+          const baseKey = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveKey']);
+          const key = await crypto.subtle.deriveKey({ name:'PBKDF2', salt, iterations, hash:'SHA-256' }, baseKey, { name:'AES-GCM', length:256 }, false, ['decrypt']);
+          const plain = await crypto.subtle.decrypt({ name:'AES-GCM', iv }, key, ciphertext);
+          const payload = JSON.parse(new TextDecoder().decode(plain));
+          if (!payload || payload.format !== 'classroom-seating-planner-read-only-html-v1' || typeof payload.body !== 'string') throw new Error('Invalid payload');
+          document.title = String(payload.title || 'Read-only classroom');
+          const viewer = document.getElementById('readonlyProtectedView');
+          viewer.replaceChildren(sanitizedViewerFragment(payload.body));
+          viewer.hidden = false;
+          passwordInput.value = '';
+          document.getElementById('readonlyUnlock').hidden = true;
+        } catch (_) {
+          error.textContent = 'Could not decrypt this package. Check the viewer password and try again.';
+        }
+      }
+      document.getElementById('readonlyOpenButton').addEventListener('click', openReadOnlyPackage);
+      document.getElementById('readonlyViewerPassword').addEventListener('keydown', event => { if (event.key === 'Enter') openReadOnlyPackage(); });
+    `;
+    return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; connect-src 'none'; frame-src 'none'; object-src 'none'; media-src 'none'; base-uri 'none'; form-action 'none'"><title>Encrypted read-only classroom package</title><style>${readOnlyViewerStyles()}${unlockStyles}</style></head><body><section id="readonlyUnlock" class="readonly-unlock"><h1>Encrypted read-only classroom package</h1><p>Enter the viewer password supplied separately. The classroom name, students, notes, and room layout remain encrypted until the password is accepted.</p><label for="readonlyViewerPassword">Viewer password</label><input id="readonlyViewerPassword" type="password" autocomplete="current-password" minlength="10" maxlength="256"><button id="readonlyOpenButton" type="button">Open classroom</button><p id="readonlyUnlockError" class="readonly-unlock-error" role="alert"></p></section><div id="readonlyProtectedView" class="readonly-protected-view" hidden></div><script>${unlockScript}<\/script></body></html>`;
   }
 
   async function buildEncryptedReadOnlyHtml(password, preset = 'student') {
     const secret = String(password || '');
-    if (secret.length < 10) throw new Error('Use a viewer password with at least 10 characters.');
+    if (secret.length < 10 || secret.length > 256) throw new Error('Use a viewer password with 10 to 256 characters.');
     const parts = readOnlyDocumentParts(preset);
     const payload = JSON.stringify({
       format: 'classroom-seating-planner-read-only-html-v1',
@@ -30305,6 +30479,7 @@ const DistrictIntegrationsV57 = (() => {
     downloadReadOnlyPackage,
     buildReadOnlyHtml: readOnlyHtml,
     buildEncryptedReadOnlyHtml,
+    encryptedReadOnlyHtmlShell,
     buildRosterDraft,
     parseSisCsvText,
     syncGoogleSettingsHub,
@@ -31288,11 +31463,16 @@ const WorkflowRecoveryV62 = (() => {
     textarea.remove();
   }
 
+  function spreadsheetSafeCsvValue(value) {
+    const text = String(value ?? '');
+    return /^[\s\u0000-\u001f]*[=+\-@]/.test(text) ? `'${text}` : text;
+  }
+
   function rejectedRowsCsv(record) {
     const rows = record.rejectedRows || [];
     const headers = Array.from(new Set(rows.flatMap(item => Object.keys(item || {}))));
     if (!headers.length) return 'reason\nNo rejected-row details were recorded.\n';
-    const quote = value => `"${String(value ?? '').replace(/"/g, '""')}"`;
+    const quote = value => `"${spreadsheetSafeCsvValue(value).replace(/"/g, '""')}"`;
     return [headers.map(quote).join(','), ...rows.map(row => headers.map(header => quote(row?.[header])).join(','))].join('\n');
   }
 
@@ -31435,6 +31615,8 @@ const WorkflowRecoveryV62 = (() => {
     createPasswordRecoveryPackage,
     preparePasswordRecoveryRestore,
     restorePasswordRecoveryPackage,
+    rejectedRowsCsv,
+    spreadsheetSafeCsvValue,
     sortSettingsNavigation
   });
 })();
