@@ -5,7 +5,7 @@
   <meta name="license" content="MIT License" />
   <meta name="spdx-license-identifier" content="MIT" />
   <meta name="copyright" content="Copyright (c) 2026 Chris L. Franklin" />
-  <meta name="app-version" content="6.5.3" />
+  <meta name="app-version" content="6.5.4" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com https://www.paypalobjects.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://www.googleapis.com https://classroom.googleapis.com https://accounts.google.com https://www.paypal.com https://www.paypalobjects.com https://www.google-analytics.com https://*.google-analytics.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://www.paypal.com; img-src 'self' data: blob: https://www.paypalobjects.com https://www.google-analytics.com; font-src 'self' data:; worker-src 'self' blob:; manifest-src 'self'; media-src 'none'; object-src 'none'; base-uri 'none'; form-action 'self' https://www.paypal.com" />
   <meta name="application-name" content="Classroom Seating Planner" />
@@ -4411,6 +4411,7 @@ body.visibility-mode #globalSearchBtn,
 body.visibility-mode #openRoomTemplatesBtn,
 body.visibility-mode #toggleLayoutToolsBtn,
 body.visibility-mode #layoutToolsPanel{display:none
+}body.product-v4.visibility-mode[data-workflow="review"] main.app > .right-panel{display:none;pointer-events:none
 }body.product-v4.visibility-mode[data-workflow="review"] .app{grid-template-columns:minmax(0, 1fr)
 }body.product-v4.visibility-mode[data-workflow="review"] .center-panel{display:flex
 }body.visibility-mode .center-panel > .panel-header .button-row{justify-content:flex-end
@@ -6242,7 +6243,7 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
 const APP_CONFIG = Object.freeze({
   name: 'Classroom Seating Planner',
   shortName: 'Seating Planner',
-  version: '6.5.3',
+  version: '6.5.4',
   copyrightHolder: 'Chris L. Franklin',
   copyrightYear: '2026',
   releaseDate: '2026-07-15',
@@ -6515,10 +6516,21 @@ const PROJECT_FEATURES = [
 
 const RELEASE_HISTORY = [
   {
+    version: '6.5.4',
+    date: 'July 15, 2026',
+    title: 'Presentation Chart Review lockout repair',
+    current: true,
+    changes: [
+      'Corrected the Review workflow CSS specificity that could make the Chart Review sidebar visible during Presentation Mode.',
+      'Presentation Mode now marks the Chart Review panel hidden, inert, and unavailable to assistive technology until authenticated exit.',
+      'Added regression coverage proving the sidebar cannot be displayed or used in Presentation Mode and is restored after exit.'
+    ]
+  },
+  {
     version: '6.5.3',
     date: 'July 15, 2026',
     title: 'Complete codebase audit, import hardening, and settings cleanup',
-    current: true,
+    current: false,
     changes: [
       'Preflighted local and Google Drive import sizes before reading response bodies, while retaining full post-read UTF-8 byte validation and existing schema checks.',
       'Removed the unused District Profile page and obsolete Presentation header-action option, and moved Google Analytics controls into Settings > Google.',
@@ -14601,6 +14613,7 @@ async function saveVisibilityPinFromSettings() {
 function applyVisibilityClasses() {
   const cfg = pageSettings().visibility;
   if (uiState.visibilityMode && cfg.hideGroupDetails && ['groups','zones'].includes(uiState.activeSideTab)) setSideTab('students');
+  const presentationActive = !!uiState.visibilityMode;
   document.body.classList.toggle('visibility-mode', !!uiState.visibilityMode);
   document.body.classList.toggle('vis-hide-class-actions', !!uiState.visibilityMode);
   document.body.classList.toggle('vis-hide-wizard', !!uiState.visibilityMode);
@@ -14616,6 +14629,13 @@ function applyVisibilityClasses() {
   document.body.classList.toggle('vis-disable-room-editing', !!uiState.visibilityMode);
   document.body.classList.toggle('vis-disable-student-editing', !!uiState.visibilityMode);
   document.body.classList.toggle('vis-disable-group-editing', !!uiState.visibilityMode);
+  const chartReviewPanel = document.querySelector('main.app > .right-panel');
+  if (chartReviewPanel) {
+    chartReviewPanel.hidden = presentationActive;
+    chartReviewPanel.inert = presentationActive;
+    if (presentationActive) chartReviewPanel.setAttribute('aria-hidden', 'true');
+    else chartReviewPanel.removeAttribute('aria-hidden');
+  }
   const button = el('visibilityModeBtn');
   if (button) {
     button.setAttribute('aria-pressed', uiState.visibilityMode ? 'true' : 'false');
