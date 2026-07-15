@@ -5,7 +5,7 @@
   <meta name="license" content="MIT License" />
   <meta name="spdx-license-identifier" content="MIT" />
   <meta name="copyright" content="Copyright (c) 2026 Chris L. Franklin" />
-  <meta name="app-version" content="6.4.7" />
+  <meta name="app-version" content="6.4.8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com https://www.paypalobjects.com blob:; style-src 'self' 'unsafe-inline'; connect-src 'self' https://www.googleapis.com https://classroom.googleapis.com https://accounts.google.com https://www.paypal.com https://www.paypalobjects.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://www.paypal.com; img-src 'self' data: blob: https://www.paypalobjects.com; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'self' https://www.paypal.com" />
   <meta name="application-name" content="Classroom Seating Planner" />
@@ -6213,7 +6213,7 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
 const APP_CONFIG = Object.freeze({
   name: 'Classroom Seating Planner',
   shortName: 'Seating Planner',
-  version: '6.4.7',
+  version: '6.4.8',
   copyrightHolder: 'Chris L. Franklin',
   copyrightYear: '2026',
   releaseDate: '2026-07-14',
@@ -6255,6 +6255,26 @@ const LOCAL_DURABLE_SAVE_PROMPT_SESSION_KEY = 'classroom-seating-planner-durable
 const LOCAL_DURABLE_SAVE_PROMPT_MIN_MS = 60000;
 const LOCAL_AUTOSAVE_SNAPSHOT_KEY = 'classroom-seating-planner-snapshots-v6';
 const GOOGLE_DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.file';
+const GOOGLE_DRIVE_USER_SESSION_KEY = 'classroom-seating-planner-google-drive-user-v6';
+const COLLABORATION_ACCESS_VERSION = 1;
+const COLLABORATION_AREAS = Object.freeze(['setup', 'room', 'seating', 'review', 'save', 'share', 'settings', 'classes']);
+const COLLABORATION_AREA_LABELS = Object.freeze({
+  setup: 'Class setup, roster, rules, and notes',
+  room: 'Room design and objects',
+  seating: 'Seat placement and generation',
+  review: 'Review, analysis, print, PDF, and SVG',
+  save: 'Save changes to the master Drive file',
+  share: 'Export and sharing tools',
+  settings: 'Settings and administrative tools',
+  classes: 'Class switching and class management'
+});
+const COLLABORATION_PRESETS = Object.freeze({
+  full: Object.freeze({ setup: 'edit', room: 'edit', seating: 'edit', review: 'edit', save: 'edit', share: 'edit', settings: 'edit', classes: 'edit' }),
+  seating: Object.freeze({ setup: 'view', room: 'view', seating: 'edit', review: 'view', save: 'edit', share: 'none', settings: 'none', classes: 'view' }),
+  room: Object.freeze({ setup: 'view', room: 'edit', seating: 'view', review: 'view', save: 'edit', share: 'none', settings: 'none', classes: 'view' }),
+  roster: Object.freeze({ setup: 'edit', room: 'view', seating: 'view', review: 'view', save: 'edit', share: 'none', settings: 'none', classes: 'view' }),
+  reviewer: Object.freeze({ setup: 'view', room: 'view', seating: 'view', review: 'view', save: 'none', share: 'view', settings: 'none', classes: 'view' })
+});
 const GOOGLE_CLASSROOM_SCOPES = [
   'https://www.googleapis.com/auth/classroom.courses.readonly',
   'https://www.googleapis.com/auth/classroom.rosters.readonly'
@@ -6445,9 +6465,9 @@ const PROJECT_FEATURES = [
   { title: 'Manual and keyboard placement', text: 'Drag, swap, lock, clear, or keyboard-place students while preserving anchors, reserved seats, and intentional Freeform geometry.' },
   { title: 'Review and integrity checks', text: 'Inspect unassigned students, rule outcomes, duplicate assignments, invalid locks, overlaps, hidden objects, and other room or data problems.' },
   { title: 'Encrypted saving and recovery', text: 'Use encrypted browser autosave, linked working files, downloaded backups, snapshots, selective restore, guarded startup recovery, and an optional separately stored password-recovery package.' },
-  { title: 'Optional Google Drive collaboration', text: 'Save and load encrypted working files through Google Drive, choose viewers or editors by Google-account email, enforce file roles, and merge overlapping saves without pretending the app provides live cursor-level co-editing.' },
+  { title: 'Optional Google Drive collaboration', text: 'Save and load encrypted working files through Google Drive, choose people by Google-account email, combine Drive Viewer or Editor roles with per-person Hidden, View only, or Can edit interface areas, and merge overlapping saves without pretending the app provides live cursor-level co-editing.' },
   { title: 'Purpose-limited sharing', text: 'Create teacher, substitute, student-facing, support-team, anonymous, and room-only outputs with a privacy summary before export.' },
-  { title: 'Printing and room output', text: 'Prepare names-only, substitute, or detailed charts with selectable fields, notes, configuration details, paper sizes, scale, tiling, and crop marks.' },
+  { title: 'Printing and room output', text: 'Prepare names-only, substitute, or detailed charts with selectable fields, notes, configuration details, paper sizes, scale, tiling, and crop marks. PDF always fits the complete Freeform room onto one chart page; selected notes and configuration may follow on supporting pages.' },
   { title: 'Security and privacy controls', text: 'Protect Settings, use Lock and Eye PINs, auto-lock the page, reveal sensitive notes deliberately, and erase browser-resident data through explicit recovery workflows.' },
   { title: 'Maintenance and diagnostics', text: 'Review build/schema information, storage health, privacy-safe activity/errors, import and integration recovery, deployment readiness, repair tools, sample data, cleanup, and Factory Reset.' },
   { title: 'Accessible responsive workspace', text: 'Use keyboard navigation, focus-managed dialogs, live announcements, skip navigation, focus mode, collapsible regions, mobile workflows, and reduced-motion support.' },
@@ -6457,10 +6477,24 @@ const PROJECT_FEATURES = [
 
 const RELEASE_HISTORY = [
   {
+    version: '6.4.8',
+    date: 'July 14, 2026',
+    title: 'Per-collaborator interface access and one-page Freeform PDFs',
+    current: true,
+    changes: [
+      'Added per-person planner access profiles to Google Drive sharing, with Hidden, View only, or Can edit modes for class setup, room design, seating, review/printing, saving, sharing, settings, and class management.',
+      'Added Full editor, Seating assistant, Room designer, Roster and rules editor, Reviewer and printer, and Custom presets while keeping Google Drive Viewer as an overriding read-only role.',
+      'Stored collaborator profiles in the encrypted save, matched the signed-in Google account by Drive permission ID, hid disallowed workflows and commands, and blocked form, Grid, Freeform, drag, context-menu, and keyboard mutation paths in view-only areas.',
+      'Clarified that interface profiles are workflow controls rather than cryptographic data redaction; encrypted read-only packages remain the correct option when data itself must be excluded.',
+      'Forced the complete Freeform room drawing to fit on one PDF chart page even when the room canvas is configured for tiled or actual-size output. Selected notes, groups, and zones can still use additional supporting pages.',
+      'Added focused regression coverage for oversized Freeform PDFs, permission normalization, hidden workflows, view-only mutation guards, command visibility, and save/import compatibility.'
+    ]
+  },
+  {
     version: '6.4.7',
     date: 'July 14, 2026',
     title: 'Faithful print exports, Drive reload continuity, and Prismatic Flow',
-    current: true,
+    current: false,
     changes: [
       'Replaced the generic PDF and SVG exporters with one shared vector renderer that preserves Standard Grid and Freeform room geometry, object styling, labels, colors, rotation, locking, front-of-room orientation, and Freeform page scaling.',
       'Wired Print Preview, Download PDF, and Download SVG to the same selected option snapshot so names, nickname, grade, ID, chart details, note categories, group configuration, and zone configuration now change every output consistently.',
@@ -6888,7 +6922,8 @@ const state = {
   rosterArchive: [],
   todaySession: null,
   seatingPlans: [],
-  importProfiles: []
+  importProfiles: [],
+  collaborationAccess: { version: COLLABORATION_ACCESS_VERSION, updatedAt: '', policies: {} }
 };
 
 const uiState = {
@@ -6946,6 +6981,9 @@ const uiState = {
   googleDriveChooserContext: null,
   googleDriveCapabilities: null,
   googleDriveAccessRole: 'unknown',
+  googleDriveUser: null,
+  sharedDriveInterfacePolicy: null,
+  sharedDriveInterfacePermissionId: '',
   sharedDriveBaseDocument: null,
   sharedDriveBaseFileId: '',
   sharedDriveMergePending: null,
@@ -7015,6 +7053,71 @@ function optionalColumnIndex(value) {
 
 function cloneJsonValue(value) {
   return value === undefined ? undefined : JSON.parse(JSON.stringify(value));
+}
+
+function normalizeCollaborationMode(value, fallback = 'none') {
+  const mode = String(value || '').toLowerCase();
+  return ['none', 'view', 'edit'].includes(mode) ? mode : fallback;
+}
+
+function collaborationPresetCapabilities(preset = 'full', driveRole = 'writer') {
+  const source = COLLABORATION_PRESETS[preset] || COLLABORATION_PRESETS.full;
+  const capabilities = {};
+  COLLABORATION_AREAS.forEach(area => {
+    const mode = normalizeCollaborationMode(source[area], 'none');
+    capabilities[area] = driveRole === 'reader' && mode === 'edit' ? 'view' : mode;
+  });
+  return capabilities;
+}
+
+function collaborationPresetForCapabilities(capabilities = {}, driveRole = 'writer') {
+  const normalized = {};
+  COLLABORATION_AREAS.forEach(area => { normalized[area] = normalizeCollaborationMode(capabilities[area], 'none'); });
+  for (const preset of Object.keys(COLLABORATION_PRESETS)) {
+    const expected = collaborationPresetCapabilities(preset, driveRole);
+    if (COLLABORATION_AREAS.every(area => expected[area] === normalized[area])) return preset;
+  }
+  return 'custom';
+}
+
+function normalizeCollaborationPolicy(policy = {}, fallback = {}) {
+  const roleValue = fallback.driveRole || policy.driveRole || 'writer';
+  const driveRole = roleValue === 'reader' ? 'reader' : 'writer';
+  const requestedPreset = String(policy.preset || fallback.preset || 'full');
+  const sourceCapabilities = policy.capabilities && typeof policy.capabilities === 'object'
+    ? policy.capabilities
+    : collaborationPresetCapabilities(requestedPreset, driveRole);
+  const capabilities = {};
+  COLLABORATION_AREAS.forEach(area => {
+    let mode = normalizeCollaborationMode(sourceCapabilities[area], collaborationPresetCapabilities('full', driveRole)[area]);
+    if (driveRole === 'reader' && mode === 'edit') mode = 'view';
+    capabilities[area] = mode;
+  });
+  return {
+    permissionId: String(policy.permissionId || fallback.permissionId || ''),
+    email: String(policy.email || fallback.email || '').trim().toLowerCase(),
+    displayName: String(policy.displayName || fallback.displayName || ''),
+    driveRole,
+    preset: collaborationPresetForCapabilities(capabilities, driveRole),
+    capabilities,
+    updatedAt: String(policy.updatedAt || fallback.updatedAt || '')
+  };
+}
+
+function normalizeCollaborationAccess(value = null) {
+  const source = value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+  const policies = {};
+  const rawPolicies = source.policies && typeof source.policies === 'object' && !Array.isArray(source.policies) ? source.policies : {};
+  Object.entries(rawPolicies).forEach(([permissionId, policy]) => {
+    const normalized = normalizeCollaborationPolicy(policy, { permissionId });
+    if (normalized.permissionId) policies[normalized.permissionId] = normalized;
+  });
+  return { version: COLLABORATION_ACCESS_VERSION, updatedAt: String(source.updatedAt || ''), policies };
+}
+
+function collaborationAccessDocument() {
+  state.collaborationAccess = normalizeCollaborationAccess(state.collaborationAccess);
+  return cloneJsonValue(state.collaborationAccess);
 }
 
 function recordStorageFailure(storageName, operation, key, error) {
@@ -15247,6 +15350,7 @@ function buildSelectiveRestoreDraft(parsed, sourceLabel = 'file', encrypted = fa
   const activeClassId = fullSave ? root.activeClassId : classes[0]?.id || '';
   const roomTemplates = fullSave ? (root.roomTemplates || []).map(normalizeRoomTemplateRecord) : (root.kind === 'seating-chart-room-layouts' ? (root.roomTemplates || []).map(normalizeRoomTemplateRecord) : []);
   const pageSettings = fullSave ? root.pageSettings || null : null;
+  const collaborationAccess = fullSave ? normalizeCollaborationAccess(root.collaborationAccess) : normalizeCollaborationAccess(null);
   const appSnapshotsFromFile = fullSave ? root.appSnapshots || [] : [];
   const preferences = fullSave && root.preferences && typeof root.preferences === 'object' ? root.preferences : null;
   return {
@@ -15259,6 +15363,7 @@ function buildSelectiveRestoreDraft(parsed, sourceLabel = 'file', encrypted = fa
     roomTemplates,
     appSnapshots: appSnapshotsFromFile.map(normalizeAppSnapshotRecord).filter(Boolean),
     pageSettings: pageSettings ? mergeImportedPageSettings(pageSettings) : null,
+    collaborationAccess,
     preferences,
     fullRestoreRecommended
   };
@@ -15446,6 +15551,7 @@ function restoreEntireImportedFile() {
   state.classes = parsed.classes.map(normalizeClassRecord);
   state.activeClassId = parsed.activeClassId;
   state.roomTemplates = (parsed.roomTemplates || []).map(normalizeRoomTemplateRecord);
+  state.collaborationAccess = normalizeCollaborationAccess(parsed.collaborationAccess);
   uiState.pageSettings = mergeImportedPageSettings(parsed.pageSettings || {});
   saveAppSnapshots((parsed.appSnapshots || []).map(normalizeAppSnapshotRecord));
   if (parsed.preferences?.dismissedHintKeys) saveDismissedHintKeys(new Set(parsed.preferences.dismissedHintKeys));
@@ -16238,6 +16344,7 @@ async function writeGoogleDriveSaveFile(options = {}) {
     await writeLocalBrowserSave({ reason: 'google-drive-mirror', announce: false, preparedSave });
     SharedDriveCollaborationV64.captureBaseDocument(preparedSave.document, saved.id || pageSettings().googleDriveFileId || '');
     SharedDriveCollaborationV64.applyDriveCapabilities(saved.capabilities || uiState.googleDriveCapabilities);
+    await SharedDriveCollaborationV64.refreshCurrentUserAccess(false);
     return true;
   } catch (err) {
     const fallbackMessage = `Google Drive save failed: ${err.message}. Saved an encrypted browser fallback for now. The warning will clear after the next successful Google Drive save.`;
@@ -16429,6 +16536,7 @@ async function loadGoogleDriveFileById(file, options = {}) {
   if (options.direct) loadedDriveDocument = await importStateDirectFromText(text, `Google Drive save ${file.name || ''}`.trim());
   else await importStateFromText(text, `Google Drive save ${file.name || ''}`.trim());
   SharedDriveCollaborationV64.applyDriveCapabilities(file.capabilities || null);
+  await SharedDriveCollaborationV64.refreshCurrentUserAccess(false);
   updateGoogleDriveSettings({
     preferredStorage: 'googleDrive',
     googleDriveFileId: file.id,
@@ -16537,6 +16645,9 @@ function forgetGoogleDriveLink() {
   uiState.googleDriveTokenExpiresAt = 0;
   uiState.googleDriveTokenClient = null;
   clearGoogleDriveTokenSession();
+  safeStorageRemove('sessionStorage', GOOGLE_DRIVE_USER_SESSION_KEY);
+  uiState.googleDriveUser = null;
+  SharedDriveCollaborationV64.applyInterfacePolicy(null, '');
   updateGoogleDriveSettings({
     preferredStorage: pageSettings().preferredStorage === 'googleDrive' ? 'browser' : pageSettings().preferredStorage,
     googleDriveFolderId: '',
@@ -17511,7 +17622,7 @@ const HELP_GUIDE_SECTIONS = [
       },
       {
         "title": "PDF / SVG in Print Options",
-        "text": "Print Preview, Download PDF, and Download SVG all use the same selected options. Standard Grid exports preserve the room cells and object styles; Freeform exports preserve canvas dimensions, object position, size, rotation, color, stacking, locks, and front-of-room orientation. Selected notes, group configuration, and zone configuration are added as supporting pages. Use JSON when you need an editable backup."
+        "text": "Print Preview, Download PDF, and Download SVG all use the same selected options. Standard Grid exports preserve the room cells and object styles; Freeform exports preserve canvas dimensions, object position, size, rotation, color, stacking, locks, and front-of-room orientation. PDF always shrinks the complete Freeform room onto one chart page, even when the canvas print mode is tiled or actual size. Selected notes, group configuration, and zone configuration are added as separate supporting pages. Use JSON when you need an editable backup."
       }
     ],
     "tips": [
@@ -17531,7 +17642,7 @@ const HELP_GUIDE_SECTIONS = [
     "id": "drive-sharing-collaboration",
     "category": "Share",
     "title": "Google Drive Sharing and Multi-User Collaboration",
-    "keywords": "share drive save collaborator people user email viewer editor writer reader role permission multi-user multi user concurrent merge shared file picker notification revoke remove access",
+    "keywords": "share drive save collaborator people user email viewer editor writer reader role permission multi-user multi user concurrent merge shared file picker notification revoke remove access hidden view only can edit preset custom seating assistant room designer reviewer",
     "intro": "The editable multi-user workflow uses one encrypted Google Drive save. The file owner chooses people and roles in Share and collaborate. This is revision-aware shared-file editing with conflict detection and three-way merge, not live Google Docs-style cursor streaming.",
     "items": [
       {
@@ -17548,11 +17659,19 @@ const HELP_GUIDE_SECTIONS = [
       },
       {
         "title": "Viewer versus Editor",
-        "text": "Viewer is read-only inside the planner. Editor can change the classroom and save back to the shared Drive file. Give Editor only to staff who should modify the master working copy."
+        "text": "Google Drive Viewer is always read-only and overrides every planner setting. Google Drive Editor makes saving technically possible, but the owner can still hide individual planner areas or make them view only. Give Editor only to staff who may modify at least part of the master working copy."
+      },
+      {
+        "title": "Planner interface access",
+        "text": "After choosing the Drive role, choose Full editor, Seating assistant, Room designer, Roster and rules editor, Reviewer and printer, or Custom permissions. Every profile can set Class Setup, Room Design, Seat Students, Review/Print, Save, Share, Settings, and Class Management to Hidden, View only, or Can edit. Drive Viewer automatically converts every Can edit choice to View only."
+      },
+      {
+        "title": "What Hidden and View only do",
+        "text": "Hidden removes workflow tabs, menu actions, settings entry points, and commands for that area. View only leaves the area available for inspection but blocks forms, buttons, Grid-cell actions, Freeform dragging, context menus, and keyboard mutations. Review/Print and non-mutating exports remain usable when their area is view only."
       },
       {
         "title": "Notification and message",
-        "text": "Leave Send Google notification enabled to have Google email the recipient. The optional message can explain which hosted planner site to open and whether the recipient should edit the master or only review it."
+        "text": "Leave Send Google notification enabled to have Google email the recipient. The optional message can explain which hosted planner site to open, which interface profile was assigned, and whether the recipient should edit the master or only review it."
       },
       {
         "title": "How the recipient opens the shared save",
@@ -17564,7 +17683,7 @@ const HELP_GUIDE_SECTIONS = [
       },
       {
         "title": "Current permissions",
-        "text": "The Current Drive permissions list shows the people Google returns for the file. The owner can change Viewer/Editor access or remove a collaborator without creating a new save file."
+        "text": "The Current Drive permissions list shows the people Google returns for the file. The owner can change Viewer/Editor access, choose a planner preset, customize all eight interface areas, save the interface profile, or remove a collaborator without creating a new save file."
       },
       {
         "title": "Concurrent edits and merge",
@@ -17572,7 +17691,7 @@ const HELP_GUIDE_SECTIONS = [
       },
       {
         "title": "Editable save versus encrypted viewer package",
-        "text": "Share the Drive save with Editor access for collaborative editing. Use an encrypted read-only HTML package or encrypted viewer file for substitutes, students, or anyone who should not modify the master. Send the viewer password through a separate channel."
+        "text": "For collaborative editing, grant Google Drive Editor access and then give the person Can edit access only to the planner areas they need. Hidden and View only profiles control this application's workflows but do not remove data from the encrypted master save. Use an encrypted read-only HTML package or encrypted viewer file for substitutes, students, or anyone who must receive a purpose-limited copy. Send the viewer password through a separate channel."
       },
       {
         "title": "Copy link, change access, or revoke access",
@@ -17586,11 +17705,12 @@ const HELP_GUIDE_SECTIONS = [
     ],
     "warnings": [
       "Google Drive sharing does not provide live cursors or instant seat movement. Changes become visible after another user loads or refreshes the Drive copy.",
-      "A Viewer cannot save changes back to the shared file. A recipient who needs to edit must receive Editor access from the owner or save a separate copy.",
+      "A Viewer cannot save changes back to the shared file. A recipient who needs to edit must receive Editor access from the owner and Can edit access for the relevant planner area.",
+      "Planner interface profiles are convenience and workflow controls enforced by this application. They do not remove data from the encrypted save and are not a substitute for an encrypted purpose-limited viewer package when the recipient must not receive certain information.",
       "The application uses a narrow per-file Drive scope. A shared file may require Google Picker to grant this deployment access for the recipient."
     ],
     "examples": [
-      "The intervention specialist receives Editor access to the shared working save. A substitute receives a password-protected read-only HTML package instead."
+      "The intervention specialist receives Drive Editor plus Seating assistant access. A room aide receives Drive Editor plus Room designer access. A substitute receives a password-protected read-only HTML package instead."
     ]
   },
   {
@@ -18493,7 +18613,8 @@ function exportState(scope = 'all', options = {}) {
   const classesToExport = scope === 'current' ? [active] : allClasses;
   const activeId = scope === 'current' ? active.id : state.activeClassId;
   const activeForExport = classesToExport.find(cls => cls.id === activeId) || classesToExport[0] || active;
-  const saveIdentity = nextSaveIdentity({ classes: classesToExport, activeClassId: activeForExport.id, roomTemplates: state.roomTemplates || [] }, { advanceRevision: options.advanceRevision === true });
+  const collaborationAccess = collaborationAccessDocument();
+  const saveIdentity = nextSaveIdentity({ classes: classesToExport, activeClassId: activeForExport.id, roomTemplates: state.roomTemplates || [], collaborationAccess }, { advanceRevision: options.advanceRevision === true });
   return JSON.stringify({
     format: SAVE_DOCUMENT_FORMAT,
     app: APP_NAME,
@@ -18507,6 +18628,7 @@ function exportState(scope = 'all', options = {}) {
     activeClassId: activeForExport.id,
     classes: classesToExport,
     roomTemplates: deepClone(state.roomTemplates || []),
+    collaborationAccess,
     appSnapshots: appSnapshots(),
     pageSettings: mergePageSettings(uiState.pageSettings),
     preferences: { dismissedHintKeys: Array.from(loadDismissedHintKeys()) }
@@ -18518,6 +18640,7 @@ function importStateCore(json) {
   const parsed = assertSupportedSaveDocument(JSON.parse(json), 'save data');
   uiState.saveIdentity = parsed.saveIdentity || null;
   state.roomTemplates = (parsed.roomTemplates || []).map(normalizeRoomTemplateRecord);
+  state.collaborationAccess = normalizeCollaborationAccess(parsed.collaborationAccess);
   uiState.pageSettings = mergeImportedPageSettings(parsed.pageSettings || {});
   saveAppSnapshots((parsed.appSnapshots || []).map(normalizeAppSnapshotRecord));
   if (parsed.preferences?.dismissedHintKeys) saveDismissedHintKeys(new Set(parsed.preferences.dismissedHintKeys));
@@ -19799,7 +19922,7 @@ function addFreeformObjectToPage(page, object, tile, transform, options) {
   page.commands.push({ type: 'text', x: centerX, y: y + height - Math.max(5, 8 * transform.scale), text: objectMeta, size: Math.max(5.3, Math.min(8, 7 * transform.scale)), weight: 600, color: palette.text, align: 'center', rotation, rotationCenterX: centerX, rotationCenterY: centerY });
 }
 
-function buildFreeformPrintPages(options, spec) {
+function buildFreeformPrintPages(options, spec, renderOptions = {}) {
   const canvas = state.freeformLayout?.canvas || {};
   const canvasWidth = Math.max(1, Number(canvas.width) || 1200);
   const canvasHeight = Math.max(1, Number(canvas.height) || 760);
@@ -19807,7 +19930,7 @@ function buildFreeformPrintPages(options, spec) {
   const footer = 18;
   const contentWidth = spec.width - spec.margin * 2;
   const contentHeight = spec.height - top - spec.margin - footer;
-  const mode = canvas.printScaleMode || 'tile';
+  const mode = renderOptions.forceFreeformFit ? 'fit' : (canvas.printScaleMode || 'tile');
   const actualScale = 72 / 96;
   let sourcePerPageWidth = contentWidth / actualScale;
   let sourcePerPageHeight = contentHeight / actualScale;
@@ -19928,7 +20051,7 @@ function addPrintableCardsToPages(pages, spec, heading, rows) {
   pages.push(page);
 }
 
-function buildPrintVectorPages(options = currentPrintOptions()) {
+function buildPrintVectorPages(options = currentPrintOptions(), renderOptions = {}) {
   const normalized = { ...defaultPrintOptions(), ...options };
   normalized.details = { ...defaultPrintOptions().details, ...(options.details || {}) };
   normalized.chartDetails = { ...defaultPrintOptions().chartDetails, ...(options.chartDetails || {}) };
@@ -19937,7 +20060,7 @@ function buildPrintVectorPages(options = currentPrintOptions()) {
   normalized.groupConfig = { ...defaultPrintOptions().groupConfig, ...(options.groupConfig || {}) };
   normalized.zoneConfig = { ...defaultPrintOptions().zoneConfig, ...(options.zoneConfig || {}) };
   const spec = printPaperSpec();
-  const pages = state.layoutMode === 'freeform' ? buildFreeformPrintPages(normalized, spec) : buildGridPrintPage(normalized, spec);
+  const pages = state.layoutMode === 'freeform' ? buildFreeformPrintPages(normalized, spec, renderOptions) : buildGridPrintPage(normalized, spec);
   addPrintableCardsToPages(pages, spec, noteCategoryTitle(['private', 'substitute', 'public'].filter(category => normalized.notes[category])), printableNoteRows(normalized));
   addPrintableCardsToPages(pages, spec, 'Group and Rule Configuration', printableGroupRows(normalized));
   addPrintableCardsToPages(pages, spec, 'Zone Configuration', printableZoneRows(normalized));
@@ -20048,7 +20171,7 @@ function pdfCommandStream(command) {
   return '';
 }
 
-function buildPrintPdfDocument(options = currentPrintOptions(), pages = buildPrintVectorPages(options)) {
+function buildPrintPdfDocument(options = currentPrintOptions(), pages = buildPrintVectorPages(options, { forceFreeformFit: true })) {
   const objects = new Map();
   const setObject = (id, body) => objects.set(id, body);
   const pageObjectIds = [];
@@ -20087,7 +20210,7 @@ function exportChartSvgCore(options = readPrintOptionsFromModal()) {
 }
 
 function exportChartPdfCore(options = readPrintOptionsFromModal()) {
-  const pages = buildPrintVectorPages(options);
+  const pages = buildPrintVectorPages(options, { forceFreeformFit: true });
   const pdf = buildPrintPdfDocument(options, pages);
   const blob = new Blob([pdf], { type: 'application/pdf' });
   const url = URL.createObjectURL(blob);
@@ -20098,7 +20221,7 @@ function exportChartPdfCore(options = readPrintOptionsFromModal()) {
   link.click();
   link.remove();
   setTimeout(() => URL.revokeObjectURL(url), 0);
-  setLiveStatusMessage(`PDF exported with the selected print options across ${pages.length} page${pages.length === 1 ? '' : 's'}.`);
+  setLiveStatusMessage(`PDF exported with the selected print options across ${pages.length} page${pages.length === 1 ? '' : 's'}. Freeform room layouts are fit onto one chart page.`);
 }
 
 
@@ -20432,6 +20555,10 @@ function resetInMemoryAppToFactory() {
   uiState.googleDriveTokenExpiresAt = 0;
   uiState.googleDriveTokenClient = null;
   clearGoogleDriveTokenSession();
+  safeStorageRemove('sessionStorage', GOOGLE_DRIVE_USER_SESSION_KEY);
+  uiState.googleDriveUser = null;
+  uiState.sharedDriveInterfacePolicy = null;
+  uiState.sharedDriveInterfacePermissionId = '';
   uiState.googleDriveBusy = false;
   uiState.googleDriveStatus = 'Google Drive is not connected.';
   uiState.googleDriveLastSyncAt = '';
@@ -23225,7 +23352,8 @@ function nextSaveIdentity(exportedState, options = {}) {
     contentHash: hashString(stableJsonStringify({
       classes: exportedState?.classes || [],
       activeClassId: exportedState?.activeClassId || '',
-      roomTemplates: exportedState?.roomTemplates || state.roomTemplates || []
+      roomTemplates: exportedState?.roomTemplates || state.roomTemplates || [],
+      collaborationAccess: exportedState?.collaborationAccess || state.collaborationAccess || normalizeCollaborationAccess(null)
     }))
   };
   if (advanceRevision) uiState.saveIdentity = identity;
@@ -25682,32 +25810,33 @@ const ProductExperience = (() => {
   }
 
   function commandDefinitions() {
-    return [
-      ['Go to Class Setup', 'Roster, students, rules, and zones', 'setup', () => setWorkflow('setup')],
-      ['Go to Room Design', 'Grid and Freeform layout tools', 'room', () => setWorkflow('room')],
-      ['Go to Seat Students', 'Manual placement and generated seating options', 'seating', () => setWorkflow('seating')],
-      ['Go to Review', 'Rule report and assignment status', 'review', () => setWorkflow('review')],
-      ['Go to Save & Share', 'Backups, printing, and controlled exports', 'share', () => setWorkflow('share')],
-      ['Generate seating options', 'Compare rule matches before applying', 'seating', () => document.getElementById('generateBtn')?.click()],
-      ['Add a student', 'Open the roster and focus the new-student form', 'setup', () => runAction('focus-add-student')],
-      ['Import or reconcile roster', 'Load a CSV roster', 'setup', () => runAction('import-roster')],
-      ['Open room tools', 'Groups, alignment, layers, history, and print pages', 'room', () => document.getElementById('openFreeformWorkspaceBtn')?.click()],
-      ['Insert a Freeform preset', 'Pods, testing rows, lab stations, meeting areas, and accessible pathways', 'room', () => ClassroomWorkflowV53.openPresets()],
-      ['Audit Freeform room', 'Find overlaps, invalid objects, and assignment problems', 'review', () => document.getElementById('openFreeformAuditBtn')?.click()],
-      ['Open Today mode', 'Attendance, temporary guests, notes, and present-student seating', 'seating', () => ClassroomWorkflowV53.openTodayMode()],
-      ['Open named seating plans', 'Save, compare, and restore room or assignment versions', 'seating', () => ClassroomWorkflowV53.openSeatingPlans()],
+    const commands = [
+      ['Go to Class Setup', 'Roster, students, rules, and zones', 'setup', () => setWorkflow('setup'), 'setup'],
+      ['Go to Room Design', 'Grid and Freeform layout tools', 'room', () => setWorkflow('room'), 'room'],
+      ['Go to Seat Students', 'Manual placement and generated seating options', 'seating', () => setWorkflow('seating'), 'seating'],
+      ['Go to Review', 'Rule report and assignment status', 'review', () => setWorkflow('review'), 'review'],
+      ['Go to Save & Share', 'Backups, printing, and controlled exports', 'share', () => setWorkflow('share'), 'share'],
+      ['Generate seating options', 'Compare rule matches before applying', 'seating', () => document.getElementById('generateBtn')?.click(), 'seating'],
+      ['Add a student', 'Open the roster and focus the new-student form', 'setup', () => runAction('focus-add-student'), 'setup'],
+      ['Import or reconcile roster', 'Load a CSV roster', 'setup', () => runAction('import-roster'), 'setup'],
+      ['Open room tools', 'Groups, alignment, layers, history, and print pages', 'room', () => document.getElementById('openFreeformWorkspaceBtn')?.click(), 'room'],
+      ['Insert a Freeform preset', 'Pods, testing rows, lab stations, meeting areas, and accessible pathways', 'room', () => ClassroomWorkflowV53.openPresets(), 'room'],
+      ['Audit Freeform room', 'Find overlaps, invalid objects, and assignment problems', 'review', () => document.getElementById('openFreeformAuditBtn')?.click(), 'review'],
+      ['Open Today mode', 'Attendance, temporary guests, notes, and present-student seating', 'seating', () => ClassroomWorkflowV53.openTodayMode(), 'seating'],
+      ['Open named seating plans', 'Save, compare, and restore room or assignment versions', 'seating', () => ClassroomWorkflowV53.openSeatingPlans(), 'seating'],
       ['Search planner data', 'Find classes, students, rules, zones, templates, and saved plans', 'search', () => ClassroomWorkflowV53.openGlobalSearch()],
-      ['Save options', 'Encrypted local, linked-file, and Drive saves', 'share', () => openSaveSetupModal()],
-      ['Print options', 'Names, notes, details, and page setup', 'share', () => document.getElementById('printBtn')?.click()],
-      ['Safe sharing presets', 'Purpose-specific exports with field review', 'share', () => ModernizationSuite.openSafeShare()],
-      ['Take a snapshot', 'Create a restore point', 'share', () => document.getElementById('snapshotQuickBtn')?.click()],
-      ['Open settings', 'Security, defaults, appearance, saving, and Drive', 'settings', () => document.getElementById('settingsBtn')?.click()],
+      ['Save options', 'Encrypted local, linked-file, and Drive saves', 'share', () => openSaveSetupModal(), 'save'],
+      ['Print options', 'Names, notes, details, and page setup', 'share', () => document.getElementById('printBtn')?.click(), 'review'],
+      ['Safe sharing presets', 'Purpose-specific exports with field review', 'share', () => ModernizationSuite.openSafeShare(), 'share'],
+      ['Take a snapshot', 'Create a restore point', 'share', () => document.getElementById('snapshotQuickBtn')?.click(), 'save'],
+      ['Open settings', 'Security, defaults, appearance, saving, and Drive', 'settings', () => document.getElementById('settingsBtn')?.click(), 'settings'],
       ['Open help guide', 'Search all features and workflows', 'help', () => document.getElementById('helpGuideBtn')?.click()],
-      ['Lock workspace', 'Protect the active chart', 'security', () => document.getElementById('pageLockBtn')?.click()],
-      ['Focus workspace', 'Hide workflow guidance and maximize the active working area', 'room', () => WorkspaceLayoutV41.toggleFocusMode()],
-      ['Minimize workflow guidance', 'Replace the workflow header with a compact stage ribbon', 'room', () => WorkspaceLayoutV41.toggleWorkflow()],
-      ['Reset workspace layout', 'Restore expanded headers, panels, and dashboard summaries', 'settings', () => WorkspaceLayoutV41.resetLayout()]
-    ].map((item, index) => ({ id: `command-${index}`, title: item[0], description: item[1], category: item[2], run: item[3] }));
+      ['Lock workspace', 'Protect the active chart', 'security', () => document.getElementById('pageLockBtn')?.click(), 'settings'],
+      ['Focus workspace', 'Hide workflow guidance and maximize the active working area', 'room', () => WorkspaceLayoutV41.toggleFocusMode(), 'room'],
+      ['Minimize workflow guidance', 'Replace the workflow header with a compact stage ribbon', 'room', () => WorkspaceLayoutV41.toggleWorkflow(), 'room'],
+      ['Reset workspace layout', 'Restore expanded headers, panels, and dashboard summaries', 'settings', () => WorkspaceLayoutV41.resetLayout(), 'settings']
+    ].map((item, index) => ({ id: `command-${index}`, title: item[0], description: item[1], category: item[2], run: item[3], accessArea: item[4] || '' }));
+    return commands.filter(command => !command.accessArea || document.body.dataset[`collab${command.accessArea[0].toUpperCase()}${command.accessArea.slice(1)}`] !== 'none');
   }
 
   function renderCommands(query = '') {
@@ -25739,6 +25868,16 @@ const ProductExperience = (() => {
   }
 
   function runAction(action) {
+    const accessArea = ({ save: 'save', 'class-tools': 'classes', 'room-tools': 'room', 'room-audit': 'review', generate: 'seating', randomize: 'seating', analyze: 'review', 'names-only': 'review', print: 'review', snapshot: 'save', diagnostics: 'settings', 'safe-share': 'share', 'setup-students': 'setup', 'focus-add-student': 'setup', 'import-roster': 'setup', 'open-rules': 'setup', 'open-zones': 'setup' })[action] || '';
+    const accessMode = accessArea ? document.body.dataset[`collab${accessArea[0].toUpperCase()}${accessArea.slice(1)}`] : '';
+    if (accessArea && accessMode === 'none') {
+      setLiveStatusMessage(`${COLLABORATION_AREA_LABELS[accessArea] || 'This command'} is hidden by your collaborator interface profile.`);
+      return;
+    }
+    if (['save', 'generate', 'randomize', 'snapshot'].includes(action) && accessArea && accessMode === 'view') {
+      setLiveStatusMessage(`${COLLABORATION_AREA_LABELS[accessArea] || 'This command'} is view only for your collaborator account.`);
+      return;
+    }
     if (action === 'save') {
       closePopovers();
       hideSaveLoadMenu();
@@ -25799,6 +25938,13 @@ const ProductExperience = (() => {
 
   function setWorkflow(key, options = {}) {
     if (!WORKFLOWS[key]) key = 'setup';
+    const requestedAccessKey = `collab${key[0].toUpperCase()}${key.slice(1)}`;
+    if (document.body.dataset[requestedAccessKey] === 'none') {
+      const fallback = Object.keys(WORKFLOWS).find(workflow => document.body.dataset[`collab${workflow[0].toUpperCase()}${workflow.slice(1)}`] !== 'none');
+      if (!fallback) return false;
+      if (!options.silent) setLiveStatusMessage(`${WORKFLOWS[key].label} is hidden by your collaborator interface profile.`);
+      key = fallback;
+    }
     activeWorkflow = key;
     document.body.dataset.workflow = key;
     safeStorageSet('sessionStorage', 'seatingPlannerWorkflow', key)
@@ -31310,6 +31456,223 @@ const SharedDriveCollaborationV64 = (() => {
     const area = document.createElement('textarea'); area.value = text; area.setAttribute('readonly', ''); area.style.position = 'fixed'; area.style.opacity = '0'; document.body.appendChild(area); area.select(); const ok = document.execCommand('copy'); area.remove(); return ok;
   }
 
+  function defaultPolicyForRole(driveRole = 'writer', identity = {}) {
+    const role = driveRole === 'reader' ? 'reader' : 'writer';
+    const preset = role === 'reader' ? 'reviewer' : 'full';
+    return normalizeCollaborationPolicy({
+      permissionId: identity.permissionId || '',
+      email: identity.emailAddress || identity.email || '',
+      displayName: identity.displayName || '',
+      driveRole: role,
+      preset,
+      capabilities: collaborationPresetCapabilities(preset, role)
+    });
+  }
+
+  function collaborationPolicy(permissionId, driveRole = 'writer', identity = {}) {
+    state.collaborationAccess = normalizeCollaborationAccess(state.collaborationAccess);
+    const stored = state.collaborationAccess.policies[String(permissionId || '')];
+    return stored
+      ? normalizeCollaborationPolicy(stored, { permissionId, driveRole, email: identity.emailAddress || '', displayName: identity.displayName || '' })
+      : defaultPolicyForRole(driveRole, { ...identity, permissionId });
+  }
+
+  function presetOptionsMarkup(selected = 'full') {
+    const options = [
+      ['full', 'Full editor'],
+      ['seating', 'Seating assistant'],
+      ['room', 'Room designer'],
+      ['roster', 'Roster and rules editor'],
+      ['reviewer', 'Reviewer and printer'],
+      ['custom', 'Custom permissions']
+    ];
+    return options.map(([value, label]) => `<option value="${value}"${selected === value ? ' selected' : ''}>${label}</option>`).join('');
+  }
+
+  function collaborationModeOptions(selected = 'none', driveRole = 'writer', area = '') {
+    const modes = [['none', 'Hidden'], ['view', 'View only'], ['edit', 'Can edit']];
+    return modes.map(([value, label]) => {
+      const disabled = value === 'edit' && driveRole === 'reader';
+      const suffix = area === 'save' && value === 'view' ? 'See status only' : label;
+      return `<option value="${value}"${selected === value ? ' selected' : ''}${disabled ? ' disabled' : ''}>${suffix}</option>`;
+    }).join('');
+  }
+
+  function capabilityGridMarkup(policy, scope) {
+    const normalized = normalizeCollaborationPolicy(policy);
+    return COLLABORATION_AREAS.map(area => `<label class="shared-drive-capability-row"><span>${escapeHtml(COLLABORATION_AREA_LABELS[area])}</span><select data-collaboration-capability="${area}" data-collaboration-scope="${escapeHtml(scope)}" aria-label="${escapeHtml(COLLABORATION_AREA_LABELS[area])}">${collaborationModeOptions(normalized.capabilities[area], normalized.driveRole, area)}</select></label>`).join('');
+  }
+
+  function policyFromCapabilityContainer(container, fallback = {}) {
+    const driveRole = fallback.driveRole === 'reader' ? 'reader' : 'writer';
+    const capabilities = {};
+    COLLABORATION_AREAS.forEach(area => {
+      let mode = normalizeCollaborationMode(container?.querySelector(`[data-collaboration-capability="${area}"]`)?.value, fallback.capabilities?.[area] || 'none');
+      if (driveRole === 'reader' && mode === 'edit') mode = 'view';
+      capabilities[area] = mode;
+    });
+    return normalizeCollaborationPolicy({ ...fallback, driveRole, capabilities, preset: collaborationPresetForCapabilities(capabilities, driveRole) });
+  }
+
+  function applyPresetToCapabilityContainer(container, preset, driveRole = 'writer') {
+    const capabilities = collaborationPresetCapabilities(preset === 'custom' ? 'full' : preset, driveRole);
+    COLLABORATION_AREAS.forEach(area => {
+      const select = container?.querySelector(`[data-collaboration-capability="${area}"]`);
+      if (!select) return;
+      select.innerHTML = collaborationModeOptions(capabilities[area], driveRole, area);
+      select.value = capabilities[area];
+    });
+  }
+
+  function currentInterfaceMode(area) {
+    const policy = uiState.sharedDriveInterfacePolicy;
+    if (!policy) return uiState.googleDriveAccessRole === 'reader' ? 'view' : 'edit';
+    return normalizeCollaborationMode(policy.capabilities?.[area], 'none');
+  }
+
+  function currentUserCanEdit(area) {
+    return uiState.googleDriveAccessRole !== 'reader' && currentInterfaceMode(area) === 'edit';
+  }
+
+  function cacheCurrentDriveUser(user) {
+    const cfg = googleDriveConfig();
+    if (!user?.permissionId || !cfg.clientId) return false;
+    uiState.googleDriveUser = { permissionId: String(user.permissionId), emailAddress: String(user.emailAddress || ''), displayName: String(user.displayName || '') };
+    return safeStorageSet('sessionStorage', GOOGLE_DRIVE_USER_SESSION_KEY, JSON.stringify({ ...uiState.googleDriveUser, clientId: cfg.clientId }));
+  }
+
+  function restoreCurrentDriveUser() {
+    let cached = null;
+    try { cached = JSON.parse(safeStorageGet('sessionStorage', GOOGLE_DRIVE_USER_SESSION_KEY) || 'null'); } catch { return null; }
+    if (!cached?.permissionId || cached.clientId !== googleDriveConfig().clientId) return null;
+    uiState.googleDriveUser = { permissionId: String(cached.permissionId), emailAddress: String(cached.emailAddress || ''), displayName: String(cached.displayName || '') };
+    return uiState.googleDriveUser;
+  }
+
+  async function fetchCurrentDriveUser(interactive = true) {
+    const response = await googleDriveFetch('https://www.googleapis.com/drive/v3/about?fields=user(displayName,emailAddress,permissionId)', { method: 'GET' }, interactive);
+    const about = await response.json();
+    const user = about?.user || null;
+    if (!user?.permissionId) throw new Error('Google Drive did not return the current account permission ID.');
+    cacheCurrentDriveUser(user);
+    return uiState.googleDriveUser;
+  }
+
+  function accessSummary(policy) {
+    if (!policy) return 'Full editor';
+    const presetLabels = { full: 'Full editor', seating: 'Seating assistant', room: 'Room designer', roster: 'Roster and rules editor', reviewer: 'Reviewer and printer', custom: 'Custom permissions' };
+    return presetLabels[policy.preset] || 'Custom permissions';
+  }
+
+  function applyInterfacePolicy(policy = null, permissionId = '') {
+    const normalized = policy ? normalizeCollaborationPolicy(policy) : null;
+    uiState.sharedDriveInterfacePolicy = normalized;
+    uiState.sharedDriveInterfacePermissionId = String(permissionId || normalized?.permissionId || '');
+    COLLABORATION_AREAS.forEach(area => {
+      document.body.dataset[`collab${area[0].toUpperCase()}${area.slice(1)}`] = normalized ? normalized.capabilities[area] : (uiState.googleDriveAccessRole === 'reader' ? (area === 'save' ? 'none' : 'view') : 'edit');
+    });
+    syncInterfaceAccessUi();
+  }
+
+  function syncInterfaceAccessUi() {
+    const policy = uiState.sharedDriveInterfacePolicy;
+    document.querySelectorAll('.v4-workflow-step[data-workflow]').forEach(button => {
+      const mode = currentInterfaceMode(button.dataset.workflow);
+      button.hidden = mode === 'none';
+      button.disabled = mode === 'none';
+      button.setAttribute('aria-disabled', mode === 'none' ? 'true' : 'false');
+      button.title = mode === 'view' ? `${COLLABORATION_AREA_LABELS[button.dataset.workflow] || 'This workflow'} — view only` : '';
+    });
+    const settingsMode = currentInterfaceMode('settings');
+    ['settingsBtn', 'googleHubSettingsBtn'].forEach(id => { const control = node(id); if (control) control.hidden = settingsMode === 'none'; });
+    const reviewMode = currentInterfaceMode('review');
+    ['printBtn', 'v4ContextPrimary'].forEach(id => { const control = node(id); if (control && id === 'printBtn') control.hidden = reviewMode === 'none'; });
+    const shareMode = currentInterfaceMode('share');
+    ['openSharedDriveManagerBtn', 'googleHubDriveShareBtn'].forEach(id => { const control = node(id); if (control) control.hidden = shareMode === 'none'; });
+    document.querySelectorAll('[data-save-menu-action="safe-share"],[data-save-menu-action="export-all"],[data-save-menu-action="export-current"],[data-save-menu-action="download-students"],[data-save-menu-action="download-groups"],[data-save-menu-action="download-rooms"],[data-save-menu-action="download-package"],[data-save-menu-action="drive-share-manager"]').forEach(control => {
+      control.hidden = shareMode === 'none';
+    });
+    const classMode = currentInterfaceMode('classes');
+    const classManager = document.querySelector('.class-manager');
+    if (classManager) classManager.hidden = classMode === 'none';
+    ['newClassBtn', 'renameClassBtn', 'duplicateClassBtn', 'classToolsBtn', 'deleteClassBtn'].forEach(id => {
+      const control = node(id);
+      if (control) control.disabled = classMode !== 'edit';
+    });
+    const saveMode = currentInterfaceMode('save');
+    document.querySelectorAll('[data-save-menu-action="save-primary"],[data-save-menu-action="google-drive-save"],[data-save-menu-action="choose-linked-file"]').forEach(control => {
+      control.hidden = saveMode === 'none';
+      control.disabled = saveMode !== 'edit';
+    });
+    document.querySelectorAll('[data-drive-write-action]').forEach(control => {
+      const needsShare = control.closest('#sharedDriveModal');
+      control.disabled = uiState.googleDriveAccessRole === 'reader' || (needsShare ? shareMode !== 'edit' : saveMode !== 'edit');
+      if (control.disabled) control.title = uiState.googleDriveAccessRole === 'reader' ? 'Google Drive granted view-only access to this file.' : 'This collaborator interface profile does not allow this action.';
+    });
+    let banner = node('collaborationAccessBanner');
+    if (!banner) {
+      banner = document.createElement('div');
+      banner.id = 'collaborationAccessBanner';
+      banner.className = 'collaboration-access-banner';
+      banner.setAttribute('role', 'status');
+      document.body.appendChild(banner);
+    }
+    const restricted = policy && policy.preset !== 'full';
+    banner.hidden = !restricted;
+    if (restricted) banner.textContent = `${accessSummary(policy)} access: some planner areas are hidden or view only.`;
+    const activeWorkflow = String(document.body.dataset.workflow || 'setup');
+    if (currentInterfaceMode(activeWorkflow) === 'none' && typeof ProductExperience !== 'undefined') {
+      const fallback = ['review', 'seating', 'room', 'setup', 'share'].find(area => currentInterfaceMode(area) !== 'none');
+      if (fallback) ProductExperience.setWorkflow(fallback);
+    }
+  }
+
+  async function refreshCurrentUserAccess(interactive = true) {
+    let user = uiState.googleDriveUser || restoreCurrentDriveUser();
+    if (!user && (interactive || hasUsableGoogleDriveToken())) {
+      try { user = await fetchCurrentDriveUser(interactive); } catch (error) {
+        if (interactive) throw error;
+      }
+    }
+    if (!user?.permissionId) {
+      state.collaborationAccess = normalizeCollaborationAccess(state.collaborationAccess);
+      const hasRestrictedProfiles = Object.keys(state.collaborationAccess.policies).length > 0;
+      const fallbackPolicy = hasRestrictedProfiles
+        ? normalizeCollaborationPolicy({ driveRole: uiState.googleDriveAccessRole === 'reader' ? 'reader' : 'writer', preset: 'reviewer', capabilities: collaborationPresetCapabilities('reviewer', uiState.googleDriveAccessRole === 'reader' ? 'reader' : 'writer') })
+        : null;
+      applyInterfacePolicy(fallbackPolicy, '');
+      if (hasRestrictedProfiles) setLiveStatusMessage('The signed-in Drive account could not be matched to its interface profile. Conservative review-only access is active until permissions are refreshed.');
+      return fallbackPolicy;
+    }
+    const policy = collaborationPolicy(user.permissionId, uiState.googleDriveAccessRole, user);
+    applyInterfacePolicy(policy, user.permissionId);
+    return policy;
+  }
+
+  async function persistCollaborationAccess(reason = 'collaboration-access') {
+    state.collaborationAccess = normalizeCollaborationAccess(state.collaborationAccess);
+    state.collaborationAccess.updatedAt = new Date().toISOString();
+    const saved = await writeGoogleDriveSaveFile({ reason, announce: false });
+    if (!saved) throw new Error('The interface permission profile could not be saved to Google Drive.');
+    return saved;
+  }
+
+  function setStoredPolicy(policy) {
+    const normalized = normalizeCollaborationPolicy(policy);
+    if (!normalized.permissionId) throw new Error('A Google Drive permission ID is required for interface access.');
+    state.collaborationAccess = normalizeCollaborationAccess(state.collaborationAccess);
+    normalized.updatedAt = new Date().toISOString();
+    state.collaborationAccess.policies[normalized.permissionId] = normalized;
+    state.collaborationAccess.updatedAt = normalized.updatedAt;
+    return normalized;
+  }
+
+  function deleteStoredPolicy(permissionId) {
+    state.collaborationAccess = normalizeCollaborationAccess(state.collaborationAccess);
+    delete state.collaborationAccess.policies[String(permissionId || '')];
+    state.collaborationAccess.updatedAt = new Date().toISOString();
+  }
+
   function applyDriveCapabilities(capabilities = null) {
     uiState.googleDriveCapabilities = capabilities && typeof capabilities === 'object' ? { ...capabilities } : null;
     uiState.googleDriveAccessRole = capabilities?.canEdit === false ? 'reader' : capabilities?.canEdit === true ? 'writer' : 'unknown';
@@ -31330,11 +31693,15 @@ const SharedDriveCollaborationV64 = (() => {
       document.body.appendChild(banner);
     }
     banner.hidden = uiState.googleDriveAccessRole !== 'reader';
+    syncInterfaceAccessUi();
   }
 
   function assertCanWriteCurrentDriveFile() {
     if (googleDriveConfig().fileId && uiState.googleDriveAccessRole === 'reader') {
       throw new Error('This Google Drive file is shared with view-only permission. Ask the owner for Editor access or save a separate copy.');
+    }
+    if (googleDriveConfig().fileId && !currentUserCanEdit('save')) {
+      throw new Error('Your collaborator interface profile does not allow saving changes to the master Drive file. Ask the owner to update your interface access.');
     }
   }
 
@@ -31373,19 +31740,36 @@ const SharedDriveCollaborationV64 = (() => {
     const meta = await driveMetadata(fileId);
     applyDriveCapabilities(meta.capabilities || null);
     permissionRows = Array.isArray(meta.permissions) ? meta.permissions : [];
+    await refreshCurrentUserAccess(true);
     renderPermissions(meta);
+    renderAddPermissionControls();
     return meta;
+  }
+
+  function renderAddPermissionControls() {
+    const role = node('sharedDriveRole')?.value === 'reader' ? 'reader' : 'writer';
+    const presetSelect = node('sharedDriveInterfacePreset');
+    let preset = presetSelect?.value || (role === 'reader' ? 'reviewer' : 'full');
+    if (role === 'reader' && preset === 'full') { preset = 'reviewer'; if (presetSelect) presetSelect.value = preset; }
+    const policy = normalizeCollaborationPolicy({ driveRole: role, preset, capabilities: collaborationPresetCapabilities(preset === 'custom' ? 'full' : preset, role) });
+    const grid = node('sharedDriveCapabilityGrid');
+    if (grid) grid.innerHTML = capabilityGridMarkup(policy, 'new');
+    if (presetSelect && preset === 'custom') presetSelect.value = 'custom';
   }
 
   function renderPermissions(meta = {}) {
     const status = node('sharedDriveStatus');
     const list = node('sharedDrivePermissionList');
-    if (status) status.textContent = `${meta.name || googleDriveConfig().fileName || 'Current Drive file'} · ${meta.capabilities?.canShare === false ? 'Sharing changes are not permitted for this account.' : 'Sharing can be managed here.'}`;
+    if (status) status.textContent = `${meta.name || googleDriveConfig().fileName || 'Current Drive file'} · ${meta.capabilities?.canShare === false ? 'Sharing changes are not permitted for this account.' : 'Sharing and interface access can be managed here.'}`;
     if (!list) return;
     list.innerHTML = permissionRows.length ? permissionRows.map(permission => {
       const identity = permission.emailAddress || permission.displayName || permission.domain || permission.type || 'Unknown collaborator';
       const own = permission.role === 'owner';
-      return `<div class="shared-drive-permission-row"><div><strong>${escapeHtml(identity)}</strong><span>${escapeHtml(permission.type || 'user')} · ${escapeHtml(permission.role || 'unknown')}</span></div><div class="button-row">${own ? '<span class="pill">Owner</span>' : `<select data-share-role="${escapeHtml(permission.id)}" aria-label="Access role for ${escapeHtml(identity)}"><option value="reader"${permission.role === 'reader' ? ' selected' : ''}>Viewer</option><option value="writer"${permission.role === 'writer' ? ' selected' : ''}>Editor</option></select><button type="button" class="tiny danger" data-remove-permission="${escapeHtml(permission.id)}">Remove</button>`}</div></div>`;
+      const driveRole = permission.role === 'reader' ? 'reader' : 'writer';
+      const policy = own ? defaultPolicyForRole('writer', { ...permission, permissionId: permission.id }) : collaborationPolicy(permission.id, driveRole, permission);
+      const current = String(uiState.googleDriveUser?.permissionId || '') === String(permission.id || '');
+      const scope = `permission-${permission.id}`;
+      return `<div class="shared-drive-permission-row" data-permission-row="${escapeHtml(permission.id)}"><div class="shared-drive-permission-identity"><strong>${escapeHtml(identity)}${current ? ' <span class="pill">Current account</span>' : ''}</strong><span>${escapeHtml(permission.type || 'user')} · ${escapeHtml(permission.role || 'unknown')} · ${escapeHtml(accessSummary(policy))}</span></div>${own ? '<div class="button-row"><span class="pill">Owner · Full editor</span></div>' : `<div class="shared-drive-permission-controls"><div class="button-row"><select data-share-role="${escapeHtml(permission.id)}" aria-label="Drive access role for ${escapeHtml(identity)}"><option value="reader"${driveRole === 'reader' ? ' selected' : ''}>Drive Viewer</option><option value="writer"${driveRole === 'writer' ? ' selected' : ''}>Drive Editor</option></select><select data-collaboration-preset="${escapeHtml(permission.id)}" aria-label="Interface access preset for ${escapeHtml(identity)}">${presetOptionsMarkup(policy.preset)}</select><button type="button" class="tiny danger" data-remove-permission="${escapeHtml(permission.id)}">Remove</button></div><details class="shared-drive-capability-details"><summary>Customize hidden, view-only, and editable areas</summary><div class="shared-drive-capability-grid" data-collaboration-grid="${escapeHtml(scope)}">${capabilityGridMarkup(policy, scope)}</div><div class="button-row"><button type="button" class="tiny secondary" data-save-interface-policy="${escapeHtml(permission.id)}">Save interface access</button></div></details></div>`}</div>`;
     }).join('') : '<div class="hint">No collaborator permissions were returned. The owner permission may be hidden by account policy.</div>';
   }
 
@@ -31398,25 +31782,69 @@ const SharedDriveCollaborationV64 = (() => {
     const params = new URLSearchParams({ fields: 'id,type,role,emailAddress,displayName', sendNotificationEmail: node('sharedDriveNotify')?.checked ? 'true' : 'false' });
     const message = String(node('sharedDriveMessage')?.value || '').trim();
     if (message && node('sharedDriveNotify')?.checked) params.set('emailMessage', message.slice(0, 1000));
-    await googleDriveFetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(fileId)}/permissions?${params.toString()}`, {
+    const response = await googleDriveFetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(fileId)}/permissions?${params.toString()}`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'user', role, emailAddress: email })
     });
+    const created = await response.json();
+    const preset = String(node('sharedDriveInterfacePreset')?.value || (role === 'reader' ? 'reviewer' : 'full'));
+    const policy = policyFromCapabilityContainer(node('sharedDriveCapabilityGrid'), { permissionId: created.id, email, displayName: created.displayName || '', driveRole: role, preset });
+    setStoredPolicy(policy);
+    try {
+      await persistCollaborationAccess('add-collaborator-interface-access');
+    } catch (error) {
+      deleteStoredPolicy(created.id);
+      try { await googleDriveFetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(fileId)}/permissions/${encodeURIComponent(created.id)}`, { method: 'DELETE' }); } catch {   }
+      throw new Error(`The collaborator was not added because the interface permission profile could not be saved: ${error.message}`);
+    }
     if (node('sharedDriveEmail')) node('sharedDriveEmail').value = '';
     await listPermissions();
-    setLiveStatusMessage(`${email} was added as ${role === 'writer' ? 'an editor' : 'a viewer'}.`);
+    setLiveStatusMessage(`${email} was added as ${role === 'writer' ? 'a Drive editor' : 'a Drive viewer'} with ${accessSummary(policy)} interface access.`);
   }
 
-  async function updatePermission(permissionId, role) {
+  async function updatePermission(permissionId, role, row = null) {
     const fileId = googleDriveConfig().fileId;
+    const previousPermission = permissionRows.find(item => String(item.id) === String(permissionId));
+    const previousRole = previousPermission?.role === 'reader' ? 'reader' : 'writer';
+    const previousPolicy = collaborationPolicy(permissionId, previousRole, previousPermission || {});
+    const nextRole = role === 'writer' ? 'writer' : 'reader';
     await googleDriveFetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(fileId)}/permissions/${encodeURIComponent(permissionId)}?fields=id,role`, {
-      method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ role: role === 'writer' ? 'writer' : 'reader' })
+      method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ role: nextRole })
     });
+    const nextPolicy = policyFromCapabilityContainer(row?.querySelector('[data-collaboration-grid]'), { ...previousPolicy, driveRole: nextRole });
+    setStoredPolicy(nextPolicy);
+    try {
+      await persistCollaborationAccess('update-collaborator-drive-role');
+    } catch (error) {
+      setStoredPolicy(previousPolicy);
+      try {
+        await googleDriveFetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(fileId)}/permissions/${encodeURIComponent(permissionId)}?fields=id,role`, {
+          method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ role: previousRole })
+        });
+      } catch {   }
+      throw error;
+    }
     await listPermissions();
+  }
+
+  async function saveInterfacePolicy(permissionId, row) {
+    const permission = permissionRows.find(item => String(item.id) === String(permissionId));
+    if (!permission) throw new Error('The selected Google Drive permission is no longer available.');
+    const driveRole = permission.role === 'reader' ? 'reader' : 'writer';
+    const previous = collaborationPolicy(permissionId, driveRole, permission);
+    const next = policyFromCapabilityContainer(row?.querySelector('[data-collaboration-grid]'), previous);
+    setStoredPolicy(next);
+    try { await persistCollaborationAccess('update-collaborator-interface-access'); }
+    catch (error) { setStoredPolicy(previous); throw error; }
+    await listPermissions();
+    setLiveStatusMessage(`${permission.emailAddress || permission.displayName || 'Collaborator'} now has ${accessSummary(next)} interface access.`);
   }
 
   async function removePermission(permissionId) {
     const fileId = googleDriveConfig().fileId;
     await googleDriveFetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(fileId)}/permissions/${encodeURIComponent(permissionId)}`, { method: 'DELETE' });
+    deleteStoredPolicy(permissionId);
+    try { await persistCollaborationAccess('remove-collaborator-interface-access'); }
+    catch (error) { setLiveStatusMessage(`Drive access was removed, but the unused interface profile could not be cleaned up yet: ${error.message}`); }
     await listPermissions();
   }
 
@@ -31541,7 +31969,8 @@ const SharedDriveCollaborationV64 = (() => {
       mergedIdentity.contentHash = hashString(stableJsonStringify({
         classes: mergedDocument.classes || [],
         activeClassId: mergedDocument.activeClassId || '',
-        roomTemplates: mergedDocument.roomTemplates || []
+        roomTemplates: mergedDocument.roomTemplates || [],
+        collaborationAccess: mergedDocument.collaborationAccess || normalizeCollaborationAccess(null)
       }));
     }
     return mergedIdentity;
@@ -31723,24 +32152,84 @@ const SharedDriveCollaborationV64 = (() => {
     return applyMergedDocument(pending.merged, pending.saveOptions, pending.mergeContext);
   }
 
-  function readOnlyInteractionGuard(event) {
-    if (uiState.googleDriveAccessRole !== 'reader') return;
-    const target = event.target instanceof Element ? event.target : null;
-    if (!target) return;
-    const allowed = target.closest('#sharedDriveModal,#sharedViewerModal,#driveMergeModal,#printOptionsModal,#printPreviewBanner,#saveLoadMenu,[data-workflow-step],#v4WorkflowNav,#printBtn,[data-v4-action="print"],[data-save-menu-action="google-drive-load"],[data-save-menu-action="drive-share-manager"],#settingsBtn,#closeSettingsBtn');
-    if (allowed) return;
-    const mutating = target.closest('.app button,.app input,.app select,.app textarea,.app [contenteditable="true"],.app [draggable="true"],.toolbar button,.toolbar input,.toolbar select');
-    if (!mutating) return;
+  function collaborationAreaForTarget(target) {
+    if (!target) return '';
+    if (target.closest('#printOptionsModal,#printPreviewBanner,#printBtn,[data-v4-action="print"]')) return 'review';
+    if (target.closest('#settingsModal,#settingsBtn,#googleHubSettingsBtn')) return 'settings';
+    if (target.closest('.class-manager,#v4ClassMenu')) return 'classes';
+    if (target.closest('#sharedDriveModal,#openSharedDriveManagerBtn,#googleHubDriveShareBtn,.v4-share-dashboard')) return 'share';
+    const saveAction = target.closest('[data-save-menu-action]')?.dataset.saveMenuAction || '';
+    if (saveAction) {
+      if (['safe-share','export-all','export-current','download-students','download-groups','download-rooms','download-package','drive-share-manager'].includes(saveAction)) return 'share';
+      if (['save-primary','open-save-options','choose-linked-file','google-drive-save'].includes(saveAction)) return 'save';
+      return 'classes';
+    }
+    if (target.closest('#saveLoadMenuBtn,#inlineSaveStatus')) return 'save';
+    if (target.closest('.app,#v4WorkflowContext')) return String(document.body.dataset.workflow || 'setup');
+    return '';
+  }
+
+  function blockCollaborationInteraction(event, area, mode) {
     event.preventDefault();
     event.stopImmediatePropagation();
-    setLiveStatusMessage('This Drive file is view only. Ask the owner for Editor access to make changes.');
+    const label = COLLABORATION_AREA_LABELS[area] || 'This area';
+    setLiveStatusMessage(mode === 'none'
+      ? `${label} is hidden by your collaborator interface profile.`
+      : `${label} is view only for your collaborator account.`);
+  }
+
+  function readOnlySafeTarget(target, area) {
+    if (target.closest('[data-help-nav],[data-guided-start],summary,.hint-close,[data-dialog-close],.v41-section-toggle,.v41-panel-toggle,[role="tab"],.side-tab')) return true;
+    if (target.matches('input[type="search"]') || target.closest('label')?.querySelector?.('input[type="search"]') === target) return true;
+    if (area === 'review' && target.closest('#printOptionsModal,#printPreviewBanner,#printBtn,[data-v4-action="print"],#analyzeBtn')) return true;
+    if (area === 'share' && !target.closest('[data-drive-write-action],[data-share-role],[data-collaboration-preset],[data-collaboration-capability],[data-remove-permission],[data-save-interface-policy]')) return true;
+    if (area === 'classes' && target.closest('#classSelect')) return true;
+    if (area === 'settings' && target.closest('#closeSettingsBtn,[data-settings-page],.settings-page-tab')) return true;
+    return false;
+  }
+
+  function readOnlyMutationTarget(target) {
+    return target.closest('button,input:not([type="search"]),select,textarea,[contenteditable="true"],[draggable="true"],.cell,.freeform-object,.student-card,.group-card,.zone-list-card,[data-seat-id],[data-cell-key]');
+  }
+
+  function readOnlyInteractionGuard(event) {
+    const target = event.target instanceof Element ? event.target : null;
+    if (!target) return;
+    const isReader = uiState.googleDriveAccessRole === 'reader';
+    const policy = uiState.sharedDriveInterfacePolicy;
+    if (!isReader && (!policy || policy.preset === 'full')) return;
+    const workflowButton = target.closest('.v4-workflow-step[data-workflow]');
+    if (workflowButton) {
+      const mode = currentInterfaceMode(workflowButton.dataset.workflow);
+      if (mode === 'none') blockCollaborationInteraction(event, workflowButton.dataset.workflow, mode);
+      return;
+    }
+    const area = collaborationAreaForTarget(target);
+    if (event.type === 'keydown') {
+      const key = String(event.key || '').toLowerCase();
+      if ((event.ctrlKey || event.metaKey) && key === 's' && !currentUserCanEdit('save')) return blockCollaborationInteraction(event, 'save', currentInterfaceMode('save'));
+      if ((event.ctrlKey || event.metaKey) && key === 'p' && currentInterfaceMode('review') === 'none') return blockCollaborationInteraction(event, 'review', 'none');
+      if (!area) return;
+      const mode = currentInterfaceMode(area);
+      if (mode === 'none') return blockCollaborationInteraction(event, area, mode);
+      if (!isReader && mode === 'edit') return;
+      if (readOnlySafeTarget(target, area) || ['tab', 'escape'].includes(key)) return;
+      if (readOnlyMutationTarget(target) || (event.ctrlKey || event.metaKey || event.altKey)) blockCollaborationInteraction(event, area, 'view');
+      return;
+    }
+    if (!area) return;
+    const mode = currentInterfaceMode(area);
+    if (mode === 'none') return blockCollaborationInteraction(event, area, mode);
+    if (!isReader && mode === 'edit') return;
+    if (readOnlySafeTarget(target, area)) return;
+    if (readOnlyMutationTarget(target)) blockCollaborationInteraction(event, area, 'view');
   }
 
   function appendMarkup() {
     const style = document.createElement('style');
-    style.textContent = `.shared-drive-modal{max-width:min(980px,96vw)}.shared-drive-howto{margin-bottom:10px;padding:10px 12px;border:1px solid #bfdbfe;border-radius:12px;background:#eff6ff;color:#1e3a8a;font-size:12px;line-height:1.4}.shared-drive-howto strong{color:#172554}.shared-drive-howto ol{margin:6px 0;padding-left:20px}.shared-drive-howto p{margin:6px 0 0}.shared-drive-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.shared-drive-permission-list{display:grid;gap:7px;max-height:300px;overflow:auto}.shared-drive-permission-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px;border:1px solid var(--border);border-radius:10px;background:#fff}.shared-drive-permission-row>div:first-child{display:grid;gap:2px;min-width:0}.shared-drive-permission-row span{color:var(--muted);font-size:11px}.shared-drive-permission-row select{min-width:110px}.shared-viewer-grid{display:grid;gap:8px}.shared-viewer-cell,.shared-viewer-object{box-sizing:border-box;border:1px solid var(--border);border-radius:10px;background:#fff;padding:8px;display:grid;place-items:center;text-align:center;min-height:72px}.shared-viewer-cell.seat{background:#dbeafe}.shared-viewer-canvas{position:relative;background:#fff;border:1px solid var(--border);overflow:auto}.shared-viewer-object{position:absolute}.drive-merge-conflict{display:grid;gap:7px;padding:9px;border:1px solid #fed7aa;border-radius:10px;background:#fffbeb}.drive-merge-conflict pre{max-height:180px;overflow:auto;white-space:pre-wrap;font-size:11px}@media(max-width:760px){.shared-drive-grid,.shared-drive-permission-row{grid-template-columns:1fr}}body[data-drive-access-role="reader"] [data-drive-write-action]{display:none!important}.drive-read-only-banner{position:fixed;left:50%;bottom:14px;z-index:39000;transform:translateX(-50%);max-width:min(680px,calc(100vw - 28px));padding:9px 12px;border:1px solid #f2ca83;border-radius:12px;background:#fffbeb;color:#7c2d12;box-shadow:0 12px 34px rgba(15,23,42,.22);font-size:12px;font-weight:800}.drive-read-only-banner[hidden]{display:none}body[data-drive-access-role="reader"] .app button,body[data-drive-access-role="reader"] .app input,body[data-drive-access-role="reader"] .app select,body[data-drive-access-role="reader"] .app textarea,body[data-drive-access-role="reader"] .app [draggable="true"]{cursor:not-allowed}`;
+    style.textContent = `.shared-drive-modal{max-width:min(980px,96vw)}.shared-drive-howto{margin-bottom:10px;padding:10px 12px;border:1px solid #bfdbfe;border-radius:12px;background:#eff6ff;color:#1e3a8a;font-size:12px;line-height:1.4}.shared-drive-howto strong{color:#172554}.shared-drive-howto ol{margin:6px 0;padding-left:20px}.shared-drive-howto p{margin:6px 0 0}.shared-drive-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.shared-drive-permission-list{display:grid;gap:7px;max-height:300px;overflow:auto}.shared-drive-permission-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px;border:1px solid var(--border);border-radius:10px;background:#fff}.shared-drive-permission-row>div:first-child{display:grid;gap:2px;min-width:0}.shared-drive-permission-row span{color:var(--muted);font-size:11px}.shared-drive-permission-row select{min-width:110px}.shared-viewer-grid{display:grid;gap:8px}.shared-viewer-cell,.shared-viewer-object{box-sizing:border-box;border:1px solid var(--border);border-radius:10px;background:#fff;padding:8px;display:grid;place-items:center;text-align:center;min-height:72px}.shared-viewer-cell.seat{background:#dbeafe}.shared-viewer-canvas{position:relative;background:#fff;border:1px solid var(--border);overflow:auto}.shared-viewer-object{position:absolute}.drive-merge-conflict{display:grid;gap:7px;padding:9px;border:1px solid #fed7aa;border-radius:10px;background:#fffbeb}.drive-merge-conflict pre{max-height:180px;overflow:auto;white-space:pre-wrap;font-size:11px}.shared-drive-permission-identity{display:grid;gap:3px;min-width:0}.shared-drive-permission-controls{display:grid;gap:7px;min-width:min(520px,100%)}.shared-drive-capability-details{border:1px solid var(--border);border-radius:10px;background:#f8fafc;padding:7px}.shared-drive-capability-details summary{cursor:pointer;font-size:11px;font-weight:850;color:var(--text)}.shared-drive-capability-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 10px;margin-top:8px}.shared-drive-capability-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(108px,140px);gap:7px;align-items:center;margin:0;padding:5px 0;border-bottom:1px solid rgba(148,163,184,.22);text-transform:none;letter-spacing:0}.shared-drive-capability-row span{font-size:11px;color:var(--text);font-weight:750}.shared-drive-capability-row select{min-width:0}.collaboration-access-banner{position:fixed;left:50%;bottom:14px;z-index:38800;transform:translateX(-50%);max-width:min(720px,calc(100vw - 28px));padding:9px 12px;border:1px solid #bfdbfe;border-radius:12px;background:#eff6ff;color:#1e3a8a;box-shadow:0 12px 34px rgba(15,23,42,.22);font-size:12px;font-weight:800}.collaboration-access-banner[hidden]{display:none}@media(max-width:760px){.shared-drive-grid,.shared-drive-permission-row,.shared-drive-capability-grid{grid-template-columns:1fr}.shared-drive-permission-controls{min-width:0}.shared-drive-capability-row{grid-template-columns:1fr}}body[data-drive-access-role="reader"] [data-drive-write-action]{display:none!important}.drive-read-only-banner{position:fixed;left:50%;bottom:14px;z-index:39000;transform:translateX(-50%);max-width:min(680px,calc(100vw - 28px));padding:9px 12px;border:1px solid #f2ca83;border-radius:12px;background:#fffbeb;color:#7c2d12;box-shadow:0 12px 34px rgba(15,23,42,.22);font-size:12px;font-weight:800}.drive-read-only-banner[hidden]{display:none}body[data-drive-access-role="reader"] .app button,body[data-drive-access-role="reader"] .app input,body[data-drive-access-role="reader"] .app select,body[data-drive-access-role="reader"] .app textarea,body[data-drive-access-role="reader"] .app [draggable="true"]{cursor:not-allowed}`;
     document.head.appendChild(style);
-    document.body.insertAdjacentHTML('beforeend', `<div id="sharedDriveModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="sharedDriveTitle"><div class="modal shared-drive-modal"><div class="panel-header"><div><span class="v44-modal-eyebrow">Google Drive</span><h2 id="sharedDriveTitle">Share and collaborate</h2></div><div class="button-row"><button id="sharedDriveGuideBtn" type="button" class="tiny ghost" data-guided-start="drive-collaboration" data-guided-mode="explain">Guide me</button><button id="closeSharedDriveBtn" type="button" class="tiny secondary">Close</button></div></div><div class="modal-body"><div id="sharedDriveHowTo" class="shared-drive-howto"><strong>Editable multi-user setup</strong><ol><li>Save or load the master planner in Google Drive.</li><li>Enter a Google-account email and choose Viewer or Editor.</li><li>Have the recipient open the same hosted planner, connect Drive, and load the shared file.</li><li>Save changes back to Drive; overlapping edits use the merge resolver.</li></ol><p>This is revision-aware shared-file editing, not live Google Docs-style cursor streaming.</p></div><div class="button-row"><span id="sharedDriveRoleBadge" class="pill">Role unknown</span><button id="refreshSharedDriveBtn" type="button" class="secondary">Refresh access</button><button id="copySharedDriveLinkBtn" type="button" class="secondary">Copy Drive link</button></div><p id="sharedDriveStatus" class="hint">Connect Google Drive and save or load a file first.</p><div class="shared-drive-grid"><section class="section"><h3>Choose who can open the editable save</h3><div class="field"><label for="sharedDriveEmail">Google account email</label><input id="sharedDriveEmail" type="email" autocomplete="off" placeholder="teacher@example.org"></div><div class="field"><label for="sharedDriveRole">Access role</label><select id="sharedDriveRole"><option value="reader">Viewer — open but cannot save changes</option><option value="writer">Editor — can change and save the master</option></select></div><label class="checkline"><input id="sharedDriveNotify" type="checkbox" checked> Send Google notification</label><div class="field"><label for="sharedDriveMessage">Optional message</label><textarea id="sharedDriveMessage" rows="3" placeholder="Open the district-hosted planner, connect this Google account, then load the shared Drive save."></textarea></div><button id="addSharedDrivePermissionBtn" type="button" data-drive-write-action>Add person to Drive file</button><div class="hint mini">The planner does not keep a separate user list. Google Drive owns the permission. Viewer is enforced as read-only; Editor can save back to the shared file.</div></section><section class="section"><h3>Create a separate encrypted viewer</h3><div class="field"><label for="sharedViewerPreset">Viewer profile</label><select id="sharedViewerPreset"><option value="substitute">Substitute chart and substitute notes</option><option value="student">Student-facing names only</option><option value="anonymous">Anonymous numbered chart</option><option value="room">Room layout only</option></select></div><div class="row"><div class="field"><label for="sharedViewerPassword">Viewer password</label><input id="sharedViewerPassword" type="password" autocomplete="new-password"></div><div class="field"><label for="sharedViewerPasswordConfirm">Confirm</label><input id="sharedViewerPasswordConfirm" type="password" autocomplete="new-password"></div></div><div class="button-row"><button id="createDriveViewerFileBtn" type="button" data-drive-write-action>Create in Drive</button><button id="downloadEncryptedViewerHtmlBtn" type="button" class="secondary">Download encrypted HTML</button></div><p id="sharedViewerResult" class="muted">Use this for a stable read-only copy, not collaborative editing. Send the password through another channel.</p></section></div><section class="section"><h3>Current Drive permissions</h3><div class="hint mini">Change a person's role here or remove access. Removing access does not recall a file the person already downloaded or printed.</div><div id="sharedDrivePermissionList" class="shared-drive-permission-list"></div></section></div></div></div><div id="sharedViewerModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="sharedViewerModalTitle"><div class="modal shared-drive-modal"><div class="panel-header"><h2 id="sharedViewerModalTitle">Shared classroom view</h2><button id="closeSharedViewerBtn" type="button" class="tiny secondary">Close</button></div><div id="sharedViewerModalBody" class="modal-body"></div></div></div><div id="driveMergeModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="driveMergeTitle"><div class="modal shared-drive-modal"><div class="panel-header"><h2 id="driveMergeTitle">Resolve Drive merge conflicts</h2><button id="cancelDriveMergeBtn" type="button" class="tiny secondary">Cancel</button></div><div class="modal-body"><div class="hint">Non-conflicting local and remote classroom changes were merged automatically. Save timestamps, revision hashes, backup manifests, and record update times are resolved automatically and are never presented as classroom conflicts. Choose which value wins only for genuine overlapping edits.</div><div id="driveMergeConflictList" class="list" style="margin-top:10px"></div><div class="button-row" style="margin-top:10px"><button id="commitDriveMergeBtn" type="button">Merge and save</button></div></div></div></div>`);
+    document.body.insertAdjacentHTML('beforeend', `<div id="sharedDriveModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="sharedDriveTitle"><div class="modal shared-drive-modal"><div class="panel-header"><div><span class="v44-modal-eyebrow">Google Drive</span><h2 id="sharedDriveTitle">Share and collaborate</h2></div><div class="button-row"><button id="sharedDriveGuideBtn" type="button" class="tiny ghost" data-guided-start="drive-collaboration" data-guided-mode="explain">Guide me</button><button id="closeSharedDriveBtn" type="button" class="tiny secondary">Close</button></div></div><div class="modal-body"><div id="sharedDriveHowTo" class="shared-drive-howto"><strong>Editable multi-user setup</strong><ol><li>Save or load the master planner in Google Drive.</li><li>Enter a Google-account email, choose Drive Viewer or Editor, then choose which planner areas are hidden, view only, or editable.</li><li>Have the recipient open the same hosted planner, connect Drive, and load the shared file.</li><li>Save changes back to Drive; overlapping edits use the merge resolver.</li></ol><p>This is revision-aware shared-file editing, not live Google Docs-style cursor streaming.</p></div><div class="button-row"><span id="sharedDriveRoleBadge" class="pill">Role unknown</span><button id="refreshSharedDriveBtn" type="button" class="secondary">Refresh access</button><button id="copySharedDriveLinkBtn" type="button" class="secondary">Copy Drive link</button></div><p id="sharedDriveStatus" class="hint">Connect Google Drive and save or load a file first.</p><div class="shared-drive-grid"><section class="section"><h3>Choose who can open the editable save</h3><div class="field"><label for="sharedDriveEmail">Google account email</label><input id="sharedDriveEmail" type="email" autocomplete="off" placeholder="teacher@example.org"></div><div class="field"><label for="sharedDriveRole">Google Drive role</label><select id="sharedDriveRole"><option value="reader">Viewer — cannot save changes</option><option value="writer">Editor — may save the master when interface access allows it</option></select></div><div class="field"><label for="sharedDriveInterfacePreset">Planner interface access</label><select id="sharedDriveInterfacePreset">${presetOptionsMarkup("reviewer")}</select></div><details class="shared-drive-capability-details" open><summary>Choose which areas are hidden, view only, or editable</summary><div id="sharedDriveCapabilityGrid" class="shared-drive-capability-grid"></div></details><label class="checkline"><input id="sharedDriveNotify" type="checkbox" checked> Send Google notification</label><div class="field"><label for="sharedDriveMessage">Optional message</label><textarea id="sharedDriveMessage" rows="3" placeholder="Open the district-hosted planner, connect this Google account, then load the shared Drive save."></textarea></div><button id="addSharedDrivePermissionBtn" type="button" data-drive-write-action>Add person to Drive file</button><div class="hint mini">Google Drive still owns file access. The planner profile controls which interface areas this person can see or edit after opening the shared save. These are workflow controls, not cryptographic data redaction; use an encrypted read-only package when information itself must be excluded.</div></section><section class="section"><h3>Create a separate encrypted viewer</h3><div class="field"><label for="sharedViewerPreset">Viewer profile</label><select id="sharedViewerPreset"><option value="substitute">Substitute chart and substitute notes</option><option value="student">Student-facing names only</option><option value="anonymous">Anonymous numbered chart</option><option value="room">Room layout only</option></select></div><div class="row"><div class="field"><label for="sharedViewerPassword">Viewer password</label><input id="sharedViewerPassword" type="password" autocomplete="new-password"></div><div class="field"><label for="sharedViewerPasswordConfirm">Confirm</label><input id="sharedViewerPasswordConfirm" type="password" autocomplete="new-password"></div></div><div class="button-row"><button id="createDriveViewerFileBtn" type="button" data-drive-write-action>Create in Drive</button><button id="downloadEncryptedViewerHtmlBtn" type="button" class="secondary">Download encrypted HTML</button></div><p id="sharedViewerResult" class="muted">Use this for a stable read-only copy, not collaborative editing. Send the password through another channel.</p></section></div><section class="section"><h3>Current Drive permissions</h3><div class="hint mini">Change a person's role here or remove access. Removing access does not recall a file the person already downloaded or printed.</div><div id="sharedDrivePermissionList" class="shared-drive-permission-list"></div></section></div></div></div><div id="sharedViewerModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="sharedViewerModalTitle"><div class="modal shared-drive-modal"><div class="panel-header"><h2 id="sharedViewerModalTitle">Shared classroom view</h2><button id="closeSharedViewerBtn" type="button" class="tiny secondary">Close</button></div><div id="sharedViewerModalBody" class="modal-body"></div></div></div><div id="driveMergeModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="driveMergeTitle"><div class="modal shared-drive-modal"><div class="panel-header"><h2 id="driveMergeTitle">Resolve Drive merge conflicts</h2><button id="cancelDriveMergeBtn" type="button" class="tiny secondary">Cancel</button></div><div class="modal-body"><div class="hint">Non-conflicting local and remote classroom changes were merged automatically. Save timestamps, revision hashes, backup manifests, and record update times are resolved automatically and are never presented as classroom conflicts. Choose which value wins only for genuine overlapping edits.</div><div id="driveMergeConflictList" class="list" style="margin-top:10px"></div><div class="button-row" style="margin-top:10px"><button id="commitDriveMergeBtn" type="button">Merge and save</button></div></div></div></div>`);
   }
 
   function openManager() {
@@ -31751,7 +32240,7 @@ const SharedDriveCollaborationV64 = (() => {
 
   function installEntryPoint() {
     const shareGrid = document.querySelector('.v4-share-grid');
-    if (shareGrid && !node('openSharedDriveManagerBtn')) shareGrid.insertAdjacentHTML('afterbegin', `<article class="v4-share-card v4-share-card-primary"><div class="v4-share-icon">☁</div><span class="v4-eyebrow">Google Drive collaboration</span><h3>Share Drive save with people</h3><p>Choose a Google-account email, assign Viewer or Editor access, review permissions, and merge overlapping saves safely.</p><button id="openSharedDriveManagerBtn" type="button" class="secondary">Choose people and access</button></article>`);
+    if (shareGrid && !node('openSharedDriveManagerBtn')) shareGrid.insertAdjacentHTML('afterbegin', `<article class="v4-share-card v4-share-card-primary"><div class="v4-share-icon">☁</div><span class="v4-eyebrow">Google Drive collaboration</span><h3>Share Drive save with people</h3><p>Choose a Google-account email, assign a Drive role, then hide, show, or make individual planner areas editable for that person.</p><button id="openSharedDriveManagerBtn" type="button" class="secondary">Choose people and access</button></article>`);
     const saveMenu = node('saveLoadMenu');
     if (saveMenu && !saveMenu.querySelector('[data-save-menu-action="drive-share-manager"]')) saveMenu.insertAdjacentHTML('beforeend', '<button type="button" data-save-menu-action="drive-share-manager">Share Drive Save with People...</button>');
   }
@@ -31765,12 +32254,30 @@ const SharedDriveCollaborationV64 = (() => {
     node('createDriveViewerFileBtn')?.addEventListener('click', () => void uploadViewerFile().catch(error => { node('sharedViewerResult').textContent = error.message; }));
     node('downloadEncryptedViewerHtmlBtn')?.addEventListener('click', () => void downloadEncryptedViewerHtml().catch(error => { node('sharedViewerResult').textContent = error.message; }));
     node('copySharedDriveLinkBtn')?.addEventListener('click', async () => { try { const meta = await driveMetadata(googleDriveConfig().fileId); await copyTextSafe(meta.webViewLink || ''); setLiveStatusMessage('Google Drive link copied.'); } catch (error) { node('sharedDriveStatus').textContent = error.message; } });
-    node('sharedDrivePermissionList')?.addEventListener('change', event => { const select = event.target.closest('[data-share-role]'); if (select) void updatePermission(select.dataset.shareRole, select.value).catch(error => { node('sharedDriveStatus').textContent = error.message; }); });
-    node('sharedDrivePermissionList')?.addEventListener('click', event => { const button = event.target.closest('[data-remove-permission]'); if (button) showInAppConfirm('Remove this collaborator from the Google Drive file?', () => void removePermission(button.dataset.removePermission).catch(error => { node('sharedDriveStatus').textContent = error.message; }), { title: 'Remove Drive Access', confirmText: 'Remove Access', cancelText: 'Cancel', danger: true }); });
+    node('sharedDriveRole')?.addEventListener('change', () => { const preset = node('sharedDriveRole').value === 'reader' ? 'reviewer' : 'full'; if (node('sharedDriveInterfacePreset')) node('sharedDriveInterfacePreset').value = preset; renderAddPermissionControls(); });
+    node('sharedDriveInterfacePreset')?.addEventListener('change', event => applyPresetToCapabilityContainer(node('sharedDriveCapabilityGrid'), event.target.value, node('sharedDriveRole')?.value === 'reader' ? 'reader' : 'writer'));
+    node('sharedDrivePermissionList')?.addEventListener('change', event => {
+      const roleSelect = event.target.closest('[data-share-role]');
+      const presetSelect = event.target.closest('[data-collaboration-preset]');
+      const row = event.target.closest('[data-permission-row]');
+      if (roleSelect) void updatePermission(roleSelect.dataset.shareRole, roleSelect.value, row).catch(error => { node('sharedDriveStatus').textContent = error.message; void listPermissions().catch(() => {}); });
+      if (presetSelect && row) applyPresetToCapabilityContainer(row.querySelector('[data-collaboration-grid]'), presetSelect.value, row.querySelector('[data-share-role]')?.value === 'reader' ? 'reader' : 'writer');
+      if (event.target.closest('[data-collaboration-capability]') && row) {
+        const preset = row.querySelector('[data-collaboration-preset]');
+        if (preset) preset.value = 'custom';
+      }
+    });
+    node('sharedDrivePermissionList')?.addEventListener('click', event => {
+      const button = event.target.closest('[data-remove-permission]');
+      const savePolicyButton = event.target.closest('[data-save-interface-policy]');
+      const row = event.target.closest('[data-permission-row]');
+      if (button) showInAppConfirm('Remove this collaborator from the Google Drive file?', () => void removePermission(button.dataset.removePermission).catch(error => { node('sharedDriveStatus').textContent = error.message; }), { title: 'Remove Drive Access', confirmText: 'Remove Access', cancelText: 'Cancel', danger: true });
+      if (savePolicyButton) void saveInterfacePolicy(savePolicyButton.dataset.saveInterfacePolicy, row).catch(error => { node('sharedDriveStatus').textContent = error.message; });
+    });
     node('closeSharedViewerBtn')?.addEventListener('click', () => { node('sharedViewerModal')?.classList.remove('show'); uiState.sharedViewerDocument = null; DialogManager.synchronize(); });
     node('commitDriveMergeBtn')?.addEventListener('click', () => void commitMergeChoices().catch(error => setLiveStatusMessage(`Drive merge failed: ${error.message}`)));
     node('cancelDriveMergeBtn')?.addEventListener('click', () => { node('driveMergeModal')?.classList.remove('show'); uiState.sharedDriveMergePending = null; DialogManager.synchronize(); });
-    ['click','change','input','pointerdown','dragstart','drop'].forEach(type => document.addEventListener(type, readOnlyInteractionGuard, true));
+    ['click','change','input','pointerdown','dragstart','drop','contextmenu','keydown'].forEach(type => document.addEventListener(type, readOnlyInteractionGuard, true));
   }
 
   function install() {
@@ -31780,6 +32287,8 @@ const SharedDriveCollaborationV64 = (() => {
     installEntryPoint();
     installEvents();
     applyDriveCapabilities(uiState.googleDriveCapabilities);
+    restoreCurrentDriveUser();
+    void refreshCurrentUserAccess(false);
   }
 
   return Object.freeze({
@@ -31796,7 +32305,12 @@ const SharedDriveCollaborationV64 = (() => {
     finalizeMergedDriveDocument,
     collaborationDocumentsEqual,
     viewerClassData,
-    encryptedViewerPayload
+    encryptedViewerPayload,
+    refreshCurrentUserAccess,
+    currentInterfaceMode,
+    currentUserCanEdit,
+    applyInterfacePolicy,
+    collaborationPolicy
   });
 })();
 
@@ -31898,6 +32412,7 @@ async function initializeApp() {
     renderAll();
   }
   restoreGoogleDriveTokenFromSession();
+  await SharedDriveCollaborationV64.refreshCurrentUserAccess(false);
   uiState.linkedSaveLastSignature = currentSaveSignature();
   uiState.appReady = !waitingForStartupUnlock;
   if (!waitingForStartupUnlock) await ensureAppSnapshotsLoaded();
@@ -32392,7 +32907,7 @@ const GuidedLearning = (() => {
       id: 'drive-collaboration',
       category: 'Google Drive sharing',
       title: 'Share an Editable Drive Save with Other Staff',
-      summary: 'Choose collaborators, assign Viewer or Editor roles, explain how recipients open the file, and understand revision-aware merging.',
+      summary: 'Choose collaborators, combine Drive roles with per-person planner access, explain how recipients open the file, and understand revision-aware merging.',
       duration: '6–8 minutes',
       difficulty: 'Intermediate',
       practiceSupported: false,
@@ -32400,12 +32915,13 @@ const GuidedLearning = (() => {
         simpleStep('open', 'Open Share and collaborate', 'The collaborator picker belongs to the active Google Drive save, not to browser-only autosave or a downloaded file.', 'Open Save & Share > Share Drive Save with People, the disk menu command, or Settings > Google > Share Current Drive Save.', '#openSharedDriveManagerBtn', { workflow: 'share', check: CHECKS.sharedDriveManagerOpened, requiredInExplain: true }),
         simpleStep('prerequisite', 'Confirm the active Drive file', 'Connect Drive and save or load the master file first. The status line names the Drive file and whether the current account may manage sharing.', 'Read the sharing status before adding anyone.', '#sharedDriveStatus', { check: CHECKS.always, requiredInPractice: false }),
         simpleStep('email', 'Choose the person', 'Enter the Google-account email that should receive access. Google Drive owns this permission; the planner does not create a separate app account.', 'Review the Google account email field.', '#sharedDriveEmail', { check: CHECKS.always, requiredInPractice: false }),
-        simpleStep('role', 'Choose Viewer or Editor', 'Viewer can open the file but the planner blocks editing and saving. Editor can change the master and save back to Drive.', 'Choose the least access the recipient needs.', '#sharedDriveRole', { check: CHECKS.always, requiredInPractice: false }),
+        simpleStep('role', 'Choose Drive Viewer or Editor', 'Drive Viewer is always read-only. Drive Editor allows saving only when the planner interface profile also grants Can edit access to the relevant area.', 'Choose the least Drive access the recipient needs.', '#sharedDriveRole', { check: CHECKS.always, requiredInPractice: false }),
+        simpleStep('interface-access', 'Choose the planner areas this person can use', 'Start with Full editor, Seating assistant, Room designer, Roster and rules editor, or Reviewer and printer. Expand the custom grid to set Class Setup, Room Design, Seat Students, Review/Print, Save, Share, Settings, and Class Management to Hidden, View only, or Can edit.', 'Review the Planner interface access preset and its eight-area permission grid.', '#sharedDriveInterfacePreset', { check: CHECKS.always, requiredInPractice: false }),
         simpleStep('notify', 'Send useful opening instructions', 'Google can notify the recipient. The message should identify the district-hosted planner and tell the recipient to connect the Google account that received access.', 'Review the notification and optional message controls.', '#sharedDriveNotify', { check: CHECKS.always, requiredInPractice: false }),
-        simpleStep('permissions', 'Review and maintain access', 'Current Drive permissions lets the owner change Viewer/Editor roles or remove a collaborator later.', 'Review the permission list.', '#sharedDrivePermissionList', { check: CHECKS.always, requiredInPractice: false }),
+        simpleStep('permissions', 'Review and maintain access', 'Current Drive permissions lets the owner change Viewer/Editor roles, change presets, customize each interface area, save the interface profile, or remove a collaborator later.', 'Review the permission list and the Save interface access action.', '#sharedDrivePermissionList', { check: CHECKS.always, requiredInPractice: false }),
         simpleStep('recipient', 'Explain how the recipient opens the save', 'The recipient opens the same hosted planner, connects Drive, and uses Load from Drive or Manage Saves & Revisions. Google Picker may be required to grant per-file access when the deployment provides it.', 'Use Copy Drive link only as a convenience; the recipient still opens the file through the planner.', '#copySharedDriveLinkBtn', { check: CHECKS.always, requiredInPractice: false }),
         simpleStep('merge', 'Understand multi-user timing', 'This is not live cursor-level co-editing. The app checks Drive revisions when saving, merges non-overlapping changes, and asks which value wins for overlapping edits.', 'Remember that another editor sees changes after loading or refreshing the Drive copy.', '#sharedDriveHowTo', { check: CHECKS.always, requiredInPractice: false }),
-        simpleStep('viewer', 'Use a viewer package for non-editors', 'A password-protected read-only HTML or encrypted viewer file is safer for substitutes, students, or anyone who should not modify the master.', 'Review the separate encrypted viewer controls and send its password through another channel.', '#sharedViewerPreset', { check: CHECKS.always, requiredInPractice: false })
+        simpleStep('viewer', 'Use a viewer package when data must be excluded', 'Planner interface profiles hide or disable controls but do not remove fields from the encrypted master save. A password-protected read-only HTML or encrypted viewer file is safer for substitutes, students, or anyone who should not receive parts of the master data.', 'Review the separate encrypted viewer controls and send its password through another channel.', '#sharedViewerPreset', { check: CHECKS.always, requiredInPractice: false })
       ]
     },
     {
