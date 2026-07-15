@@ -5,9 +5,9 @@
   <meta name="license" content="MIT License" />
   <meta name="spdx-license-identifier" content="MIT" />
   <meta name="copyright" content="Copyright (c) 2026 Chris L. Franklin" />
-  <meta name="app-version" content="6.5.0" />
+  <meta name="app-version" content="6.5.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com https://www.paypalobjects.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://www.googleapis.com https://classroom.googleapis.com https://accounts.google.com https://www.paypal.com https://www.paypalobjects.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://www.paypal.com; img-src 'self' data: blob: https://www.paypalobjects.com; font-src 'self' data:; worker-src 'self' blob:; manifest-src 'self'; media-src 'none'; object-src 'none'; base-uri 'none'; form-action 'self' https://www.paypal.com" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com https://www.paypalobjects.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://www.googleapis.com https://classroom.googleapis.com https://accounts.google.com https://www.paypal.com https://www.paypalobjects.com https://www.google-analytics.com https://*.google-analytics.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://www.paypal.com; img-src 'self' data: blob: https://www.paypalobjects.com https://www.google-analytics.com; font-src 'self' data:; worker-src 'self' blob:; manifest-src 'self'; media-src 'none'; object-src 'none'; base-uri 'none'; form-action 'self' https://www.paypal.com" />
   <meta name="application-name" content="Classroom Seating Planner" />
   <meta name="theme-color" content="#1e3a8a" />
   
@@ -1146,6 +1146,8 @@ body[data-theme="linux"] .settings-page-header{background:var(--panel-2);color:v
 }.freeform-minimap{position:sticky;left:calc(100% - 148px);bottom:10px;width:136px;height:86px;z-index:500;border:1px solid rgba(148,163,184,.5);border-radius:12px;background:rgba(255,255,255,.9);box-shadow:0 10px 24px rgba(15,23,42,.13);overflow:hidden;cursor:crosshair;backdrop-filter:blur(8px);opacity:.88;transition:opacity .16s ease, box-shadow .16s ease
 }.freeform-minimap:hover{opacity:1;box-shadow:0 12px 28px rgba(15,23,42,.18)
 }.freeform-minimap::before{content:'Minimap';position:absolute;left:6px;top:5px;z-index:2;padding:2px 5px;border-radius:999px;background:rgba(255,255,255,.92);color:#334155;font-size:8px;font-weight:800;letter-spacing:.05em;text-transform:uppercase
+}.google-analytics-settings{display:grid;gap:8px;margin-top:12px;padding:10px;border:1px solid var(--border);border-radius:12px;background:#f8fafc
+}.google-analytics-settings h4{margin:0;color:var(--text);font-size:13px
 }.freeform-minimap.hidden{display:none
 }.freeform-minimap-objects,
 .freeform-minimap-viewport{position:absolute;inset:0
@@ -3058,6 +3060,7 @@ body.visibility-mode.vis-hide-chart-actions #randomizeAllBtn,
 body.visibility-mode.vis-hide-chart-actions #clearAssignmentsBtn,
 body.visibility-mode.vis-hide-chart-actions #clearAnchorsBtn,
 body.visibility-mode.vis-hide-room-header-actions #layoutNamesOnlyBtn,
+body.visibility-mode.vis-hide-room-header-actions #hideUnassignedTitlesBtn,
 body.visibility-mode.vis-hide-room-header-actions #analyzeBtn{display:none
 }body.visibility-mode.vis-hide-students.vis-hide-status .app{grid-template-columns:minmax(0, 1fr)
 }body.visibility-mode.vis-hide-students:not(.vis-hide-status) .app{grid-template-columns:minmax(0, 1fr) var(--right-col)
@@ -3665,6 +3668,12 @@ body.product-v4.workspace-v41 .v4-class-dock > .v4-icon-button{width:34px;min-wi
 }body.product-v4.workspace-v41.v41-workflow-collapsed .v4-workflow-nav,
 body.product-v4.workspace-v41.v41-workflow-collapsed .v4-workflow-context{display:none
 }body.product-v4.workspace-v41 .v41-stage-ribbon .v4-icon-button{width:30px;min-width:30px;height:30px;min-height:30px
+}body.hide-object-type-labels .freeform-type-pill,
+body.hide-object-type-labels .cell-type-label{display:none
+}body.hide-unassigned-seat-titles .cell.seat.unassigned-seat .seat-person,
+body.hide-unassigned-seat-titles .freeform-object.seat.unassigned .freeform-object-title.placeholder{visibility:hidden
+}body.visibility-mode.vis-disable-room-editing .freeform-rotate-handle,
+body.visibility-mode.vis-disable-room-editing #rotateFreeformObjectBtn{display:none
 }body.product-v4.workspace-v41 .app,
 body.product-v4.workspace-v41.left-collapsed .app,
 body.product-v4.workspace-v41.right-collapsed .app,
@@ -4653,6 +4662,12 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
         </section>
 
         <section class="section print-options-section">
+          <h3>PDF and SVG Page Framing</h3>
+          <label class="checkline" for="printCropToContentToggle"><input id="printCropToContentToggle" type="checkbox" /> <span>Crop to occupied room content and fill the chart page</span></label>
+          <div class="hint">For PDF and SVG output, trims unused outer Grid cells or Freeform canvas space, then enlarges the remaining seats and room objects to use the printable page while keeping the complete room on one chart page. Notes, Groups, and Zones may still use supporting pages.</div>
+        </section>
+
+        <section class="section print-options-section">
           <h3>Download Output Copies</h3>
           <div class="hint">PDF and SVG are printable/shareable output copies. They are not editable save files and they do not replace your save file or backup.</div>
           <div class="print-download-actions" style="margin-top:8px;">
@@ -4860,6 +4875,7 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
           <button type="button" id="clearAssignmentsBtn" class="secondary">Clear Assignments</button>
           <button type="button" id="clearAnchorsBtn" class="secondary">Clear Anchors</button>
           <button id="todayModeBtn" class="secondary" type="button" aria-pressed="false">Today</button>
+          <button id="hideUnassignedTitlesBtn" class="secondary" type="button" aria-pressed="false" title="Hide the Drop student here and Unassigned titles on empty seats while keeping the seats usable.">Hide Empty Titles</button>
           <button id="openSeatingPlansBtn" class="secondary" type="button">Plans</button>
           <button id="globalSearchBtn" class="secondary icon-button" type="button" aria-label="Search planner" title="Search planner">⌕</button>
           <button id="layoutNamesOnlyBtn" class="secondary" type="button" aria-pressed="false">Names Only</button>
@@ -5367,7 +5383,8 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
                           <option value="linux">Linux Terminal</option>
                         </select>
                       </div>
-                      <div class="hint">Themes change the overall feel and colors without changing seating data. Prismatic Flow adds animated jewel-tone gradients and glass surfaces; reduced-motion settings automatically calm the animation.</div>
+                      <label class="checkline" for="settingHideObjectTypeLabels"><input id="settingHideObjectTypeLabels" type="checkbox" /> <span>Hide Seat and room-object type labels on the workspace</span></label>
+                      <div class="hint">Themes change the overall feel and colors without changing seating data. Prismatic Flow adds animated jewel-tone gradients and glass surfaces; reduced-motion settings automatically calm the animation. The object-label option hides the small Seat, Teacher Desk, Table, and custom-object type indicators without hiding student names or custom seat labels.</div>
                     </section>
             <section class="section settings-section">
                       <h3>Page Load Defaults</h3>
@@ -5426,7 +5443,7 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
             </div>
             <section class="section settings-section">
                       <h3>Eye / Visibility Mode</h3>
-                      <div class="hint">The eye button creates a controlled viewing mode. When Eye Mode starts, the full original chart is encrypted into session storage, the visible in-memory chart is sanitized, and the app only shows the details allowed by these settings. Exiting restores the encrypted original with the Eye PIN, Lock PIN, or current encryption key.</div>
+                      <div class="hint">The eye button creates a controlled viewing mode. Eye Mode always removes the Students, Groups &amp; Zones panel. When it starts, the full original chart is encrypted into session storage, the visible in-memory chart is sanitized, and the app only shows the details allowed by these settings. Exiting restores the encrypted original with the Eye PIN, Lock PIN, or current encryption key.</div>
                       <div class="settings-grid two-col">
                         <label class="checkline" for="visHideClassActions"><input id="visHideClassActions" type="checkbox" /> <span>Hide class New/Rename/Duplicate/Delete</span></label>
                         <label class="checkline" for="visHideWizard"><input id="visHideWizard" type="checkbox" /> <span>Hide guided-help entry points</span></label>
@@ -5434,7 +5451,6 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
                         <label class="checkline" for="visHideSettings"><input id="visHideSettings" type="checkbox" /> <span>Hide Settings gear</span></label>
                         <label class="checkline" for="visHidePrint"><input id="visHidePrint" type="checkbox" /> <span>Hide Print controls</span></label>
                         <label class="checkline" for="visHideLayoutTools"><input id="visHideLayoutTools" type="checkbox" /> <span>Hide Layout Tools</span></label>
-                        <label class="checkline" for="visHideStudentsPanel"><input id="visHideStudentsPanel" type="checkbox" /> <span>Hide Students, Groups &amp; Zones panel</span></label>
                         <label class="checkline" for="visHideStatusPanel"><input id="visHideStatusPanel" type="checkbox" /> <span>Hide Chart Status panel</span></label>
                         <label class="checkline" for="visHideChartActions"><input id="visHideChartActions" type="checkbox" /> <span>Hide generate/randomize/clear controls</span></label>
                         <label class="checkline" for="visHideRoomHeaderActions"><input id="visHideRoomHeaderActions" type="checkbox" /> <span>Hide Room Layout header buttons</span></label>
@@ -5517,6 +5533,12 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
                         <button id="settingsGoogleDriveSaveBtn" class="secondary" type="button">Save Encrypted Copy</button>
                         <button id="settingsGoogleDriveLoadBtn" class="secondary" type="button">Load from Drive</button>
                         <button id="settingsGoogleDriveForgetBtn" class="secondary" type="button">Disconnect</button>
+                      </div>
+                      <div class="google-analytics-settings">
+                        <h4>Google Analytics</h4>
+                        <label class="checkline" for="settingGoogleAnalyticsEnabled"><input id="settingGoogleAnalyticsEnabled" type="checkbox" /> <span>Allow anonymous usage analytics on this browser</span></label>
+                        <div id="googleAnalyticsSettingsStatus" class="hint" aria-live="polite">Checking analytics preference...</div>
+                        <div class="encryption-note">This browser-only preference is not stored in classroom save files. Analytics is loaded only from hosted HTTP/HTTPS pages, sends the standard page view to measurement ID G-NMRMNM7ZCD, and does not add student names, notes, class names, seat assignments, or save contents as custom events.</div>
                       </div>
                     </section>
           </div>
@@ -6213,7 +6235,7 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
 const APP_CONFIG = Object.freeze({
   name: 'Classroom Seating Planner',
   shortName: 'Seating Planner',
-  version: '6.5.0',
+  version: '6.5.1',
   copyrightHolder: 'Chris L. Franklin',
   copyrightYear: '2026',
   releaseDate: '2026-07-14',
@@ -6285,6 +6307,8 @@ const NETWORK_TIMEOUT_MS = 60000;
 const MAX_API_PAGES = 200;
 const MIN_LOCAL_CREDENTIAL_LENGTH = 6;
 const MAX_LOCAL_CREDENTIAL_LENGTH = 256;
+const GOOGLE_ANALYTICS_MEASUREMENT_ID = 'G-NMRMNM7ZCD';
+const GOOGLE_ANALYTICS_DISABLED_STORAGE_KEY = 'classroom-seating-planner-google-analytics-disabled-v6';
 
 const IMPORT_LIMITS = Object.freeze({
   saveBytes: 64 * 1024 * 1024,
@@ -6474,7 +6498,7 @@ const PROJECT_FEATURES = [
   { title: 'Encrypted saving and recovery', text: 'Use encrypted browser autosave, linked working files, downloaded backups, snapshots, selective restore, guarded startup recovery, and an optional separately stored password-recovery package.' },
   { title: 'Optional Google Drive collaboration', text: 'Save and load encrypted working files through Google Drive, choose people by Google-account email, combine Drive Viewer or Editor roles with per-person Hidden, View only, or Can edit interface areas, and merge overlapping saves without pretending the app provides live cursor-level co-editing.' },
   { title: 'Purpose-limited sharing', text: 'Create teacher, substitute, student-facing, support-team, anonymous, and room-only outputs with a privacy summary before export.' },
-  { title: 'Printing and room output', text: 'Prepare names-only, substitute, or detailed charts with selectable fields, notes, configuration details, paper sizes, scale, tiling, and crop marks. PDF always fits the complete Freeform room onto one chart page; selected notes and configuration may follow on supporting pages.' },
+  { title: 'Printing and room output', text: 'Prepare names-only, substitute, or detailed charts with selectable fields, notes, configuration details, paper sizes, scale, tiling, crop marks, and an optional crop-to-content mode that removes unused outer room space and enlarges the occupied Grid or Freeform layout while keeping the chart on one page. Selected notes and configuration may follow on supporting pages.' },
   { title: 'Security and privacy controls', text: 'Protect Settings, use Lock and Eye PINs, auto-lock the page, reveal sensitive notes deliberately, and erase browser-resident data through explicit recovery workflows.' },
   { title: 'Maintenance and diagnostics', text: 'Review build/schema information, storage health, privacy-safe activity/errors, import and integration recovery, deployment readiness, repair tools, sample data, cleanup, and Factory Reset.' },
   { title: 'Accessible responsive workspace', text: 'Use keyboard navigation, focus-managed dialogs, live announcements, skip navigation, focus mode, collapsible regions, mobile workflows, and reduced-motion support.' },
@@ -6484,10 +6508,25 @@ const PROJECT_FEATURES = [
 
 const RELEASE_HISTORY = [
   {
+    version: '6.5.1',
+    date: 'July 14, 2026',
+    title: 'Eye Mode, workspace label controls, and optional analytics',
+    current: true,
+    changes: [
+      'Eye Mode now always removes the Students, Groups & Zones panel, and older saved visibility choices can no longer keep the roster visible.',
+      'Freeform clockwise, counterclockwise, toolbar, drag, and keyboard rotation paths now respect Eye Mode room-editing protection.',
+      'Added a Seating workspace control for hiding empty-seat titles in both Grid and Freeform layouts.',
+      'Added an Appearance setting for hiding Seat and room-object type indicators while preserving student names and custom labels.',
+      'Added hosted Google Analytics measurement G-NMRMNM7ZCD with a browser-local opt-out; local file copies and test environments do not load the tag.',
+      'Added PDF and SVG crop-to-content framing that trims unused outer Grid cells or Freeform canvas space, enlarges occupied seats and room objects to fill the page, and keeps the room chart on one page.',
+      'Updated CSP, Help, deployment guidance, and regression coverage for the new controls and privacy boundary.'
+    ]
+  },
+  {
     version: '6.5.0',
     date: 'July 14, 2026',
     title: 'Complete security, encryption, codebase, and interface audit',
-    current: true,
+    current: false,
     changes: [
       'Bounded imported PBKDF2 work factors and stored lock credentials before any expensive key derivation, while retaining generation-6 encrypted-save compatibility.',
       'Hardened password-protected read-only HTML by validating its envelope and sanitizing decrypted markup before insertion.',
@@ -7221,6 +7260,8 @@ const DEFAULT_PAGE_SETTINGS = Object.freeze({
   csvCollapsed: true,
   addStudentCollapsed: true,
   hideHints: false,
+  hideObjectTypeLabels: false,
+  hideUnassignedSeatTitles: false,
   autoSaveMinutes: 1,
   preferredStorage: 'browser',
   googleDriveClientId: GOOGLE_DRIVE_CLIENT_ID,
@@ -7289,6 +7330,8 @@ function mergePageSettingsCore(value) {
     csvCollapsed: source.csvCollapsed ?? DEFAULT_PAGE_SETTINGS.csvCollapsed,
     addStudentCollapsed: source.addStudentCollapsed ?? DEFAULT_PAGE_SETTINGS.addStudentCollapsed,
     hideHints: source.hideHints ?? DEFAULT_PAGE_SETTINGS.hideHints,
+    hideObjectTypeLabels: source.hideObjectTypeLabels ?? DEFAULT_PAGE_SETTINGS.hideObjectTypeLabels,
+    hideUnassignedSeatTitles: source.hideUnassignedSeatTitles ?? DEFAULT_PAGE_SETTINGS.hideUnassignedSeatTitles,
     autoSaveMinutes: clampNumber(source.autoSaveMinutes ?? (source.autoSaveLinkedFile ? 3 : DEFAULT_PAGE_SETTINGS.autoSaveMinutes), 0, 120),
     preferredStorage: ['browser','linked','googleDrive'].includes(source.preferredStorage) ? source.preferredStorage : DEFAULT_PAGE_SETTINGS.preferredStorage,
     googleDriveClientId: String(source.googleDriveClientId || GOOGLE_DRIVE_CLIENT_ID || '').trim(),
@@ -7331,7 +7374,7 @@ function mergePageSettingsCore(value) {
       hideSettings: visibility.hideSettings ?? DEFAULT_PAGE_SETTINGS.visibility.hideSettings,
       hidePrint: visibility.hidePrint ?? DEFAULT_PAGE_SETTINGS.visibility.hidePrint,
       hideLayoutTools: visibility.hideLayoutTools ?? DEFAULT_PAGE_SETTINGS.visibility.hideLayoutTools,
-      hideStudentsPanel: visibility.hideStudentsPanel ?? DEFAULT_PAGE_SETTINGS.visibility.hideStudentsPanel,
+      hideStudentsPanel: true,  
       hideStatusPanel: visibility.hideStatusPanel ?? DEFAULT_PAGE_SETTINGS.visibility.hideStatusPanel,
       hideChartActions: visibility.hideChartActions ?? DEFAULT_PAGE_SETTINGS.visibility.hideChartActions,
       hideRoomHeaderActions: visibility.hideRoomHeaderActions ?? DEFAULT_PAGE_SETTINGS.visibility.hideRoomHeaderActions,
@@ -7886,6 +7929,18 @@ function refreshNamesOnlyToggle() {
   }
 }
 
+function refreshUnassignedSeatTitlesToggle() {
+  const hidden = !!pageSettings().hideUnassignedSeatTitles;
+  document.body.classList.toggle('hide-unassigned-seat-titles', hidden);
+  const button = el('hideUnassignedTitlesBtn');
+  if (!button) return;
+  button.setAttribute('aria-pressed', hidden ? 'true' : 'false');
+  button.textContent = hidden ? 'Show Empty Titles' : 'Hide Empty Titles';
+  button.title = hidden
+    ? 'Show the Drop student here and Unassigned titles on empty seats.'
+    : 'Hide the Drop student here and Unassigned titles on empty seats while keeping the seats usable.';
+}
+
 function refreshHeaderToggle() {
   const button = el('toggleHeaderBtn');
   if (!button) return;
@@ -8004,7 +8059,9 @@ function applyPageSettings(settings = pageSettings(), options = {}) {
   const cfg = pageSettings();
   document.body.dataset.theme = cfg.theme || 'default';
   document.body.classList.toggle('hide-all-hints', !!cfg.hideHints);
+  document.body.classList.toggle('hide-object-type-labels', !!cfg.hideObjectTypeLabels);
   document.body.classList.toggle('freeform-clean-view', !!cfg.freeformCleanView);
+  refreshUnassignedSeatTitlesToggle();
   if (options.applyLoadDefaults === true) applyPageLoadDefaults(cfg);
   queueEnhanceHints();
   applyVisibilityClasses();
@@ -10256,7 +10313,7 @@ function freeformObjectInnerHtml(obj, lookups) {
     return `
           ${groupDisplay.bars}
           <div class="freeform-object-title${student ? '' : ' placeholder'}">${student ? seatStudentHtml(student) : 'Unassigned'}</div>
-          <div class="freeform-object-meta"><span class="pill">Seat</span>${seatLabelHtml}${groupDisplay.studentGroups.length ? `<span class="pill" title="${escapeHtml(groupDisplay.titleText)}">${groupDisplay.studentGroups.length} group${groupDisplay.studentGroups.length === 1 ? '' : 's'}</span>` : ''}${groupDisplay.anchors.length ? `<span class="pill" title="${escapeHtml(groupDisplay.titleText)}">${groupDisplay.anchors.length} reserved</span>` : ''}</div>
+          <div class="freeform-object-meta"><span class="pill freeform-type-pill">Seat</span>${seatLabelHtml}${groupDisplay.studentGroups.length ? `<span class="pill" title="${escapeHtml(groupDisplay.titleText)}">${groupDisplay.studentGroups.length} group${groupDisplay.studentGroups.length === 1 ? '' : 's'}</span>` : ''}${groupDisplay.anchors.length ? `<span class="pill" title="${escapeHtml(groupDisplay.titleText)}">${groupDisplay.anchors.length} reserved</span>` : ''}</div>
           ${groupDisplay.chipsHtml}
           ${groupDisplay.zonesHtml}
           <div class="freeform-object-actions no-print">
@@ -10266,7 +10323,7 @@ function freeformObjectInnerHtml(obj, lookups) {
   }
   return `
         <div class="freeform-object-title">${escapeHtml(obj.label || objectLabel(obj.type))}</div>
-        <div class="freeform-object-meta"><span class="pill subtle">${escapeHtml(objectLabel(obj.type))}</span></div>
+        <div class="freeform-object-meta"><span class="pill subtle freeform-type-pill">${escapeHtml(objectLabel(obj.type))}</span></div>
         <div class="freeform-object-actions no-print">
           <button class="tiny secondary" data-freeform-lock="${escapeHtml(obj.id)}" title="${locked ? 'Unlock this freeform object' : 'Lock this freeform object'}" aria-label="${locked ? 'Unlock this freeform object' : 'Lock this freeform object'}">${locked ? 'Unlock' : 'Lock'}</button>
         </div>`;
@@ -10296,7 +10353,7 @@ function syncFreeformToolbarState() {
   const deleteBtn = el('deleteFreeformObjectBtn');
   if (deleteBtn) deleteBtn.disabled = !count;
   const rotateBtn = el('rotateFreeformObjectBtn');
-  if (rotateBtn) rotateBtn.disabled = count !== 1;
+  if (rotateBtn) rotateBtn.disabled = count !== 1 || eyeModeBlocksRoomEditing();
   ['toggleFreeformMinimapBtn','toggleFreeformMinimapInlineBtn'].forEach(id => {
     const minimapBtn = el(id);
     if (minimapBtn) {
@@ -10902,6 +10959,7 @@ Students, groups, zones, saved room history, and the Standard Grid layout are ke
 }
 
 function rotateFreeformObject(id, degrees = 15) {
+  if (eyeModeBlocksRoomEditing()) return blockEyeModeAction('room');
   const targets = freeformRotationTargets(id);
   if (!targets.length) return;
   pushUndoSnapshot('Before freeform rotation');
@@ -13288,7 +13346,7 @@ function renderGrid() {
         : '';
       const div = document.createElement('div');
       const groupClasses = [visualGroups.length ? 'has-groups' : '', groupsForStudent.length ? 'has-student-groups' : '', anchors.length ? 'has-anchor-groups' : '', isCustomCellType(cell.type) ? 'custom-object' : ''].filter(Boolean).join(' ');
-      div.className = `cell ${cell.type}${groupClasses ? ' ' + groupClasses : ''}`;
+      div.className = `cell ${cell.type}${cell.type === 'seat' && !student ? ' unassigned-seat' : ''}${groupClasses ? ' ' + groupClasses : ''}`;
       if (visualGroups.length) div.style.setProperty('--primary-group-color', safeColor(visualGroups[0].group.color));
       div.dataset.cellKey = cellKey;
       if (uiState.designMode) div.dataset.designTooltip = `Defined as: ${objectLabel(cell.type)}${(cell.zoneIds || []).length ? ' | Zones: ' + (cell.zoneIds || []).map(id => lookups.zones.get(String(id))?.name || id).join(', ') : ''} (row ${r}, column ${c})`;
@@ -13302,7 +13360,7 @@ function renderGrid() {
               ${studentGroupBar}${anchorGroupBar}${zoneTagsHtml(cell, lookups.zones)}
               <div class="cell-label">
                 <span>${r},${c}</span>
-                <span class="cell-status">${escapeHtml(cell.type)} ${cell.manual ? '<span class="pill locked" title="This student is locked here and randomize will not move them.">Locked</span>' : ''} ${anchorDots}</span>
+                <span class="cell-status"><span class="cell-type-label">${escapeHtml(objectLabel(cell.type))}</span> ${cell.manual ? '<span class="pill locked" title="This student is locked here and randomize will not move them.">Locked</span>' : ''} ${anchorDots}</span>
               </div>
               ${cell.type === 'seat' ? `
                 <div class="seat-person" ${student ? `${eyeModeBlocksSeatEditing() ? '' : 'draggable="true"'} data-seat-student-id="${escapeHtml(student.id)}" data-source-cell="${cellKey}" title="${eyeModeBlocksSeatEditing() ? 'Eye Mode blocks seat moves until it is exited.' : `Drag ${escapeHtml(studentDisplay(student))} to another seat. If the target is occupied, the two students swap.`}"` : ''}>${seatStudentHtml(student)}</div>
@@ -13615,7 +13673,7 @@ const CONTROL_TOOLTIPS = {
   guidedLearningBtn: 'Open Quick Start and focused lessons for Freeform, room design, seating, rules, saving, printing, and Google tools.',
   helpGuideBtn: 'Open the searchable help guide with explanations, tips, examples, security guidance, and troubleshooting for the whole application.',
   settingsBtn: 'Open Settings for page defaults, visibility mode, security PINs, encryption, recommended saving workflow, custom room objects, sample data, About, and the Change Log.',
-  visibilityModeBtn: 'Enter or exit Eye visibility mode. Entering hides configured sections. Exiting requires the eye PIN, lock PIN, or current encryption key.',
+  visibilityModeBtn: 'Enter or exit Eye visibility mode. Entering always removes the roster panel and hides configured sections. Exiting requires the eye PIN, lock PIN, or current encryption key.',
   pageLockBtn: 'Lock the page with a PIN/password. If no lock PIN/password exists yet, you will be asked to create one before the screen locks.',
   saveLoadMenuBtn: 'Open the Save menu for Save Now, Load Save File, and More Save Options.',
   snapshotQuickBtn: 'Take a snapshot of the current class and open the snapshot list so snapshots can be restored later.',
@@ -13644,6 +13702,7 @@ const CONTROL_TOOLTIPS = {
   clearAnchorsBtn: 'Remove all group anchors from seats without deleting the groups themselves.',
   toggleLayoutToolsBtn: 'Show or hide the full Layout Tools section for rows, columns, click tools, and multi-cell selection.',
   layoutNamesOnlyBtn: 'Toggle the Room Layout into a names-only view that hides group color bars and reservation dots while editing.',
+  hideUnassignedTitlesBtn: 'Hide or show the Drop student here and Unassigned titles on empty seats without removing the seats.',
   buildGridBtn: 'Apply the row and column numbers and resize the grid while keeping existing cells that still fit.',
   makeAllSeatsBtn: 'Turn every grid cell into an assignable student seat.',
   emptyGridBtn: 'Turn every grid cell into empty space and clear all assignments and anchors.',
@@ -13674,6 +13733,8 @@ const CONTROL_TOOLTIPS = {
   designModeBtn: 'Toggle Design Mode. Design Mode shrinks cells to layout-planning size and shows only the cell type or defined room object while keeping click, right-click, shift-select, and drag selection tools active.',
   designSizeSlider: 'Resize cells while Design Mode is on. This only affects the layout-design view; turning Design Mode off restores normal seat sizing.',
   settingHideHints: 'Hide all text hints throughout the app without deleting them from the file.',
+  settingHideObjectTypeLabels: 'Hide the small Seat and room-object type indicators while keeping student names and custom seat labels visible.',
+  settingGoogleAnalyticsEnabled: 'Allow or disable anonymous Google Analytics page measurement on this browser. This preference is not saved inside classroom files.',
   settingAutoSaveMinutes: 'Set how many minutes to wait before auto-saving changes to the chosen save file. Use 0 to turn auto-save off.',
   resetDismissedHintsBtn: 'Show hints again after they have been closed with the X button.',
   settingsCustomObjectName: 'Type a custom room object name to add to the Click Tool and right-click menu.',
@@ -14282,6 +14343,9 @@ function updatePageSettingsFormCore() {
   setControlChecked('settingCsvCollapsed', cfg.csvCollapsed);
   setControlChecked('settingAddStudentCollapsed', cfg.addStudentCollapsed);
   setControlChecked('settingHideHints', cfg.hideHints);
+  setControlChecked('settingHideObjectTypeLabels', cfg.hideObjectTypeLabels);
+  setControlChecked('settingGoogleAnalyticsEnabled', googleAnalyticsEnabled());
+  updateGoogleAnalyticsStatus();
   setControlValue('settingAutoSaveMinutes', cfg.autoSaveMinutes || 0);
   setControlValue('settingPreferredStorage', cfg.preferredStorage || 'browser');
   setControlValue('settingGoogleDriveClientId', cfg.googleDriveClientId || GOOGLE_DRIVE_CLIENT_ID || '');
@@ -14301,7 +14365,6 @@ function updatePageSettingsFormCore() {
   setControlChecked('visHideSettings', cfg.visibility.hideSettings);
   setControlChecked('visHidePrint', cfg.visibility.hidePrint);
   setControlChecked('visHideLayoutTools', cfg.visibility.hideLayoutTools);
-  setControlChecked('visHideStudentsPanel', cfg.visibility.hideStudentsPanel);
   setControlChecked('visHideStatusPanel', cfg.visibility.hideStatusPanel);
   setControlChecked('visHideChartActions', cfg.visibility.hideChartActions);
   setControlChecked('visHideRoomHeaderActions', cfg.visibility.hideRoomHeaderActions);
@@ -14343,6 +14406,8 @@ function readPageSettingsFormCore() {
     csvCollapsed: checked('settingCsvCollapsed'),
     addStudentCollapsed: checked('settingAddStudentCollapsed'),
     hideHints: checked('settingHideHints'),
+    hideObjectTypeLabels: checked('settingHideObjectTypeLabels'),
+    hideUnassignedSeatTitles: pageSettings().hideUnassignedSeatTitles,
     autoSaveMinutes: clampNumber(value('settingAutoSaveMinutes'), 0, 120),
     preferredStorage: value('settingPreferredStorage') || pageSettings().preferredStorage || 'browser',
     googleDriveClientId: value('settingGoogleDriveClientId') || pageSettings().googleDriveClientId || GOOGLE_DRIVE_CLIENT_ID || '',
@@ -14365,7 +14430,7 @@ function readPageSettingsFormCore() {
       hideSettings: checked('visHideSettings'),
       hidePrint: checked('visHidePrint'),
       hideLayoutTools: checked('visHideLayoutTools'),
-      hideStudentsPanel: checked('visHideStudentsPanel'),
+      hideStudentsPanel: true,
       hideStatusPanel: checked('visHideStatusPanel'),
       hideChartActions: checked('visHideChartActions'),
       hideRoomHeaderActions: checked('visHideRoomHeaderActions'),
@@ -14449,7 +14514,7 @@ function applyVisibilityClasses() {
   document.body.classList.toggle('vis-hide-settings', !!uiState.visibilityMode && !!cfg.hideSettings);
   document.body.classList.toggle('vis-hide-print', !!uiState.visibilityMode && !!cfg.hidePrint);
   document.body.classList.toggle('vis-hide-layout-tools', !!uiState.visibilityMode && !!cfg.hideLayoutTools);
-  document.body.classList.toggle('vis-hide-students', !!uiState.visibilityMode && !!cfg.hideStudentsPanel);
+  document.body.classList.toggle('vis-hide-students', !!uiState.visibilityMode);
   document.body.classList.toggle('vis-hide-status', !!uiState.visibilityMode && !!cfg.hideStatusPanel);
   document.body.classList.toggle('vis-hide-chart-actions', !!uiState.visibilityMode && !!cfg.hideChartActions);
   document.body.classList.toggle('vis-hide-room-header-actions', !!uiState.visibilityMode && !!cfg.hideRoomHeaderActions);
@@ -15269,7 +15334,7 @@ async function loadGoogleDriveSaveFromWelcome() {
   return openGoogleDriveFileChooser({ skipConfirm: true, direct: true, fromWelcome: true });
 }
 
-function sanitizedStudentForVisibility(student) { const source = normalizeStudent(student); const cfg = pageSettings().visibility || {}; return { ...source, grade: cfg.disableStudentEditing || cfg.hideStudentsPanel ? '' : source.grade, notesPrivate: '', notesSubstitute: '', notesPublic: cfg.disableStudentEditing ? '' : source.notesPublic }; }
+function sanitizedStudentForVisibility(student) { const source = normalizeStudent(student); const cfg = pageSettings().visibility || {}; return { ...source, grade: cfg.disableStudentEditing ? '' : source.grade, notesPrivate: '', notesSubstitute: '', notesPublic: cfg.disableStudentEditing ? '' : source.notesPublic }; }
 function sanitizedCellForVisibility(cell) { const source = cell && typeof cell === 'object' ? { ...cell } : {}; if (pageSettings().visibility.hideGroupDetails) { source.anchorGroupIds = []; source.zoneIds = []; } return source; }
 function sanitizedClassForVisibilityMode(classRecord) { const cls = normalizeClassRecord(classRecord); const cfg = pageSettings().visibility; const cells = {}; Object.entries(cls.cells || {}).forEach(([key, cell]) => { cells[key] = sanitizedCellForVisibility(cell); }); return { ...cls, students: (cls.students || []).map(sanitizedStudentForVisibility), groups: cfg.hideGroupDetails ? [] : (cls.groups || []).map(group => ({ ...group })), zones: cfg.hideGroupDetails ? [] : (cls.zones || []).map(zone => ({ ...zone })), cells, snapshots: [], chartMeta: normalizeChartMeta(cls.chartMeta || {}) }; }
 function sanitizeInMemoryForVisibilityMode() { persistActiveClass(); const activeId = state.activeClassId; state.classes = (state.classes || []).map(sanitizedClassForVisibilityMode); state.roomTemplates = []; uiState.undoStack = []; uiState.redoStack = []; uiState.csvImportDraft = null; uiState.noteEditorContext = null; uiState.noteEditorDraft = null; uiState.restoreImportDraft = null; uiState.mobileCarryItem = null; if (uiState.selectedCellKeys) uiState.selectedCellKeys.clear(); if (state.classes.some(cls => cls.id === activeId)) state.activeClassId = activeId; applyClassToState(state.activeClassId || state.classes[0]?.id); hideMobileActionDrawer?.(); updateUndoRedoButtons(); }
@@ -16125,6 +16190,92 @@ function loadExternalScriptOnce({ src, markerAttribute, ready, errorMessage, tim
     script.addEventListener('error', onError, { once: true });
     if (created) document.head.appendChild(script);
   });
+}
+
+let googleAnalyticsLoadPromise = null;
+let googleAnalyticsConfigured = false;
+
+function googleAnalyticsEnabled() {
+  return safeStorageGet('localStorage', GOOGLE_ANALYTICS_DISABLED_STORAGE_KEY) !== 'true';
+}
+
+function googleAnalyticsRuntimeSupported() {
+  const protocol = String(window.location?.protocol || '');
+  const userAgent = String(window.navigator?.userAgent || '');
+  return ['http:', 'https:'].includes(protocol) && !/jsdom|node\.js/i.test(userAgent);
+}
+
+function updateGoogleAnalyticsStatus(message = '') {
+  const status = el('googleAnalyticsSettingsStatus');
+  const enabled = googleAnalyticsEnabled();
+  const checkbox = el('settingGoogleAnalyticsEnabled');
+  if (checkbox && checkbox.checked !== enabled) checkbox.checked = enabled;
+  if (!status) return;
+  if (message) { status.textContent = message; return; }
+  if (!enabled) {
+    status.textContent = 'Disabled on this browser. The Google tag is not loaded on future page loads, and collection is disabled for the current page.';
+    return;
+  }
+  if (!googleAnalyticsRuntimeSupported()) {
+    status.textContent = 'Enabled, but analytics runs only when the planner is hosted over HTTP or HTTPS. Local file copies do not load the Google tag.';
+    return;
+  }
+  status.textContent = googleAnalyticsConfigured ? 'Enabled for this hosted page.' : 'Enabled. The Google tag will load for this hosted page.';
+}
+
+function configureGoogleAnalyticsQueue() {
+  if (googleAnalyticsConfigured) return;
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = window.gtag || function gtag() { window.dataLayer.push(arguments); };
+  window.gtag('consent', 'default', { analytics_storage: 'granted' });
+  window.gtag('js', new Date());
+  window.gtag('config', GOOGLE_ANALYTICS_MEASUREMENT_ID);
+  googleAnalyticsConfigured = true;
+}
+
+async function initializeGoogleAnalytics() {
+  const enabled = googleAnalyticsEnabled();
+  window[`ga-disable-${GOOGLE_ANALYTICS_MEASUREMENT_ID}`] = !enabled;
+  updateGoogleAnalyticsStatus();
+  if (!enabled || !googleAnalyticsRuntimeSupported()) return false;
+  configureGoogleAnalyticsQueue();
+  if (!googleAnalyticsLoadPromise) {
+    updateGoogleAnalyticsStatus('Loading the Google Analytics tag for this hosted page...');
+    googleAnalyticsLoadPromise = loadExternalScriptOnce({
+      src: `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(GOOGLE_ANALYTICS_MEASUREMENT_ID)}`,
+      markerAttribute: 'data-google-analytics',
+      errorMessage: 'Google Analytics could not be loaded.',
+      timeoutMs: 20000
+    }).catch(error => {
+      googleAnalyticsLoadPromise = null;
+      document.querySelector('script[data-google-analytics]')?.remove();
+      throw error;
+    });
+  }
+  try {
+    await googleAnalyticsLoadPromise;
+    updateGoogleAnalyticsStatus('Enabled for this hosted page. No classroom data is added as a custom analytics event.');
+    return true;
+  } catch (_) {
+    updateGoogleAnalyticsStatus('Enabled, but the Google Analytics tag is currently blocked, offline, or unavailable.');
+    return false;
+  }
+}
+
+function setGoogleAnalyticsEnabled(enabled, options = {}) {
+  const next = !!enabled;
+  const persisted = next
+    ? safeStorageRemove('localStorage', GOOGLE_ANALYTICS_DISABLED_STORAGE_KEY)
+    : safeStorageSet('localStorage', GOOGLE_ANALYTICS_DISABLED_STORAGE_KEY, 'true');
+  window[`ga-disable-${GOOGLE_ANALYTICS_MEASUREMENT_ID}`] = !next;
+  if (typeof window.gtag === 'function') {
+    window.gtag('consent', 'update', { analytics_storage: next ? 'granted' : 'denied' });
+  }
+  if (next) void initializeGoogleAnalytics();
+  else updateGoogleAnalyticsStatus(persisted ? '' : 'Analytics is disabled for this page, but the browser could not persist the preference.');
+  if (options.announce !== false) {
+    setLiveStatusMessage(next ? 'Google Analytics enabled on this browser.' : 'Google Analytics disabled on this browser.');
+  }
 }
 
 function syncGoogleDriveInputsToSettings(source = 'settings') {
@@ -17746,7 +17897,7 @@ const HELP_GUIDE_SECTIONS = [
       },
       {
         "title": "PDF / SVG in Print Options",
-        "text": "Print Preview, Download PDF, and Download SVG all use the same selected options. Standard Grid exports preserve the room cells and object styles; Freeform exports preserve canvas dimensions, object position, size, rotation, color, stacking, locks, and front-of-room orientation. PDF always shrinks the complete Freeform room onto one chart page, even when the canvas print mode is tiled or actual size. Selected notes, group configuration, and zone configuration are added as separate supporting pages. Use JSON when you need an editable backup."
+        "text": "Print Preview, Download PDF, and Download SVG all use the same selected options. Standard Grid exports preserve the room cells and object styles; Freeform exports preserve canvas dimensions, object position, size, rotation, color, stacking, locks, and front-of-room orientation. PDF always shrinks the complete Freeform room onto one chart page, even when the canvas print mode is tiled or actual size. Enable Crop to occupied room content and fill the chart page to remove unused outer Grid cells or Freeform canvas margins and enlarge the remaining seats and room objects in both PDF and SVG output. The room stays on one chart page; selected notes, group configuration, and zone configuration are added as separate supporting pages. Use JSON when you need an editable backup."
       }
     ],
     "tips": [
@@ -17879,7 +18030,7 @@ const HELP_GUIDE_SECTIONS = [
       },
       {
         "title": "Eye Mode PIN",
-        "text": "Protects exit from a simplified or restricted visibility mode and can wrap the session encryption key while Eye Mode is active."
+        "text": "Protects exit from a simplified or restricted visibility mode and can wrap the session encryption key while Eye Mode is active. Eye Mode always removes the Students, Groups & Zones panel; enabled room-editing protection also blocks every Freeform rotation path."
       },
       {
         "title": "Auto-lock after inactive minutes",
@@ -17905,7 +18056,7 @@ const HELP_GUIDE_SECTIONS = [
     "id": "settings",
     "category": "Settings",
     "title": "Settings: What Each Section Controls",
-    "keywords": "settings chart details appearance theme prismatic defaults hints visibility mode access pin encryption custom objects sample data about changelog local data auto lock",
+    "keywords": "settings chart details appearance theme prismatic defaults hints visibility mode access pin encryption custom objects sample data about changelog local data auto lock google analytics opt out object labels empty seat titles",
     "intro": "Settings controls chart details, security, default views, visibility restrictions, custom room objects, and local data tools.",
     "items": [
       {
@@ -17913,8 +18064,8 @@ const HELP_GUIDE_SECTIONS = [
         "text": "Title, date, period, room, and teacher/owner. These appear in print views and save with the class."
       },
       {
-        "title": "Visual Theme",
-        "text": "Choose the application color and surface treatment. Prismatic Flow is the most animated option, with flowing jewel-tone gradients across the shell, panels, controls, seats, and room cards. Operating-system reduced-motion preferences automatically disable its animation."
+        "title": "Visual Theme and object labels",
+        "text": "Choose the application color and surface treatment. Prismatic Flow is the most animated option, with flowing jewel-tone gradients across the shell, panels, controls, seats, and room cards. Operating-system reduced-motion preferences automatically disable its animation. The Appearance page can also hide the small Seat and room-object type indicators without hiding student names or custom labels."
       },
       {
         "title": "Session Timeout / Local Data",
@@ -17926,7 +18077,7 @@ const HELP_GUIDE_SECTIONS = [
       },
       {
         "title": "Eye / Visibility Mode",
-        "text": "Choose which panels and controls are hidden when Eye Mode is active."
+        "text": "Eye Mode always removes the Students, Groups & Zones panel. The remaining settings choose which other controls are hidden and which seating, room, student, group, and zone edits are blocked."
       },
       {
         "title": "Settings Access",
@@ -17943,6 +18094,10 @@ const HELP_GUIDE_SECTIONS = [
       {
         "title": "Recommended Saving Workflow",
         "text": "Shows save health, auto-save timing, and the focused Save Options panel for downloads or restore/upload actions."
+      },
+      {
+        "title": "Google Analytics preference",
+        "text": "Hosted HTTP/HTTPS deployments can send the standard page view to measurement ID G-NMRMNM7ZCD. The Google settings area contains a browser-local opt-out. The choice is not stored in classroom saves, and local file copies do not load the tag."
       },
       {
         "title": "Right-Click Room Objects",
@@ -19302,6 +19457,7 @@ function defaultPrintOptions() {
     chartDetails: { title: true, className: true, date: true, period: true, room: true, teacher: true },
     notes: { private: false, substitute: false, public: false },
     sections: { groups: false, zones: false },
+    framing: { cropToContent: false },
     groupConfig: { rule: true, priority: true, zone: true, members: true, reservedSeats: true, color: true },
     zoneConfig: { color: true, students: true, groups: true, seats: true }
   };
@@ -19314,6 +19470,7 @@ function currentPrintOptions() {
   uiState.printOptions.chartDetails = { ...defaults.chartDetails, ...(uiState.printOptions.chartDetails || {}) };
   uiState.printOptions.notes = { ...defaults.notes, ...(uiState.printOptions.notes || {}) };
   uiState.printOptions.sections = { ...defaults.sections, ...(uiState.printOptions.sections || {}) };
+  uiState.printOptions.framing = { ...defaults.framing, ...(uiState.printOptions.framing || {}) };
   uiState.printOptions.groupConfig = { ...defaults.groupConfig, ...(uiState.printOptions.groupConfig || {}) };
   uiState.printOptions.zoneConfig = { ...defaults.zoneConfig, ...(uiState.printOptions.zoneConfig || {}) };
   return uiState.printOptions;
@@ -19341,6 +19498,7 @@ function setPrintOptionDefaultsForMode(mode) {
   options.chartDetails = { ...defaultPrintOptions().chartDetails };
   options.notes = { private: false, substitute: false, public: false };
   options.sections = { groups: false, zones: false };
+  options.framing = { cropToContent: false };
   options.groupConfig = { ...defaultPrintOptions().groupConfig };
   options.zoneConfig = { ...defaultPrintOptions().zoneConfig };
   if (options.mode === 'substitute') options.notes = { private: false, substitute: true, public: true };
@@ -19368,6 +19526,7 @@ function writePrintOptionsToModal() {
   document.querySelectorAll('[data-print-zone-detail]').forEach(input => {
     input.checked = !!options.zoneConfig[input.dataset.printZoneDetail];
   });
+  if (el('printCropToContentToggle')) el('printCropToContentToggle').checked = !!options.framing?.cropToContent;
 }
 
 function readPrintOptionsFromModal() {
@@ -19391,6 +19550,7 @@ function readPrintOptionsFromModal() {
   document.querySelectorAll('[data-print-zone-detail]').forEach(input => {
     options.zoneConfig[input.dataset.printZoneDetail] = !!input.checked;
   });
+  options.framing.cropToContent = !!el('printCropToContentToggle')?.checked;
   if (!Object.values(options.details).some(Boolean)) {
     options.details.firstName = true;
     options.details.lastName = true;
@@ -19903,9 +20063,36 @@ function addPrintTextBlock(page, lines, bounds, options = {}) {
   }));
 }
 
+function printGridContentBounds(options = currentPrintOptions()) {
+  const full = { minRow: 1, maxRow: Math.max(1, Number(state.rows) || 1), minCol: 1, maxCol: Math.max(1, Number(state.cols) || 1), cropped: false };
+  if (!options.framing?.cropToContent) return full;
+  const occupied = Object.values(state.cells || {}).filter(cell => {
+    if (!cell) return false;
+    const type = String(cell.type || 'empty');
+    return type !== 'empty'
+      || Boolean(cell.assignedStudentId)
+      || Boolean((cell.anchorGroupIds || []).length)
+      || Boolean((cell.zoneIds || []).length);
+  });
+  if (!occupied.length) return full;
+  const rows = occupied.map(cell => clampNumber(cell.row, 1, full.maxRow));
+  const cols = occupied.map(cell => clampNumber(cell.col, 1, full.maxCol));
+  return {
+    minRow: Math.min(...rows),
+    maxRow: Math.max(...rows),
+    minCol: Math.min(...cols),
+    maxCol: Math.max(...cols),
+    cropped: true
+  };
+}
+
 function buildGridPrintPage(options, spec) {
+  const bounds = printGridContentBounds(options);
+  const visibleRows = bounds.maxRow - bounds.minRow + 1;
+  const visibleCols = bounds.maxCol - bounds.minCol + 1;
   const title = printChartMetaLine(options) || 'Seating Chart';
-  const subtitle = `${state.rows} × ${state.cols} Grid · ${state.students.length} students`;
+  const cropText = bounds.cropped ? ` · cropped from ${state.rows} × ${state.cols}` : '';
+  const subtitle = `${visibleRows} × ${visibleCols} Grid${cropText} · ${state.students.length} students`;
   const page = createPrintVectorPage(spec, title, subtitle);
   const top = spec.margin + 52;
   const footer = 18;
@@ -19914,25 +20101,26 @@ function buildGridPrintPage(options, spec) {
   const sourceCellWidth = 112;
   const sourceCellHeight = 133;
   const gap = 7;
-  const sourceWidth = state.cols * sourceCellWidth + Math.max(0, state.cols - 1) * gap;
-  const sourceHeight = state.rows * sourceCellHeight + Math.max(0, state.rows - 1) * gap;
-  const scale = Math.min(contentWidth / Math.max(1, sourceWidth), contentHeight / Math.max(1, sourceHeight), 1.35);
+  const sourceWidth = visibleCols * sourceCellWidth + Math.max(0, visibleCols - 1) * gap;
+  const sourceHeight = visibleRows * sourceCellHeight + Math.max(0, visibleRows - 1) * gap;
+  const scaleLimit = bounds.cropped ? Number.POSITIVE_INFINITY : 1.35;
+  const scale = Math.min(contentWidth / Math.max(1, sourceWidth), contentHeight / Math.max(1, sourceHeight), scaleLimit);
   const roomWidth = sourceWidth * scale;
   const roomHeight = sourceHeight * scale;
   const originX = spec.margin + (contentWidth - roomWidth) / 2;
   const originY = top + (contentHeight - roomHeight) / 2;
-  const labelSize = Math.max(5.5, Math.min(9, 8 * scale));
-  const nameSize = Math.max(6.5, Math.min(12, 10.5 * scale));
-  for (let row = 1; row <= state.rows; row += 1) {
-    for (let col = 1; col <= state.cols; col += 1) {
+  const labelSize = Math.max(5.5, Math.min(bounds.cropped ? 12 : 9, 8 * scale));
+  const nameSize = Math.max(6.5, Math.min(bounds.cropped ? 18 : 12, 10.5 * scale));
+  for (let row = bounds.minRow; row <= bounds.maxRow; row += 1) {
+    for (let col = bounds.minCol; col <= bounds.maxCol; col += 1) {
       const cell = state.cells[keyOf(row, col)] || { row, col, type: 'empty' };
       const type = String(cell.type || 'empty');
       const palette = printPaletteForType(type, options.mode);
-      const x = originX + (col - 1) * (sourceCellWidth + gap) * scale;
-      const y = originY + (row - 1) * (sourceCellHeight + gap) * scale;
+      const x = originX + (col - bounds.minCol) * (sourceCellWidth + gap) * scale;
+      const y = originY + (row - bounds.minRow) * (sourceCellHeight + gap) * scale;
       const width = sourceCellWidth * scale;
       const height = sourceCellHeight * scale;
-      page.commands.push({ type: 'rect', x, y, width, height, radius: Math.min(9, 11 * scale), fill: palette.fill, stroke: palette.stroke, lineWidth: Math.max(0.7, scale) });
+      page.commands.push({ type: 'rect', x, y, width, height, radius: Math.min(12, 11 * scale), fill: palette.fill, stroke: palette.stroke, lineWidth: Math.max(0.7, Math.min(2.5, scale)) });
       const student = getStudent(cell.assignedStudentId);
       if (options.mode === 'seen') {
         page.commands.push({ type: 'text', x: x + 5 * scale, y: y + 12 * scale, text: `${row},${col}`, size: labelSize, weight: 700, color: palette.text });
@@ -19940,7 +20128,7 @@ function buildGridPrintPage(options, spec) {
         const colors = printGroupColorsForSeat(student?.id, cell.anchorGroupIds).slice(0, 5);
         if (colors.length) {
           const stripeWidth = (width - 8 * scale) / colors.length;
-          colors.forEach((color, index) => page.commands.push({ type: 'rect', x: x + 4 * scale + index * stripeWidth, y: y + 3 * scale, width: stripeWidth, height: Math.max(2, 4 * scale), fill: color, stroke: 'none' }));
+          colors.forEach((color, index) => page.commands.push({ type: 'rect', x: x + 4 * scale + index * stripeWidth, y: y + 3 * scale, width: stripeWidth, height: Math.max(2, Math.min(9, 4 * scale)), fill: color, stroke: 'none' }));
         }
       }
       const lines = student
@@ -19961,7 +20149,7 @@ function buildGridPrintPage(options, spec) {
       }
     }
   }
-  page.commands.push({ type: 'text', x: spec.width - spec.margin, y: spec.height - 10, text: 'Classroom Seating Planner', size: 7, color: '#94a3b8', align: 'right' });
+  page.commands.push({ type: 'text', x: spec.width - spec.margin, y: spec.height - 10, text: bounds.cropped ? 'Cropped to occupied content · fit to page' : 'Classroom Seating Planner', size: 7, color: '#94a3b8', align: 'right' });
   return [page];
 }
 
@@ -19981,12 +20169,29 @@ function freeformObjectIntersectsTile(object, tile) {
   return bounds.right >= tile.x && bounds.left <= tile.x + tile.width && bounds.bottom >= tile.y && bounds.top <= tile.y + tile.height;
 }
 
-function addFreeformFrontMarker(page, canvas, tile, transform) {
+function printFreeformContentBounds(canvas, objects = [], cropToContent = false) {
+  const canvasWidth = Math.max(1, Number(canvas?.width) || 1200);
+  const canvasHeight = Math.max(1, Number(canvas?.height) || 760);
+  const full = { x: 0, y: 0, width: canvasWidth, height: canvasHeight, cropped: false };
+  if (!cropToContent || !objects.length) return full;
+  const bounds = objects.map(printFreeformObjectBounds);
+  const padding = Math.max(16, Number(canvas?.gridSize) || 20);
+  const left = Math.max(0, Math.min(...bounds.map(item => item.left)) - padding);
+  const top = Math.max(0, Math.min(...bounds.map(item => item.top)) - padding);
+  const right = Math.min(canvasWidth, Math.max(...bounds.map(item => item.right)) + padding);
+  const bottom = Math.min(canvasHeight, Math.max(...bounds.map(item => item.bottom)) + padding);
+  if (!(right > left && bottom > top)) return full;
+  return { x: left, y: top, width: right - left, height: bottom - top, cropped: true };
+}
+
+function addFreeformFrontMarker(page, canvas, tile, transform, roomBounds = null) {
   const side = ['top', 'right', 'bottom', 'left'].includes(String(canvas.frontSide || '').toLowerCase()) ? String(canvas.frontSide).toLowerCase() : 'top';
-  const source = side === 'top' ? { x: canvas.width / 2, y: 12, rotation: 0 }
-    : side === 'bottom' ? { x: canvas.width / 2, y: canvas.height - 12, rotation: 0 }
-      : side === 'left' ? { x: 12, y: canvas.height / 2, rotation: -90 }
-        : { x: canvas.width - 12, y: canvas.height / 2, rotation: 90 };
+  const bounds = roomBounds || { x: 0, y: 0, width: canvas.width, height: canvas.height };
+  const inset = Math.min(12, Math.max(4, Math.min(bounds.width, bounds.height) * 0.04));
+  const source = side === 'top' ? { x: bounds.x + bounds.width / 2, y: bounds.y + inset, rotation: 0 }
+    : side === 'bottom' ? { x: bounds.x + bounds.width / 2, y: bounds.y + bounds.height - inset, rotation: 0 }
+      : side === 'left' ? { x: bounds.x + inset, y: bounds.y + bounds.height / 2, rotation: -90 }
+        : { x: bounds.x + bounds.width - inset, y: bounds.y + bounds.height / 2, rotation: 90 };
   if (source.x < tile.x || source.x > tile.x + tile.width || source.y < tile.y || source.y > tile.y + tile.height) return;
   const x = transform.x + (source.x - tile.x) * transform.scale;
   const y = transform.y + (source.y - tile.y) * transform.scale;
@@ -20048,13 +20253,17 @@ function addFreeformObjectToPage(page, object, tile, transform, options) {
 
 function buildFreeformPrintPages(options, spec, renderOptions = {}) {
   const canvas = state.freeformLayout?.canvas || {};
-  const canvasWidth = Math.max(1, Number(canvas.width) || 1200);
-  const canvasHeight = Math.max(1, Number(canvas.height) || 760);
+  const objects = [...(state.freeformLayout?.objects || [])]
+    .sort((a, b) => Number(a.zIndex || 1) - Number(b.zIndex || 1));
+  const cropToContent = Boolean(options.framing?.cropToContent);
+  const roomBounds = printFreeformContentBounds(canvas, objects, cropToContent);
+  const canvasWidth = roomBounds.width;
+  const canvasHeight = roomBounds.height;
   const top = spec.margin + 52;
   const footer = 18;
   const contentWidth = spec.width - spec.margin * 2;
   const contentHeight = spec.height - top - spec.margin - footer;
-  const mode = renderOptions.forceFreeformFit ? 'fit' : (canvas.printScaleMode || 'tile');
+  const mode = renderOptions.forceFreeformFit || cropToContent ? 'fit' : (canvas.printScaleMode || 'tile');
   const actualScale = 72 / 96;
   let sourcePerPageWidth = contentWidth / actualScale;
   let sourcePerPageHeight = contentHeight / actualScale;
@@ -20072,14 +20281,15 @@ function buildFreeformPrintPages(options, spec, renderOptions = {}) {
   for (let row = 0; row < rows; row += 1) {
     for (let col = 0; col < columns; col += 1) {
       const tile = {
-        x: col * sourcePerPageWidth,
-        y: row * sourcePerPageHeight,
+        x: roomBounds.x + col * sourcePerPageWidth,
+        y: roomBounds.y + row * sourcePerPageHeight,
         width: Math.min(sourcePerPageWidth, canvasWidth - col * sourcePerPageWidth),
         height: Math.min(sourcePerPageHeight, canvasHeight - row * sourcePerPageHeight)
       };
       const title = printChartMetaLine(options) || 'Seating Chart';
       const tileText = rows * columns > 1 ? ` · Page ${row + 1}.${col + 1} of ${rows}.${columns}` : '';
-      const subtitle = `Freeform room ${Math.round(canvasWidth)} × ${Math.round(canvasHeight)} px${tileText}`;
+      const cropText = roomBounds.cropped ? ` · cropped from ${Math.round(Number(canvas.width) || 1200)} × ${Math.round(Number(canvas.height) || 760)} px` : '';
+      const subtitle = `Freeform room ${Math.round(canvasWidth)} × ${Math.round(canvasHeight)} px${cropText}${tileText}`;
       const page = createPrintVectorPage(spec, title, subtitle);
       const scale = fit
         ? Math.min(contentWidth / canvasWidth, contentHeight / canvasHeight)
@@ -20093,13 +20303,15 @@ function buildFreeformPrintPages(options, spec, renderOptions = {}) {
       };
       page.commands.push({ type: 'clipStart', x: transform.x, y: transform.y, width: roomWidth, height: roomHeight });
       addFreeformGrid(page, canvas, tile, transform, options);
-      addFreeformFrontMarker(page, { ...canvas, width: canvasWidth, height: canvasHeight }, tile, transform);
-      [...(state.freeformLayout?.objects || [])]
-        .sort((a, b) => Number(a.zIndex || 1) - Number(b.zIndex || 1))
+      addFreeformFrontMarker(page, { ...canvas, width: Number(canvas.width) || 1200, height: Number(canvas.height) || 760 }, tile, transform, roomBounds);
+      objects
         .filter(object => freeformObjectIntersectsTile(object, tile))
         .forEach(object => addFreeformObjectToPage(page, object, tile, transform, options));
       page.commands.push({ type: 'clipEnd' });
-      page.commands.push({ type: 'text', x: spec.width - spec.margin, y: spec.height - 10, text: fit ? 'Fit to page' : `${mode === 'actual' ? 'Actual size' : 'Tiled'} · ${row + 1}.${col + 1}`, size: 7, color: '#94a3b8', align: 'right' });
+      const footerText = roomBounds.cropped
+        ? 'Cropped to occupied content · fit to page'
+        : fit ? 'Fit to page' : `${mode === 'actual' ? 'Actual size' : 'Tiled'} · ${row + 1}.${col + 1}`;
+      page.commands.push({ type: 'text', x: spec.width - spec.margin, y: spec.height - 10, text: footerText, size: 7, color: '#94a3b8', align: 'right' });
       pages.push(page);
     }
   }
@@ -20181,6 +20393,7 @@ function buildPrintVectorPages(options = currentPrintOptions(), renderOptions = 
   normalized.chartDetails = { ...defaultPrintOptions().chartDetails, ...(options.chartDetails || {}) };
   normalized.notes = { ...defaultPrintOptions().notes, ...(options.notes || {}) };
   normalized.sections = { ...defaultPrintOptions().sections, ...(options.sections || {}) };
+  normalized.framing = { ...defaultPrintOptions().framing, ...(options.framing || {}) };
   normalized.groupConfig = { ...defaultPrintOptions().groupConfig, ...(options.groupConfig || {}) };
   normalized.zoneConfig = { ...defaultPrintOptions().zoneConfig, ...(options.zoneConfig || {}) };
   const spec = printPaperSpec();
@@ -20330,7 +20543,7 @@ function exportChartSvgCore(options = readPrintOptionsFromModal()) {
   const pages = buildPrintVectorPages(options);
   const svg = buildPrintSvgDocument(options, pages);
   downloadText(`seating-chart-${new Date().toISOString().slice(0,10)}.svg`, svg, 'image/svg+xml');
-  setLiveStatusMessage(`SVG exported with the selected print options across ${pages.length} page${pages.length === 1 ? '' : 's'}.`);
+  setLiveStatusMessage(`SVG exported with the selected print options across ${pages.length} page${pages.length === 1 ? '' : 's'}.${options.framing?.cropToContent ? ' The room chart was cropped to occupied content and enlarged to fill one page.' : ''}`);
 }
 
 function exportChartPdfCore(options = readPrintOptionsFromModal()) {
@@ -20338,7 +20551,7 @@ function exportChartPdfCore(options = readPrintOptionsFromModal()) {
   const pdf = buildPrintPdfDocument(options, pages);
   const blob = new Blob([pdf], { type: 'application/pdf' });
   triggerBlobDownload(`seating-chart-${new Date().toISOString().slice(0,10)}.pdf`, blob);
-  setLiveStatusMessage(`PDF exported with the selected print options across ${pages.length} page${pages.length === 1 ? '' : 's'}. Freeform room layouts are fit onto one chart page.`);
+  setLiveStatusMessage(`PDF exported with the selected print options across ${pages.length} page${pages.length === 1 ? '' : 's'}. ${options.framing?.cropToContent ? 'The room chart was cropped to occupied content and enlarged to fill one page.' : 'Freeform room layouts are fit onto one chart page.'}`);
 }
 
 
@@ -21279,6 +21492,14 @@ function wireEvents() {
     renderGrid();
   });
 
+  el('hideUnassignedTitlesBtn')?.addEventListener('click', () => {
+    uiState.pageSettings = mergePageSettings({ ...pageSettings(), hideUnassignedSeatTitles: !pageSettings().hideUnassignedSeatTitles });
+    applyPageSettings(uiState.pageSettings, { skipRender: false });
+    schedulePageSettingsPersistence('hide-unassigned-seat-titles');
+    scheduleLinkedAutoSave('settings');
+    setLiveStatusMessage(pageSettings().hideUnassignedSeatTitles ? 'Empty seat titles hidden.' : 'Empty seat titles shown.');
+  });
+
   el('designModeBtn').addEventListener('click', () => {
     uiState.designMode = !uiState.designMode;
     hideDesignModeTooltip();
@@ -21350,6 +21571,9 @@ function wireEvents() {
   el('settingsGoogleDriveSaveBtn')?.addEventListener('click', () => writeGoogleDriveSaveFile({ reason: 'manual', announce: true }));
   el('settingsGoogleDriveLoadBtn')?.addEventListener('click', loadFromGoogleDriveFile);
   el('settingsGoogleDriveForgetBtn')?.addEventListener('click', forgetGoogleDriveLink);
+  el('settingGoogleAnalyticsEnabled')?.addEventListener('change', event => {
+    setGoogleAnalyticsEnabled(!!event.target.checked, { announce: true });
+  });
   ['saveOptionGoogleDriveFolderName'].forEach(id => {
     el(id)?.addEventListener('input', () => syncGoogleDriveInputsToSettings('saveOptions'));
   });
@@ -21363,7 +21587,7 @@ function wireEvents() {
   el('closeSaveSetupBtn')?.addEventListener('click', () => closeSaveSetupModal(false));
   el('saveSetupDoneBtn')?.addEventListener('click', () => closeSaveSetupModal(true));
   el('saveSetupModal')?.addEventListener('click', event => { if (event.target.id === 'saveSetupModal') closeSaveSetupModal(false); });
-  ['settingTheme','settingDefaultNamesOnly','settingHeaderCollapsed','settingLeftCollapsed','settingRightCollapsed','settingLayoutToolsCollapsed','settingCsvCollapsed','settingAddStudentCollapsed','settingHideHints','settingAutoSaveMinutes','settingPreferredStorage','settingGoogleDriveFolderName','settingDesignCellSize','settingSettingsAccessMethod','settingAutoLockMinutes','settingAutoLockOnBlur','settingAutoLockOnTabHidden','settingAutoLockOnReturnMinutes','settingPbkdf2Iterations','visHideClassActions','visHideWizard','visHideSaveLoad','visHideSettings','visHidePrint','visHideLayoutTools','visHideStudentsPanel','visHideStatusPanel','visHideChartActions','visHideRoomHeaderActions','visForceNamesOnly','visHideGroupDetails','visDisableSeatEditing','visDisableRoomEditing','visDisableStudentEditing','visDisableGroupEditing'].forEach(id => {
+  ['settingTheme','settingDefaultNamesOnly','settingHeaderCollapsed','settingLeftCollapsed','settingRightCollapsed','settingLayoutToolsCollapsed','settingCsvCollapsed','settingAddStudentCollapsed','settingHideHints','settingHideObjectTypeLabels','settingAutoSaveMinutes','settingPreferredStorage','settingGoogleDriveFolderName','settingDesignCellSize','settingSettingsAccessMethod','settingAutoLockMinutes','settingAutoLockOnBlur','settingAutoLockOnTabHidden','settingAutoLockOnReturnMinutes','settingPbkdf2Iterations','visHideClassActions','visHideWizard','visHideSaveLoad','visHideSettings','visHidePrint','visHideLayoutTools','visHideStatusPanel','visHideChartActions','visHideRoomHeaderActions','visForceNamesOnly','visHideGroupDetails','visDisableSeatEditing','visDisableRoomEditing','visDisableStudentEditing','visDisableGroupEditing'].forEach(id => {
     const control = el(id);
     if (!control) return;
     control.addEventListener(control.tagName === 'SELECT' || control.type === 'number' ? 'input' : 'change', readPageSettingsForm);
@@ -22286,11 +22510,11 @@ const WorkflowExpansion = (() => {
 
   function privacyProfiles(mode) {
     return {
-      teacher: { hideClassActions:false, hideWizard:false, hideSaveLoad:false, hideSettings:false, hidePrint:false, hideLayoutTools:false, hideStudentsPanel:false, hideStatusPanel:false, hideChartActions:false, hideRoomHeaderActions:false, forceNamesOnly:false, hideGroupDetails:false, disableSeatEditing:false, disableRoomEditing:false, disableStudentEditing:false, disableGroupEditing:false },
-      substitute: { hideClassActions:true, hideWizard:true, hideSaveLoad:true, hideSettings:true, hidePrint:false, hideLayoutTools:true, hideStudentsPanel:false, hideStatusPanel:false, hideChartActions:true, hideRoomHeaderActions:true, forceNamesOnly:true, hideGroupDetails:false, disableSeatEditing:true, disableRoomEditing:true, disableStudentEditing:true, disableGroupEditing:true },
+      teacher: { hideClassActions:false, hideWizard:false, hideSaveLoad:false, hideSettings:false, hidePrint:false, hideLayoutTools:false, hideStudentsPanel:true, hideStatusPanel:false, hideChartActions:false, hideRoomHeaderActions:false, forceNamesOnly:false, hideGroupDetails:false, disableSeatEditing:false, disableRoomEditing:false, disableStudentEditing:false, disableGroupEditing:false },
+      substitute: { hideClassActions:true, hideWizard:true, hideSaveLoad:true, hideSettings:true, hidePrint:false, hideLayoutTools:true, hideStudentsPanel:true, hideStatusPanel:false, hideChartActions:true, hideRoomHeaderActions:true, forceNamesOnly:true, hideGroupDetails:false, disableSeatEditing:true, disableRoomEditing:true, disableStudentEditing:true, disableGroupEditing:true },
       student: { hideClassActions:true, hideWizard:true, hideSaveLoad:true, hideSettings:true, hidePrint:true, hideLayoutTools:true, hideStudentsPanel:true, hideStatusPanel:true, hideChartActions:true, hideRoomHeaderActions:true, forceNamesOnly:true, hideGroupDetails:true, disableSeatEditing:true, disableRoomEditing:true, disableStudentEditing:true, disableGroupEditing:true },
-      admin: { hideClassActions:false, hideWizard:true, hideSaveLoad:false, hideSettings:false, hidePrint:false, hideLayoutTools:false, hideStudentsPanel:false, hideStatusPanel:false, hideChartActions:false, hideRoomHeaderActions:false, forceNamesOnly:false, hideGroupDetails:false, disableSeatEditing:true, disableRoomEditing:true, disableStudentEditing:false, disableGroupEditing:false },
-      privacy: { hideClassActions:true, hideWizard:true, hideSaveLoad:true, hideSettings:true, hidePrint:true, hideLayoutTools:true, hideStudentsPanel:false, hideStatusPanel:true, hideChartActions:true, hideRoomHeaderActions:true, forceNamesOnly:true, hideGroupDetails:true, disableSeatEditing:true, disableRoomEditing:true, disableStudentEditing:true, disableGroupEditing:true }
+      admin: { hideClassActions:false, hideWizard:true, hideSaveLoad:false, hideSettings:false, hidePrint:false, hideLayoutTools:false, hideStudentsPanel:true, hideStatusPanel:false, hideChartActions:false, hideRoomHeaderActions:false, forceNamesOnly:false, hideGroupDetails:false, disableSeatEditing:true, disableRoomEditing:true, disableStudentEditing:false, disableGroupEditing:false },
+      privacy: { hideClassActions:true, hideWizard:true, hideSaveLoad:true, hideSettings:true, hidePrint:true, hideLayoutTools:true, hideStudentsPanel:true, hideStatusPanel:true, hideChartActions:true, hideRoomHeaderActions:true, forceNamesOnly:true, hideGroupDetails:true, disableSeatEditing:true, disableRoomEditing:true, disableStudentEditing:true, disableGroupEditing:true }
     }[mode] || null;
   }
 
@@ -32619,6 +32843,7 @@ async function initializeApp() {
   ClassSetupWorkspaceV54.afterReady();
   DistrictIntegrationsV57.afterReady();
   WorkflowRecoveryV62.afterReady();
+  void initializeGoogleAnalytics();
   void registerHostedServiceWorker();
 }
 
