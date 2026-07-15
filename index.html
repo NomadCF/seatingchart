@@ -5,7 +5,7 @@
   <meta name="license" content="MIT License" />
   <meta name="spdx-license-identifier" content="MIT" />
   <meta name="copyright" content="Copyright (c) 2026 Chris L. Franklin" />
-  <meta name="app-version" content="6.5.1" />
+  <meta name="app-version" content="6.5.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com https://www.paypalobjects.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://www.googleapis.com https://classroom.googleapis.com https://accounts.google.com https://www.paypal.com https://www.paypalobjects.com https://www.google-analytics.com https://*.google-analytics.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://www.paypal.com; img-src 'self' data: blob: https://www.paypalobjects.com https://www.google-analytics.com; font-src 'self' data:; worker-src 'self' blob:; manifest-src 'self'; media-src 'none'; object-src 'none'; base-uri 'none'; form-action 'self' https://www.paypal.com" />
   <meta name="application-name" content="Classroom Seating Planner" />
@@ -4404,6 +4404,40 @@ body.header-collapsed .header-settings-slot #snapshotQuickBtn{width:30px;min-wid
   }.modal .button-row > button:not(.icon-button){flex:1 1 min(170px, 100%)
   }.modal .button-row > .icon-button{flex:0 0 34px
   }
+}.seat-display-controls{display:inline-grid;grid-template-columns:auto minmax(84px, 118px) auto auto minmax(84px, 118px) auto;align-items:center;gap:5px;padding:4px 7px;border:1px solid var(--border);border-radius:10px;background:var(--panel, #fff);white-space:nowrap;position:sticky;left:0;z-index:3;box-shadow:4px 0 10px color-mix(in srgb, var(--text) 8%, transparent)
+}.seat-display-controls label{margin:0;font-size:9px
+}.seat-display-controls input[type="range"]{width:100%;min-width:84px;min-height:22px;padding:0
+}.seat-display-controls .pill{min-width:40px;justify-content:center
+}body.product-v4 .cell .seat-person{font-size:calc(11.2px * var(--seat-text-scale, 1))
+}body.product-v4 .freeform-object .freeform-object-title{font-size:calc(12px * var(--seat-text-scale, 1))
+}body.product-v4 .freeform-object .freeform-object-meta,
+body.product-v4 .freeform-object .freeform-group-summary,
+body.product-v4 .cell .seat-empty{font-size:calc(10px * var(--seat-text-scale, 1))
+}body.visibility-mode{--v41-shell-height:0px;--v4-workflow-nav-height:0px;--v4-context-height:0px
+}body.visibility-mode .v4-workflow-shell,
+body.visibility-mode #undoBtn,
+body.visibility-mode #redoBtn,
+body.visibility-mode #helpGuideBtn,
+body.visibility-mode #snapshotQuickBtn,
+body.visibility-mode #ui51SnapshotMenuBtn,
+body.visibility-mode #ui51HelpMenuBtn,
+body.visibility-mode #v4CommandButton,
+body.visibility-mode .right-panel,
+body.visibility-mode #openSeatingPlansBtn,
+body.visibility-mode #globalSearchBtn,
+body.visibility-mode #openRoomTemplatesBtn,
+body.visibility-mode #toggleLayoutToolsBtn,
+body.visibility-mode #layoutToolsPanel{display:none
+}body.product-v4.visibility-mode[data-workflow="review"] .app{grid-template-columns:minmax(0, 1fr)
+}body.product-v4.visibility-mode[data-workflow="review"] .center-panel{display:flex
+}body.visibility-mode .center-panel > .panel-header .button-row{justify-content:flex-end
+}body.visibility-mode .center-panel > .panel-header .button-row > button{display:none
+}body.visibility-mode .seat-display-controls{display:inline-grid
+}@media (max-width: 900px){.seat-display-controls{grid-template-columns:auto minmax(72px, 1fr) auto;max-width:100%
+  }.seat-display-controls label:nth-of-type(2),
+  .seat-display-controls #seatTextSizeSlider,
+  .seat-display-controls #seatTextSizeValue{grid-row:2
+  }
 }body.visibility-mode.vis-hide-wizard #guidedLearningBtn,
 body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
 }
@@ -4430,7 +4464,7 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
       <button id="deleteClassBtn" class="danger tiny icon-button" type="button" aria-label="Delete class" title="Delete the current class. You must keep at least one class.">🗑</button>
     </div>
     <div class="header-settings-slot no-print">
-      <button type="button" id="visibilityModeBtn" class="secondary icon-button" aria-label="Toggle visibility mode" title="Hide selected controls and sections. Exiting visibility mode requires the visibility PIN, lock PIN, or encryption key.">👁</button>
+      <button type="button" id="visibilityModeBtn" class="secondary icon-button" aria-label="Toggle Presentation Mode" title="Show the finished seating chart in locked Review mode. Exiting requires the Presentation PIN, Lock PIN, or encryption key.">👁</button>
       <button type="button" id="helpGuideBtn" class="secondary icon-button" aria-label="Open help guide" title="Open the searchable help guide for every major tool, setting, and workflow.">?</button>
       <button id="snapshotQuickBtn" class="secondary icon-button" type="button" aria-label="Take full-app snapshot" title="Take a full-app snapshot and open the snapshot list">📸</button>
       <button type="button" id="settingsBtn" class="secondary icon-button" aria-label="Open settings" title="Open settings for page defaults, visibility mode, security, About, sample data, and custom right-click room objects">⚙</button>
@@ -4870,6 +4904,14 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
       <div class="panel-header">
         <h2>Room Layout</h2>
         <div class="button-row no-print">
+          <div id="seatDisplayControls" class="seat-display-controls" aria-label="Seat display controls">
+            <label for="seatViewZoomSlider">Zoom</label>
+            <input id="seatViewZoomSlider" type="range" min="35" max="175" step="5" value="100" title="Change seat and room-object size on screen without changing saved positions." />
+            <span id="seatViewZoomValue" class="pill">100%</span>
+            <label for="seatTextSizeSlider">Text</label>
+            <input id="seatTextSizeSlider" type="range" min="70" max="200" step="5" value="100" title="Change the size of student and object text inside seats." />
+            <span id="seatTextSizeValue" class="pill">100%</span>
+          </div>
           <button type="button" id="generateBtn">Generate Chart</button>
           <button type="button" id="randomizeAllBtn" class="secondary">Randomize + Seat Everyone</button>
           <button type="button" id="clearAssignmentsBtn" class="secondary">Clear Assignments</button>
@@ -5001,7 +5043,7 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
                       <div class="field small"><label for="freeformCanvasHeightInput">Height</label><input id="freeformCanvasHeightInput" type="number" min="300" max="12000" value="1800" /></div>
                       <div class="field small"><label for="freeformGridSizeInput">Grid</label><input id="freeformGridSizeInput" type="number" min="5" max="80" value="40" /></div>
                       <div class="field small"><label for="freeformFrontSideSelect">Front</label><select id="freeformFrontSideSelect" title="Choose which side of the room is the front."><option value="top">Top</option><option value="right">Right</option><option value="bottom">Bottom</option><option value="left">Left</option></select></div>
-                      <div class="field small freeform-zoom-field"><label for="freeformZoomSlider">Zoom</label><input id="freeformZoomSlider" type="range" min="35" max="175" step="5" value="100" title="Zoom the room view without changing saved placement." /><span id="freeformZoomValue" class="pill">100%</span></div>
+
                     </div>
                   </section>
 
@@ -5337,7 +5379,7 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
           <button id="settingsPageChartBtn" class="settings-page-tab active" type="button" role="tab" aria-selected="true" aria-controls="settingsPageChart" data-settings-nav="chart"><span class="settings-page-title">Chart</span><span class="settings-page-desc">Title, date, room, and printable chart identity.</span></button>
           <button id="settingsPageAppearanceBtn" class="settings-page-tab" type="button" role="tab" aria-selected="false" aria-controls="settingsPageAppearance" data-settings-nav="appearance"><span class="settings-page-title">Appearance</span><span class="settings-page-desc">Theme, default layout state, and hint behavior.</span></button>
           <button id="settingsPageHelpBtn" class="settings-page-tab" type="button" role="tab" aria-selected="false" aria-controls="settingsPageHelp" data-settings-nav="help"><span class="settings-page-title">Help &amp; Guides</span><span class="settings-page-desc">Start focused lessons, resume practice, or search the reference guide.</span></button>
-          <button id="settingsPageEyeBtn" class="settings-page-tab" type="button" role="tab" aria-selected="false" aria-controls="settingsPageEye" data-settings-nav="eye"><span class="settings-page-title">Eye Mode</span><span class="settings-page-desc">Student-facing visibility, edit blocking, and hidden-detail protection.</span></button>
+          <button id="settingsPageEyeBtn" class="settings-page-tab" type="button" role="tab" aria-selected="false" aria-controls="settingsPageEye" data-settings-nav="eye"><span class="settings-page-title">Presentation Mode</span><span class="settings-page-desc">Locked review display, selected details, and hidden-data protection.</span></button>
           <button id="settingsPageSavingBtn" class="settings-page-tab" type="button" role="tab" aria-selected="false" aria-controls="settingsPageSaving" data-settings-nav="saving"><span class="settings-page-title">Saving</span><span class="settings-page-desc">Linked save file, auto-save, backups, and save/download encryption.</span></button>
           <button id="settingsPageSecurityBtn" class="settings-page-tab" type="button" role="tab" aria-selected="false" aria-controls="settingsPageSecurity" data-settings-nav="security"><span class="settings-page-title">Security &amp; Data</span><span class="settings-page-desc">Auto-lock, Settings access, PINs, local data cleanup, and full reset.</span></button>
           <button id="settingsPageRoomBtn" class="settings-page-tab" type="button" role="tab" aria-selected="false" aria-controls="settingsPageRoom" data-settings-nav="room"><span class="settings-page-title">Room Objects</span><span class="settings-page-desc">Custom right-click room objects and sample classroom data.</span></button>
@@ -5436,31 +5478,20 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
               </div>
             </section>
           </div>
-          <div id="settingsPageEye" class="settings-page" role="tabpanel" data-settings-panel="eye" aria-label="Eye Mode settings">
+          <div id="settingsPageEye" class="settings-page" role="tabpanel" data-settings-panel="eye" aria-label="Presentation Mode settings">
             <div class="settings-page-header">
-              <strong>Eye Mode visibility and protection</strong>
-              Student-facing visibility, edit blocking, and encrypted hidden-detail protection.
+              <strong>Presentation Mode visibility and protection</strong>
+              A locked Review view with encrypted hidden-detail protection and adjustable on-screen seat size.
             </div>
             <section class="section settings-section">
-                      <h3>Eye / Visibility Mode</h3>
-                      <div class="hint">The eye button creates a controlled viewing mode. Eye Mode always removes the Students, Groups &amp; Zones panel. When it starts, the full original chart is encrypted into session storage, the visible in-memory chart is sanitized, and the app only shows the details allowed by these settings. Exiting restores the encrypted original with the Eye PIN, Lock PIN, or current encryption key.</div>
+                      <h3>Presentation Mode</h3>
+                      <div class="hint">Presentation Mode switches to Review, hides workflow guidance, rosters, chart-review details, undo/redo, Help, snapshots, and editing tools, and keeps only the room display plus its Zoom and Text sliders. The full original chart is encrypted into session storage, the visible in-memory chart is sanitized, and exiting restores the original with the Presentation PIN, Lock PIN, or current encryption key.</div>
                       <div class="settings-grid two-col">
-                        <label class="checkline" for="visHideClassActions"><input id="visHideClassActions" type="checkbox" /> <span>Hide class New/Rename/Duplicate/Delete</span></label>
-                        <label class="checkline" for="visHideWizard"><input id="visHideWizard" type="checkbox" /> <span>Hide guided-help entry points</span></label>
-                        <label class="checkline" for="visHideSaveLoad"><input id="visHideSaveLoad" type="checkbox" /> <span>Hide Save / Load</span></label>
-                        <label class="checkline" for="visHideSettings"><input id="visHideSettings" type="checkbox" /> <span>Hide Settings gear</span></label>
                         <label class="checkline" for="visHidePrint"><input id="visHidePrint" type="checkbox" /> <span>Hide Print controls</span></label>
-                        <label class="checkline" for="visHideLayoutTools"><input id="visHideLayoutTools" type="checkbox" /> <span>Hide Layout Tools</span></label>
-                        <label class="checkline" for="visHideStatusPanel"><input id="visHideStatusPanel" type="checkbox" /> <span>Hide Chart Status panel</span></label>
-                        <label class="checkline" for="visHideChartActions"><input id="visHideChartActions" type="checkbox" /> <span>Hide generate/randomize/clear controls</span></label>
                         <label class="checkline" for="visHideRoomHeaderActions"><input id="visHideRoomHeaderActions" type="checkbox" /> <span>Hide Room Layout header buttons</span></label>
-                        <label class="checkline" for="visForceNamesOnly"><input id="visForceNamesOnly" type="checkbox" /> <span>Force Names Only while eye mode is active</span></label>
+                        <label class="checkline" for="visForceNamesOnly"><input id="visForceNamesOnly" type="checkbox" /> <span>Force Names Only while presentation mode is active</span></label>
                         <label class="checkline" for="visHideGroupDetails"><input id="visHideGroupDetails" type="checkbox" /> <span>Hide group/zone details and markers</span></label>
-                        <label class="checkline" for="visDisableSeatEditing"><input id="visDisableSeatEditing" type="checkbox" /> <span>Disable seating assignment and seat action edits</span></label>
-                        <label class="checkline" for="visDisableRoomEditing"><input id="visDisableRoomEditing" type="checkbox" /> <span>Disable room/cell layout editing</span></label>
-                        <label class="checkline" for="visDisableStudentEditing"><input id="visDisableStudentEditing" type="checkbox" /> <span>Disable adding, editing, or deleting student info</span></label>
-                        <label class="checkline" for="visDisableGroupEditing"><input id="visDisableGroupEditing" type="checkbox" /> <span>Disable group and zone editing</span></label>
-                      </div>
+                        </div>
                       <div id="visibilityCredentialNote" class="hint"></div>
                     </section>
           </div>
@@ -5488,7 +5519,7 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
                         </div>
                         <input id="settingPbkdf2Iterations" type="number" min="150000" max="2000000" step="50000" value="310000" />
                       </div>
-                      <div class="encryption-note">The Welcome screen requires an encryption password before first use. For security, the active session key is not prefilled here after entry. Updating the password changes future local saves, linked saves, backups, and new snapshots only. Older downloaded saves/backups/snapshots remain encrypted with the password used when they were created. The key is not written into exported save files; while Lock or Eye Mode is active, it can be stored only as an encrypted wrapped key protected by the Lock/Eye PIN/password.</div>
+                      <div class="encryption-note">The Welcome screen requires an encryption password before first use. For security, the active session key is not prefilled here after entry. Updating the password changes future local saves, linked saves, backups, and new snapshots only. Older downloaded saves/backups/snapshots remain encrypted with the password used when they were created. The key is not written into exported save files; while Lock or Presentation Mode is active, it can be stored only as an encrypted wrapped key protected by the Lock or Presentation Mode PIN/password.</div>
                     </section>
             <section class="section settings-section">
                       <h3>Saving</h3>
@@ -5554,7 +5585,7 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
                         <div class="security-status-card"><strong>Storage encrypted</strong><span id="securityStatusStorageEncrypted" class="security-status-value warn">Checking...</span></div>
                         <div class="security-status-card"><strong>Settings protected</strong><span id="securityStatusSettingsProtected" class="security-status-value warn">Checking...</span></div>
                         <div class="security-status-card"><strong>Lock PIN set</strong><span id="securityStatusLockPin" class="security-status-value warn">Checking...</span></div>
-                        <div class="security-status-card"><strong>Eye PIN set</strong><span id="securityStatusEyePin" class="security-status-value warn">Checking...</span></div>
+                        <div class="security-status-card"><strong>Presentation PIN set</strong><span id="securityStatusEyePin" class="security-status-value warn">Checking...</span></div>
                       </div>
                     </section>
             <section class="section settings-section">
@@ -5575,13 +5606,13 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
                     </section>
             <section class="section settings-section">
                       <h3>Settings Access</h3>
-                      <div class="hint">Choose what credential is required before the Settings page opens. By default, the first-run encryption password protects Settings. You can disable the prompt, but doing so lets anyone with the unlocked page change security, visibility, save, and local-data settings. Auto uses Lock PIN first, then Eye PIN, then the current session encryption key.</div>
+                      <div class="hint">Choose what credential is required before the Settings page opens. By default, the first-run encryption password protects Settings. You can disable the prompt, but doing so lets anyone with the unlocked page change security, visibility, save, and local-data settings. Auto uses Lock PIN first, then Presentation PIN, then the current session encryption key.</div>
                       <div class="field" style="margin-top:8px;">
                         <label for="settingSettingsAccessMethod">Require for Settings access</label>
                         <select id="settingSettingsAccessMethod">
-                          <option value="auto">Auto: Lock PIN → Eye PIN → Encryption key</option>
+                          <option value="auto">Auto: Lock PIN → Presentation PIN → Encryption key</option>
                           <option value="lock">Lock/Unlock PIN only</option>
-                          <option value="eye">Eye Mode PIN only</option>
+                          <option value="eye">Presentation Mode PIN only</option>
                           <option value="encryption">Encryption key only</option>
                           <option value="none">No prompt / unlocked Settings</option>
                         </select>
@@ -5599,10 +5630,10 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
                           <button id="settingsSaveLockPinBtn" class="secondary" type="button">Save Lock PIN</button>
                         </div>
                         <div class="security-card">
-                          <h4>Eye Mode Exit PIN</h4>
-                          <div class="field"><label for="settingsVisibilityPin">New eye mode PIN/password</label><input id="settingsVisibilityPin" type="password" minlength="6" maxlength="256" autocomplete="new-password" /></div>
-                          <div class="field"><label for="settingsVisibilityPinConfirm">Confirm eye mode PIN/password</label><input id="settingsVisibilityPinConfirm" type="password" minlength="6" maxlength="256" autocomplete="new-password" /></div>
-                          <button id="settingsSaveVisibilityPinBtn" class="secondary" type="button">Save Eye PIN</button>
+                          <h4>Presentation Mode Exit PIN</h4>
+                          <div class="field"><label for="settingsVisibilityPin">New presentation mode PIN/password</label><input id="settingsVisibilityPin" type="password" minlength="6" maxlength="256" autocomplete="new-password" /></div>
+                          <div class="field"><label for="settingsVisibilityPinConfirm">Confirm Presentation Mode PIN/password</label><input id="settingsVisibilityPinConfirm" type="password" minlength="6" maxlength="256" autocomplete="new-password" /></div>
+                          <button id="settingsSaveVisibilityPinBtn" class="secondary" type="button">Save Presentation PIN</button>
                         </div>
                       </div>
                       <div id="settingsPinStatus" class="hint"></div>
@@ -6053,7 +6084,7 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
       <div class="modal-body">
         <div id="settingsAccessMessage" class="hint" style="margin-bottom:10px;">Enter the required credential to open Settings.</div>
         <div class="field">
-          <label id="settingsAccessInputLabel" for="settingsAccessInput">PIN/password or encryption key</label>
+          <label id="settingsAccessInputLabel" for="settingsAccessInput">Presentation PIN/password or encryption key</label>
           <input id="settingsAccessInput" type="password" autocomplete="current-password" />
         </div>
         <div id="settingsAccessError" class="warning" style="display:none; margin-top:8px;"></div>
@@ -6133,19 +6164,19 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
   <div id="visibilityExitModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="visibilityExitTitle">
     <div class="modal" style="max-width: 520px;">
       <div class="panel-header">
-        <h2 id="visibilityExitTitle">Exit Visibility Mode</h2>
+        <h2 id="visibilityExitTitle">Exit Presentation Mode</h2>
         <button id="visibilityExitCancelTopBtn" class="tiny secondary" type="button">Close</button>
       </div>
       <div class="modal-body">
-        <div id="visibilityExitMessage" class="hint" style="margin-bottom:10px;">Enter the visibility PIN, lock PIN, or current encryption key to restore hidden controls.</div>
+        <div id="visibilityExitMessage" class="hint" style="margin-bottom:10px;">Enter the Presentation Mode PIN, Lock PIN, or current encryption key to restore the previous workflow and editing controls.</div>
         <div class="field">
-          <label for="visibilityExitInput">PIN/password or encryption key</label>
+          <label for="visibilityExitInput">Presentation PIN/password or encryption key</label>
           <input id="visibilityExitInput" type="password" autocomplete="current-password" />
         </div>
         <div id="visibilityExitError" class="warning" style="display:none; margin-top:8px;"></div>
         <div class="button-row" style="margin-top:10px;">
           <button id="visibilityExitCancelBtn" class="secondary" type="button">Cancel</button>
-          <button id="visibilityExitContinueBtn" type="button">Exit Eye Mode</button>
+          <button id="visibilityExitContinueBtn" type="button">Exit Presentation Mode</button>
         </div>
       </div>
     </div>
@@ -6154,16 +6185,16 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
   <div id="visibilityProtectKeyModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="visibilityProtectKeyTitle">
     <div class="modal" style="max-width: 540px;">
       <div class="panel-header">
-        <h2 id="visibilityProtectKeyTitle">Enter Secure Eye Mode</h2>
+        <h2 id="visibilityProtectKeyTitle">Enter Protected Presentation Mode</h2>
         <button id="visibilityProtectKeyCancelTopBtn" class="tiny secondary" type="button">Close</button>
       </div>
       <div class="modal-body">
-        <div class="hint" style="margin-bottom:10px;">Enter the Eye PIN or Lock PIN/password. Eye Mode encrypts the full original chart state, shows only the allowed sanitized view, and restores the original when you exit.</div>
-        <div class="field"><label for="visibilityProtectKeyInput">Eye PIN or Lock PIN/password</label><input id="visibilityProtectKeyInput" type="password" autocomplete="current-password" /></div>
+        <div class="hint" style="margin-bottom:10px;">Enter the Presentation PIN or Lock PIN/password. Presentation Mode encrypts the full original chart state, opens a read-only Review workspace, shows only the configured basic information, and restores the original workflow when you exit.</div>
+        <div class="field"><label for="visibilityProtectKeyInput">Presentation PIN or Lock PIN/password</label><input id="visibilityProtectKeyInput" type="password" autocomplete="current-password" /></div>
         <div id="visibilityProtectKeyError" class="warning" style="display:none; margin-top:8px;"></div>
         <div class="button-row" style="margin-top:10px;">
           <button id="visibilityProtectKeyCancelBtn" class="secondary" type="button">Cancel</button>
-          <button id="visibilityProtectKeyContinueBtn" type="button">Enter Eye Mode</button>
+          <button id="visibilityProtectKeyContinueBtn" type="button">Enter Presentation Mode</button>
         </div>
       </div>
     </div>
@@ -6172,17 +6203,17 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
   <div id="visibilitySetupModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="visibilitySetupTitle">
     <div class="modal" style="max-width: 540px;">
       <div class="panel-header">
-        <h2 id="visibilitySetupTitle">Set Eye Mode PIN</h2>
+        <h2 id="visibilitySetupTitle">Set Presentation Mode PIN</h2>
         <button id="visibilitySetupCancelTopBtn" class="tiny secondary" type="button">Close</button>
       </div>
       <div class="modal-body">
-        <div class="hint" style="margin-bottom:10px;">No visibility PIN, lock PIN, or encryption key is currently available. Create an eye mode PIN/password. It is stored only as a salted cryptographic hash.</div>
-        <div class="field"><label for="visibilitySetupInput">Eye mode PIN/password</label><input id="visibilitySetupInput" type="password" minlength="6" maxlength="256" autocomplete="new-password" /></div>
-        <div class="field"><label for="visibilitySetupConfirmInput">Confirm eye mode PIN/password</label><input id="visibilitySetupConfirmInput" type="password" minlength="6" maxlength="256" autocomplete="new-password" /></div>
+        <div class="hint" style="margin-bottom:10px;">No Presentation Mode PIN, Lock PIN, or encryption key is currently available. Create a Presentation Mode PIN/password. It is stored only as a salted cryptographic hash.</div>
+        <div class="field"><label for="visibilitySetupInput">Presentation Mode PIN/password</label><input id="visibilitySetupInput" type="password" minlength="6" maxlength="256" autocomplete="new-password" /></div>
+        <div class="field"><label for="visibilitySetupConfirmInput">Confirm Presentation Mode PIN/password</label><input id="visibilitySetupConfirmInput" type="password" minlength="6" maxlength="256" autocomplete="new-password" /></div>
         <div id="visibilitySetupError" class="warning" style="display:none; margin-top:8px;"></div>
         <div class="button-row" style="margin-top:10px;">
           <button id="visibilitySetupCancelBtn" class="secondary" type="button">Cancel</button>
-          <button id="visibilitySetupSaveBtn" type="button">Save and Enter Eye Mode</button>
+          <button id="visibilitySetupSaveBtn" type="button">Save and Enter Presentation Mode</button>
         </div>
       </div>
     </div>
@@ -6235,7 +6266,7 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
 const APP_CONFIG = Object.freeze({
   name: 'Classroom Seating Planner',
   shortName: 'Seating Planner',
-  version: '6.5.1',
+  version: '6.5.2',
   copyrightHolder: 'Chris L. Franklin',
   copyrightYear: '2026',
   releaseDate: '2026-07-14',
@@ -6499,7 +6530,7 @@ const PROJECT_FEATURES = [
   { title: 'Optional Google Drive collaboration', text: 'Save and load encrypted working files through Google Drive, choose people by Google-account email, combine Drive Viewer or Editor roles with per-person Hidden, View only, or Can edit interface areas, and merge overlapping saves without pretending the app provides live cursor-level co-editing.' },
   { title: 'Purpose-limited sharing', text: 'Create teacher, substitute, student-facing, support-team, anonymous, and room-only outputs with a privacy summary before export.' },
   { title: 'Printing and room output', text: 'Prepare names-only, substitute, or detailed charts with selectable fields, notes, configuration details, paper sizes, scale, tiling, crop marks, and an optional crop-to-content mode that removes unused outer room space and enlarges the occupied Grid or Freeform layout while keeping the chart on one page. Selected notes and configuration may follow on supporting pages.' },
-  { title: 'Security and privacy controls', text: 'Protect Settings, use Lock and Eye PINs, auto-lock the page, reveal sensitive notes deliberately, and erase browser-resident data through explicit recovery workflows.' },
+  { title: 'Security and privacy controls', text: 'Protect Settings, use Lock and Presentation Mode PINs, auto-lock the page, present a finished read-only chart, reveal sensitive notes deliberately, and erase browser-resident data through explicit recovery workflows.' },
   { title: 'Maintenance and diagnostics', text: 'Review build/schema information, storage health, privacy-safe activity/errors, import and integration recovery, deployment readiness, repair tools, sample data, cleanup, and Factory Reset.' },
   { title: 'Accessible responsive workspace', text: 'Use keyboard navigation, focus-managed dialogs, live announcements, skip navigation, focus mode, collapsible regions, mobile workflows, and reduced-motion support.' },
   { title: 'Themes and customization', text: 'Choose complete accessible themes including Default, Gradient Sky, Shimmer, Prismatic Flow, Aurora Focus, High Contrast, Windows XP, Windows 11, macOS Frosted, and Linux Terminal.' },
@@ -6508,18 +6539,29 @@ const PROJECT_FEATURES = [
 
 const RELEASE_HISTORY = [
   {
-    version: '6.5.1',
-    date: 'July 14, 2026',
-    title: 'Eye Mode, workspace label controls, and optional analytics',
+    version: '6.5.2',
+    date: 'July 15, 2026',
+    title: 'Presentation workspace and universal room display controls',
     current: true,
     changes: [
-      'Eye Mode now always removes the Students, Groups & Zones panel, and older saved visibility choices can no longer keep the roster visible.',
-      'Freeform clockwise, counterclockwise, toolbar, drag, and keyboard rotation paths now respect Eye Mode room-editing protection.',
-      'Added a Seating workspace control for hiding empty-seat titles in both Grid and Freeform layouts.',
-      'Added an Appearance setting for hiding Seat and room-object type indicators while preserving student names and custom labels.',
-      'Added hosted Google Analytics measurement G-NMRMNM7ZCD with a browser-local opt-out; local file copies and test environments do not load the tag.',
-      'Added PDF and SVG crop-to-content framing that trims unused outer Grid cells or Freeform canvas space, enlarges occupied seats and room objects to fill the page, and keeps the room chart on one page.',
-      'Updated CSP, Help, deployment guidance, and regression coverage for the new controls and privacy boundary.'
+      'Leaving Room Design now turns Design Mode off automatically before another workflow opens.',
+      'Added persistent Zoom and Text sliders anywhere the interactive Grid or Freeform room is visible.',
+      'Presentation Mode now switches to Review and hides the workflow strip, roster, Chart Review sidebar, Undo, Redo, Help, snapshots, command search, saving, settings, layout tools, and editing controls.',
+      'Presentation Mode blocks Grid, Freeform, drag, keyboard, rotation, context-menu, student, group, and room mutations while keeping Zoom and Text controls available for readability.',
+      'Exiting Presentation Mode restores the prior workflow after credential verification.',
+      'Updated Help, settings guidance, release metadata, and regression coverage while retaining legacy visibility and eye field names for save compatibility.'
+    ]
+  },
+  {
+    version: '6.5.1',
+    date: 'July 15, 2026',
+    title: 'Presentation privacy, workspace labels, analytics, and crop-to-content exports',
+    current: false,
+    changes: [
+      'Presentation Mode always removes the Students, Groups & Zones panel and blocks every Freeform rotation path.',
+      'Added empty-seat-title and room-object-type display options.',
+      'Added optional hosted Google Analytics with a browser-local opt-out and no custom classroom-data events.',
+      'Added PDF and SVG crop-to-content framing that enlarges occupied Grid or Freeform content while keeping the room chart on one page.'
     ]
   },
   {
@@ -6933,7 +6975,7 @@ const RELEASE_HISTORY = [
     date: 'June–July 2026',
     title: 'Security, recovery, maintenance, and data integrity',
     changes: [
-      'Added first-run encryption, Lock and Eye modes, protected notes, encrypted snapshots, password rotation, save health, repair tools, and Factory Reset.',
+      'Added first-run encryption, Lock and Presentation Modes, protected notes, encrypted snapshots, password rotation, save health, repair tools, and Factory Reset.',
       'Completed broad code and data-integrity audits and expanded Freeform data across templates, exports, and restores.'
     ]
   },
@@ -7007,6 +7049,7 @@ const uiState = {
   groupManagerCarryItem: null,
   visibilityMode: false,
   visibilityPreviousNamesOnly: true,
+  visibilityPreviousWorkflow: 'review',
   pageSettings: null,
   undoStack: [],
   redoStack: [],
@@ -7262,6 +7305,8 @@ const DEFAULT_PAGE_SETTINGS = Object.freeze({
   hideHints: false,
   hideObjectTypeLabels: false,
   hideUnassignedSeatTitles: false,
+  gridViewZoom: 100,
+  seatTextScale: 100,
   autoSaveMinutes: 1,
   preferredStorage: 'browser',
   googleDriveClientId: GOOGLE_DRIVE_CLIENT_ID,
@@ -7332,6 +7377,8 @@ function mergePageSettingsCore(value) {
     hideHints: source.hideHints ?? DEFAULT_PAGE_SETTINGS.hideHints,
     hideObjectTypeLabels: source.hideObjectTypeLabels ?? DEFAULT_PAGE_SETTINGS.hideObjectTypeLabels,
     hideUnassignedSeatTitles: source.hideUnassignedSeatTitles ?? DEFAULT_PAGE_SETTINGS.hideUnassignedSeatTitles,
+    gridViewZoom: clampNumber(source.gridViewZoom ?? DEFAULT_PAGE_SETTINGS.gridViewZoom, 35, 175),
+    seatTextScale: clampNumber(source.seatTextScale ?? DEFAULT_PAGE_SETTINGS.seatTextScale, 70, 200),
     autoSaveMinutes: clampNumber(source.autoSaveMinutes ?? (source.autoSaveLinkedFile ? 3 : DEFAULT_PAGE_SETTINGS.autoSaveMinutes), 0, 120),
     preferredStorage: ['browser','linked','googleDrive'].includes(source.preferredStorage) ? source.preferredStorage : DEFAULT_PAGE_SETTINGS.preferredStorage,
     googleDriveClientId: String(source.googleDriveClientId || GOOGLE_DRIVE_CLIENT_ID || '').trim(),
@@ -7368,22 +7415,22 @@ function mergePageSettingsCore(value) {
     autoLockOnReturnMinutes: clampNumber(source.autoLockOnReturnMinutes ?? DEFAULT_PAGE_SETTINGS.autoLockOnReturnMinutes, 0, 240),
     pbkdf2Iterations: clampNumber(source.pbkdf2Iterations ?? DEFAULT_PAGE_SETTINGS.pbkdf2Iterations, 150000, 2000000),
     visibility: {
-      hideClassActions: visibility.hideClassActions ?? DEFAULT_PAGE_SETTINGS.visibility.hideClassActions,
-      hideWizard: visibility.hideWizard ?? DEFAULT_PAGE_SETTINGS.visibility.hideWizard,
-      hideSaveLoad: visibility.hideSaveLoad ?? DEFAULT_PAGE_SETTINGS.visibility.hideSaveLoad,
-      hideSettings: visibility.hideSettings ?? DEFAULT_PAGE_SETTINGS.visibility.hideSettings,
+      hideClassActions: true,
+      hideWizard: true,
+      hideSaveLoad: true,
+      hideSettings: true,
       hidePrint: visibility.hidePrint ?? DEFAULT_PAGE_SETTINGS.visibility.hidePrint,
-      hideLayoutTools: visibility.hideLayoutTools ?? DEFAULT_PAGE_SETTINGS.visibility.hideLayoutTools,
+      hideLayoutTools: true,
       hideStudentsPanel: true,  
-      hideStatusPanel: visibility.hideStatusPanel ?? DEFAULT_PAGE_SETTINGS.visibility.hideStatusPanel,
-      hideChartActions: visibility.hideChartActions ?? DEFAULT_PAGE_SETTINGS.visibility.hideChartActions,
+      hideStatusPanel: true,
+      hideChartActions: true,
       hideRoomHeaderActions: visibility.hideRoomHeaderActions ?? DEFAULT_PAGE_SETTINGS.visibility.hideRoomHeaderActions,
       forceNamesOnly: visibility.forceNamesOnly ?? DEFAULT_PAGE_SETTINGS.visibility.forceNamesOnly,
       hideGroupDetails: visibility.hideGroupDetails ?? visibility[LEGACY_SCHEMA_12_GROUP_FIELDS.hideDetails] ?? DEFAULT_PAGE_SETTINGS.visibility.hideGroupDetails,
-      disableSeatEditing: visibility.disableSeatEditing ?? DEFAULT_PAGE_SETTINGS.visibility.disableSeatEditing,
-      disableRoomEditing: visibility.disableRoomEditing ?? DEFAULT_PAGE_SETTINGS.visibility.disableRoomEditing,
-      disableStudentEditing: visibility.disableStudentEditing ?? DEFAULT_PAGE_SETTINGS.visibility.disableStudentEditing,
-      disableGroupEditing: visibility.disableGroupEditing ?? visibility[LEGACY_SCHEMA_12_GROUP_FIELDS.disableEditing] ?? DEFAULT_PAGE_SETTINGS.visibility.disableGroupEditing
+      disableSeatEditing: true,
+      disableRoomEditing: true,
+      disableStudentEditing: true,
+      disableGroupEditing: true
     }
   };
 }
@@ -7887,7 +7934,61 @@ function installHintDismissalSupport() {
   enhanceHints(document);
 }
 
-const normalCellFloor = () => 142;
+function gridViewScale() {
+  return clampNumber(pageSettings().gridViewZoom ?? 100, 35, 175) / 100;
+}
+
+function seatTextScale() {
+  return clampNumber(pageSettings().seatTextScale ?? 100, 70, 200) / 100;
+}
+
+function currentSeatViewZoomPercent() {
+  if (state.layoutMode === 'freeform') return Math.round(clampNumber(state.freeformLayout?.canvas?.zoom ?? 1, 0.35, 1.75) * 100);
+  return Math.round(clampNumber(pageSettings().gridViewZoom ?? 100, 35, 175));
+}
+
+function syncSeatDisplayControls() {
+  const zoom = currentSeatViewZoomPercent();
+  const textPercent = Math.round(clampNumber(pageSettings().seatTextScale ?? 100, 70, 200));
+  const zoomSlider = el('seatViewZoomSlider');
+  const zoomValue = el('seatViewZoomValue');
+  const textSlider = el('seatTextSizeSlider');
+  const textValue = el('seatTextSizeValue');
+  if (zoomSlider && document.activeElement !== zoomSlider) zoomSlider.value = String(zoom);
+  if (zoomValue) zoomValue.textContent = `${zoom}%`;
+  if (textSlider && document.activeElement !== textSlider) textSlider.value = String(textPercent);
+  if (textValue) textValue.textContent = `${textPercent}%`;
+  document.body.style.setProperty('--seat-text-scale', String(textPercent / 100));
+}
+
+function setSeatViewZoom(value, { announce = false } = {}) {
+  const percent = clampNumber(value, 35, 175);
+  if (state.layoutMode === 'freeform') {
+    ensureFreeformLayout();
+    state.freeformLayout.canvas.zoom = percent / 100;
+    persistFreeformGeometrySession('seat-view-zoom');
+    persistActiveClass();
+    scheduleLinkedAutoSave('seat-view-zoom');
+    renderFreeformLayout();
+  } else {
+    uiState.pageSettings = mergePageSettings({ ...pageSettings(), gridViewZoom: percent });
+    schedulePageSettingsPersistence('grid-view-zoom');
+    renderGrid();
+  }
+  syncSeatDisplayControls();
+  if (announce) setLiveStatusMessage(`Seat and room zoom set to ${Math.round(percent)}%.`);
+}
+
+function setSeatTextScale(value, { announce = false } = {}) {
+  const percent = clampNumber(value, 70, 200);
+  uiState.pageSettings = mergePageSettings({ ...pageSettings(), seatTextScale: percent });
+  document.body.style.setProperty('--seat-text-scale', String(percent / 100));
+  schedulePageSettingsPersistence('seat-text-scale');
+  syncSeatDisplayControls();
+  if (announce) setLiveStatusMessage(`Seat text size set to ${Math.round(percent)}%.`);
+}
+
+const normalCellFloor = () => Math.round(142 * gridViewScale());
 const designCellWidth = () => clampNumber(uiState.designCellSize || 28, 20, 72);
 const designCellHeight = () => Math.max(26, Math.round(designCellWidth() * 1.32));
 
@@ -8061,7 +8162,9 @@ function applyPageSettings(settings = pageSettings(), options = {}) {
   document.body.classList.toggle('hide-all-hints', !!cfg.hideHints);
   document.body.classList.toggle('hide-object-type-labels', !!cfg.hideObjectTypeLabels);
   document.body.classList.toggle('freeform-clean-view', !!cfg.freeformCleanView);
+  document.body.style.setProperty('--seat-text-scale', String(seatTextScale()));
   refreshUnassignedSeatTitlesToggle();
+  syncSeatDisplayControls();
   if (options.applyLoadDefaults === true) applyPageLoadDefaults(cfg);
   queueEnhanceHints();
   applyVisibilityClasses();
@@ -8613,10 +8716,10 @@ function hasAnyVisibilityExitSecret() {
 function updateVisibilityCredentialNote() {
   const target = el('visibilityCredentialNote');
   if (!target) return;
-  if (getVisibilityCredential()) target.textContent = 'Eye mode has its own exit PIN set.';
-  else if (getLockCredential()) target.textContent = 'No eye PIN is set, so eye mode will use the Lock/Unlock PIN as a fallback.';
-  else if (currentSessionEncryptionKey()) target.textContent = 'No PIN is set, so eye mode can be exited with the current session encryption key.';
-  else target.textContent = 'No exit secret is set. The first time eye mode is used, the app will ask for an eye mode PIN.';
+  if (getVisibilityCredential()) target.textContent = 'Presentation Mode has its own exit PIN set.';
+  else if (getLockCredential()) target.textContent = 'No eye PIN is set, so presentation mode will use the Lock/Unlock PIN as a fallback.';
+  else if (currentSessionEncryptionKey()) target.textContent = 'No PIN is set, so presentation mode can be exited with the current session encryption key.';
+  else target.textContent = 'No exit secret is set. The first time presentation mode is used, the app will ask for an presentation mode PIN.';
 }
 
 function showPageLockError(message) {
@@ -9802,8 +9905,8 @@ function syncFreeformControlsFromState() {
   const passThrough = el('freeformSeatPassThroughToggle');
   const overlapOnDrop = el('freeformSeatOverlapToggle');
   const guides = el('freeformMagneticGuidesToggle');
-  const zoomSlider = el('freeformZoomSlider');
-  const zoomValue = el('freeformZoomValue');
+  const zoomSlider = el('seatViewZoomSlider');
+  const zoomValue = el('seatViewZoomValue');
   if (w && document.activeElement !== w) w.value = layout.canvas.width;
   if (h && document.activeElement !== h) h.value = layout.canvas.height;
   if (gridSize && document.activeElement !== gridSize) gridSize.value = layout.canvas.gridSize;
@@ -10494,6 +10597,7 @@ function renderFreeformLayout() {
     }
   };
   el('printStats').textContent = `${printChartMetaLine() || activeClassName()} · Freeform layout · ${state.students.length} students · ${seatCount} seats · ${assignedIds.size} assigned`;
+  syncSeatDisplayControls();
   updateFreeformSelectionVisuals();
   document.querySelectorAll('.freeform-object[data-object-id]').forEach(node => node.classList.toggle('keyboard-freeform-selected', uiState.freeformSelectedObjectIds?.has(node.dataset.objectId)));
   syncFreeformToolbarState();
@@ -11081,12 +11185,12 @@ function updateFreeformCanvasSettings() {
   layout.canvas.gridSize = clampNumber(el('freeformGridSizeInput')?.value ?? layout.canvas.gridSize, 5, 80);
   const frontSide = String(el('freeformFrontSideSelect')?.value || layout.canvas.frontSide || 'top').toLowerCase();
   layout.canvas.frontSide = ['top','right','bottom','left'].includes(frontSide) ? frontSide : 'top';
-  layout.canvas.zoom = clampNumber((Number(el('freeformZoomSlider')?.value || Math.round((layout.canvas.zoom || 1) * 100)) / 100), 0.35, 1.75);
+  layout.canvas.zoom = clampNumber((Number(el('seatViewZoomSlider')?.value || Math.round((layout.canvas.zoom || 1) * 100)) / 100), 0.35, 1.75);
   layout.canvas.snap = Boolean(el('freeformSnapToggle')?.checked);
   layout.canvas.allowSeatPassThrough = Boolean(el('freeformSeatPassThroughToggle')?.checked);
   layout.canvas.allowSeatOverlapOnDrop = Boolean(el('freeformSeatOverlapToggle')?.checked);
   layout.canvas.magneticGuides = el('freeformMagneticGuidesToggle') ? Boolean(el('freeformMagneticGuidesToggle').checked) : layout.canvas.magneticGuides !== false;
-  const zoomValue = el('freeformZoomValue');
+  const zoomValue = el('seatViewZoomValue');
   if (zoomValue) zoomValue.textContent = `${Math.round(layout.canvas.zoom * 100)}%`;
   uiState.pageSettings.freeformGridSize = layout.canvas.gridSize;
   uiState.pageSettings.freeformSnapToGrid = layout.canvas.snap;
@@ -13314,6 +13418,9 @@ function renderGrid() {
   let seatCount = 0;
   const assignedIds = new Set();
   const calculatedCellHeight = uiState.designMode ? designCellHeight() : calculateCellHeight(lookups);
+  const baseCellWidth = Number.parseFloat(getComputedStyle(document.body).getPropertyValue('--cell-width')) || 112;
+  const scaledCellWidth = uiState.designMode ? designCellWidth() : Math.round(baseCellWidth * gridViewScale());
+  grid.style.setProperty('--cell-width', `${scaledCellWidth}px`);
   grid.style.setProperty('--cell-height', `${calculatedCellHeight}px`);
   grid.style.gridTemplateColumns = `repeat(${state.cols}, var(--cell-width))`;
   grid.innerHTML = '';
@@ -13363,7 +13470,7 @@ function renderGrid() {
                 <span class="cell-status"><span class="cell-type-label">${escapeHtml(objectLabel(cell.type))}</span> ${cell.manual ? '<span class="pill locked" title="This student is locked here and randomize will not move them.">Locked</span>' : ''} ${anchorDots}</span>
               </div>
               ${cell.type === 'seat' ? `
-                <div class="seat-person" ${student ? `${eyeModeBlocksSeatEditing() ? '' : 'draggable="true"'} data-seat-student-id="${escapeHtml(student.id)}" data-source-cell="${cellKey}" title="${eyeModeBlocksSeatEditing() ? 'Eye Mode blocks seat moves until it is exited.' : `Drag ${escapeHtml(studentDisplay(student))} to another seat. If the target is occupied, the two students swap.`}"` : ''}>${seatStudentHtml(student)}</div>
+                <div class="seat-person" ${student ? `${eyeModeBlocksSeatEditing() ? '' : 'draggable="true"'} data-seat-student-id="${escapeHtml(student.id)}" data-source-cell="${cellKey}" title="${eyeModeBlocksSeatEditing() ? 'Presentation mode blocks seat moves until it is exited.' : `Drag ${escapeHtml(studentDisplay(student))} to another seat. If the target is occupied, the two students swap.`}"` : ''}>${seatStudentHtml(student)}</div>
                 <div class="cell-actions">
                   ${student ? `<button class="tiny ${cell.manual ? 'ghost' : 'secondary'}" data-toggle-seat-lock="${cellKey}" title="${cell.manual ? 'Unlock this student so Generate and Randomize may move them again.' : 'Lock this student to this seat so Generate and Randomize will not move them.'}">${cell.manual ? 'Unlock' : 'Lock'}</button>` : ''}
                   ${student ? `<button class="tiny secondary" data-clear-seat="${cellKey}" title="Remove this student from this seat and return them to the unassigned list.">Clear</button>` : ''}
@@ -13381,6 +13488,7 @@ function renderGrid() {
   }
   grid.appendChild(fragment);
   el('printStats').textContent = `${printChartMetaLine() || activeClassName()} · ${state.students.length} students · ${seatCount} seats · ${assignedIds.size} assigned`;
+  syncSeatDisplayControls();
   requestAnimationFrame(() => {
     normalizeCellHeight(calculatedCellHeight);
     requestAnimationFrame(() => normalizeCellHeight(calculatedCellHeight));
@@ -13673,7 +13781,7 @@ const CONTROL_TOOLTIPS = {
   guidedLearningBtn: 'Open Quick Start and focused lessons for Freeform, room design, seating, rules, saving, printing, and Google tools.',
   helpGuideBtn: 'Open the searchable help guide with explanations, tips, examples, security guidance, and troubleshooting for the whole application.',
   settingsBtn: 'Open Settings for page defaults, visibility mode, security PINs, encryption, recommended saving workflow, custom room objects, sample data, About, and the Change Log.',
-  visibilityModeBtn: 'Enter or exit Eye visibility mode. Entering always removes the roster panel and hides configured sections. Exiting requires the eye PIN, lock PIN, or current encryption key.',
+  visibilityModeBtn: 'Enter or exit Presentation mode. Presentation switches to Review, hides editing/navigation controls, and protects hidden data. Exiting requires the Presentation PIN, Lock PIN, or current encryption key.',
   pageLockBtn: 'Lock the page with a PIN/password. If no lock PIN/password exists yet, you will be asked to create one before the screen locks.',
   saveLoadMenuBtn: 'Open the Save menu for Save Now, Load Save File, and More Save Options.',
   snapshotQuickBtn: 'Take a snapshot of the current class and open the snapshot list so snapshots can be restored later.',
@@ -14359,21 +14467,10 @@ function updatePageSettingsFormCore() {
   setControlValue('settingAutoLockOnReturnMinutes', cfg.autoLockOnReturnMinutes || 0);
   setControlValue('settingPbkdf2Iterations', cfg.pbkdf2Iterations || DEFAULT_PAGE_SETTINGS.pbkdf2Iterations);
   updatePasswordStrengthDisplay('settingsEncryptionKey', 'settingsPasswordStrength');
-  setControlChecked('visHideClassActions', cfg.visibility.hideClassActions);
-  setControlChecked('visHideWizard', cfg.visibility.hideWizard);
-  setControlChecked('visHideSaveLoad', cfg.visibility.hideSaveLoad);
-  setControlChecked('visHideSettings', cfg.visibility.hideSettings);
   setControlChecked('visHidePrint', cfg.visibility.hidePrint);
-  setControlChecked('visHideLayoutTools', cfg.visibility.hideLayoutTools);
-  setControlChecked('visHideStatusPanel', cfg.visibility.hideStatusPanel);
-  setControlChecked('visHideChartActions', cfg.visibility.hideChartActions);
   setControlChecked('visHideRoomHeaderActions', cfg.visibility.hideRoomHeaderActions);
   setControlChecked('visForceNamesOnly', cfg.visibility.forceNamesOnly);
   setControlChecked('visHideGroupDetails', cfg.visibility.hideGroupDetails);
-  setControlChecked('visDisableSeatEditing', cfg.visibility.disableSeatEditing);
-  setControlChecked('visDisableRoomEditing', cfg.visibility.disableRoomEditing);
-  setControlChecked('visDisableStudentEditing', cfg.visibility.disableStudentEditing);
-  setControlChecked('visDisableGroupEditing', cfg.visibility.disableGroupEditing);
   updateVisibilityCredentialNote();
   updatePinStatus();
   updateGoogleDriveControls();
@@ -14387,7 +14484,7 @@ function readPageSettingsFormCore() {
   if (requestedSettingsAccessMethod === 'none' && previousSettingsAccessMethod !== 'none' && !uiState.allowSettingsAccessNoneOnce) {
     const select = el('settingSettingsAccessMethod');
     if (select) select.value = previousSettingsAccessMethod;
-    showInAppConfirm('Disable the Settings access prompt? Anyone with this unlocked page could open Settings and change security, Eye Mode, save, local data, and reset options. The chart data can still be encrypted at rest, but the Settings door itself will be open while the page is unlocked.', () => {
+    showInAppConfirm('Disable the Settings access prompt? Anyone with this unlocked page could open Settings and change security, Presentation Mode, save, local data, and reset options. The chart data can still be encrypted at rest, but the Settings door itself will be open while the page is unlocked.', () => {
       uiState.allowSettingsAccessNoneOnce = true;
       if (select) select.value = 'none';
       readPageSettingsForm();
@@ -14408,6 +14505,8 @@ function readPageSettingsFormCore() {
     hideHints: checked('settingHideHints'),
     hideObjectTypeLabels: checked('settingHideObjectTypeLabels'),
     hideUnassignedSeatTitles: pageSettings().hideUnassignedSeatTitles,
+    gridViewZoom: pageSettings().gridViewZoom,
+    seatTextScale: pageSettings().seatTextScale,
     autoSaveMinutes: clampNumber(value('settingAutoSaveMinutes'), 0, 120),
     preferredStorage: value('settingPreferredStorage') || pageSettings().preferredStorage || 'browser',
     googleDriveClientId: value('settingGoogleDriveClientId') || pageSettings().googleDriveClientId || GOOGLE_DRIVE_CLIENT_ID || '',
@@ -14424,22 +14523,22 @@ function readPageSettingsFormCore() {
     autoLockOnReturnMinutes: value('settingAutoLockOnReturnMinutes'),
     pbkdf2Iterations: value('settingPbkdf2Iterations'),
     visibility: {
-      hideClassActions: checked('visHideClassActions'),
-      hideWizard: checked('visHideWizard'),
-      hideSaveLoad: checked('visHideSaveLoad'),
-      hideSettings: checked('visHideSettings'),
+      hideClassActions: true,
+      hideWizard: true,
+      hideSaveLoad: true,
+      hideSettings: true,
       hidePrint: checked('visHidePrint'),
-      hideLayoutTools: checked('visHideLayoutTools'),
+      hideLayoutTools: true,
       hideStudentsPanel: true,
-      hideStatusPanel: checked('visHideStatusPanel'),
-      hideChartActions: checked('visHideChartActions'),
+      hideStatusPanel: true,
+      hideChartActions: true,
       hideRoomHeaderActions: checked('visHideRoomHeaderActions'),
       forceNamesOnly: checked('visForceNamesOnly'),
       hideGroupDetails: checked('visHideGroupDetails'),
-      disableSeatEditing: checked('visDisableSeatEditing'),
-      disableRoomEditing: checked('visDisableRoomEditing'),
-      disableStudentEditing: checked('visDisableStudentEditing'),
-      disableGroupEditing: checked('visDisableGroupEditing')
+      disableSeatEditing: true,
+      disableRoomEditing: true,
+      disableStudentEditing: true,
+      disableGroupEditing: true
     }
   });
   applyPageSettings(uiState.pageSettings, { skipRender: true });
@@ -14459,7 +14558,7 @@ function updatePinStatus(message = '') {
   if (!node) return;
   const parts = [];
   parts.push(getLockCredential() ? 'Lock PIN is set.' : 'Lock PIN is not set.');
-  parts.push(getVisibilityCredential() ? 'Eye PIN is set.' : (getLockCredential() ? 'Eye mode will fall back to the Lock PIN.' : 'Eye PIN is not set.'));
+  parts.push(getVisibilityCredential() ? 'Presentation PIN is set.' : (getLockCredential() ? 'Presentation Mode will fall back to the Lock PIN.' : 'Presentation PIN is not set.'));
   parts.push(settingsAccessRequirementText());
   if (message) parts.push(message);
   node.textContent = parts.join(' ');
@@ -14488,19 +14587,19 @@ async function saveLockPinFromSettings() {
 async function saveVisibilityPinFromSettings() {
   const pin = String(el('settingsVisibilityPin')?.value || '');
   const confirm = String(el('settingsVisibilityPinConfirm')?.value || '');
-  const validationMessage = newLocalCredentialValidationMessage(pin, 'eye mode PIN/password');
+  const validationMessage = newLocalCredentialValidationMessage(pin, 'presentation mode PIN/password');
   if (validationMessage) { updatePinStatus(validationMessage); return; }
-  if (pin !== confirm) { updatePinStatus('Eye mode PIN/password entries do not match.'); return; }
+  if (pin !== confirm) { updatePinStatus('Presentation Mode PIN/password entries do not match.'); return; }
   try {
     await saveVisibilityCredential(pin);
     el('settingsVisibilityPin').value = '';
     el('settingsVisibilityPinConfirm').value = '';
-    updatePinStatus('Eye mode PIN/password saved.');
+    updatePinStatus('Presentation Mode PIN/password saved.');
     updateVisibilityCredentialNote();
     updateSecurityStatusPanel();
-    setLiveStatusMessage('Eye mode PIN/password saved as a salted hash.');
+    setLiveStatusMessage('Presentation Mode PIN/password saved as a salted hash.');
   } catch (err) {
-    updatePinStatus(err.message || 'Could not save eye mode PIN/password.');
+    updatePinStatus(err.message || 'Could not save presentation mode PIN/password.');
   }
 }
 
@@ -14508,63 +14607,67 @@ function applyVisibilityClasses() {
   const cfg = pageSettings().visibility;
   if (uiState.visibilityMode && cfg.hideGroupDetails && ['groups','zones'].includes(uiState.activeSideTab)) setSideTab('students');
   document.body.classList.toggle('visibility-mode', !!uiState.visibilityMode);
-  document.body.classList.toggle('vis-hide-class-actions', !!uiState.visibilityMode && !!cfg.hideClassActions);
-  document.body.classList.toggle('vis-hide-wizard', !!uiState.visibilityMode && !!cfg.hideWizard);
-  document.body.classList.toggle('vis-hide-save-load', !!uiState.visibilityMode && !!cfg.hideSaveLoad);
-  document.body.classList.toggle('vis-hide-settings', !!uiState.visibilityMode && !!cfg.hideSettings);
+  document.body.classList.toggle('vis-hide-class-actions', !!uiState.visibilityMode);
+  document.body.classList.toggle('vis-hide-wizard', !!uiState.visibilityMode);
+  document.body.classList.toggle('vis-hide-save-load', !!uiState.visibilityMode);
+  document.body.classList.toggle('vis-hide-settings', !!uiState.visibilityMode);
   document.body.classList.toggle('vis-hide-print', !!uiState.visibilityMode && !!cfg.hidePrint);
-  document.body.classList.toggle('vis-hide-layout-tools', !!uiState.visibilityMode && !!cfg.hideLayoutTools);
+  document.body.classList.toggle('vis-hide-layout-tools', !!uiState.visibilityMode);
   document.body.classList.toggle('vis-hide-students', !!uiState.visibilityMode);
-  document.body.classList.toggle('vis-hide-status', !!uiState.visibilityMode && !!cfg.hideStatusPanel);
-  document.body.classList.toggle('vis-hide-chart-actions', !!uiState.visibilityMode && !!cfg.hideChartActions);
+  document.body.classList.toggle('vis-hide-status', !!uiState.visibilityMode);
+  document.body.classList.toggle('vis-hide-chart-actions', !!uiState.visibilityMode);
   document.body.classList.toggle('vis-hide-room-header-actions', !!uiState.visibilityMode && !!cfg.hideRoomHeaderActions);
   document.body.classList.toggle('vis-hide-group-details', !!uiState.visibilityMode && !!cfg.hideGroupDetails);
-  document.body.classList.toggle('vis-disable-seat-editing', !!uiState.visibilityMode && !!cfg.disableSeatEditing);
-  document.body.classList.toggle('vis-disable-room-editing', !!uiState.visibilityMode && !!cfg.disableRoomEditing);
-  document.body.classList.toggle('vis-disable-student-editing', !!uiState.visibilityMode && !!cfg.disableStudentEditing);
-  document.body.classList.toggle('vis-disable-group-editing', !!uiState.visibilityMode && !!cfg.disableGroupEditing);
+  document.body.classList.toggle('vis-disable-seat-editing', !!uiState.visibilityMode);
+  document.body.classList.toggle('vis-disable-room-editing', !!uiState.visibilityMode);
+  document.body.classList.toggle('vis-disable-student-editing', !!uiState.visibilityMode);
+  document.body.classList.toggle('vis-disable-group-editing', !!uiState.visibilityMode);
   const button = el('visibilityModeBtn');
   if (button) {
     button.setAttribute('aria-pressed', uiState.visibilityMode ? 'true' : 'false');
     button.textContent = uiState.visibilityMode ? '🙈' : '👁';
-    button.title = uiState.visibilityMode ? 'Exit visibility mode. PIN/password or encryption key required.' : 'Enter visibility mode and hide configured sections.';
+    button.title = uiState.visibilityMode ? 'Exit Presentation Mode. PIN/password or encryption key required.' : 'Enter the protected read-only Presentation Mode.';
   }
-}
-
-function visibilitySettingEnabled(key) {
-  return !!uiState.visibilityMode && !!pageSettings().visibility?.[key];
 }
 
 function blockEyeModeAction(kind, message = '') {
   const labels = {
-    seat: 'Eye Mode is blocking seating edits. Exit Eye Mode to change assignments, locks, or seat actions.',
-    room: 'Eye Mode is blocking room/cell editing. Exit Eye Mode to change the room layout.',
-    student: 'Eye Mode is blocking student info edits. Exit Eye Mode to add, edit, or delete student records.',
-    group: 'Eye Mode is blocking group/zone edits. Exit Eye Mode to change groups, zones, or memberships.'
+    seat: 'Presentation mode is blocking seating edits. Exit Presentation mode to change assignments, locks, or seat actions.',
+    room: 'Presentation mode is blocking room/cell editing. Exit Presentation mode to change the room layout.',
+    student: 'Presentation mode is blocking student info edits. Exit Presentation mode to add, edit, or delete student records.',
+    group: 'Presentation mode is blocking group/zone edits. Exit Presentation mode to change groups, zones, or memberships.'
   };
-  setLiveStatusMessage(message || labels[kind] || 'Eye Mode is blocking that edit. Exit Eye Mode to make changes.');
+  setLiveStatusMessage(message || labels[kind] || 'Presentation mode is blocking that edit. Exit Presentation mode to make changes.');
   hideCellContextMenu?.();
   hideStudentGroupContextMenu?.();
   hideMobileActionDrawer?.();
   return true;
 }
 
-function eyeModeBlocksSeatEditing() { return visibilitySettingEnabled('disableSeatEditing'); }
-function eyeModeBlocksRoomEditing() { return visibilitySettingEnabled('disableRoomEditing'); }
-function eyeModeBlocksStudentEditing() { return visibilitySettingEnabled('disableStudentEditing'); }
-function eyeModeBlocksGroupEditing() { return visibilitySettingEnabled('disableGroupEditing'); }
+function eyeModeBlocksSeatEditing() { return !!uiState.visibilityMode; }
+function eyeModeBlocksRoomEditing() { return !!uiState.visibilityMode; }
+function eyeModeBlocksStudentEditing() { return !!uiState.visibilityMode; }
+function eyeModeBlocksGroupEditing() { return !!uiState.visibilityMode; }
 
 function enterVisibilityMode() {
   uiState.visibilityPreviousNamesOnly = uiState.namesOnlyLayout;
+  uiState.visibilityPreviousWorkflow = document.body.dataset.workflow || 'review';
+  if (uiState.designMode) {
+    uiState.designMode = false;
+    hideDesignModeTooltip();
+    applyDesignModeUi();
+  }
   uiState.visibilityMode = true;
+  document.getElementById('v4CommandPalette')?.classList.remove('show');
+  ProductExperience?.setWorkflow?.('review', { silent: true, presentation: true });
   if (pageSettings().visibility.forceNamesOnly) uiState.namesOnlyLayout = true;
   if (pageSettings().visibility.hideGroupDetails && ['groups','zones'].includes(uiState.activeSideTab)) setSideTab('students');
   refreshNamesOnlyToggle();
   applyVisibilityClasses();
   renderGrid();
-  if (safeStorageGet('sessionStorage', VISIBILITY_WRAPPED_KEY_SESSION_KEY)) setLiveStatusMessage('Eye mode enabled. The full original chart is encrypted, and the session encryption key is wrapped until you exit.');
-  else if (!getVisibilityCredential() && getLockCredential()) setLiveStatusMessage('Eye mode enabled. The full original chart is encrypted; the Lock PIN will be accepted to exit.');
-  else setLiveStatusMessage('Eye mode enabled. The full original chart is encrypted and hidden details are scrubbed from the visible state.');
+  if (safeStorageGet('sessionStorage', VISIBILITY_WRAPPED_KEY_SESSION_KEY)) setLiveStatusMessage('Presentation Mode enabled. Review is read-only; the full original chart is encrypted and the session key is wrapped until exit.');
+  else if (!getVisibilityCredential() && getLockCredential()) setLiveStatusMessage('Presentation Mode enabled. Review is read-only; the full original chart is encrypted and the Lock PIN will be accepted to exit.');
+  else setLiveStatusMessage('Presentation Mode enabled. Review is read-only and hidden details are scrubbed from the visible state.');
 }
 
 async function requestEnterVisibilityMode() {
@@ -14582,35 +14685,36 @@ async function requestEnterVisibilityMode() {
   }
   try {
     const protectedOk = await protectVisibilityModeData(currentSessionEncryptionKey());
-    if (!protectedOk) throw new Error('Eye Mode needs an encryption key or PIN/password to protect hidden data.');
+    if (!protectedOk) throw new Error('Presentation Mode needs an encryption key or PIN/password to protect hidden data.');
     enterVisibilityMode();
   } catch (err) {
-    setLiveStatusMessage(`Could not enter Eye Mode securely: ${err.message}`);
+    setLiveStatusMessage(`Could not enter Presentation Mode securely: ${err.message}`);
   }
 }
 
 function exitVisibilityMode() {
   uiState.visibilityMode = false;
   uiState.namesOnlyLayout = !!uiState.visibilityPreviousNamesOnly;
+  ProductExperience?.setWorkflow?.(uiState.visibilityPreviousWorkflow || 'review', { silent: true });
   safeStorageRemove('sessionStorage', VISIBILITY_WRAPPED_KEY_SESSION_KEY);
   safeStorageRemove('sessionStorage', VISIBILITY_DATA_SESSION_KEY);
   refreshNamesOnlyToggle();
   applyVisibilityClasses();
   renderGrid();
-  setLiveStatusMessage('Eye mode disabled. Hidden controls restored.');
+  setLiveStatusMessage('Presentation Mode disabled. The previous workflow and hidden controls were restored.');
 }
 
 function showVisibilityExitError(message) {
   const node = el('visibilityExitError');
   if (!node) return;
-  node.textContent = String(message || 'Could not exit eye mode.');
+  node.textContent = String(message || 'Could not exit presentation mode.');
   node.style.display = 'block';
 }
 
 function showVisibilityProtectKeyError(message) {
   const node = el('visibilityProtectKeyError');
   if (!node) return;
-  node.textContent = String(message || 'Could not protect the encryption key for eye mode.');
+  node.textContent = String(message || 'Could not protect the encryption key for presentation mode.');
   node.style.display = 'block';
 }
 
@@ -14632,11 +14736,11 @@ function closeVisibilityProtectKeyModal() {
 async function protectEncryptionKeyAndEnterVisibilityMode() {
   const input = el('visibilityProtectKeyInput');
   const secret = String(input?.value || '');
-  if (!secret) { showVisibilityProtectKeyError('Enter the Eye PIN or Lock PIN/password.'); return; }
+  if (!secret) { showVisibilityProtectKeyError('Enter the Presentation PIN or Lock PIN/password.'); return; }
   try {
     const source = await visibilitySecretSource(secret, false);
     if (!source) {
-      showVisibilityProtectKeyError('Incorrect Eye PIN or Lock PIN/password.');
+      showVisibilityProtectKeyError('Incorrect Presentation PIN or Lock PIN/password.');
       input?.select();
       input?.focus();
       return;
@@ -14651,7 +14755,7 @@ async function protectEncryptionKeyAndEnterVisibilityMode() {
     closeVisibilityProtectKeyModal();
     enterVisibilityMode();
   } catch (err) {
-    showVisibilityProtectKeyError(err.message || 'Could not protect the encryption key for eye mode.');
+    showVisibilityProtectKeyError(err.message || 'Could not protect the encryption key for presentation mode.');
   }
 }
 
@@ -14695,7 +14799,7 @@ async function attemptVisibilityExit() {
     closeVisibilityExitModal();
     exitVisibilityMode();
   } catch (err) {
-    showVisibilityExitError(err.message || 'Could not exit eye mode.');
+    showVisibilityExitError(err.message || 'Could not exit presentation mode.');
   }
 }
 
@@ -14719,7 +14823,7 @@ function closeVisibilitySetupModal() {
 function showVisibilitySetupError(message) {
   const node = el('visibilitySetupError');
   if (!node) return;
-  node.textContent = String(message || 'Could not set eye mode PIN.');
+  node.textContent = String(message || 'Could not set presentation mode PIN.');
   node.style.display = 'block';
 }
 
@@ -14728,9 +14832,9 @@ async function saveVisibilitySetupAndEnter() {
   const confirmInput = el('visibilitySetupConfirmInput');
   const secret = String(input?.value || '');
   const confirmSecret = String(confirmInput?.value || '');
-  const validationMessage = newLocalCredentialValidationMessage(secret, 'eye mode PIN/password');
+  const validationMessage = newLocalCredentialValidationMessage(secret, 'presentation mode PIN/password');
   if (validationMessage) { showVisibilitySetupError(validationMessage); return; }
-  if (secret !== confirmSecret) { showVisibilitySetupError('The eye mode PIN/password entries do not match.'); return; }
+  if (secret !== confirmSecret) { showVisibilitySetupError('The presentation mode PIN/password entries do not match.'); return; }
   try {
     await saveVisibilityCredential(secret);
     const activeKey = currentSessionEncryptionKey();
@@ -14744,7 +14848,7 @@ async function saveVisibilitySetupAndEnter() {
     updateVisibilityCredentialNote();
     enterVisibilityMode();
   } catch (err) {
-    showVisibilitySetupError(err.message || 'Could not save eye mode PIN/password.');
+    showVisibilitySetupError(err.message || 'Could not save presentation mode PIN/password.');
   }
 }
 
@@ -14756,7 +14860,7 @@ function settingsAccessRequirement() {
   const encryptionAvailable = !!currentSessionEncryptionKey();
   const make = (type) => {
     if (type === 'lock' && lockAvailable) return { type, label: 'Lock/Unlock PIN', message: 'Enter the Lock/Unlock PIN to open Settings.' };
-    if (type === 'eye' && eyeAvailable) return { type, label: 'Eye Mode PIN', message: 'Enter the Eye Mode PIN to open Settings.' };
+    if (type === 'eye' && eyeAvailable) return { type, label: 'Presentation Mode PIN', message: 'Enter the Presentation Mode PIN to open Settings.' };
     if (type === 'encryption' && encryptionAvailable) return { type, label: 'Encryption key', message: 'Enter the current session encryption key to open Settings.' };
     return null;
   };
@@ -14770,8 +14874,8 @@ function settingsAccessRequirementText() {
   const method = pageSettings().settingsAccessMethod || 'auto';
   if (req) return `Settings access currently requires: ${req.label}.`;
   if (method === 'none') return 'Settings access is currently unlocked. Anyone using this unlocked page can open Settings until this is changed.';
-  if (method === 'auto') return 'Settings access is currently open because no Lock PIN, Eye PIN, or session encryption key is configured.';
-  return `Settings access is currently open because the selected ${method === 'lock' ? 'Lock PIN' : method === 'eye' ? 'Eye PIN' : 'Encryption key'} is not configured.`;
+  if (method === 'auto') return 'Settings access is currently open because no Lock PIN, Presentation PIN, or session encryption key is configured.';
+  return `Settings access is currently open because the selected ${method === 'lock' ? 'Lock PIN' : method === 'eye' ? 'Presentation PIN' : 'Encryption key'} is not configured.`;
 }
 
 async function verifySettingsAccessSecret(secret, requirement) {
@@ -15338,8 +15442,8 @@ function sanitizedStudentForVisibility(student) { const source = normalizeStuden
 function sanitizedCellForVisibility(cell) { const source = cell && typeof cell === 'object' ? { ...cell } : {}; if (pageSettings().visibility.hideGroupDetails) { source.anchorGroupIds = []; source.zoneIds = []; } return source; }
 function sanitizedClassForVisibilityMode(classRecord) { const cls = normalizeClassRecord(classRecord); const cfg = pageSettings().visibility; const cells = {}; Object.entries(cls.cells || {}).forEach(([key, cell]) => { cells[key] = sanitizedCellForVisibility(cell); }); return { ...cls, students: (cls.students || []).map(sanitizedStudentForVisibility), groups: cfg.hideGroupDetails ? [] : (cls.groups || []).map(group => ({ ...group })), zones: cfg.hideGroupDetails ? [] : (cls.zones || []).map(zone => ({ ...zone })), cells, snapshots: [], chartMeta: normalizeChartMeta(cls.chartMeta || {}) }; }
 function sanitizeInMemoryForVisibilityMode() { persistActiveClass(); const activeId = state.activeClassId; state.classes = (state.classes || []).map(sanitizedClassForVisibilityMode); state.roomTemplates = []; uiState.undoStack = []; uiState.redoStack = []; uiState.csvImportDraft = null; uiState.noteEditorContext = null; uiState.noteEditorDraft = null; uiState.restoreImportDraft = null; uiState.mobileCarryItem = null; if (uiState.selectedCellKeys) uiState.selectedCellKeys.clear(); if (state.classes.some(cls => cls.id === activeId)) state.activeClassId = activeId; applyClassToState(state.activeClassId || state.classes[0]?.id); hideMobileActionDrawer?.(); updateUndoRedoButtons(); }
-async function protectVisibilityModeData(secret = '') { const protector = String(secret || currentSessionEncryptionKey() || ''); if (!protector) return false; let plain = exportState('all'); const encrypted = await encryptTextWithSecret(plain, protector, 'visibility-session', { visibilityProtected: true, protectedAt: new Date().toISOString() }); plain = ''; if (!safeStorageSet('sessionStorage', VISIBILITY_DATA_SESSION_KEY, encrypted)) throw new Error('Eye Mode could not store its encrypted recovery copy. Check browser storage permissions or available space; the chart was not hidden.'); sanitizeInMemoryForVisibilityMode(); return true; }
-async function restoreVisibilityModeData(secret = '') { const stored = safeStorageGet('sessionStorage', VISIBILITY_DATA_SESSION_KEY); if (!stored) return false; const parsed = JSON.parse(stored); const candidates = []; [currentSessionEncryptionKey(), secret].forEach(value => { const text = String(value || ''); if (text && !candidates.includes(text)) candidates.push(text); }); let lastError = null; for (const candidate of candidates) { try { const decrypted = await decryptTextEnvelope(parsed, candidate); importState(decrypted); safeStorageRemove('sessionStorage', VISIBILITY_DATA_SESSION_KEY); return true; } catch (err) { lastError = err; } } throw lastError || new Error('Could not restore Eye Mode protected data.'); }
+async function protectVisibilityModeData(secret = '') { const protector = String(secret || currentSessionEncryptionKey() || ''); if (!protector) return false; let plain = exportState('all'); const encrypted = await encryptTextWithSecret(plain, protector, 'visibility-session', { visibilityProtected: true, protectedAt: new Date().toISOString() }); plain = ''; if (!safeStorageSet('sessionStorage', VISIBILITY_DATA_SESSION_KEY, encrypted)) throw new Error('Presentation Mode could not store its encrypted recovery copy. Check browser storage permissions or available space; the chart was not hidden.'); sanitizeInMemoryForVisibilityMode(); return true; }
+async function restoreVisibilityModeData(secret = '') { const stored = safeStorageGet('sessionStorage', VISIBILITY_DATA_SESSION_KEY); if (!stored) return false; const parsed = JSON.parse(stored); const candidates = []; [currentSessionEncryptionKey(), secret].forEach(value => { const text = String(value || ''); if (text && !candidates.includes(text)) candidates.push(text); }); let lastError = null; for (const candidate of candidates) { try { const decrypted = await decryptTextEnvelope(parsed, candidate); importState(decrypted); safeStorageRemove('sessionStorage', VISIBILITY_DATA_SESSION_KEY); return true; } catch (err) { lastError = err; } } throw lastError || new Error('Could not restore Presentation Mode protected data.'); }
 async function snapshotDataForStorage(plainText) { const plain = String(plainText || ''); if (!currentSessionEncryptionKey()) return plain; return encryptTextWithSecret(plain, currentSessionEncryptionKey(), 'snapshot', { payloadKind: 'snapshot', snapshotEncrypted: true }); }
 async function snapshotDataForRestore(data) {
   const text = String(data || '');
@@ -17262,7 +17366,7 @@ function updateSaveHealthPanel(statusOverride = '') {
   if (encryptionNode) encryptionNode.textContent = currentSessionEncryptionKey()
     ? 'Full-save encryption ready. Local saves, linked saves, downloads, snapshots, settings, roster data, notes, groups, zones, and room data will be encrypted.'
     : safeStorageGet('sessionStorage', PAGE_LOCK_WRAPPED_KEY_SESSION_KEY) || safeStorageGet('sessionStorage', VISIBILITY_WRAPPED_KEY_SESSION_KEY)
-          ? 'Encryption key is wrapped while locked/eye mode is active. Unlock or exit eye mode to restore it.'
+          ? 'Encryption key is wrapped while locked/presentation mode is active. Unlock or exit presentation mode to restore it.'
           : hasSensitiveStudentNotes()
             ? 'Private or Substitute notes exist. Set the session encryption password before saving or downloading.'
             : 'Encryption password is not set. Secure save/export is blocked until a session password is active.';
@@ -17326,7 +17430,7 @@ function updateSecurityStatusPanelCore() {
   const snapshotRaw = safeStorageGet('localStorage', LOCAL_AUTOSAVE_SNAPSHOT_KEY);
   const snapshotsEncrypted = !snapshotRaw || snapshotRaw === '[]' || snapshotIndexStorageIsEncrypted();
   const settingsProtected = (pageSettings().settingsAccessMethod || 'auto') !== 'none';
-  setSecurityStatus('securityStatusActiveKey', activeKey, 'Present', wrappedKey ? 'Wrapped while locked/eye mode' : 'Missing', wrappedKey);
+  setSecurityStatus('securityStatusActiveKey', activeKey, 'Present', wrappedKey ? 'Wrapped while locked/presentation mode' : 'Missing', wrappedKey);
   setSecurityStatus('securityStatusStorageEncrypted', saveEncrypted && snapshotsEncrypted, 'Encrypted', saveEncrypted ? 'Snapshot index not encrypted' : 'Local save missing/not encrypted', saveEncrypted && !snapshotsEncrypted);
   setSecurityStatus('securityStatusSettingsProtected', settingsProtected, 'Protected', 'Not protected');
   setSecurityStatus('securityStatusLockPin', !!getLockCredential(), 'Set', 'Not set');
@@ -17954,7 +18058,7 @@ const HELP_GUIDE_SECTIONS = [
       },
       {
         "title": "Reloading the planner",
-        "text": "An unexpired Drive access token is retained only for the current browser tab, so reloading that tab normally restores Drive access without another connection step. After the token expires, the next user-initiated Drive command requests fresh access and reuses the existing Google grant when possible. Disconnect, Lock, Eye Mode, Factory Reset, a closed tab, or browser storage restrictions clear this temporary access."
+        "text": "An unexpired Drive access token is retained only for the current browser tab, so reloading that tab normally restores Drive access without another connection step. After the token expires, the next user-initiated Drive command requests fresh access and reuses the existing Google grant when possible. Disconnect, Lock, Presentation Mode, Factory Reset, a closed tab, or browser storage restrictions clear this temporary access."
       },
       {
         "title": "Current permissions",
@@ -18018,19 +18122,19 @@ const HELP_GUIDE_SECTIONS = [
       },
       {
         "title": "Encryption key",
-        "text": "The key is remembered only for the current browser session and is not stored in exported files. During manual Lock or Eye Mode with a PIN available, the key is stored only as an encrypted wrapped value and removed from active memory."
+        "text": "The key is remembered only for the current browser session and is not stored in exported files. During manual Lock or Presentation Mode with a PIN available, the key is stored only as an encrypted wrapped value and removed from active memory."
       },
       {
         "title": "Settings Access",
-        "text": "Requires Auto, Lock PIN, Eye PIN, or Encryption Key before Settings opens, or can be disabled after a warning confirmation."
+        "text": "Requires Auto, Lock PIN, Presentation PIN, or Encryption Key before Settings opens, or can be disabled after a warning confirmation."
       },
       {
         "title": "Lock PIN/password",
         "text": "Locks the chart screen, encrypts the full working dataset while locked, and wraps the session encryption key with the Lock PIN/password when available."
       },
       {
-        "title": "Eye Mode PIN",
-        "text": "Protects exit from a simplified or restricted visibility mode and can wrap the session encryption key while Eye Mode is active. Eye Mode always removes the Students, Groups & Zones panel; enabled room-editing protection also blocks every Freeform rotation path."
+        "title": "Presentation Mode PIN",
+        "text": "Protects exit from the locked Presentation workspace and can wrap the session encryption key while Presentation Mode is active. Presentation Mode always switches to Review, removes both side panels and editing controls, and blocks every Grid, Freeform, drag, keyboard, context-menu, and rotation mutation path."
       },
       {
         "title": "Auto-lock after inactive minutes",
@@ -18042,7 +18146,7 @@ const HELP_GUIDE_SECTIONS = [
       }
     ],
     "tips": [
-      "Suggested setup: enable encryption, enter a key, save Lock PIN, save Eye PIN, set Settings Access to Auto, then Download All Current Classes for your durable backup.",
+      "Suggested setup: enable encryption, enter a key, save Lock PIN, save Presentation PIN, set Settings Access to Auto, then Download All Current Classes for your durable backup.",
       "Use Substitute notes for information a substitute should see; keep Private notes for staff-only context."
     ],
     "warnings": [
@@ -18076,8 +18180,8 @@ const HELP_GUIDE_SECTIONS = [
         "text": "Choose default Names Only mode, workflow guidance, the Seating roster panel, Review status panel, Layout Tools, CSV/Add Student collapse, design cell size, and hint visibility. Only controls that still exist in the current product workspace are listed. Changes do not rearrange the current workspace until applied."
       },
       {
-        "title": "Eye / Visibility Mode",
-        "text": "Eye Mode always removes the Students, Groups & Zones panel. The remaining settings choose which other controls are hidden and which seating, room, student, group, and zone edits are blocked."
+        "title": "Presentation Mode",
+        "text": "Presentation Mode always removes the Students, Groups & Zones panel. Presentation Mode is always read-only: it switches to Review, hides editing/navigation/history controls and both side panels, and blocks seating, room, student, group, zone, drag, keyboard, context-menu, and rotation mutations. Zoom and Text remain available. The privacy profile controls the basic names, group details, print availability, and room-header details shown in that protected view."
       },
       {
         "title": "Settings Access",
@@ -18085,7 +18189,7 @@ const HELP_GUIDE_SECTIONS = [
       },
       {
         "title": "Lock / Visibility PINs",
-        "text": "Create or update the Lock PIN and Eye Mode PIN."
+        "text": "Create or update the Lock PIN and Presentation Mode PIN."
       },
       {
         "title": "Save / Download Encryption",
@@ -18644,7 +18748,7 @@ const HELP_GUIDE_SECTIONS = [
       },
       {
         "title": "Security and privacy windows",
-        "text": "Welcome Security, Encryption Password, Security Guided Help, Settings Access, Page Lock setup, Lock Now, Eye Mode setup, Eye Mode exit, and privacy-key protection control access to sensitive data. Closing a setup window without saving leaves the previous policy in place."
+        "text": "Welcome Security, Encryption Password, Security Guided Help, Settings Access, Page Lock setup, Lock Now, Presentation Mode setup, Presentation Mode exit, and privacy-key protection control access to sensitive data. Closing a setup window without saving leaves the previous policy in place."
       },
       {
         "title": "Confirmations",
@@ -18672,7 +18776,7 @@ const HELP_GUIDE_SECTIONS = [
       },
       {
         "title": "Security Guided Help",
-        "text": "Open Settings > Security & Data > Security Guided Help. It checks encryption, Settings access, Lock PIN, Eye PIN, auto-lock, and storage encryption. Valid options auto-save to encrypted browser storage; unmatched PIN fields block completion."
+        "text": "Open Settings > Security & Data > Security Guided Help. It checks encryption, Settings access, Lock PIN, Presentation PIN, auto-lock, and storage encryption. Valid options auto-save to encrypted browser storage; unmatched PIN fields block completion."
       },
       {
         "title": "Guided Lessons",
@@ -21133,7 +21237,6 @@ function wireEvents() {
   el('freeformCanvasHeightInput')?.addEventListener('change', updateFreeformCanvasSettings);
   el('freeformGridSizeInput')?.addEventListener('change', updateFreeformCanvasSettings);
   el('freeformFrontSideSelect')?.addEventListener('change', updateFreeformCanvasSettings);
-  el('freeformZoomSlider')?.addEventListener('input', updateFreeformCanvasSettings);
   el('freeformSnapToggle')?.addEventListener('change', updateFreeformCanvasSettings);
   el('freeformSeatPassThroughToggle')?.addEventListener('change', updateFreeformCanvasSettings);
   el('freeformSeatOverlapToggle')?.addEventListener('change', () => {
@@ -21500,6 +21603,11 @@ function wireEvents() {
     setLiveStatusMessage(pageSettings().hideUnassignedSeatTitles ? 'Empty seat titles hidden.' : 'Empty seat titles shown.');
   });
 
+  el('seatViewZoomSlider')?.addEventListener('input', event => setSeatViewZoom(event.target.value));
+  el('seatViewZoomSlider')?.addEventListener('change', event => setSeatViewZoom(event.target.value, { announce: true }));
+  el('seatTextSizeSlider')?.addEventListener('input', event => setSeatTextScale(event.target.value));
+  el('seatTextSizeSlider')?.addEventListener('change', event => setSeatTextScale(event.target.value, { announce: true }));
+
   el('designModeBtn').addEventListener('click', () => {
     uiState.designMode = !uiState.designMode;
     hideDesignModeTooltip();
@@ -21587,7 +21695,7 @@ function wireEvents() {
   el('closeSaveSetupBtn')?.addEventListener('click', () => closeSaveSetupModal(false));
   el('saveSetupDoneBtn')?.addEventListener('click', () => closeSaveSetupModal(true));
   el('saveSetupModal')?.addEventListener('click', event => { if (event.target.id === 'saveSetupModal') closeSaveSetupModal(false); });
-  ['settingTheme','settingDefaultNamesOnly','settingHeaderCollapsed','settingLeftCollapsed','settingRightCollapsed','settingLayoutToolsCollapsed','settingCsvCollapsed','settingAddStudentCollapsed','settingHideHints','settingHideObjectTypeLabels','settingAutoSaveMinutes','settingPreferredStorage','settingGoogleDriveFolderName','settingDesignCellSize','settingSettingsAccessMethod','settingAutoLockMinutes','settingAutoLockOnBlur','settingAutoLockOnTabHidden','settingAutoLockOnReturnMinutes','settingPbkdf2Iterations','visHideClassActions','visHideWizard','visHideSaveLoad','visHideSettings','visHidePrint','visHideLayoutTools','visHideStatusPanel','visHideChartActions','visHideRoomHeaderActions','visForceNamesOnly','visHideGroupDetails','visDisableSeatEditing','visDisableRoomEditing','visDisableStudentEditing','visDisableGroupEditing'].forEach(id => {
+  ['settingTheme','settingDefaultNamesOnly','settingHeaderCollapsed','settingLeftCollapsed','settingRightCollapsed','settingLayoutToolsCollapsed','settingCsvCollapsed','settingAddStudentCollapsed','settingHideHints','settingHideObjectTypeLabels','settingAutoSaveMinutes','settingPreferredStorage','settingGoogleDriveFolderName','settingDesignCellSize','settingSettingsAccessMethod','settingAutoLockMinutes','settingAutoLockOnBlur','settingAutoLockOnTabHidden','settingAutoLockOnReturnMinutes','settingPbkdf2Iterations','visHidePrint','visHideRoomHeaderActions','visForceNamesOnly','visHideGroupDetails'].forEach(id => {
     const control = el(id);
     if (!control) return;
     control.addEventListener(control.tagName === 'SELECT' || control.type === 'number' ? 'input' : 'change', readPageSettingsForm);
@@ -22217,11 +22325,11 @@ const WorkflowExpansion = (() => {
     const aboutPanel = el('settingsPageAbout');
     const panels = `
           <div id="settingsPagePrivacy" class="settings-page" role="tabpanel" data-settings-panel="privacy" aria-label="Privacy Views settings">
-            ${panelHeader('Privacy display modes','Pick a display profile, then apply it to Eye Mode and print-facing behavior. These are convenience configurations, not a separate password system.')}
+            ${panelHeader('Privacy display modes','Choose the basic names and detail level used by Presentation Mode and print-facing behavior. Presentation Mode itself is always a locked Review workspace; these profiles do not weaken its editing restrictions.')}
             <section class="section settings-section"><h3>Display Profile</h3>
               <div class="field"><label for="settingPrivacyDisplayMode">Privacy display mode</label><select id="settingPrivacyDisplayMode"><option value="teacher">Teacher Full View</option><option value="substitute">Substitute View</option><option value="student">Student Display View</option><option value="admin">Admin Review View</option><option value="privacy">Privacy Mode / Initials Only</option></select></div>
               <div class="privacy-mode-buttons"><button type="button" class="secondary" data-apply-privacy-mode="teacher">Teacher Full View<br><span class="muted">Everything visible while unlocked.</span></button><button type="button" class="secondary" data-apply-privacy-mode="substitute">Substitute View<br><span class="muted">Sub/public notes only, editing blocked.</span></button><button type="button" class="secondary" data-apply-privacy-mode="student">Student Display<br><span class="muted">Names/nicknames only, no notes.</span></button><button type="button" class="secondary" data-apply-privacy-mode="admin">Admin Review<br><span class="muted">Details visible, private notes still reveal-only.</span></button><button type="button" class="secondary" data-apply-privacy-mode="privacy">Initials Only<br><span class="muted">Hide details and force names-only display.</span></button></div>
-              <div class="hint">Applying a privacy view updates the Eye Mode checkboxes. Eye Mode still requires its PIN/encryption workflow to enter or exit.</div>
+              <div class="hint">Applying a privacy view changes the allowed names, group details, print availability, and room-header details inside Presentation Mode. The mode remains locked and still requires its PIN/encryption workflow to enter or exit.</div>
             </section>
             <section class="section settings-section"><h3>Private/Substitute Note Reveal Timeout</h3><div class="field"><label for="settingNoteRevealTimeoutSeconds">Hide revealed non-public notes after seconds</label><input id="settingNoteRevealTimeoutSeconds" type="number" min="0" max="600" step="5" /></div><label class="checkline"><input id="settingNoteRevealHideOnBlur" type="checkbox" /> <span>Hide revealed notes when the browser loses focus or the tab becomes hidden</span></label><div class="hint">Use 0 to keep revealed notes visible until the note editor closes. Public notes are not affected.</div></section>
             <section class="section settings-section"><h3>Print / Export Warnings</h3><label class="checkline"><input id="settingPrintSecurityWarnings" type="checkbox" /> <span>Warn before print/PDF/SVG when private notes, substitute notes, IDs, grade, or group/zone details are included</span></label><label class="checkline"><input id="settingExportSecurityWarnings" type="checkbox" /> <span>Warn before encrypted exports that include student records, notes, snapshots, or room metadata</span></label></section>
@@ -22257,7 +22365,7 @@ const WorkflowExpansion = (() => {
     if (slot) { if (clearBtn) slot.appendChild(clearBtn); if (factoryBtn) slot.appendChild(factoryBtn); }
     const statusPanel = el('securityStatusPanel');
     if (statusPanel && !el('securitySetupWizardOpenBtn')) {
-      statusPanel.closest('section')?.insertAdjacentHTML('beforebegin', `<section class="section settings-section"><h3>Security Guided Help</h3><div class="hint">Walk through encryption, Settings access, Lock PIN, Eye PIN, auto-lock, and security status in one guided sequence.</div><div class="button-row"><button id="securitySetupWizardOpenBtn" type="button">Open Security Guided Help</button></div></section>`);
+      statusPanel.closest('section')?.insertAdjacentHTML('beforebegin', `<section class="section settings-section"><h3>Security Guided Help</h3><div class="hint">Walk through encryption, Settings access, Lock PIN, Presentation PIN, auto-lock, and security status in one guided sequence.</div><div class="button-row"><button id="securitySetupWizardOpenBtn" type="button">Open Security Guided Help</button></div></section>`);
       statusPanel.closest('section')?.insertAdjacentHTML('afterend', `<section class="section settings-section"><h3>Lock Workflow Readiness</h3><div id="lockWorkflowReadiness" class="save-health-report"></div></section>`);
     }
     const saveEncryptionCard = el('settingsApplyEncryptionKeyBtn')?.closest('.security-card') || el('settingsEncryptionKey')?.closest('.security-card');
@@ -22304,9 +22412,9 @@ const WorkflowExpansion = (() => {
 
   function settingsAccessOptionsHtml(current) {
     const options = [
-      ['auto', 'Auto: Lock PIN → Eye PIN → Encryption key'],
+      ['auto', 'Auto: Lock PIN → Presentation PIN → Encryption key'],
       ['lock', 'Lock/Unlock PIN only'],
-      ['eye', 'Eye Mode PIN only'],
+      ['eye', 'Presentation Mode PIN only'],
       ['encryption', 'Encryption key only'],
       ['none', 'No prompt / unlocked Settings']
     ];
@@ -22331,9 +22439,9 @@ const WorkflowExpansion = (() => {
     const onHidden = el('securityWizardAutoLockOnTabHidden') ? !!el('securityWizardAutoLockOnTabHidden').checked : !!cfg.autoLockOnTabHidden;
     const returnMinutes = clampNumber(el('securityWizardAutoLockOnReturnMinutes')?.value ?? cfg.autoLockOnReturnMinutes ?? 0, 0, 240);
     const accessLabels = {
-      auto: 'Auto: Lock PIN → Eye PIN → Encryption key',
+      auto: 'Auto: Lock PIN → Presentation PIN → Encryption key',
       lock: 'Lock/Unlock PIN only',
-      eye: 'Eye Mode PIN only',
+      eye: 'Presentation Mode PIN only',
       encryption: 'Encryption key only',
       none: 'No prompt / unlocked Settings'
     };
@@ -22347,7 +22455,7 @@ const WorkflowExpansion = (() => {
       { key:'encryption', title:'Encryption password', done:activeKey, warn:!activeKey, text: activeKey ? 'Active session encryption key is present.' : 'Create or enter the encryption password before continuing.', staticOnly:true },
       { key:'settings', title:'Settings access requirement', done:requestedAccess !== 'none', warn:requestedAccess === 'none', text: requestedAccess === 'none' ? 'Settings will open without a prompt. Save only if this is intentional.' : `Settings will require: ${accessLabels[requestedAccess] || accessLabels.auto}.`, body:'settings' },
       { key:'lock', title:'Lock PIN/password', done:lockState.done, warn:!lockState.done, text: lockState.valid ? 'Ready to save a valid Lock PIN/password.' : (getLockCredential() ? 'Lock PIN/password is already set.' : `Enter matching Lock PIN/password values with at least ${MIN_LOCAL_CREDENTIAL_LENGTH} characters.`), body:'lock' },
-      { key:'eye', title:'Eye Mode PIN/password', done:eyeState.done, warn:!eyeState.done, text: eyeState.valid ? 'Ready to save a valid Eye Mode PIN/password.' : (getVisibilityCredential() ? 'Eye Mode PIN/password is already set.' : `Enter matching Eye Mode PIN/password values with at least ${MIN_LOCAL_CREDENTIAL_LENGTH} characters.`), body:'eye' },
+      { key:'eye', title:'Presentation Mode PIN/password', done:eyeState.done, warn:!eyeState.done, text: eyeState.valid ? 'Ready to save a valid Presentation Mode PIN/password.' : (getVisibilityCredential() ? 'Presentation Mode PIN/password is already set.' : `Enter matching Presentation Mode PIN/password values with at least ${MIN_LOCAL_CREDENTIAL_LENGTH} characters.`), body:'eye' },
       { key:'autolock', title:'Auto-lock rules', done:autoLock, warn:!autoLock, text: autoLock ? 'At least one auto-lock trigger is configured.' : 'No auto-lock triggers are enabled yet.', body:'autolock' },
       { key:'storage', title:'Storage encryption', done:storageEncrypted, warn:!storageEncrypted, text: storageEncrypted ? 'Local browser save and snapshot index are encrypted or empty.' : 'Save once after setup to encrypt current browser storage.', staticOnly:true }
     ];
@@ -22360,13 +22468,13 @@ const WorkflowExpansion = (() => {
 
   function securityWizardBodyHtml(kind, cfg) {
     if (kind === 'settings') {
-      return `<div class="security-wizard-check-body"><div class="field"><label for="securityWizardSettingsAccessMethod">Require before Settings opens</label><select id="securityWizardSettingsAccessMethod">${settingsAccessOptionsHtml(cfg.settingsAccessMethod || 'auto')}</select></div><div class="setting-inline-warning">Choosing <strong>No prompt</strong> means anyone with the unlocked page can change security, save/export, Eye Mode, and reset settings. The app will ask for confirmation before applying that.</div></div>`;
+      return `<div class="security-wizard-check-body"><div class="field"><label for="securityWizardSettingsAccessMethod">Require before Settings opens</label><select id="securityWizardSettingsAccessMethod">${settingsAccessOptionsHtml(cfg.settingsAccessMethod || 'auto')}</select></div><div class="setting-inline-warning">Choosing <strong>No prompt</strong> means anyone with the unlocked page can change security, save/export, Presentation Mode, and reset settings. The app will ask for confirmation before applying that.</div></div>`;
     }
     if (kind === 'lock') {
       return `<div class="security-wizard-check-body"><div class="security-card"><h4>Lock / Unlock PIN</h4><div class="field"><label for="securityWizardLockPin">New lock PIN/password</label><input id="securityWizardLockPin" type="password" autocomplete="new-password" placeholder="Leave blank to keep current PIN" /></div><div class="field"><label for="securityWizardLockPinConfirm">Confirm lock PIN/password</label><input id="securityWizardLockPinConfirm" type="password" autocomplete="new-password" /></div><div class="muted">Used for normal lock/unlock and auto-lock restore during this page session.</div></div></div>`;
     }
     if (kind === 'eye') {
-      return `<div class="security-wizard-check-body"><div class="security-card"><h4>Eye Mode Exit PIN</h4><div class="field"><label for="securityWizardEyePin">New Eye Mode PIN/password</label><input id="securityWizardEyePin" type="password" autocomplete="new-password" placeholder="Leave blank to keep current PIN" /></div><div class="field"><label for="securityWizardEyePinConfirm">Confirm Eye Mode PIN/password</label><input id="securityWizardEyePinConfirm" type="password" autocomplete="new-password" /></div><div class="muted">Used to exit Eye Mode without needing the full encryption password.</div></div></div>`;
+      return `<div class="security-wizard-check-body"><div class="security-card"><h4>Presentation Mode Exit PIN</h4><div class="field"><label for="securityWizardEyePin">New Presentation Mode PIN/password</label><input id="securityWizardEyePin" type="password" autocomplete="new-password" placeholder="Leave blank to keep current PIN" /></div><div class="field"><label for="securityWizardEyePinConfirm">Confirm Presentation Mode PIN/password</label><input id="securityWizardEyePinConfirm" type="password" autocomplete="new-password" /></div><div class="muted">Used to exit Presentation Mode without needing the full encryption password.</div></div></div>`;
     }
     if (kind === 'autolock') {
       return `<div class="security-wizard-check-body"><div class="auto-lock-grid"><div class="auto-lock-card"><label for="securityWizardAutoLockMinutes">Auto-lock after inactive minutes</label><input id="securityWizardAutoLockMinutes" type="number" min="0" max="240" step="1" value="${escapeHtml(cfg.autoLockMinutes || 0)}" /><div class="muted">Use 0 to disable inactivity auto-lock.</div></div><label class="checkline auto-lock-card" for="securityWizardAutoLockOnBlur"><input id="securityWizardAutoLockOnBlur" type="checkbox" ${cfg.autoLockOnBlur ? 'checked' : ''} /> <span>Lock immediately when this window loses focus</span></label><label class="checkline auto-lock-card" for="securityWizardAutoLockOnTabHidden"><input id="securityWizardAutoLockOnTabHidden" type="checkbox" ${cfg.autoLockOnTabHidden ? 'checked' : ''} /> <span>Lock immediately when this tab becomes hidden/inactive</span></label><div class="auto-lock-card"><label for="securityWizardAutoLockOnReturnMinutes">Lock when returning after inactive minutes</label><input id="securityWizardAutoLockOnReturnMinutes" type="number" min="0" max="240" step="1" value="${escapeHtml(cfg.autoLockOnReturnMinutes || 0)}" /><div class="muted">Example: set 10 so returning after 10+ hidden minutes locks immediately.</div></div></div></div>`;
@@ -22450,9 +22558,9 @@ const WorkflowExpansion = (() => {
         cachePageLockSecretForSession(lockPin);
       }
       if (eyePin || eyeConfirm) {
-        const eyeValidationMessage = newLocalCredentialValidationMessage(eyePin, 'Eye Mode PIN/password');
+        const eyeValidationMessage = newLocalCredentialValidationMessage(eyePin, 'Presentation Mode PIN/password');
         if (eyeValidationMessage) throw new Error(eyeValidationMessage);
-        if (eyePin !== eyeConfirm) throw new Error('Eye Mode PIN/password entries do not match.');
+        if (eyePin !== eyeConfirm) throw new Error('Presentation Mode PIN/password entries do not match.');
         await saveVisibilityCredential(eyePin);
       }
       uiState.pageSettings = mergePageSettings({
@@ -22479,7 +22587,7 @@ const WorkflowExpansion = (() => {
     if (requestedAccess === 'none' && (cfg.settingsAccessMethod || 'auto') !== 'none') {
       if (securityWizardConfirmingSettingsNone) return;
       securityWizardConfirmingSettingsNone = true;
-      showInAppConfirm('Disable the Settings access prompt? Anyone with this unlocked page could open Settings and change security, Eye Mode, save, local data, and reset options. The chart data can still be encrypted at rest, but the Settings door itself will be open while the page is unlocked.', () => {
+      showInAppConfirm('Disable the Settings access prompt? Anyone with this unlocked page could open Settings and change security, Presentation Mode, save, local data, and reset options. The chart data can still be encrypted at rest, but the Settings door itself will be open while the page is unlocked.', () => {
         securityWizardConfirmingSettingsNone = false;
         void applyCoreSettings().catch(err => securityWizardMessage(err.message || 'Could not save security setup.'));
       }, { title: 'Disable Settings Protection?', confirmText: 'Disable Prompt', cancelText: 'Keep Protected', onCancel: () => { securityWizardConfirmingSettingsNone = false; const select = el('securityWizardSettingsAccessMethod'); if (select) select.value = cfg.settingsAccessMethod || 'auto'; updateSecurityWizardLiveStatus(); } });
@@ -22524,7 +22632,7 @@ const WorkflowExpansion = (() => {
     uiState.pageSettings = mergePageSettings({ ...pageSettings(), privacyDisplayMode: mode, visibility: { ...pageSettings().visibility, ...profile } });
     updatePageSettingsForm();
     applyPageSettings(uiState.pageSettings, { skipRender: false });
-    setLiveStatusMessage(`Applied ${mode.replace(/^[a-z]/, c => c.toUpperCase())} privacy display mode to Eye Mode settings.`);
+    setLiveStatusMessage(`Applied ${mode.replace(/^[a-z]/, c => c.toUpperCase())} privacy display profile for Presentation Mode.`);
   }
 
   function noteRevealTimeoutMs() {
@@ -26179,6 +26287,10 @@ const ProductExperience = (() => {
   }
 
   function openCommandPalette() {
+    if (uiState.visibilityMode) {
+      setLiveStatusMessage('Command search is hidden in Presentation mode. Exit Presentation mode to use editing commands.');
+      return;
+    }
     const modal = document.getElementById('v4CommandPalette');
     if (!modal) return;
     modal.classList.add('show');
@@ -26269,6 +26381,16 @@ const ProductExperience = (() => {
 
   function setWorkflow(key, options = {}) {
     if (!WORKFLOWS[key]) key = 'setup';
+    if (uiState.visibilityMode && key !== 'review') {
+      if (!options.silent) setLiveStatusMessage('Presentation mode stays in Review. Exit Presentation mode to open editing workflows.');
+      key = 'review';
+    }
+    if (activeWorkflow === 'room' && key !== 'room' && uiState.designMode) {
+      uiState.designMode = false;
+      hideDesignModeTooltip();
+      applyDesignModeUi();
+      renderGrid();
+    }
     const requestedAccessKey = `collab${key[0].toUpperCase()}${key.slice(1)}`;
     if (document.body.dataset[requestedAccessKey] === 'none') {
       const fallback = Object.keys(WORKFLOWS).find(workflow => document.body.dataset[`collab${workflow[0].toUpperCase()}${workflow.slice(1)}`] !== 'none');
@@ -27356,7 +27478,7 @@ const UserWorkflowV44 = (() => {
     const securityTab = el('settingsPageSecurityBtn');
     securityTab?.querySelector('.settings-page-title')?.replaceChildren(document.createTextNode('Security'));
     const securityDesc = securityTab?.querySelector('.settings-page-desc');
-    if (securityDesc) securityDesc.textContent = 'Settings protection, unlock PINs, Eye Mode credentials, and auto-lock.';
+    if (securityDesc) securityDesc.textContent = 'Settings protection, unlock PINs, Presentation Mode credentials, and auto-lock.';
     if (header) header.innerHTML = '<strong>Security and access</strong>Choose who can open Settings, manage unlock credentials, and configure automatic locking.';
     const roomTab = el('settingsPageRoomBtn');
     const roomDesc = roomTab?.querySelector('.settings-page-desc');
@@ -27396,7 +27518,7 @@ const UserWorkflowV44 = (() => {
         const method = select.value;
         let problem = '';
         if (method === 'lock' && !getLockCredential()) problem = 'Set a Lock / Unlock PIN before selecting PIN-only Settings access.';
-        if (method === 'eye' && !getVisibilityCredential()) problem = 'Set an Eye Mode PIN before selecting Eye-PIN-only Settings access.';
+        if (method === 'eye' && !getVisibilityCredential()) problem = 'Set an Presentation Mode PIN before selecting Presentation-PIN-only Settings access.';
         if (method === 'encryption' && !currentSessionEncryptionKey()) problem = 'Enter the encryption password for this session before selecting encryption-only Settings access.';
         if (!problem) return;
         event.stopImmediatePropagation();
@@ -27433,7 +27555,7 @@ const UserWorkflowV44 = (() => {
     const lockStatus = el('settingsLockPinCardStatus');
     const eyeStatus = el('settingsVisibilityPinCardStatus');
     if (lockStatus) lockStatus.textContent = lockSet ? 'A Lock / Unlock PIN is set. Enter it above to test it, or enter matching new values to replace it.' : 'No Lock / Unlock PIN is set. The encryption password can still protect Settings when automatic access is selected.';
-    if (eyeStatus) eyeStatus.textContent = eyeSet ? 'An Eye Mode exit PIN is set. Enter it above to test it, or enter matching new values to replace it.' : lockSet ? 'No separate Eye PIN is set. Eye Mode can fall back to the Lock PIN.' : 'No Eye Mode PIN is set.';
+    if (eyeStatus) eyeStatus.textContent = eyeSet ? 'An Presentation Mode exit PIN is set. Enter it above to test it, or enter matching new values to replace it.' : lockSet ? 'No separate Presentation PIN is set. Presentation Mode can fall back to the Lock PIN.' : 'No Presentation Mode PIN is set.';
     const protectionToggle = el('settingsProtectionToggle');
     if (protectionToggle) protectionToggle.checked = (pageSettings().settingsAccessMethod || 'auto') !== 'none';
     const status = el('settingsAccessStatus');
@@ -27444,11 +27566,11 @@ const UserWorkflowV44 = (() => {
     const lock = type === 'lock';
     const input = el(lock ? 'settingsLockPin' : 'settingsVisibilityPin');
     const value = String(input?.value || '');
-    if (!credentialExists(type)) { updatePinStatus(`No ${lock ? 'Lock / Unlock' : 'Eye Mode'} PIN is currently set.`); return; }
-    if (!value) { updatePinStatus(`Enter the current ${lock ? 'Lock / Unlock' : 'Eye Mode'} PIN in the first field, then choose Test entered PIN.`); input?.focus(); return; }
+    if (!credentialExists(type)) { updatePinStatus(`No ${lock ? 'Lock / Unlock' : 'Presentation Mode'} PIN is currently set.`); return; }
+    if (!value) { updatePinStatus(`Enter the current ${lock ? 'Lock / Unlock' : 'Presentation Mode'} PIN in the first field, then choose Test entered PIN.`); input?.focus(); return; }
     try {
       const ok = lock ? await verifyPageLockSecret(value) : await verifyHashedCredential(VISIBILITY_CREDENTIAL_KEY, value);
-      updatePinStatus(ok ? `${lock ? 'Lock / Unlock' : 'Eye Mode'} PIN verified successfully.` : `Incorrect ${lock ? 'Lock / Unlock' : 'Eye Mode'} PIN.`);
+      updatePinStatus(ok ? `${lock ? 'Lock / Unlock' : 'Presentation Mode'} PIN verified successfully.` : `Incorrect ${lock ? 'Lock / Unlock' : 'Presentation Mode'} PIN.`);
       if (ok && lock) cachePageLockSecretForSession(value);
       if (!ok) input?.select();
     } catch (error) {
@@ -27459,7 +27581,7 @@ const UserWorkflowV44 = (() => {
   function removePin(type) {
     const lock = type === 'lock';
     if (!credentialExists(type)) return;
-    showInAppConfirm(`Remove the saved ${lock ? 'Lock / Unlock' : 'Eye Mode'} PIN?`, () => {
+    showInAppConfirm(`Remove the saved ${lock ? 'Lock / Unlock' : 'Presentation Mode'} PIN?`, () => {
       safeStorageRemove('localStorage', lock ? PAGE_LOCK_CREDENTIAL_KEY : VISIBILITY_CREDENTIAL_KEY);
       if (lock) clearCachedPageLockSecretForSession();
       const current = pageSettings().settingsAccessMethod || 'auto';
@@ -27467,11 +27589,11 @@ const UserWorkflowV44 = (() => {
         const fallback = currentSessionEncryptionKey() ? 'encryption' : 'auto';
         setAccessMethod(fallback, false);
       }
-      updatePinStatus(`${lock ? 'Lock / Unlock' : 'Eye Mode'} PIN removed.`);
+      updatePinStatus(`${lock ? 'Lock / Unlock' : 'Presentation Mode'} PIN removed.`);
       updateVisibilityCredentialNote();
       updateSecurityStatusPanel();
       updatePinControlState();
-      setLiveStatusMessage(`${lock ? 'Lock / Unlock' : 'Eye Mode'} PIN removed.`);
+      setLiveStatusMessage(`${lock ? 'Lock / Unlock' : 'Presentation Mode'} PIN removed.`);
     }, { title: `Remove ${lock ? 'Lock' : 'Eye'} PIN?`, confirmText: 'Remove PIN', cancelText: 'Keep PIN' });
   }
 
@@ -27770,7 +27892,7 @@ const StartupRecoveryV45 = (() => {
 
   async function beginFreshStart() {
     showInAppConfirm(
-      'Erase this browser’s local planner data and start with a new encryption password? This permanently removes local charts, snapshots, Settings, Lock/Eye PIN hashes, and cached save permissions. Downloaded files and Google Drive files are not deleted.',
+      'Erase this browser’s local planner data and start with a new encryption password? This permanently removes local charts, snapshots, Settings, Lock/Presentation PIN hashes, and cached save permissions. Downloaded files and Google Drive files are not deleted.',
       async () => {
         try {
           await clearPersistedPlannerData();
@@ -27856,8 +27978,8 @@ const ProductionReadinessV50 = (() => {
     settingsApplyEncryptionKeyBtn: ['security.encryption-change', 'Encryption password change requested'],
     settingsSaveLockPinBtn: ['security.lock-pin-save', 'Lock PIN save requested'],
     settingsRemoveLockPinBtn: ['security.lock-pin-remove', 'Lock PIN removal requested'],
-    settingsSaveVisibilityPinBtn: ['security.eye-pin-save', 'Eye PIN save requested'],
-    settingsRemoveVisibilityPinBtn: ['security.eye-pin-remove', 'Eye PIN removal requested'],
+    settingsSaveVisibilityPinBtn: ['security.eye-pin-save', 'Presentation PIN save requested'],
+    settingsRemoveVisibilityPinBtn: ['security.eye-pin-remove', 'Presentation PIN removal requested'],
     clearLocalDataBtn: ['maintenance.clear-local-data', 'Clear local data requested'],
     factoryResetEverythingBtn: ['maintenance.factory-reset', 'Factory reset requested'],
     repairDataIntegrityBtn: ['maintenance.repair', 'Safe data-integrity repair requested'],
