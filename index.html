@@ -5,7 +5,7 @@
   <meta name="license" content="MIT License" />
   <meta name="spdx-license-identifier" content="MIT" />
   <meta name="copyright" content="Copyright (c) 2026 Chris L. Franklin" />
-  <meta name="app-version" content="6.5.4" />
+  <meta name="app-version" content="6.5.5" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com https://www.paypalobjects.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://www.googleapis.com https://classroom.googleapis.com https://accounts.google.com https://www.paypal.com https://www.paypalobjects.com https://www.google-analytics.com https://*.google-analytics.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://www.paypal.com; img-src 'self' data: blob: https://www.paypalobjects.com https://www.google-analytics.com; font-src 'self' data:; worker-src 'self' blob:; manifest-src 'self'; media-src 'none'; object-src 'none'; base-uri 'none'; form-action 'self' https://www.paypal.com" />
   <meta name="application-name" content="Classroom Seating Planner" />
@@ -4387,10 +4387,12 @@ body.header-collapsed .header-settings-slot #snapshotQuickBtn{width:30px;min-wid
   }.modal .button-row > button:not(.icon-button){flex:1 1 min(170px, 100%)
   }.modal .button-row > .icon-button{flex:0 0 34px
   }
-}.seat-display-controls{display:inline-grid;grid-template-columns:auto minmax(84px, 118px) auto auto minmax(84px, 118px) auto;align-items:center;gap:5px;padding:4px 7px;border:1px solid var(--border);border-radius:10px;background:var(--panel, #fff);white-space:nowrap;position:sticky;left:0;z-index:3;box-shadow:4px 0 10px color-mix(in srgb, var(--text) 8%, transparent)
-}.seat-display-controls label{margin:0;font-size:9px
-}.seat-display-controls input[type="range"]{width:100%;min-width:84px;min-height:22px;padding:0
-}.seat-display-controls .pill{min-width:40px;justify-content:center
+}.seat-display-controls{display:flex;align-items:center;gap:7px;padding:4px 7px;border:1px solid var(--border);border-radius:10px;background:var(--panel, #fff);white-space:nowrap;position:sticky;left:0;z-index:3;flex:0 0 auto;box-shadow:4px 0 10px color-mix(in srgb, var(--text) 8%, transparent)
+}.seat-display-control{display:grid;grid-template-columns:auto minmax(84px, 118px) auto;align-items:center;gap:5px;min-width:0
+}.seat-display-control label{margin:0;font-size:9px
+}.seat-display-control input[type="range"]{width:100%;min-width:84px;min-height:22px;padding:0
+}.seat-display-control .pill{min-width:40px;justify-content:center
+}.mobile-room-pan-button{display:none;min-width:84px;white-space:nowrap
 }body.product-v4 .cell .seat-person{font-size:calc(11.2px * var(--seat-text-scale, 1))
 }body.product-v4 .freeform-object .freeform-object-title{font-size:calc(12px * var(--seat-text-scale, 1))
 }body.product-v4 .freeform-object .freeform-object-meta,
@@ -4416,11 +4418,28 @@ body.visibility-mode #layoutToolsPanel{display:none
 }body.product-v4.visibility-mode[data-workflow="review"] .center-panel{display:flex
 }body.visibility-mode .center-panel > .panel-header .button-row{justify-content:flex-end
 }body.visibility-mode .center-panel > .panel-header .button-row > button{display:none
-}body.visibility-mode .seat-display-controls{display:inline-grid
-}@media (max-width: 900px){.seat-display-controls{grid-template-columns:auto minmax(72px, 1fr) auto;max-width:100%
-  }.seat-display-controls label:nth-of-type(2),
-  .seat-display-controls #seatTextSizeSlider,
-  .seat-display-controls #seatTextSizeValue{grid-row:2
+}body.visibility-mode .seat-display-controls{display:flex
+}@media (max-width: 900px){body.product-v4 .center-panel > .panel-header{align-items:stretch;flex-direction:column
+  }body.product-v4 .center-panel > .panel-header > h2{width:100%;max-width:100%
+  }body.product-v4 .center-panel > .panel-header .button-row{width:100%;max-width:100%;min-width:0;flex-wrap:nowrap;justify-content:flex-start;overflow-x:auto;overflow-y:hidden;padding-bottom:3px;scroll-padding-inline:4px;-webkit-overflow-scrolling:touch
+  }.seat-display-controls,
+  body.visibility-mode .seat-display-controls{display:grid;grid-template-columns:minmax(0, 1fr);width:min(100%, 360px);max-width:none;flex:0 0 min(100%, 360px);gap:5px;padding:6px 7px;white-space:normal
+  }.seat-display-control{grid-template-columns:minmax(62px, auto) minmax(92px, 1fr) 44px;width:100%;gap:6px
+  }.seat-display-control label{font-size:10px;line-height:1.15;white-space:normal
+  }.seat-display-control input[type="range"]{min-width:92px
+  }.mobile-room-pan-button:not([hidden]){display:inline-flex;align-items:center;justify-content:center;width:100%;min-height:34px
+  }body.product-v4 .center-panel .grid-wrap{display:block;justify-items:initial;align-items:initial;overflow:scroll;overscroll-behavior:contain;touch-action:pan-x pan-y;scrollbar-gutter:stable;-webkit-overflow-scrolling:touch
+  }body.product-v4 .center-panel .grid-wrap > .seat-grid:not(.freeform-canvas),
+  body.product-v4 .center-panel .grid-wrap > .freeform-canvas-stage{margin:0
+  }body.product-v4 .center-panel .grid-wrap > .seat-grid:not(.freeform-canvas){width:max-content;min-width:max-content;justify-content:start
+  }body:not([data-workflow="room"]) .seat-grid.freeform-canvas,
+  body.mobile-room-pan-mode .seat-grid.freeform-canvas{touch-action:pan-x pan-y
+  }body.mobile-room-pan-mode .center-panel .grid-wrap{cursor:grab
+  }body.mobile-room-pan-mode .center-panel .grid-wrap:active{cursor:grabbing
+  }
+}@media (max-width: 420px){.seat-display-controls,
+  body.visibility-mode .seat-display-controls{width:100%;flex-basis:100%
+  }.seat-display-control{grid-template-columns:58px minmax(78px, 1fr) 42px
   }
 }body.visibility-mode.vis-hide-wizard #guidedLearningBtn,
 body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
@@ -4888,13 +4907,18 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
       <div class="panel-header">
         <h2>Room Layout</h2>
         <div class="button-row no-print">
-          <div id="seatDisplayControls" class="seat-display-controls" aria-label="Seat display controls">
-            <label for="seatViewZoomSlider">Zoom</label>
-            <input id="seatViewZoomSlider" type="range" min="35" max="175" step="5" value="100" title="Change seat and room-object size on screen without changing saved positions." />
-            <span id="seatViewZoomValue" class="pill">100%</span>
-            <label for="seatTextSizeSlider">Text</label>
-            <input id="seatTextSizeSlider" type="range" min="70" max="200" step="5" value="100" title="Change the size of student and object text inside seats." />
-            <span id="seatTextSizeValue" class="pill">100%</span>
+          <div id="seatDisplayControls" class="seat-display-controls" aria-label="Room display controls">
+            <div class="seat-display-control">
+              <label for="seatViewZoomSlider">Seat zoom</label>
+              <input id="seatViewZoomSlider" type="range" min="35" max="175" step="5" value="100" title="Change seat and room-object size on screen without changing saved positions." />
+              <output id="seatViewZoomValue" class="pill" for="seatViewZoomSlider">100%</output>
+            </div>
+            <div class="seat-display-control">
+              <label for="seatTextSizeSlider">Text size</label>
+              <input id="seatTextSizeSlider" type="range" min="70" max="200" step="5" value="100" title="Change the size of student and object text inside seats." />
+              <output id="seatTextSizeValue" class="pill" for="seatTextSizeSlider">100%</output>
+            </div>
+            <button id="mobileRoomPanBtn" class="secondary mobile-room-pan-button" type="button" aria-pressed="false" title="On mobile, turn this on to drag the room viewport without moving seats or objects.">Pan room</button>
           </div>
           <button type="button" id="generateBtn">Generate Chart</button>
           <button type="button" id="randomizeAllBtn" class="secondary">Randomize + Seat Everyone</button>
@@ -6243,7 +6267,7 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
 const APP_CONFIG = Object.freeze({
   name: 'Classroom Seating Planner',
   shortName: 'Seating Planner',
-  version: '6.5.4',
+  version: '6.5.5',
   copyrightHolder: 'Chris L. Franklin',
   copyrightYear: '2026',
   releaseDate: '2026-07-15',
@@ -6516,10 +6540,22 @@ const PROJECT_FEATURES = [
 
 const RELEASE_HISTORY = [
   {
+    version: '6.5.5',
+    date: 'July 15, 2026',
+    title: 'Mobile room controls and full-viewport panning',
+    current: true,
+    changes: [
+      'Reflowed Seat zoom and Text size into fitted mobile rows so labels, sliders, and percentages remain readable on narrow screens.',
+      'Changed the mobile room viewport to a start-aligned two-axis scrolling surface so oversized Grid and Freeform rooms no longer extend into unreachable centered space.',
+      'Added a mobile Pan room control that moves the viewport without moving seats or room objects, and turns on automatically in mobile Presentation Mode.',
+      'Allowed native room swipes in Seat Students and Review while preserving deliberate object editing in Room Design, with focused and real-browser mobile validation.'
+    ]
+  },
+  {
     version: '6.5.4',
     date: 'July 15, 2026',
     title: 'Presentation Chart Review lockout repair',
-    current: true,
+    current: false,
     changes: [
       'Corrected the Review workflow CSS specificity that could make the Chart Review sidebar visible during Presentation Mode.',
       'Presentation Mode now marks the Chart Review panel hidden, inert, and unavailable to assistive technology until authenticated exit.',
@@ -7047,6 +7083,9 @@ const uiState = {
   lockedSnapshotEncrypted: '',
   mobileActivePanel: 'layout',
   mobileCarryItem: null,
+  mobileRoomPanActive: false,
+  mobileRoomPanPointer: null,
+  visibilityPreviousMobileRoomPan: false,
   groupManagerCarryItem: null,
   visibilityMode: false,
   visibilityPreviousNamesOnly: true,
@@ -7995,6 +8034,96 @@ function setSeatTextScale(value, { announce = false } = {}) {
   if (announce) setLiveStatusMessage(`Seat text size set to ${Math.round(percent)}%.`);
 }
 
+function syncMobileRoomPanUi() {
+  const mobile = isMobileViewport();
+  if (!mobile) {
+    uiState.mobileRoomPanActive = false;
+    uiState.mobileRoomPanPointer = null;
+  }
+  document.body.classList.toggle('mobile-room-pan-mode', mobile && !!uiState.mobileRoomPanActive);
+  const button = el('mobileRoomPanBtn');
+  if (!button) return;
+  button.hidden = !mobile;
+  const active = mobile && !!uiState.mobileRoomPanActive;
+  button.setAttribute('aria-pressed', active ? 'true' : 'false');
+  button.textContent = active ? 'Pan: On' : 'Pan room';
+  button.title = active
+    ? 'Drag anywhere in the room to move the viewport. Turn Pan off to edit seats or room objects.'
+    : 'Turn Pan on to drag around a room that is larger than the mobile screen.';
+}
+
+function setMobileRoomPanActive(active, { announce = false } = {}) {
+  uiState.mobileRoomPanActive = Boolean(active && isMobileViewport());
+  uiState.mobileRoomPanPointer = null;
+  syncMobileRoomPanUi();
+  if (announce) {
+    setLiveStatusMessage(uiState.mobileRoomPanActive
+      ? 'Room Pan is on. Drag anywhere in the room to move around without editing seats or objects.'
+      : 'Room Pan is off. Normal seat and room interactions are available.');
+  }
+}
+
+function toggleMobileRoomPan() {
+  setMobileRoomPanActive(!uiState.mobileRoomPanActive, { announce: true });
+}
+
+function beginMobileRoomPan(event) {
+  if (!uiState.mobileRoomPanActive || !isMobileViewport() || event.button !== 0 || event.isPrimary === false) return;
+  const scroller = event.currentTarget;
+  if (!(scroller instanceof HTMLElement) || event.target.closest('.freeform-minimap')) return;
+  uiState.mobileRoomPanPointer = {
+    pointerId: event.pointerId,
+    startX: event.clientX,
+    startY: event.clientY,
+    scrollLeft: scroller.scrollLeft,
+    scrollTop: scroller.scrollTop,
+    moved: false,
+    scroller
+  };
+  scroller.setPointerCapture?.(event.pointerId);
+  event.preventDefault();
+  event.stopImmediatePropagation();
+}
+
+function moveMobileRoomPan(event) {
+  const pan = uiState.mobileRoomPanPointer;
+  if (!pan || event.pointerId !== pan.pointerId) return;
+  const deltaX = event.clientX - pan.startX;
+  const deltaY = event.clientY - pan.startY;
+  if (!pan.moved && Math.hypot(deltaX, deltaY) >= 4) pan.moved = true;
+  pan.scroller.scrollLeft = Math.max(0, pan.scrollLeft - deltaX);
+  pan.scroller.scrollTop = Math.max(0, pan.scrollTop - deltaY);
+  event.preventDefault();
+  event.stopImmediatePropagation();
+}
+
+function finishMobileRoomPan(event) {
+  const pan = uiState.mobileRoomPanPointer;
+  if (!pan || event.pointerId !== pan.pointerId) return;
+  pan.scroller.releasePointerCapture?.(event.pointerId);
+  if (pan.moved) {
+    uiState.skipNextCellClick = true;
+    uiState.suppressFreeformCanvasClick = true;
+    setTimeout(() => {
+      uiState.skipNextCellClick = false;
+      uiState.suppressFreeformCanvasClick = false;
+    }, 80);
+  }
+  uiState.mobileRoomPanPointer = null;
+  event.preventDefault();
+  event.stopImmediatePropagation();
+}
+
+function installMobileRoomPanHandlers() {
+  const scroller = el('seatGrid')?.closest('.grid-wrap');
+  if (!scroller || scroller.dataset.mobileRoomPanInstalled === 'true') return;
+  scroller.dataset.mobileRoomPanInstalled = 'true';
+  scroller.addEventListener('pointerdown', beginMobileRoomPan, true);
+  scroller.addEventListener('pointermove', moveMobileRoomPan, true);
+  scroller.addEventListener('pointerup', finishMobileRoomPan, true);
+  scroller.addEventListener('pointercancel', finishMobileRoomPan, true);
+}
+
 const normalCellFloor = () => Math.round(142 * gridViewScale());
 const designCellWidth = () => clampNumber(uiState.designCellSize || 28, 20, 72);
 const designCellHeight = () => Math.max(26, Math.round(designCellWidth() * 1.32));
@@ -8013,6 +8142,7 @@ function setMobilePanel(panelName = 'layout') {
     button.setAttribute('aria-pressed', active ? 'true' : 'false');
   });
   if (typeof updateMobileCarryUi === 'function') updateMobileCarryUi();
+  syncMobileRoomPanUi();
 }
 
 function isMobileViewport() {
@@ -8207,7 +8337,9 @@ function keepMobileWorkspaceUsable() {
     }
   } else {
     document.body.classList.remove('mobile-view-layout', 'mobile-view-people', 'mobile-view-status');
+    setMobileRoomPanActive(false);
   }
+  syncMobileRoomPanUi();
 }
 
 
@@ -10769,6 +10901,7 @@ function finishFreeformPointerRotation(event) {
 
 function beginFreeformPointerDrag(event, id) {
   if (event.button !== 0 || eyeModeBlocksRoomEditing()) return;
+  if (isMobileViewport() && (uiState.mobileRoomPanActive || document.body.dataset.workflow !== 'room')) return;
   restoreFreeformGeometryFromCache();
   const obj = (state.freeformLayout?.objects || []).find(item => item.id === id);
   if (!obj) return;
@@ -14666,6 +14799,7 @@ function eyeModeBlocksGroupEditing() { return !!uiState.visibilityMode; }
 function enterVisibilityMode() {
   uiState.visibilityPreviousNamesOnly = uiState.namesOnlyLayout;
   uiState.visibilityPreviousWorkflow = document.body.dataset.workflow || 'review';
+  uiState.visibilityPreviousMobileRoomPan = !!uiState.mobileRoomPanActive;
   if (uiState.designMode) {
     uiState.designMode = false;
     hideDesignModeTooltip();
@@ -14674,6 +14808,7 @@ function enterVisibilityMode() {
   uiState.visibilityMode = true;
   document.getElementById('v4CommandPalette')?.classList.remove('show');
   ProductExperience?.setWorkflow?.('review', { silent: true, presentation: true });
+  if (isMobileViewport()) setMobileRoomPanActive(true);
   if (pageSettings().visibility.forceNamesOnly) uiState.namesOnlyLayout = true;
   if (pageSettings().visibility.hideGroupDetails && ['groups','zones'].includes(uiState.activeSideTab)) setSideTab('students');
   refreshNamesOnlyToggle();
@@ -14709,6 +14844,7 @@ async function requestEnterVisibilityMode() {
 function exitVisibilityMode() {
   uiState.visibilityMode = false;
   uiState.namesOnlyLayout = !!uiState.visibilityPreviousNamesOnly;
+  setMobileRoomPanActive(!!uiState.visibilityPreviousMobileRoomPan);
   ProductExperience?.setWorkflow?.(uiState.visibilityPreviousWorkflow || 'review', { silent: true });
   safeStorageRemove('sessionStorage', VISIBILITY_WRAPPED_KEY_SESSION_KEY);
   safeStorageRemove('sessionStorage', VISIBILITY_DATA_SESSION_KEY);
@@ -18732,13 +18868,22 @@ const HELP_GUIDE_SECTIONS = [
         "text": "Dense action rows scroll horizontally instead of crushing button labels or shrinking touch targets."
       },
       {
-        "title": "Touch room editing",
-        "text": "Grid selection and Freeform dragging support touch. Use landscape orientation for detailed room changes."
+        "title": "Seat zoom and text size",
+        "text": "The room header keeps Seat zoom and Text size in two fitted rows. Seat zoom changes how large seats and room objects appear; Text size changes the labels inside them without altering saved room geometry."
+      },
+      {
+        "title": "Move around a large room",
+        "text": "Swipe the room in Seat Students and Review to reach content beyond the phone screen. In Room Design, turn on Pan room before dragging the viewport so the gesture moves the view instead of a seat or object. Turn Pan off again to edit."
+      },
+      {
+        "title": "Presentation Mode on mobile",
+        "text": "Pan room turns on automatically in mobile Presentation Mode. Zoom, Text size, and Pan remain available while editing and workflow controls stay locked."
       }
     ],
     "tips": [
       "Use landscape orientation for detailed room layout edits when possible.",
-      "Use desktop or tablet screens for large setup tasks. Phone mode is best for quick edits, attendance, and placement checks."
+      "When a room is larger than the screen, use ordinary swipes in Seat Students or Review, or turn on Pan room while designing.",
+      "Use desktop or tablet screens for large setup tasks. Phone mode is best for quick edits, attendance, placement checks, and presenting a finished chart."
     ],
     "examples": [
       "Open Seat Students, select an unassigned student, then tap the desired visible seat."
@@ -21636,6 +21781,9 @@ function wireEvents() {
   el('seatViewZoomSlider')?.addEventListener('change', event => setSeatViewZoom(event.target.value, { announce: true }));
   el('seatTextSizeSlider')?.addEventListener('input', event => setSeatTextScale(event.target.value));
   el('seatTextSizeSlider')?.addEventListener('change', event => setSeatTextScale(event.target.value, { announce: true }));
+  el('mobileRoomPanBtn')?.addEventListener('click', toggleMobileRoomPan);
+  installMobileRoomPanHandlers();
+  syncMobileRoomPanUi();
 
   el('designModeBtn').addEventListener('click', () => {
     uiState.designMode = !uiState.designMode;
@@ -28979,6 +29127,7 @@ const ClassroomWorkflowV53 = (() => {
 
   function beginMarquee(event) {
     if(state.layoutMode!=='freeform'||document.body.classList.contains('freeform-pan-mode')||event.button!==0)return;
+    if(isMobileViewport()&&(uiState.mobileRoomPanActive||document.body.dataset.workflow!=='room'))return;
     const grid=el('seatGrid');if(!grid||!grid.contains(event.target))return;
     if(event.target.closest('button,input,select,textarea,.freeform-minimap,.freeform-resize-handle,.freeform-rotate-handle'))return;
     const objectNode=event.target.closest('.freeform-object');
