@@ -5,13 +5,13 @@
   <meta name="license" content="MIT License" />
   <meta name="spdx-license-identifier" content="MIT" />
   <meta name="copyright" content="Copyright (c) 2026 Chris L. Franklin" />
-  <meta name="app-version" content="6.5.2" />
+  <meta name="app-version" content="6.5.3" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com https://www.paypalobjects.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://www.googleapis.com https://classroom.googleapis.com https://accounts.google.com https://www.paypal.com https://www.paypalobjects.com https://www.google-analytics.com https://*.google-analytics.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://www.paypal.com; img-src 'self' data: blob: https://www.paypalobjects.com https://www.google-analytics.com; font-src 'self' data:; worker-src 'self' blob:; manifest-src 'self'; media-src 'none'; object-src 'none'; base-uri 'none'; form-action 'self' https://www.paypal.com" />
   <meta name="application-name" content="Classroom Seating Planner" />
   <meta name="theme-color" content="#1e3a8a" />
   
-  <meta name="build-date" content="2026-07-14T00:00:00Z" />
+  <meta name="build-date" content="2026-07-15T00:00:00Z" />
   <title>Classroom Seating Planner</title>
   <style>@layer app-base, app-priority;@layer app-base{:root{--bg:#f6f7fb;--panel-2:#f0f3f8;--text:#172033;--muted:#607089;--border:#d8deea;--accent:#2f6fed;--accent-dark:#1e55bd;--seat:#e8f0ff;--seat-border:#9db7ef;--teacher:#fff3d6;--table:#e8f7ec;--door:#fce8ee;--empty:#fbfcff;--shadow:0 12px 30px rgba(29, 39, 61, 0.08);--radius:14px;font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif
 }*{box-sizing:border-box
@@ -2643,8 +2643,6 @@ body[data-theme="linux"] .class-setup-review-row{background:var(--panel-bg, #0f1
 }.change-log-heading strong{font-size:13px;line-height:1.3
 }.change-log-version{display:block;margin-top:3px;color:var(--muted);font-size:11px;font-weight:750;line-height:1.3
 }.change-log-entry ul{margin-top:8px
-}.district-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 12px
-}.district-form-grid .district-wide{grid-column:1 / -1
 }.drive-manager-modal{width:min(1080px,96vw);max-width:1080px
 }.drive-manager-list,
 .drive-revision-list{display:grid;gap:8px;margin-top:10px;max-height:58vh;overflow:auto
@@ -2659,9 +2657,7 @@ body[data-theme="linux"] .class-setup-review-row{background:var(--panel-bg, #0f1
 }.drive-manager-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:5px
 }.district-roster-modal{width:min(1040px,96vw);max-width:1040px
 }#districtRosterPreview{margin:10px 0;max-height:320px
-}@media (max-width:760px){.district-form-grid{grid-template-columns:1fr
-  }.district-form-grid .district-wide{grid-column:auto
-  }.drive-manager-row,
+}@media (max-width:760px){.drive-manager-row,
   .drive-revision-row{grid-template-columns:1fr
   }.drive-manager-actions{justify-content:flex-start
   }
@@ -3058,10 +3054,7 @@ body.visibility-mode.vis-hide-status .right-panel,
 body.visibility-mode.vis-hide-chart-actions #generateBtn,
 body.visibility-mode.vis-hide-chart-actions #randomizeAllBtn,
 body.visibility-mode.vis-hide-chart-actions #clearAssignmentsBtn,
-body.visibility-mode.vis-hide-chart-actions #clearAnchorsBtn,
-body.visibility-mode.vis-hide-room-header-actions #layoutNamesOnlyBtn,
-body.visibility-mode.vis-hide-room-header-actions #hideUnassignedTitlesBtn,
-body.visibility-mode.vis-hide-room-header-actions #analyzeBtn{display:none
+body.visibility-mode.vis-hide-chart-actions #clearAnchorsBtn{display:none
 }body.visibility-mode.vis-hide-students.vis-hide-status .app{grid-template-columns:minmax(0, 1fr)
 }body.visibility-mode.vis-hide-students:not(.vis-hide-status) .app{grid-template-columns:minmax(0, 1fr) var(--right-col)
 }body.visibility-mode.vis-hide-status:not(.vis-hide-students) .app{grid-template-columns:var(--left-col) minmax(0, 1fr)
@@ -4224,21 +4217,11 @@ body.interface-v51 .settings-modal .settings-page-tab .settings-page-desc{max-wi
 }body.interface-v51 .settings-modal .settings-page-tab .settings-page-desc{align-self:start;line-height:1.3
 }.settings-modal .settings-page-content{scrollbar-gutter:stable
 }.hint.dismissible-hint{min-height:46px;padding-right:52px
-}.district-integrations-page .district-form-grid{grid-template-columns:repeat(auto-fit, minmax(min(260px, 100%), 1fr));align-items:end
-}.district-integrations-page .district-form-grid .district-wide{grid-column:1 / -1
-}.district-integrations-page .field,
-.district-integrations-page input,
-.district-integrations-page select{min-width:0
-}.district-integrations-page label{white-space:normal;line-height:1.25;overflow-wrap:anywhere
-}.district-integrations-page .district-action-row{display:grid;grid-template-columns:repeat(auto-fit, minmax(min(210px, 100%), 1fr));gap:8px;width:100%
-}.district-integrations-page .district-action-row button{width:100%;min-width:0;min-height:40px;padding:8px 10px;white-space:normal;text-align:center;line-height:1.25;overflow-wrap:anywhere
-}.district-integrations-page .district-status-hint{min-height:46px;padding-right:52px;overflow-wrap:anywhere
 }@media (max-width: 860px){.settings-modal .modal-body.settings-body{grid-template-columns:1fr
   }body.interface-v51 .settings-modal .settings-page-tab{min-height:68px
   }
 }@media (max-width: 560px){body.interface-v51 .settings-modal .settings-page-tab{min-height:48px;grid-template-columns:32px minmax(0, 1fr)
   }body.interface-v51 .settings-modal .settings-page-tab .settings-page-desc{display:none
-  }.district-integrations-page .district-action-row{grid-template-columns:1fr
   }
 }.concurrent-tab-banner{border-bottom-color:#fdba74;background:#fff7ed;color:#7c2d12
 }.concurrent-tab-banner .danger{background:#9a3412;color:#ffffff;border-color:#7c2d12
@@ -4467,7 +4450,7 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
       <button type="button" id="visibilityModeBtn" class="secondary icon-button" aria-label="Toggle Presentation Mode" title="Show the finished seating chart in locked Review mode. Exiting requires the Presentation PIN, Lock PIN, or encryption key.">👁</button>
       <button type="button" id="helpGuideBtn" class="secondary icon-button" aria-label="Open help guide" title="Open the searchable help guide for every major tool, setting, and workflow.">?</button>
       <button id="snapshotQuickBtn" class="secondary icon-button" type="button" aria-label="Take full-app snapshot" title="Take a full-app snapshot and open the snapshot list">📸</button>
-      <button type="button" id="settingsBtn" class="secondary icon-button" aria-label="Open settings" title="Open settings for page defaults, visibility mode, security, About, sample data, and custom right-click room objects">⚙</button>
+      <button type="button" id="settingsBtn" class="secondary icon-button" aria-label="Open settings" title="Open settings for page defaults, Presentation Mode, security, About, sample data, and custom right-click room objects">⚙</button>
       <button type="button" id="pageLockBtn" class="secondary icon-button" aria-label="Lock page" title="Lock the seating chart screen so changes cannot be made until the PIN/password is entered again">🔒</button>
     </div>
     <div class="header-toggle-slot no-print">
@@ -5488,7 +5471,6 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
                       <div class="hint">Presentation Mode switches to Review, hides workflow guidance, rosters, chart-review details, undo/redo, Help, snapshots, and editing tools, and keeps only the room display plus its Zoom and Text sliders. The full original chart is encrypted into session storage, the visible in-memory chart is sanitized, and exiting restores the original with the Presentation PIN, Lock PIN, or current encryption key.</div>
                       <div class="settings-grid two-col">
                         <label class="checkline" for="visHidePrint"><input id="visHidePrint" type="checkbox" /> <span>Hide Print controls</span></label>
-                        <label class="checkline" for="visHideRoomHeaderActions"><input id="visHideRoomHeaderActions" type="checkbox" /> <span>Hide Room Layout header buttons</span></label>
                         <label class="checkline" for="visForceNamesOnly"><input id="visForceNamesOnly" type="checkbox" /> <span>Force Names Only while presentation mode is active</span></label>
                         <label class="checkline" for="visHideGroupDetails"><input id="visHideGroupDetails" type="checkbox" /> <span>Hide group/zone details and markers</span></label>
                         </div>
@@ -5565,12 +5547,6 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
                         <button id="settingsGoogleDriveLoadBtn" class="secondary" type="button">Load from Drive</button>
                         <button id="settingsGoogleDriveForgetBtn" class="secondary" type="button">Disconnect</button>
                       </div>
-                      <div class="google-analytics-settings">
-                        <h4>Google Analytics</h4>
-                        <label class="checkline" for="settingGoogleAnalyticsEnabled"><input id="settingGoogleAnalyticsEnabled" type="checkbox" /> <span>Allow anonymous usage analytics on this browser</span></label>
-                        <div id="googleAnalyticsSettingsStatus" class="hint" aria-live="polite">Checking analytics preference...</div>
-                        <div class="encryption-note">This browser-only preference is not stored in classroom save files. Analytics is loaded only from hosted HTTP/HTTPS pages, sends the standard page view to measurement ID G-NMRMNM7ZCD, and does not add student names, notes, class names, seat assignments, or save contents as custom events.</div>
-                      </div>
                     </section>
           </div>
           <div id="settingsPageSecurity" class="settings-page" role="tabpanel" data-settings-panel="security" aria-label="Security &amp; Data settings">
@@ -5620,7 +5596,7 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
                       <div id="settingsAccessStatus" class="hint"></div>
                     </section>
             <section class="section settings-section">
-                      <h3>Lock / Visibility PINs</h3>
+                      <h3>Lock / Presentation PINs</h3>
                       <div class="hint">PINs are stored as salted PBKDF2-SHA-256 hashes, not plain text. Chart data encryption still uses the encryption key when set, otherwise the lock PIN/password is used as a fallback.</div>
                       <div class="settings-grid two-col">
                         <div class="security-card">
@@ -6266,12 +6242,12 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
 const APP_CONFIG = Object.freeze({
   name: 'Classroom Seating Planner',
   shortName: 'Seating Planner',
-  version: '6.5.2',
+  version: '6.5.3',
   copyrightHolder: 'Chris L. Franklin',
   copyrightYear: '2026',
-  releaseDate: '2026-07-14',
-  releaseDateDisplay: 'July 14, 2026',
-  buildDate: '2026-07-14T00:00:00Z',
+  releaseDate: '2026-07-15',
+  releaseDateDisplay: 'July 15, 2026',
+  buildDate: '2026-07-15T00:00:00Z',
   commit: 'local',
   environment: 'production',
   dataSchemaVersion: 13,
@@ -6539,10 +6515,23 @@ const PROJECT_FEATURES = [
 
 const RELEASE_HISTORY = [
   {
+    version: '6.5.3',
+    date: 'July 15, 2026',
+    title: 'Complete codebase audit, import hardening, and settings cleanup',
+    current: true,
+    changes: [
+      'Preflighted local and Google Drive import sizes before reading response bodies, while retaining full post-read UTF-8 byte validation and existing schema checks.',
+      'Removed the unused District Profile page and obsolete Presentation header-action option, and moved Google Analytics controls into Settings > Google.',
+      'Tightened Lock, Presentation, and viewer credential boundaries, rejected oversized verification input before PBKDF2, and removed predictable identifier fallback behavior.',
+      'Restricted Drive links, bounded service-worker navigation caching to the application shell, and made failed external-script loads retryable.',
+      'Removed stale release-audit artifacts, strengthened static connectivity and bounded-I/O checks, refreshed current documentation, and revalidated all supported workflows.'
+    ]
+  },
+  {
     version: '6.5.2',
     date: 'July 15, 2026',
     title: 'Presentation workspace and universal room display controls',
-    current: true,
+    current: false,
     changes: [
       'Leaving Room Design now turns Design Mode off automatically before another workflow opens.',
       'Added persistent Zoom and Text sliders anywhere the interactive Grid or Freeform room is visible.',
@@ -6911,7 +6900,7 @@ const RELEASE_HISTORY = [
     date: 'July 2026',
     title: 'District integrations and cloud lifecycle management',
     changes: [
-      'Added district profiles, Google Classroom and SIS roster reconciliation, purpose-limited read-only classroom packages, and a unified Google Settings hub.',
+      'Added Google Classroom and SIS roster reconciliation, purpose-limited read-only classroom packages, and a unified Google Settings hub.',
       'Added deployment-owned Google Picker support, Drive file management, revision browsing, stronger conflict detection, and Classroom CSP coverage.',
       'Added SHA-256 backup manifests, bounded import validation, targeted rendering, Settings auto-save, complete Factory Reset cleanup, and responsive Settings repairs.'
     ]
@@ -7275,17 +7264,13 @@ function clearPlannerWebStorage(storageName) {
   return { removed, failed };
 }
 const keyOf = (row, col) => `${row}-${col}`;
-let fallbackIdCounter = 0;
 function secureRandomToken(byteLength = 16) {
   const size = Math.max(8, Math.min(64, Number(byteLength) || 16));
-  if (window.crypto?.getRandomValues) {
-    const bytes = crypto.getRandomValues(new Uint8Array(size));
-    return Array.from(bytes, byte => byte.toString(16).padStart(2, '0')).join('');
-  }
-  fallbackIdCounter += 1;
-  return `${Date.now().toString(36)}-${fallbackIdCounter.toString(36)}`;
+  if (!window.crypto?.getRandomValues) throw new Error('Secure random-number generation is required by this browser.');
+  const bytes = window.crypto.getRandomValues(new Uint8Array(size));
+  return Array.from(bytes, byte => byte.toString(16).padStart(2, '0')).join('');
 }
-const uid = (prefix) => `${prefix}-${crypto.randomUUID ? crypto.randomUUID() : secureRandomToken(16)}`;
+const uid = (prefix) => `${prefix}-${window.crypto?.randomUUID?.() || secureRandomToken(16)}`;
 const escapeHtml = (value) => String(value ?? '').replace(/[&<>'"]/g, ch => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#039;', '"':'&quot;' }[ch]));
 const cssEscape = (value) => (window.CSS && typeof window.CSS.escape === 'function') ? window.CSS.escape(String(value)) : String(value ?? '').replace(/[^a-zA-Z0-9_-]/g, '\\$&');
 const GROUP_COLORS = ['#2f6fed', '#e11d48', '#16a34a', '#f59e0b', '#7c3aed', '#0891b2', '#db2777', '#65a30d', '#ea580c', '#475569'];
@@ -7318,10 +7303,6 @@ const DEFAULT_PAGE_SETTINGS = Object.freeze({
   googleDriveFileVersion: '',
   googleDriveHeadRevisionId: '',
   googleDriveRemoteMd5: '',
-  districtName: '',
-  districtDomain: '',
-  districtSupportUrl: '',
-  googleClassroomEnabled: false,
   designCellSize: 28,
   freeformSnapToGrid: true,
   freeformAllowSeatPassThrough: true,
@@ -7352,7 +7333,6 @@ const DEFAULT_PAGE_SETTINGS = Object.freeze({
     hideStudentsPanel: true,
     hideStatusPanel: true,
     hideChartActions: true,
-    hideRoomHeaderActions: false,
     forceNamesOnly: true,
     hideGroupDetails: true,
     disableSeatEditing: true,
@@ -7390,10 +7370,6 @@ function mergePageSettingsCore(value) {
     googleDriveFileVersion: String(source.googleDriveFileVersion || '').trim(),
     googleDriveHeadRevisionId: String(source.googleDriveHeadRevisionId || '').trim(),
     googleDriveRemoteMd5: String(source.googleDriveRemoteMd5 || '').trim(),
-    districtName: String(source.districtName || '').trim().slice(0, 160),
-    districtDomain: String(source.districtDomain || '').trim().slice(0, 160),
-    districtSupportUrl: String(source.districtSupportUrl || '').trim().slice(0, 500),
-    googleClassroomEnabled: source.googleClassroomEnabled ?? false,
     designCellSize: clampNumber(source.designCellSize ?? DEFAULT_PAGE_SETTINGS.designCellSize, 20, 72),
     freeformSnapToGrid: source.freeformSnapToGrid ?? DEFAULT_PAGE_SETTINGS.freeformSnapToGrid,
     freeformAllowSeatPassThrough: source.freeformAllowSeatPassThrough ?? DEFAULT_PAGE_SETTINGS.freeformAllowSeatPassThrough,
@@ -7424,7 +7400,6 @@ function mergePageSettingsCore(value) {
       hideStudentsPanel: true,  
       hideStatusPanel: true,
       hideChartActions: true,
-      hideRoomHeaderActions: visibility.hideRoomHeaderActions ?? DEFAULT_PAGE_SETTINGS.visibility.hideRoomHeaderActions,
       forceNamesOnly: visibility.forceNamesOnly ?? DEFAULT_PAGE_SETTINGS.visibility.forceNamesOnly,
       hideGroupDetails: visibility.hideGroupDetails ?? visibility[LEGACY_SCHEMA_12_GROUP_FIELDS.hideDetails] ?? DEFAULT_PAGE_SETTINGS.visibility.hideGroupDetails,
       disableSeatEditing: true,
@@ -7454,10 +7429,7 @@ function mergeImportedPageSettings(value) {
     googleDriveLastSavedAt: current.googleDriveLastSavedAt || '',
     googleDriveFileVersion: current.googleDriveFileVersion || '',
     googleDriveHeadRevisionId: current.googleDriveHeadRevisionId || '',
-    googleDriveRemoteMd5: current.googleDriveRemoteMd5 || '',
-    districtName: current.districtName || imported.districtName || '',
-    districtDomain: current.districtDomain || imported.districtDomain || '',
-    districtSupportUrl: current.districtSupportUrl || imported.districtSupportUrl || ''
+    googleDriveRemoteMd5: current.googleDriveRemoteMd5 || ''
   };
 }
 
@@ -7532,6 +7504,29 @@ function assertImportTextWithinLimits(text, sourceLabel = 'file/local save', lim
   const bytes = utf8ByteLength(text);
   if (bytes > limit) throw new Error(`The selected ${sourceLabel} is ${Math.ceil(bytes / 1048576)} MB. The safety limit is ${Math.floor(limit / 1048576)} MB.`);
   return bytes;
+}
+
+function assertImportByteLengthWithinLimits(byteLength, sourceLabel = 'file/local save', limit = IMPORT_LIMITS.saveBytes) {
+  const bytes = Number(byteLength);
+  if (Number.isFinite(bytes) && bytes > limit) throw new Error(`The selected ${sourceLabel} is ${Math.ceil(bytes / 1048576)} MB. The safety limit is ${Math.floor(limit / 1048576)} MB.`);
+  return Number.isFinite(bytes) ? bytes : 0;
+}
+
+async function readTextFileWithinLimits(file, sourceLabel = 'file/local save', limit = IMPORT_LIMITS.saveBytes) {
+  if (!file || typeof file.text !== 'function') throw new Error(`The selected ${sourceLabel} is unavailable or unreadable.`);
+  assertImportByteLengthWithinLimits(file.size, sourceLabel, limit);
+  const text = await file.text();
+  assertImportTextWithinLimits(text, sourceLabel, limit);
+  return text;
+}
+
+async function readResponseTextWithinLimits(response, sourceLabel = 'network file', limit = IMPORT_LIMITS.saveBytes) {
+  if (!response || typeof response.text !== 'function') throw new Error(`The ${sourceLabel} response is unavailable or unreadable.`);
+  const contentLength = response.headers?.get?.('content-length');
+  if (contentLength) assertImportByteLengthWithinLimits(Number(contentLength), sourceLabel, limit);
+  const text = await response.text();
+  assertImportTextWithinLimits(text, sourceLabel, limit);
+  return text;
 }
 
 function validateImportStructure(root, sourceLabel = 'file/local save') {
@@ -8689,10 +8684,12 @@ async function saveHashedCredential(storageKey, secret, storageErrorMessage = 'T
 }
 
 async function verifyHashedCredential(storageKey, secret) {
+  const value = String(secret || '');
+  if (!value || value.length > MAX_LOCAL_CREDENTIAL_LENGTH) return false;
   const credential = getHashedCredential(storageKey);
   if (!credential) return false;
   const salt = base64ToBytes(credential.salt);
-  const testHash = await hashPageLockSecret(secret, salt, Number(credential.iterations) || 180000);
+  const testHash = await hashPageLockSecret(value, salt, Number(credential.iterations) || 180000);
   return timingSafeEqual(testHash, credential.hash);
 }
 
@@ -8717,9 +8714,9 @@ function updateVisibilityCredentialNote() {
   const target = el('visibilityCredentialNote');
   if (!target) return;
   if (getVisibilityCredential()) target.textContent = 'Presentation Mode has its own exit PIN set.';
-  else if (getLockCredential()) target.textContent = 'No eye PIN is set, so presentation mode will use the Lock/Unlock PIN as a fallback.';
-  else if (currentSessionEncryptionKey()) target.textContent = 'No PIN is set, so presentation mode can be exited with the current session encryption key.';
-  else target.textContent = 'No exit secret is set. The first time presentation mode is used, the app will ask for an presentation mode PIN.';
+  else if (getLockCredential()) target.textContent = 'No Presentation PIN is set, so Presentation Mode will use the Lock/Unlock PIN as a fallback.';
+  else if (currentSessionEncryptionKey()) target.textContent = 'No Presentation PIN is set, so Presentation Mode can be exited with the current session encryption key.';
+  else target.textContent = 'No exit secret is set. The first time presentation mode is used, the app will ask for a Presentation PIN.';
 }
 
 function showPageLockError(message) {
@@ -13780,7 +13777,7 @@ const CONTROL_TOOLTIPS = {
   toggleRightPanelBtn: 'Collapse or expand the Chart Status panel to give the room grid more horizontal space.',
   guidedLearningBtn: 'Open Quick Start and focused lessons for Freeform, room design, seating, rules, saving, printing, and Google tools.',
   helpGuideBtn: 'Open the searchable help guide with explanations, tips, examples, security guidance, and troubleshooting for the whole application.',
-  settingsBtn: 'Open Settings for page defaults, visibility mode, security PINs, encryption, recommended saving workflow, custom room objects, sample data, About, and the Change Log.',
+  settingsBtn: 'Open Settings for page defaults, Presentation Mode, security PINs, encryption, recommended saving workflow, custom room objects, sample data, About, and the Change Log.',
   visibilityModeBtn: 'Enter or exit Presentation mode. Presentation switches to Review, hides editing/navigation controls, and protects hidden data. Exiting requires the Presentation PIN, Lock PIN, or current encryption key.',
   pageLockBtn: 'Lock the page with a PIN/password. If no lock PIN/password exists yet, you will be asked to create one before the screen locks.',
   saveLoadMenuBtn: 'Open the Save menu for Save Now, Load Save File, and More Save Options.',
@@ -13848,7 +13845,7 @@ const CONTROL_TOOLTIPS = {
   settingsCustomObjectName: 'Type a custom room object name to add to the Click Tool and right-click menu.',
   settingsAddCustomObjectBtn: 'Add the typed custom object to the Click Tool and right-click menu. It will save with this chart.',
   settingsSaveLockPinBtn: 'Save or replace the Lock/Unlock PIN/password. It is stored as a salted hash, not plain text.',
-  settingsSaveVisibilityPinBtn: 'Save or replace the Eye visibility mode exit PIN/password. It is stored as a salted hash, not plain text.',
+  settingsSaveVisibilityPinBtn: 'Save or replace the Presentation Mode exit PIN/password. It is stored as a salted hash, not plain text.',
   toggleAddStudentBtn: 'Expand or collapse the Add Student panel. When collapsed, the roster uses the reclaimed space. It opens automatically when there are no students.',
   closeClassNameBtn: 'Close the class name window without saving.',
   saveClassNameBtn: 'Create or rename the class using the entered class name.',
@@ -14094,7 +14091,7 @@ function showStudentGroupContextMenu(studentId, x, y) {
   title.textContent = studentDisplay(student);
   const editButton = `<button type="button" data-edit-student-id="${escapeHtml(targetId)}" title="Edit this student's first name, last name, nickname, grade, or ID.">Edit Student Information...</button><button type="button" data-edit-student-notes="${escapeHtml(targetId)}" title="Open categorized notes for this student.">📝 Student Notes...</button><div class="context-menu-separator"></div>`;
   if (eyeModeBlocksGroupEditing()) {
-    items.innerHTML = editButton + '<div class="context-menu-empty-note">Group membership editing is disabled in the current visibility mode.</div>';
+    items.innerHTML = editButton + '<div class="context-menu-empty-note">Group membership editing is disabled in the current Presentation Mode.</div>';
   } else if (!state.groups.length) {
     items.innerHTML = editButton + '<div class="context-menu-empty-note">No groups exist yet. Create a group first, then assign students here.</div>';
   } else {
@@ -14468,7 +14465,6 @@ function updatePageSettingsFormCore() {
   setControlValue('settingPbkdf2Iterations', cfg.pbkdf2Iterations || DEFAULT_PAGE_SETTINGS.pbkdf2Iterations);
   updatePasswordStrengthDisplay('settingsEncryptionKey', 'settingsPasswordStrength');
   setControlChecked('visHidePrint', cfg.visibility.hidePrint);
-  setControlChecked('visHideRoomHeaderActions', cfg.visibility.hideRoomHeaderActions);
   setControlChecked('visForceNamesOnly', cfg.visibility.forceNamesOnly);
   setControlChecked('visHideGroupDetails', cfg.visibility.hideGroupDetails);
   updateVisibilityCredentialNote();
@@ -14532,7 +14528,6 @@ function readPageSettingsFormCore() {
       hideStudentsPanel: true,
       hideStatusPanel: true,
       hideChartActions: true,
-      hideRoomHeaderActions: checked('visHideRoomHeaderActions'),
       forceNamesOnly: checked('visForceNamesOnly'),
       hideGroupDetails: checked('visHideGroupDetails'),
       disableSeatEditing: true,
@@ -14616,7 +14611,6 @@ function applyVisibilityClasses() {
   document.body.classList.toggle('vis-hide-students', !!uiState.visibilityMode);
   document.body.classList.toggle('vis-hide-status', !!uiState.visibilityMode);
   document.body.classList.toggle('vis-hide-chart-actions', !!uiState.visibilityMode);
-  document.body.classList.toggle('vis-hide-room-header-actions', !!uiState.visibilityMode && !!cfg.hideRoomHeaderActions);
   document.body.classList.toggle('vis-hide-group-details', !!uiState.visibilityMode && !!cfg.hideGroupDetails);
   document.body.classList.toggle('vis-disable-seat-editing', !!uiState.visibilityMode);
   document.body.classList.toggle('vis-disable-room-editing', !!uiState.visibilityMode);
@@ -14777,7 +14771,7 @@ function closeVisibilityExitModal() {
 async function attemptVisibilityExit() {
   const input = el('visibilityExitInput');
   const secret = String(input?.value || '');
-  if (!secret) { showVisibilityExitError('Enter the eye PIN, lock PIN, or current encryption key.'); return; }
+  if (!secret) { showVisibilityExitError('Enter the Presentation PIN, lock PIN, or current encryption key.'); return; }
   try {
     const source = await visibilitySecretSource(secret, true);
     if (!source) {
@@ -15412,7 +15406,7 @@ async function importExistingSaveFromWelcome(event) {
   if (!file) return;
   closeWelcomeSecurityModal();
   try {
-    const text = await file.text();
+    const text = await readTextFileWithinLimits(file, 'uploaded save or backup', IMPORT_LIMITS.saveBytes);
     await importStateDirectFromText(text, 'uploaded save or backup');
     if (typeof StartupRecoveryV45 !== 'undefined') StartupRecoveryV45.completeExternalLoad();
     uiState.linkedSaveLastSignature = currentSaveSignature();
@@ -16234,6 +16228,17 @@ function escapeDriveQueryString(value) {
 }
 
 
+function trustedGoogleDriveWebLink(value) {
+  try {
+    const url = new URL(String(value || ''));
+    if (url.protocol !== 'https:' || !['drive.google.com', 'docs.google.com'].includes(url.hostname)) return '';
+    return url.href;
+  } catch (_) {
+    return '';
+  }
+}
+
+
 async function fetchWithTimeout(url, options = {}, timeoutMs = NETWORK_TIMEOUT_MS) {
   const duration = Math.max(1000, Math.min(180000, Number(timeoutMs) || NETWORK_TIMEOUT_MS));
   const controller = new AbortController();
@@ -16277,7 +16282,10 @@ function loadExternalScriptOnce({ src, markerAttribute, ready, errorMessage, tim
       script?.removeEventListener('load', onLoad);
       script?.removeEventListener('error', onError);
       if (ok && (!ready || ready())) resolve(true);
-      else reject(error || new Error(errorMessage));
+      else {
+        if (script && (!ready || !ready())) script.remove();
+        reject(error || new Error(errorMessage));
+      }
     };
     const onLoad = () => finish(true);
     const onError = () => finish(false, new Error(errorMessage));
@@ -16904,7 +16912,8 @@ async function loadGoogleDriveFileById(file, options = {}) {
   }
   updateGoogleDriveStatus(`Downloading encrypted save from Google Drive: ${file.name || 'selected save'}...`);
   const response = await googleDriveFetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(file.id)}?alt=media`, { method: 'GET' });
-  const text = await response.text();
+  assertImportByteLengthWithinLimits(file.size, `Google Drive save ${file.name || ''}`.trim(), IMPORT_LIMITS.saveBytes);
+  const text = await readResponseTextWithinLimits(response, `Google Drive save ${file.name || ''}`.trim(), IMPORT_LIMITS.saveBytes);
   const viewerHandled = await SharedDriveCollaborationV64.tryOpenEncryptedViewerPayload(text, file);
   if (viewerHandled) {
     SharedDriveCollaborationV64.applyDriveCapabilities(file.capabilities || null);
@@ -17121,7 +17130,7 @@ async function loadFromLinkedSaveFile() {
       const allowed = await ensureLinkedSavePermission(handle, 'read');
       if (!allowed) throw new Error('Permission to read this linked file was not granted.');
       const file = await handle.getFile();
-      const text = await file.text();
+      const text = await readTextFileWithinLimits(file, 'linked save file', IMPORT_LIMITS.saveBytes);
       await importStateFromText(text, 'linked save file');
       await setLinkedSaveHandle(handle);
       uiState.linkedSaveStatus = `Restore options opened for ${handle.name || 'linked save file'}.`;
@@ -18160,7 +18169,7 @@ const HELP_GUIDE_SECTIONS = [
     "id": "settings",
     "category": "Settings",
     "title": "Settings: What Each Section Controls",
-    "keywords": "settings chart details appearance theme prismatic defaults hints visibility mode access pin encryption custom objects sample data about changelog local data auto lock google analytics opt out object labels empty seat titles",
+    "keywords": "settings chart details appearance theme prismatic defaults hints Presentation Mode access pin encryption custom objects sample data about changelog local data auto lock google analytics opt out object labels empty seat titles",
     "intro": "Settings controls chart details, security, default views, visibility restrictions, custom room objects, and local data tools.",
     "items": [
       {
@@ -18188,7 +18197,7 @@ const HELP_GUIDE_SECTIONS = [
         "text": "Choose which credential is required to open Settings, or deliberately disable the prompt after confirming the risk."
       },
       {
-        "title": "Lock / Visibility PINs",
+        "title": "Lock / Presentation PINs",
         "text": "Create or update the Lock PIN and Presentation Mode PIN."
       },
       {
@@ -19980,7 +19989,7 @@ function renderCsvPreview() {
     warning.textContent = duplicates.length ? `${duplicates.length} preview row(s) may match existing students. Existing matching IDs will update instead of creating a duplicate.` : '';
   }
   const headers = ['First','Last','Nick','Grade','ID','Private','Substitute','Public'];
-  el('csvPreviewTable').innerHTML = `<table><thead><tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.map(r => `<tr><td>${escapeHtml(r.firstName)}</td><td>${escapeHtml(r.lastName)}</td><td>${escapeHtml(r.nickName)}</td><td>${escapeHtml(r.grade)}</td><td>${escapeHtml(r.id)}</td><td>${escapeHtml(studentNoteValue(r, 'private') ? 'Yes' : '')}</td><td>${escapeHtml(studentNoteValue(r, 'substitute') ? 'Yes' : '')}</td><td>${escapeHtml(studentNoteValue(r, 'public') ? 'Yes' : '')}</td></tr>`).join('')}</tbody></table>`;
+  el('csvPreviewTable').innerHTML = `<table><thead><tr>${headers.map(h => `<th>${escapeHtml(h)}</th>`).join('')}</tr></thead><tbody>${rows.map(r => `<tr><td>${escapeHtml(r.firstName)}</td><td>${escapeHtml(r.lastName)}</td><td>${escapeHtml(r.nickName)}</td><td>${escapeHtml(r.grade)}</td><td>${escapeHtml(r.id)}</td><td>${escapeHtml(studentNoteValue(r, 'private') ? 'Yes' : '')}</td><td>${escapeHtml(studentNoteValue(r, 'substitute') ? 'Yes' : '')}</td><td>${escapeHtml(studentNoteValue(r, 'public') ? 'Yes' : '')}</td></tr>`).join('')}</tbody></table>`;
 }
 
 
@@ -20829,7 +20838,7 @@ function installAutoLockActivityTracking() {
 
 function clearAllLocalData() {
   closeSettingsModal();
-  showInAppConfirm('Clear local saved chart data, snapshots, session keys, lock PIN, eye PIN, save prompts, dismissed hints, and local app preferences from this browser? Export first if you need a copy.', async () => {
+  showInAppConfirm('Clear local saved chart data, snapshots, session keys, lock PIN, Presentation PIN, save prompts, dismissed hints, and local app preferences from this browser? Export first if you need a copy.', async () => {
     uiState.browserSaveEpoch += 1;
     clearAutosaveSchedule();
     clearTimeout(uiState.pageSettingsPersistTimer);
@@ -21141,7 +21150,7 @@ function wireEvents() {
     const file = event.target.files[0];
     if (!file) return;
     try {
-      openCsvMappingWizard(await file.text());
+      openCsvMappingWizard(await readTextFileWithinLimits(file, 'CSV roster', IMPORT_LIMITS.csvBytes));
     } catch (err) {
       WorkflowRecoveryV62.reportFailure({
         operation: 'Open CSV Roster Import',
@@ -21150,7 +21159,7 @@ function wireEvents() {
         dataChanged: false,
         snapshotCreated: false,
         remedy: 'Confirm the file is a valid comma-separated roster with one header row and at least one student row.',
-        retry: async () => openCsvMappingWizard(await file.text())
+        retry: async () => openCsvMappingWizard(await readTextFileWithinLimits(file, 'CSV roster', IMPORT_LIMITS.csvBytes))
       });
     } finally {
       event.target.value = '';
@@ -21695,7 +21704,7 @@ function wireEvents() {
   el('closeSaveSetupBtn')?.addEventListener('click', () => closeSaveSetupModal(false));
   el('saveSetupDoneBtn')?.addEventListener('click', () => closeSaveSetupModal(true));
   el('saveSetupModal')?.addEventListener('click', event => { if (event.target.id === 'saveSetupModal') closeSaveSetupModal(false); });
-  ['settingTheme','settingDefaultNamesOnly','settingHeaderCollapsed','settingLeftCollapsed','settingRightCollapsed','settingLayoutToolsCollapsed','settingCsvCollapsed','settingAddStudentCollapsed','settingHideHints','settingHideObjectTypeLabels','settingAutoSaveMinutes','settingPreferredStorage','settingGoogleDriveFolderName','settingDesignCellSize','settingSettingsAccessMethod','settingAutoLockMinutes','settingAutoLockOnBlur','settingAutoLockOnTabHidden','settingAutoLockOnReturnMinutes','settingPbkdf2Iterations','visHidePrint','visHideRoomHeaderActions','visForceNamesOnly','visHideGroupDetails'].forEach(id => {
+  ['settingTheme','settingDefaultNamesOnly','settingHeaderCollapsed','settingLeftCollapsed','settingRightCollapsed','settingLayoutToolsCollapsed','settingCsvCollapsed','settingAddStudentCollapsed','settingHideHints','settingHideObjectTypeLabels','settingAutoSaveMinutes','settingPreferredStorage','settingGoogleDriveFolderName','settingDesignCellSize','settingSettingsAccessMethod','settingAutoLockMinutes','settingAutoLockOnBlur','settingAutoLockOnTabHidden','settingAutoLockOnReturnMinutes','settingPbkdf2Iterations','visHidePrint','visForceNamesOnly','visHideGroupDetails'].forEach(id => {
     const control = el(id);
     if (!control) return;
     control.addEventListener(control.tagName === 'SELECT' || control.type === 'number' ? 'input' : 'change', readPageSettingsForm);
@@ -21900,7 +21909,7 @@ function wireEvents() {
     const file = event.target.files[0];
     if (!file) return;
     try {
-      await importStateFromText(await file.text(), `uploaded file ${file.name}`);
+      await importStateFromText(await readTextFileWithinLimits(file, `uploaded file ${file.name}`, IMPORT_LIMITS.saveBytes), `uploaded file ${file.name}`);
     } catch (err) {
       WorkflowRecoveryV62.reportFailure({
         operation: 'Open Classes Save File',
@@ -21909,7 +21918,7 @@ function wireEvents() {
         dataChanged: false,
         snapshotCreated: false,
         remedy: 'Use a current schema-compatible Classroom Seating Planner save and enter the matching encryption password when prompted.',
-        retry: async () => importStateFromText(await file.text(), `uploaded file ${file.name}`)
+        retry: async () => importStateFromText(await readTextFileWithinLimits(file, `uploaded file ${file.name}`, IMPORT_LIMITS.saveBytes), `uploaded file ${file.name}`)
       });
     } finally {
       event.target.value = '';
@@ -22618,11 +22627,11 @@ const WorkflowExpansion = (() => {
 
   function privacyProfiles(mode) {
     return {
-      teacher: { hideClassActions:false, hideWizard:false, hideSaveLoad:false, hideSettings:false, hidePrint:false, hideLayoutTools:false, hideStudentsPanel:true, hideStatusPanel:false, hideChartActions:false, hideRoomHeaderActions:false, forceNamesOnly:false, hideGroupDetails:false, disableSeatEditing:false, disableRoomEditing:false, disableStudentEditing:false, disableGroupEditing:false },
-      substitute: { hideClassActions:true, hideWizard:true, hideSaveLoad:true, hideSettings:true, hidePrint:false, hideLayoutTools:true, hideStudentsPanel:true, hideStatusPanel:false, hideChartActions:true, hideRoomHeaderActions:true, forceNamesOnly:true, hideGroupDetails:false, disableSeatEditing:true, disableRoomEditing:true, disableStudentEditing:true, disableGroupEditing:true },
-      student: { hideClassActions:true, hideWizard:true, hideSaveLoad:true, hideSettings:true, hidePrint:true, hideLayoutTools:true, hideStudentsPanel:true, hideStatusPanel:true, hideChartActions:true, hideRoomHeaderActions:true, forceNamesOnly:true, hideGroupDetails:true, disableSeatEditing:true, disableRoomEditing:true, disableStudentEditing:true, disableGroupEditing:true },
-      admin: { hideClassActions:false, hideWizard:true, hideSaveLoad:false, hideSettings:false, hidePrint:false, hideLayoutTools:false, hideStudentsPanel:true, hideStatusPanel:false, hideChartActions:false, hideRoomHeaderActions:false, forceNamesOnly:false, hideGroupDetails:false, disableSeatEditing:true, disableRoomEditing:true, disableStudentEditing:false, disableGroupEditing:false },
-      privacy: { hideClassActions:true, hideWizard:true, hideSaveLoad:true, hideSettings:true, hidePrint:true, hideLayoutTools:true, hideStudentsPanel:true, hideStatusPanel:true, hideChartActions:true, hideRoomHeaderActions:true, forceNamesOnly:true, hideGroupDetails:true, disableSeatEditing:true, disableRoomEditing:true, disableStudentEditing:true, disableGroupEditing:true }
+      teacher: { hideClassActions:false, hideWizard:false, hideSaveLoad:false, hideSettings:false, hidePrint:false, hideLayoutTools:false, hideStudentsPanel:true, hideStatusPanel:false, hideChartActions:false, forceNamesOnly:false, hideGroupDetails:false, disableSeatEditing:false, disableRoomEditing:false, disableStudentEditing:false, disableGroupEditing:false },
+      substitute: { hideClassActions:true, hideWizard:true, hideSaveLoad:true, hideSettings:true, hidePrint:false, hideLayoutTools:true, hideStudentsPanel:true, hideStatusPanel:false, hideChartActions:true, forceNamesOnly:true, hideGroupDetails:false, disableSeatEditing:true, disableRoomEditing:true, disableStudentEditing:true, disableGroupEditing:true },
+      student: { hideClassActions:true, hideWizard:true, hideSaveLoad:true, hideSettings:true, hidePrint:true, hideLayoutTools:true, hideStudentsPanel:true, hideStatusPanel:true, hideChartActions:true, forceNamesOnly:true, hideGroupDetails:true, disableSeatEditing:true, disableRoomEditing:true, disableStudentEditing:true, disableGroupEditing:true },
+      admin: { hideClassActions:false, hideWizard:true, hideSaveLoad:false, hideSettings:false, hidePrint:false, hideLayoutTools:false, hideStudentsPanel:true, hideStatusPanel:false, hideChartActions:false, forceNamesOnly:false, hideGroupDetails:false, disableSeatEditing:true, disableRoomEditing:true, disableStudentEditing:false, disableGroupEditing:false },
+      privacy: { hideClassActions:true, hideWizard:true, hideSaveLoad:true, hideSettings:true, hidePrint:true, hideLayoutTools:true, hideStudentsPanel:true, hideStatusPanel:true, hideChartActions:true, forceNamesOnly:true, hideGroupDetails:true, disableSeatEditing:true, disableRoomEditing:true, disableStudentEditing:true, disableGroupEditing:true }
     }[mode] || null;
   }
 
@@ -25247,7 +25256,7 @@ const ModernizationSuite = (() => {
   async function openRosterReconcileFile(file) {
     if (!file) return;
     try {
-      reconcileDraft = parseReconcileCsv(await file.text());
+      reconcileDraft = parseReconcileCsv(await readTextFileWithinLimits(file, 'roster reconciliation CSV', IMPORT_LIMITS.csvBytes));
       renderReconcileDraft();
       el('rosterReconcileModal')?.classList.add('show');
       if (reconcileDraft.rejectedRows?.length) {
@@ -25269,7 +25278,7 @@ const ModernizationSuite = (() => {
         dataChanged: false,
         snapshotCreated: false,
         remedy: 'Confirm the file is a valid CSV with a recognized name or student-ID column.',
-        retry: async () => { reconcileDraft = parseReconcileCsv(await file.text()); renderReconcileDraft(); el('rosterReconcileModal')?.classList.add('show'); }
+        retry: async () => { reconcileDraft = parseReconcileCsv(await readTextFileWithinLimits(file, 'roster reconciliation CSV', IMPORT_LIMITS.csvBytes)); renderReconcileDraft(); el('rosterReconcileModal')?.classList.add('show'); }
       });
     }
   }
@@ -27233,7 +27242,6 @@ const ProductRepairV43 = (() => {
 
 const UserWorkflowV44 = (() => {
   let installed = false;
-  const PIN_MIN_LENGTH = 4;
 
   function credentialExists(type) {
     if (type === 'lock') return !!getLockCredential();
@@ -27284,10 +27292,10 @@ const UserWorkflowV44 = (() => {
                   <details id="v44OnboardingPinDetails" class="v44-pin-details">
                     <summary>Set or replace a separate Lock / Unlock PIN</summary>
                     <div class="v44-pin-grid">
-                      <div class="field"><label for="v44OnboardingLockPin">PIN or password</label><input id="v44OnboardingLockPin" type="password" autocomplete="new-password" /></div>
-                      <div class="field"><label for="v44OnboardingLockPinConfirm">Confirm PIN or password</label><input id="v44OnboardingLockPinConfirm" type="password" autocomplete="new-password" /></div>
+                      <div class="field"><label for="v44OnboardingLockPin">PIN or password</label><input id="v44OnboardingLockPin" type="password" autocomplete="new-password" minlength="${MIN_LOCAL_CREDENTIAL_LENGTH}" maxlength="${MAX_LOCAL_CREDENTIAL_LENGTH}" /></div>
+                      <div class="field"><label for="v44OnboardingLockPinConfirm">Confirm PIN or password</label><input id="v44OnboardingLockPinConfirm" type="password" autocomplete="new-password" minlength="${MIN_LOCAL_CREDENTIAL_LENGTH}" maxlength="${MAX_LOCAL_CREDENTIAL_LENGTH}" /></div>
                     </div>
-                    <div class="muted">Use at least four characters. This PIN can unlock the page and can be selected as the Settings credential.</div>
+                    <div class="muted">Use at least ${MIN_LOCAL_CREDENTIAL_LENGTH} characters. This PIN can unlock the page and can be selected as the Settings credential.</div>
                   </details>
                 </div>
                 <div class="v44-security-choice-actions"><span class="muted">Protection choices save automatically.</span></div>
@@ -27402,7 +27410,8 @@ const UserWorkflowV44 = (() => {
     const pin = String(el('v44OnboardingLockPin')?.value || '');
     const confirmPin = String(el('v44OnboardingLockPinConfirm')?.value || '');
     if (pin || confirmPin) {
-      if (pin.length < PIN_MIN_LENGTH) { onboardingStatus('Use at least four characters for the Lock / Unlock PIN.', 'bad'); return false; }
+      const pinValidation = newLocalCredentialValidationMessage(pin, 'Lock / Unlock PIN');
+      if (pinValidation) { onboardingStatus(pinValidation, 'bad'); return false; }
       if (pin !== confirmPin) { onboardingStatus('The Lock / Unlock PIN entries do not match.', 'bad'); return false; }
       try {
         await savePageLockCredential(pin);
@@ -27465,7 +27474,7 @@ const UserWorkflowV44 = (() => {
     const page = el('settingsPageSecurity');
     if (!page) return;
     const header = page.querySelector('.settings-page-header');
-    const orderedTitles = ['Settings Access', 'Lock / Visibility PINs', 'Unlock PINs', 'Lock Immediately After Inactivity', 'Security Status', 'Security Guided Help', 'Lock Workflow Readiness'];
+    const orderedTitles = ['Settings Access', 'Lock / Presentation PINs', 'Unlock PINs', 'Lock Immediately After Inactivity', 'Security Status', 'Security Guided Help', 'Lock Workflow Readiness'];
     let anchor = header;
     orderedTitles.forEach(title => {
       const section = findSettingsSection(title);
@@ -27473,7 +27482,7 @@ const UserWorkflowV44 = (() => {
       anchor.insertAdjacentElement('afterend', section);
       anchor = section;
     });
-    const pinSection = findSettingsSection('Lock / Visibility PINs');
+    const pinSection = findSettingsSection('Lock / Presentation PINs');
     if (pinSection) { const heading = pinSection.querySelector('h3'); if (heading) heading.textContent = 'Unlock PINs'; }
     const securityTab = el('settingsPageSecurityBtn');
     securityTab?.querySelector('.settings-page-title')?.replaceChildren(document.createTextNode('Security'));
@@ -29718,13 +29727,6 @@ const DistrictIntegrationsV57 = (() => {
   let classroomStatusMessage = 'Not connected.';
 
   const node = id => document.getElementById(id);
-  const districtSettings = () => ({
-    districtName: pageSettings().districtName || '',
-    districtDomain: pageSettings().districtDomain || '',
-    districtSupportUrl: pageSettings().districtSupportUrl || '',
-    googleClassroomEnabled: !!pageSettings().googleClassroomEnabled
-  });
-
   function insertSettingsNavigationEntry(id, title, description, beforeId = 'settingsPageAboutBtn') {
     if (node(`settingsPage${id[0].toUpperCase()}${id.slice(1)}Btn`)) return null;
     const button = document.createElement('button');
@@ -29752,7 +29754,7 @@ const DistrictIntegrationsV57 = (() => {
 
   function injectGoogleSettingsHub() {
     if (node('settingsPageGoogle')) return;
-    insertSettingsNavigationEntry('google', 'Google', 'Drive saves, Classroom rosters, Picker availability, revisions, and cloud connection status.', 'settingsPageDistrictBtn');
+    insertSettingsNavigationEntry('google', 'Google', 'Drive saves, Classroom rosters, analytics, Picker availability, revisions, and cloud connection status.', 'settingsPageAboutBtn');
     const panel = document.createElement('div');
     panel.id = 'settingsPageGoogle';
     panel.className = 'settings-page google-settings-page';
@@ -29795,13 +29797,19 @@ const DistrictIntegrationsV57 = (() => {
             <div class="google-hub-action-grid"><button id="googleHubClassroomReviewBtn" type="button">Review Classroom Roster</button></div>
             <button id="googleHubOpenClassSetupBtn" class="ghost tiny google-hub-context-link" type="button">Open Class Setup Import Roster</button>
           </section>
+          <section class="section settings-section google-analytics-settings">
+            <h3>Google Analytics</h3>
+            <label class="checkline" for="settingGoogleAnalyticsEnabled"><input id="settingGoogleAnalyticsEnabled" type="checkbox" /> <span>Allow anonymous usage analytics on this browser</span></label>
+            <div id="googleAnalyticsSettingsStatus" class="hint" aria-live="polite">Checking analytics preference...</div>
+            <div class="encryption-note">This browser-only preference is not stored in classroom save files. Analytics is loaded only from hosted HTTP/HTTPS pages, sends the standard page view to measurement ID G-NMRMNM7ZCD, and does not add student names, notes, class names, seat assignments, or save contents as custom events.</div>
+          </section>
           <section class="section settings-section">
             <h3>Deployment status</h3>
             <div id="googleHubDeploymentStatus" class="hint">Google OAuth uses the project configuration bundled with this build. Teachers are not asked to enter API keys or project credentials.</div>
           </section>`;
-    const beforePanel = node('settingsPageDistrict') || node('settingsPageAbout');
+    const beforePanel = node('settingsPageAbout');
     beforePanel?.before(panel);
-    if (!SETTINGS_PAGE_IDS.includes('google')) SETTINGS_PAGE_IDS.splice(Math.max(0, SETTINGS_PAGE_IDS.indexOf('district') >= 0 ? SETTINGS_PAGE_IDS.indexOf('district') : SETTINGS_PAGE_IDS.indexOf('about')), 0, 'google');
+    if (!SETTINGS_PAGE_IDS.includes('google')) SETTINGS_PAGE_IDS.splice(Math.max(0, SETTINGS_PAGE_IDS.indexOf('about')), 0, 'google');
     addMobileSettingsOption('google', 'Google');
   }
 
@@ -29881,36 +29889,6 @@ const DistrictIntegrationsV57 = (() => {
     setTimeout(syncGoogleSettingsHub, 0);
   }
 
-  function injectSettingsPage() {
-    if (node('settingsPageDistrict')) return;
-    insertSettingsNavigationEntry('district', 'District Profile', 'Organization identity, approved domain, and support information.');
-    const about = node('settingsPageAbout');
-    const panel = document.createElement('div');
-    panel.id = 'settingsPageDistrict';
-    panel.className = 'settings-page district-integrations-page';
-    panel.setAttribute('role','tabpanel');
-    panel.dataset.settingsPanel = 'district';
-    panel.setAttribute('aria-label','District profile');
-    panel.innerHTML = `
-          <div class="settings-page-header"><strong>District profile</strong>Store optional organization identity and support information for this deployment. Roster imports now live in Class Setup so teachers do not have to search Settings for classroom work.</div>
-          <section class="section settings-section"><h3>District deployment profile</h3>
-            <div class="district-form-grid">
-              <div class="field"><label for="districtNameInput">District / organization name</label><input id="districtNameInput" maxlength="160" /></div>
-              <div class="field"><label for="districtDomainInput">Approved domain</label><input id="districtDomainInput" maxlength="160" placeholder="example.org" /></div>
-              <div class="field district-wide"><label for="districtSupportUrlInput">Support URL</label><input id="districtSupportUrlInput" maxlength="500" placeholder="https://support.example.org" /></div>
-            </div>
-            <div class="button-row district-action-row"><button id="saveDistrictProfileBtn" class="secondary" type="button">Save District Profile</button></div>
-          </section>
-          <section class="section settings-section"><h3>Roster import location</h3>
-            <div class="hint">Mapped CSV, SIS / OneRoster CSV, and Google Classroom imports are together under <strong>Class Setup → Import Roster</strong>. Google authorization and Drive management remain in the Google Settings page.</div>
-            <div class="button-row district-action-row"><button id="openClassSetupImportFromDistrictBtn" class="secondary" type="button">Open Import Roster</button><button id="openGoogleSettingsFromDistrictBtn" class="ghost" type="button">Open Google Settings</button></div>
-          </section>`;
-    about?.before(panel);
-    if (!SETTINGS_PAGE_IDS.includes('district')) SETTINGS_PAGE_IDS.splice(Math.max(0, SETTINGS_PAGE_IDS.indexOf('about')), 0, 'district');
-    addMobileSettingsOption('district', 'District Profile');
-    injectGoogleSettingsHub();
-  }
-
   function injectCloudModals() {
     if (!node('driveManagerModal')) {
       const shell = document.createElement('div');
@@ -29944,32 +29922,14 @@ const DistrictIntegrationsV57 = (() => {
         <div id="readOnlyPackageProfileSummary" class="hint mini"></div>
         <label class="checkline"><input id="readOnlyPackagePasswordToggle" type="checkbox" /> Password-protect and encrypt this HTML package</label>
         <div id="readOnlyPackagePasswordFields" class="row" hidden>
-          <div class="field"><label for="readOnlyPackagePassword">Viewer password</label><input id="readOnlyPackagePassword" type="password" autocomplete="new-password" minlength="10" /></div>
-          <div class="field"><label for="readOnlyPackagePasswordConfirm">Confirm password</label><input id="readOnlyPackagePasswordConfirm" type="password" autocomplete="new-password" minlength="10" /></div>
+          <div class="field"><label for="readOnlyPackagePassword">Viewer password</label><input id="readOnlyPackagePassword" type="password" autocomplete="new-password" minlength="10" maxlength="256" /></div>
+          <div class="field"><label for="readOnlyPackagePasswordConfirm">Confirm password</label><input id="readOnlyPackagePasswordConfirm" type="password" autocomplete="new-password" minlength="10" maxlength="256" /></div>
         </div>
         <div id="readOnlyPackageStatus" class="muted">Unprotected packages open immediately. Protected packages require the viewer password and keep the classroom data encrypted at rest.</div>
         <button id="downloadReadOnlyClassroomBtn" type="button">Download Read-only Classroom HTML</button>`;
       safeBody.insertBefore(section,node('safeSharePreview'));
     }
   }
-
-  function saveDistrictProfile() {
-    updateGoogleDriveSettings({
-      districtName: String(node('districtNameInput')?.value || '').trim(),
-      districtDomain: String(node('districtDomainInput')?.value || '').trim(),
-      districtSupportUrl: String(node('districtSupportUrlInput')?.value || '').trim()
-    });
-    setLiveStatusMessage('District deployment profile saved.');
-  }
-
-
-  function updateDistrictForm() {
-    const cfg=districtSettings();
-    if(node('districtNameInput'))node('districtNameInput').value=cfg.districtName;
-    if(node('districtDomainInput'))node('districtDomainInput').value=cfg.districtDomain;
-    if(node('districtSupportUrlInput'))node('districtSupportUrlInput').value=cfg.districtSupportUrl;
-  }
-
 
   function loadGooglePickerScript() {
     return loadExternalScriptOnce({
@@ -30098,7 +30058,8 @@ const DistrictIntegrationsV57 = (() => {
         return;
       }
       if (action === 'open') {
-        if (file.webViewLink) window.open(file.webViewLink, '_blank', 'noopener');
+        const webLink = trustedGoogleDriveWebLink(file.webViewLink);
+        if (webLink) window.open(webLink, '_blank', 'noopener');
         return;
       }
       if (action === 'revisions') {
@@ -30174,7 +30135,7 @@ const DistrictIntegrationsV57 = (() => {
   async function fetchRevisionText(revisionId) {
     if (!revisionContext?.id) throw new Error('No Drive file is selected.');
     const response = await googleDriveFetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(revisionContext.id)}/revisions/${encodeURIComponent(revisionId)}?alt=media`, {method:'GET'});
-    return response.text();
+    return readResponseTextWithinLimits(response, 'Google Drive revision', IMPORT_LIMITS.saveBytes);
   }
 
   async function handleRevisionAction(button) {
@@ -30205,7 +30166,7 @@ const DistrictIntegrationsV57 = (() => {
     if(classroomToken&&Date.now()<classroomTokenExpiresAt-60000)return classroomToken;
     if(!interactive)throw new Error('Google Classroom needs a fresh sign-in.');
     await loadGoogleIdentityServicesScript(); const clientId=googleDriveConfig().clientId; if(!clientId)throw new Error('Configure a Google OAuth Client ID under Saving first.');
-    return new Promise((resolve,reject)=>{const client=google.accounts.oauth2.initTokenClient({client_id:clientId,scope:GOOGLE_CLASSROOM_SCOPES,prompt:'',callback:response=>{if(response?.error){reject(new Error(response.error_description||response.error));return;}classroomToken=response.access_token||'';classroomTokenExpiresAt=Date.now()+Number(response.expires_in||3600)*1000;updateGoogleDriveSettings({googleClassroomEnabled:true});resolve(classroomToken);}});client.requestAccessToken({prompt:'consent'});});
+    return new Promise((resolve,reject)=>{const client=google.accounts.oauth2.initTokenClient({client_id:clientId,scope:GOOGLE_CLASSROOM_SCOPES,prompt:'',callback:response=>{if(response?.error){reject(new Error(response.error_description||response.error));return;}classroomToken=response.access_token||'';classroomTokenExpiresAt=Date.now()+Number(response.expires_in||3600)*1000;resolve(classroomToken);}});client.requestAccessToken({prompt:'consent'});});
   }
   async function classroomFetch(url) {
     const token = await ensureClassroomToken(true);
@@ -30350,7 +30311,7 @@ const DistrictIntegrationsV57 = (() => {
     if (!file) return;
     const status = node('classSetupSisStatus');
     try {
-      const records = parseSisCsvText(await file.text());
+      const records = parseSisCsvText(await readTextFileWithinLimits(file, 'SIS CSV', IMPORT_LIMITS.csvBytes));
       openRosterDraft(records, 'SIS CSV');
       const rejectedRows = records.rejectedRows || [];
       if (status) status.textContent = `Loaded ${records.length} SIS records for reconciliation${rejectedRows.length ? `; ${rejectedRows.length} row${rejectedRows.length === 1 ? '' : 's'} rejected` : ''}.`;
@@ -30664,6 +30625,7 @@ const DistrictIntegrationsV57 = (() => {
           const ciphertext = b64(encryption.ciphertext);
           if (salt.length !== 16 || iv.length !== 12 || ciphertext.length < 17) throw new Error('Damaged envelope');
           const password = passwordInput.value;
+          if (password.length < 10 || password.length > 256) throw new Error('Invalid password length');
           const baseKey = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveKey']);
           const key = await crypto.subtle.deriveKey({ name:'PBKDF2', salt, iterations, hash:'SHA-256' }, baseKey, { name:'AES-GCM', length:256 }, false, ['decrypt']);
           const plain = await crypto.subtle.decrypt({ name:'AES-GCM', iv }, key, ciphertext);
@@ -30685,9 +30647,15 @@ const DistrictIntegrationsV57 = (() => {
     return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; connect-src 'none'; frame-src 'none'; object-src 'none'; media-src 'none'; base-uri 'none'; form-action 'none'"><title>Encrypted read-only classroom package</title><style>${readOnlyViewerStyles()}${unlockStyles}</style></head><body><section id="readonlyUnlock" class="readonly-unlock"><h1>Encrypted read-only classroom package</h1><p>Enter the viewer password supplied separately. The classroom name, students, notes, and room layout remain encrypted until the password is accepted.</p><label for="readonlyViewerPassword">Viewer password</label><input id="readonlyViewerPassword" type="password" autocomplete="current-password" minlength="10" maxlength="256"><button id="readonlyOpenButton" type="button">Open classroom</button><p id="readonlyUnlockError" class="readonly-unlock-error" role="alert"></p></section><div id="readonlyProtectedView" class="readonly-protected-view" hidden></div><script>${unlockScript}<\/script></body></html>`;
   }
 
-  async function buildEncryptedReadOnlyHtml(password, preset = 'student') {
+  function confirmedViewerPassword(password, confirmation = password) {
     const secret = String(password || '');
     if (secret.length < 10 || secret.length > 256) throw new Error('Use a viewer password with 10 to 256 characters.');
+    if (secret !== String(confirmation || '')) throw new Error('The viewer passwords do not match.');
+    return secret;
+  }
+
+  async function buildEncryptedReadOnlyHtml(password, preset = 'student') {
+    const secret = confirmedViewerPassword(password);
     const parts = readOnlyDocumentParts(preset);
     const payload = JSON.stringify({
       format: 'classroom-seating-planner-read-only-html-v1',
@@ -30729,9 +30697,8 @@ const DistrictIntegrationsV57 = (() => {
     if (protectedPackage) {
       const password = String(node('readOnlyPackagePassword')?.value || '');
       const confirmation = String(node('readOnlyPackagePasswordConfirm')?.value || '');
-      if (password.length < 10) throw new Error('Use a viewer password with at least 10 characters.');
-      if (password !== confirmation) throw new Error('The viewer passwords do not match.');
-      html = await buildEncryptedReadOnlyHtml(password, preset);
+      const secret = confirmedViewerPassword(password, confirmation);
+      html = await buildEncryptedReadOnlyHtml(secret, preset);
       suffix = `read-only-${preset}-protected`;
     } else {
       html = readOnlyHtml(preset);
@@ -30756,10 +30723,7 @@ const DistrictIntegrationsV57 = (() => {
   }
 
   function installEvents(){
-    document.addEventListener('click',event=>{const driveAction=event.target.closest('[data-drive-action]');if(driveAction){void handleDriveManagerAction(driveAction);return;}const revisionAction=event.target.closest('[data-revision-action]');if(revisionAction){void handleRevisionAction(revisionAction);return;}if(event.target.closest('[data-settings-nav="district"]'))setTimeout(updateDistrictForm,0);if(event.target.closest('[data-settings-nav="google"]'))setTimeout(syncGoogleSettingsHub,0);});
-    node('saveDistrictProfileBtn')?.addEventListener('click',saveDistrictProfile);
-    node('openGoogleSettingsFromDistrictBtn')?.addEventListener('click',()=>openSettingsPage('google'));
-    node('openClassSetupImportFromDistrictBtn')?.addEventListener('click',openClassSetupImport);
+    document.addEventListener('click',event=>{const driveAction=event.target.closest('[data-drive-action]');if(driveAction){void handleDriveManagerAction(driveAction);return;}const revisionAction=event.target.closest('[data-revision-action]');if(revisionAction){void handleRevisionAction(revisionAction);return;}if(event.target.closest('[data-settings-nav="google"]'))setTimeout(syncGoogleSettingsHub,0);});
     node('openGoogleSettingsFromSavingBtn')?.addEventListener('click',()=>openSettingsPage('google'));
     node('googleHubOpenSavingBtn')?.addEventListener('click',()=>openSettingsPage('saving'));
     node('googleHubOpenClassSetupBtn')?.addEventListener('click',openClassSetupImport);
@@ -30810,8 +30774,8 @@ const DistrictIntegrationsV57 = (() => {
     syncGoogleSettingsHub();
   }
 
-  function install(){if(installed)return;installed=true;injectSettingsPage();injectGoogleSettingsHub();injectCloudModals();injectDriveControls();installEvents();installGoogleHubSynchronization();updateDistrictForm();document.body.dataset.districtIntegrations=APP_REVISION;}
-  function afterReady(){updateDistrictForm();syncGoogleSettingsHub();}
+  function install(){if(installed)return;installed=true;injectGoogleSettingsHub();injectCloudModals();injectDriveControls();installEvents();installGoogleHubSynchronization();document.body.dataset.districtIntegrations=APP_REVISION;}
+  function afterReady(){syncGoogleSettingsHub();}
   return Object.freeze({
     install,
     afterReady,
@@ -30825,6 +30789,7 @@ const DistrictIntegrationsV57 = (() => {
     downloadReadOnlyPackage,
     buildReadOnlyHtml: readOnlyHtml,
     buildEncryptedReadOnlyHtml,
+    confirmedViewerPassword,
     encryptedReadOnlyHtmlShell,
     buildRosterDraft,
     parseSisCsvText,
@@ -31600,7 +31565,7 @@ const WorkflowRecoveryV62 = (() => {
   async function loadClassMergeFile(file) {
     if (!file) return;
     try {
-      const payload = await file.text();
+      const payload = await readTextFileWithinLimits(file, `class merge file ${file.name}`, IMPORT_LIMITS.saveBytes);
       const { parsed } = await parseSupportedPayloadText(payload, `class merge file ${file.name}`);
       classMergeExternalClasses = parsed.classes.map(normalizeClassRecord);
       renderClassMergeSources(classMergeExternalClasses.length ? 'file:0' : '');
@@ -31677,8 +31642,7 @@ const WorkflowRecoveryV62 = (() => {
   async function preparePasswordRecoveryRestore(file) {
     if (!file) return;
     try {
-      const raw = await file.text();
-      assertImportTextWithinLimits(raw, 'password recovery package', 2 * 1024 * 1024);
+      const raw = await readTextFileWithinLimits(file, 'password recovery package', 2 * 1024 * 1024);
       const parsed = JSON.parse(raw);
       assertSupportedEncryptedEnvelope(parsed, 'password recovery package', PASSWORD_RECOVERY_KIND);
       if (parsed.recoveryFormat !== PASSWORD_RECOVERY_FORMAT || parsed.payloadKind !== PASSWORD_RECOVERY_KIND) throw new Error('The selected file is not a supported encryption password recovery package.');
@@ -31703,8 +31667,7 @@ const WorkflowRecoveryV62 = (() => {
     try {
       const normalizedCode = normalizeRecoveryCode(enteredCode);
       if (normalizedCode.length !== 48) throw new Error('Enter the complete one-time recovery code from the separate code file.');
-      const raw = await file.text();
-      assertImportTextWithinLimits(raw, 'password recovery package', 2 * 1024 * 1024);
+      const raw = await readTextFileWithinLimits(file, 'password recovery package', 2 * 1024 * 1024);
       const parsed = JSON.parse(raw);
       assertSupportedEncryptedEnvelope(parsed, 'password recovery package', PASSWORD_RECOVERY_KIND);
       if (parsed.recoveryFormat !== PASSWORD_RECOVERY_FORMAT || parsed.payloadKind !== PASSWORD_RECOVERY_KIND) throw new Error('The selected file is not a supported encryption password recovery package.');
@@ -32407,10 +32370,9 @@ const SharedDriveCollaborationV64 = (() => {
     const password = String(node('sharedViewerPassword')?.value || '');
     const confirm = String(node('sharedViewerPasswordConfirm')?.value || '');
     const preset = String(node('sharedViewerPreset')?.value || 'substitute');
-    if (password.length < 10) throw new Error('Use a viewer password with at least 10 characters.');
-    if (password !== confirm) throw new Error('The viewer passwords do not match.');
+    const secret = DistrictIntegrationsV57.confirmedViewerPassword(password, confirm);
     const folderId = await ensureGoogleDriveAppFolder();
-    const payload = await encryptedViewerPayload(password, preset);
+    const payload = await encryptedViewerPayload(secret, preset);
     const classPart = String(activeClassName() || 'class').replace(/[^a-z0-9._ -]+/gi, '-').replace(/\s+/g, '-').slice(0, 50);
     const metadata = { name: `${classPart}-encrypted-viewer.json`, mimeType: 'application/json', parents: folderId ? [folderId] : undefined, appProperties: { app: GOOGLE_DRIVE_APP_PROPERTY, kind: VIEWER_KIND, encrypted: 'true', viewerFormat: VIEWER_FORMAT, appVersion: APP_REVISION } };
     if (!metadata.parents) delete metadata.parents;
@@ -32426,9 +32388,8 @@ const SharedDriveCollaborationV64 = (() => {
     const password = String(node('sharedViewerPassword')?.value || '');
     const confirm = String(node('sharedViewerPasswordConfirm')?.value || '');
     const preset = String(node('sharedViewerPreset')?.value || 'substitute');
-    if (password.length < 10) throw new Error('Use a viewer password with at least 10 characters.');
-    if (password !== confirm) throw new Error('The viewer passwords do not match.');
-    const html = await DistrictIntegrationsV57.buildEncryptedReadOnlyHtml(password, preset);
+    const secret = DistrictIntegrationsV57.confirmedViewerPassword(password, confirm);
+    const html = await DistrictIntegrationsV57.buildEncryptedReadOnlyHtml(secret, preset);
     downloadText(`${String(activeClassName() || 'class').replace(/[^a-z0-9]+/gi, '-').toLowerCase()}-encrypted-viewer.html`, html, 'text/html');
     setLiveStatusMessage('Encrypted view-only HTML downloaded. Send its password separately.');
   }
@@ -32615,7 +32576,7 @@ const SharedDriveCollaborationV64 = (() => {
 
   async function remotePlainDocument(fileId) {
     const response = await googleDriveFetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(fileId)}?alt=media`, { method: 'GET' });
-    const text = await response.text();
+    const text = await readResponseTextWithinLimits(response, 'remote Google Drive save', IMPORT_LIMITS.saveBytes);
     let parsed = JSON.parse(text);
     if (parsed?.encrypted) parsed = JSON.parse(await decryptTextEnvelope(parsed, currentSessionEncryptionKey()));
     assertSupportedSaveDocument(parsed, 'remote Google Drive save');
@@ -32757,7 +32718,7 @@ const SharedDriveCollaborationV64 = (() => {
     const style = document.createElement('style');
     style.textContent = `.shared-drive-modal{max-width:min(980px,96vw)}.shared-drive-howto{margin-bottom:10px;padding:10px 12px;border:1px solid #bfdbfe;border-radius:12px;background:#eff6ff;color:#1e3a8a;font-size:12px;line-height:1.4}.shared-drive-howto strong{color:#172554}.shared-drive-howto ol{margin:6px 0;padding-left:20px}.shared-drive-howto p{margin:6px 0 0}.shared-drive-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.shared-drive-permission-list{display:grid;gap:7px;max-height:300px;overflow:auto}.shared-drive-permission-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px;border:1px solid var(--border);border-radius:10px;background:#fff}.shared-drive-permission-row>div:first-child{display:grid;gap:2px;min-width:0}.shared-drive-permission-row span{color:var(--muted);font-size:11px}.shared-drive-permission-row select{min-width:110px}.shared-viewer-grid{display:grid;gap:8px}.shared-viewer-cell,.shared-viewer-object{box-sizing:border-box;border:1px solid var(--border);border-radius:10px;background:#fff;padding:8px;display:grid;place-items:center;text-align:center;min-height:72px}.shared-viewer-cell.seat{background:#dbeafe}.shared-viewer-canvas{position:relative;background:#fff;border:1px solid var(--border);overflow:auto}.shared-viewer-object{position:absolute}.drive-merge-conflict{display:grid;gap:7px;padding:9px;border:1px solid #fed7aa;border-radius:10px;background:#fffbeb}.drive-merge-conflict pre{max-height:180px;overflow:auto;white-space:pre-wrap;font-size:11px}.shared-drive-permission-identity{display:grid;gap:3px;min-width:0}.shared-drive-permission-controls{display:grid;gap:7px;min-width:min(520px,100%)}.shared-drive-capability-details{border:1px solid var(--border);border-radius:10px;background:#f8fafc;padding:7px}.shared-drive-capability-details summary{cursor:pointer;font-size:11px;font-weight:850;color:var(--text)}.shared-drive-capability-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 10px;margin-top:8px}.shared-drive-capability-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(108px,140px);gap:7px;align-items:center;margin:0;padding:5px 0;border-bottom:1px solid rgba(148,163,184,.22);text-transform:none;letter-spacing:0}.shared-drive-capability-row span{font-size:11px;color:var(--text);font-weight:750}.shared-drive-capability-row select{min-width:0}.collaboration-access-banner{position:fixed;left:50%;bottom:14px;z-index:38800;transform:translateX(-50%);max-width:min(720px,calc(100vw - 28px));padding:9px 12px;border:1px solid #bfdbfe;border-radius:12px;background:#eff6ff;color:#1e3a8a;box-shadow:0 12px 34px rgba(15,23,42,.22);font-size:12px;font-weight:800}.collaboration-access-banner[hidden]{display:none}@media(max-width:760px){.shared-drive-grid,.shared-drive-permission-row,.shared-drive-capability-grid{grid-template-columns:1fr}.shared-drive-permission-controls{min-width:0}.shared-drive-capability-row{grid-template-columns:1fr}}body[data-drive-access-role="reader"] [data-drive-write-action]{display:none!important}.drive-read-only-banner{position:fixed;left:50%;bottom:14px;z-index:39000;transform:translateX(-50%);max-width:min(680px,calc(100vw - 28px));padding:9px 12px;border:1px solid #f2ca83;border-radius:12px;background:#fffbeb;color:#7c2d12;box-shadow:0 12px 34px rgba(15,23,42,.22);font-size:12px;font-weight:800}.drive-read-only-banner[hidden]{display:none}body[data-drive-access-role="reader"] .app button,body[data-drive-access-role="reader"] .app input,body[data-drive-access-role="reader"] .app select,body[data-drive-access-role="reader"] .app textarea,body[data-drive-access-role="reader"] .app [draggable="true"]{cursor:not-allowed}`;
     document.head.appendChild(style);
-    document.body.insertAdjacentHTML('beforeend', `<div id="sharedDriveModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="sharedDriveTitle"><div class="modal shared-drive-modal"><div class="panel-header"><div><span class="v44-modal-eyebrow">Google Drive</span><h2 id="sharedDriveTitle">Share and collaborate</h2></div><div class="button-row"><button id="sharedDriveGuideBtn" type="button" class="tiny ghost" data-guided-start="drive-collaboration" data-guided-mode="explain">Guide me</button><button id="closeSharedDriveBtn" type="button" class="tiny secondary">Close</button></div></div><div class="modal-body"><div id="sharedDriveHowTo" class="shared-drive-howto"><strong>Editable multi-user setup</strong><ol><li>Save or load the master planner in Google Drive.</li><li>Enter a Google-account email, choose Drive Viewer or Editor, then choose which planner areas are hidden, view only, or editable.</li><li>Have the recipient open the same hosted planner, connect Drive, and load the shared file.</li><li>Save changes back to Drive; overlapping edits use the merge resolver.</li></ol><p>This is revision-aware shared-file editing, not live Google Docs-style cursor streaming.</p></div><div class="button-row"><span id="sharedDriveRoleBadge" class="pill">Role unknown</span><button id="refreshSharedDriveBtn" type="button" class="secondary">Refresh access</button><button id="copySharedDriveLinkBtn" type="button" class="secondary">Copy Drive link</button></div><p id="sharedDriveStatus" class="hint">Connect Google Drive and save or load a file first.</p><div class="shared-drive-grid"><section class="section"><h3>Choose who can open the editable save</h3><div class="field"><label for="sharedDriveEmail">Google account email</label><input id="sharedDriveEmail" type="email" autocomplete="off" placeholder="teacher@example.org"></div><div class="field"><label for="sharedDriveRole">Google Drive role</label><select id="sharedDriveRole"><option value="reader">Viewer — cannot save changes</option><option value="writer">Editor — may save the master when interface access allows it</option></select></div><div class="field"><label for="sharedDriveInterfacePreset">Planner interface access</label><select id="sharedDriveInterfacePreset">${presetOptionsMarkup("reviewer")}</select></div><details class="shared-drive-capability-details" open><summary>Choose which areas are hidden, view only, or editable</summary><div id="sharedDriveCapabilityGrid" class="shared-drive-capability-grid"></div></details><label class="checkline"><input id="sharedDriveNotify" type="checkbox" checked> Send Google notification</label><div class="field"><label for="sharedDriveMessage">Optional message</label><textarea id="sharedDriveMessage" rows="3" placeholder="Open the district-hosted planner, connect this Google account, then load the shared Drive save."></textarea></div><button id="addSharedDrivePermissionBtn" type="button" data-drive-write-action>Add person to Drive file</button><div class="hint mini">Google Drive still owns file access. The planner profile controls which interface areas this person can see or edit after opening the shared save. These are workflow controls, not cryptographic data redaction; use an encrypted read-only package when information itself must be excluded.</div></section><section class="section"><h3>Create a separate encrypted viewer</h3><div class="field"><label for="sharedViewerPreset">Viewer profile</label><select id="sharedViewerPreset"><option value="substitute">Substitute chart and substitute notes</option><option value="student">Student-facing names only</option><option value="anonymous">Anonymous numbered chart</option><option value="room">Room layout only</option></select></div><div class="row"><div class="field"><label for="sharedViewerPassword">Viewer password</label><input id="sharedViewerPassword" type="password" autocomplete="new-password"></div><div class="field"><label for="sharedViewerPasswordConfirm">Confirm</label><input id="sharedViewerPasswordConfirm" type="password" autocomplete="new-password"></div></div><div class="button-row"><button id="createDriveViewerFileBtn" type="button" data-drive-write-action>Create in Drive</button><button id="downloadEncryptedViewerHtmlBtn" type="button" class="secondary">Download encrypted HTML</button></div><p id="sharedViewerResult" class="muted">Use this for a stable read-only copy, not collaborative editing. Send the password through another channel.</p></section></div><section class="section"><h3>Current Drive permissions</h3><div class="hint mini">Change a person's role here or remove access. Removing access does not recall a file the person already downloaded or printed.</div><div id="sharedDrivePermissionList" class="shared-drive-permission-list"></div></section></div></div></div><div id="sharedViewerModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="sharedViewerModalTitle"><div class="modal shared-drive-modal"><div class="panel-header"><h2 id="sharedViewerModalTitle">Shared classroom view</h2><button id="closeSharedViewerBtn" type="button" class="tiny secondary">Close</button></div><div id="sharedViewerModalBody" class="modal-body"></div></div></div><div id="driveMergeModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="driveMergeTitle"><div class="modal shared-drive-modal"><div class="panel-header"><h2 id="driveMergeTitle">Resolve Drive merge conflicts</h2><button id="cancelDriveMergeBtn" type="button" class="tiny secondary">Cancel</button></div><div class="modal-body"><div class="hint">Non-conflicting local and remote classroom changes were merged automatically. Save timestamps, revision hashes, backup manifests, and record update times are resolved automatically and are never presented as classroom conflicts. Choose which value wins only for genuine overlapping edits.</div><div id="driveMergeConflictList" class="list" style="margin-top:10px"></div><div class="button-row" style="margin-top:10px"><button id="commitDriveMergeBtn" type="button">Merge and save</button></div></div></div></div>`);
+    document.body.insertAdjacentHTML('beforeend', `<div id="sharedDriveModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="sharedDriveTitle"><div class="modal shared-drive-modal"><div class="panel-header"><div><span class="v44-modal-eyebrow">Google Drive</span><h2 id="sharedDriveTitle">Share and collaborate</h2></div><div class="button-row"><button id="sharedDriveGuideBtn" type="button" class="tiny ghost" data-guided-start="drive-collaboration" data-guided-mode="explain">Guide me</button><button id="closeSharedDriveBtn" type="button" class="tiny secondary">Close</button></div></div><div class="modal-body"><div id="sharedDriveHowTo" class="shared-drive-howto"><strong>Editable multi-user setup</strong><ol><li>Save or load the master planner in Google Drive.</li><li>Enter a Google-account email, choose Drive Viewer or Editor, then choose which planner areas are hidden, view only, or editable.</li><li>Have the recipient open the same hosted planner, connect Drive, and load the shared file.</li><li>Save changes back to Drive; overlapping edits use the merge resolver.</li></ol><p>This is revision-aware shared-file editing, not live Google Docs-style cursor streaming.</p></div><div class="button-row"><span id="sharedDriveRoleBadge" class="pill">Role unknown</span><button id="refreshSharedDriveBtn" type="button" class="secondary">Refresh access</button><button id="copySharedDriveLinkBtn" type="button" class="secondary">Copy Drive link</button></div><p id="sharedDriveStatus" class="hint">Connect Google Drive and save or load a file first.</p><div class="shared-drive-grid"><section class="section"><h3>Choose who can open the editable save</h3><div class="field"><label for="sharedDriveEmail">Google account email</label><input id="sharedDriveEmail" type="email" autocomplete="off" placeholder="teacher@example.org"></div><div class="field"><label for="sharedDriveRole">Google Drive role</label><select id="sharedDriveRole"><option value="reader">Viewer — cannot save changes</option><option value="writer">Editor — may save the master when interface access allows it</option></select></div><div class="field"><label for="sharedDriveInterfacePreset">Planner interface access</label><select id="sharedDriveInterfacePreset">${presetOptionsMarkup("reviewer")}</select></div><details class="shared-drive-capability-details" open><summary>Choose which areas are hidden, view only, or editable</summary><div id="sharedDriveCapabilityGrid" class="shared-drive-capability-grid"></div></details><label class="checkline"><input id="sharedDriveNotify" type="checkbox" checked> Send Google notification</label><div class="field"><label for="sharedDriveMessage">Optional message</label><textarea id="sharedDriveMessage" rows="3" placeholder="Open the district-hosted planner, connect this Google account, then load the shared Drive save."></textarea></div><button id="addSharedDrivePermissionBtn" type="button" data-drive-write-action>Add person to Drive file</button><div class="hint mini">Google Drive still owns file access. The planner profile controls which interface areas this person can see or edit after opening the shared save. These are workflow controls, not cryptographic data redaction; use an encrypted read-only package when information itself must be excluded.</div></section><section class="section"><h3>Create a separate encrypted viewer</h3><div class="field"><label for="sharedViewerPreset">Viewer profile</label><select id="sharedViewerPreset"><option value="substitute">Substitute chart and substitute notes</option><option value="student">Student-facing names only</option><option value="anonymous">Anonymous numbered chart</option><option value="room">Room layout only</option></select></div><div class="row"><div class="field"><label for="sharedViewerPassword">Viewer password</label><input id="sharedViewerPassword" type="password" autocomplete="new-password" minlength="10" maxlength="256"></div><div class="field"><label for="sharedViewerPasswordConfirm">Confirm</label><input id="sharedViewerPasswordConfirm" type="password" autocomplete="new-password" minlength="10" maxlength="256"></div></div><div class="button-row"><button id="createDriveViewerFileBtn" type="button" data-drive-write-action>Create in Drive</button><button id="downloadEncryptedViewerHtmlBtn" type="button" class="secondary">Download encrypted HTML</button></div><p id="sharedViewerResult" class="muted">Use this for a stable read-only copy, not collaborative editing. Send the password through another channel.</p></section></div><section class="section"><h3>Current Drive permissions</h3><div class="hint mini">Change a person's role here or remove access. Removing access does not recall a file the person already downloaded or printed.</div><div id="sharedDrivePermissionList" class="shared-drive-permission-list"></div></section></div></div></div><div id="sharedViewerModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="sharedViewerModalTitle"><div class="modal shared-drive-modal"><div class="panel-header"><h2 id="sharedViewerModalTitle">Shared classroom view</h2><button id="closeSharedViewerBtn" type="button" class="tiny secondary">Close</button></div><div id="sharedViewerModalBody" class="modal-body"></div></div></div><div id="driveMergeModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="driveMergeTitle"><div class="modal shared-drive-modal"><div class="panel-header"><h2 id="driveMergeTitle">Resolve Drive merge conflicts</h2><button id="cancelDriveMergeBtn" type="button" class="tiny secondary">Cancel</button></div><div class="modal-body"><div class="hint">Non-conflicting local and remote classroom changes were merged automatically. Save timestamps, revision hashes, backup manifests, and record update times are resolved automatically and are never presented as classroom conflicts. Choose which value wins only for genuine overlapping edits.</div><div id="driveMergeConflictList" class="list" style="margin-top:10px"></div><div class="button-row" style="margin-top:10px"><button id="commitDriveMergeBtn" type="button">Merge and save</button></div></div></div></div>`);
   }
 
   function openManager() {
@@ -32781,7 +32742,7 @@ const SharedDriveCollaborationV64 = (() => {
     node('addSharedDrivePermissionBtn')?.addEventListener('click', () => void addPermission().catch(error => { node('sharedDriveStatus').textContent = error.message; }));
     node('createDriveViewerFileBtn')?.addEventListener('click', () => void uploadViewerFile().catch(error => { node('sharedViewerResult').textContent = error.message; }));
     node('downloadEncryptedViewerHtmlBtn')?.addEventListener('click', () => void downloadEncryptedViewerHtml().catch(error => { node('sharedViewerResult').textContent = error.message; }));
-    node('copySharedDriveLinkBtn')?.addEventListener('click', async () => { try { const meta = await driveMetadata(googleDriveConfig().fileId); await copyTextSafe(meta.webViewLink || ''); setLiveStatusMessage('Google Drive link copied.'); } catch (error) { node('sharedDriveStatus').textContent = error.message; } });
+    node('copySharedDriveLinkBtn')?.addEventListener('click', async () => { try { const meta = await driveMetadata(googleDriveConfig().fileId); const webLink = trustedGoogleDriveWebLink(meta.webViewLink); if (!webLink) throw new Error('Google Drive did not return a safe file link.'); await copyTextSafe(webLink); setLiveStatusMessage('Google Drive link copied.'); } catch (error) { node('sharedDriveStatus').textContent = error.message; } });
     node('sharedDriveRole')?.addEventListener('change', () => { const preset = node('sharedDriveRole').value === 'reader' ? 'reviewer' : 'full'; if (node('sharedDriveInterfacePreset')) node('sharedDriveInterfacePreset').value = preset; renderAddPermissionControls(); });
     node('sharedDriveInterfacePreset')?.addEventListener('change', event => applyPresetToCapabilityContainer(node('sharedDriveCapabilityGrid'), event.target.value, node('sharedDriveRole')?.value === 'reader' ? 'reader' : 'writer'));
     node('sharedDrivePermissionList')?.addEventListener('change', event => {
@@ -33417,16 +33378,16 @@ const GuidedLearning = (() => {
       id: 'security-privacy',
       category: 'Security and privacy',
       title: 'Set Up Security, Locking, and Privacy',
-      summary: 'Use the Security Guided Help to verify encryption, Settings access, Lock and Eye PINs, auto-lock, and encrypted storage.',
+      summary: 'Use the Security Guided Help to verify encryption, Settings access, Lock and Presentation PINs, auto-lock, and encrypted storage.',
       duration: '7–9 minutes',
       difficulty: 'Intermediate',
       practiceSupported: false,
       steps: [
         simpleStep('open', 'Open Security Guided Help', 'The security wizard gathers the related controls in one status-driven checklist.', 'Open Settings > Security & Data, then choose Open Security Guided Help.', '#securitySetupWizardOpenBtn', { check: CHECKS.securityWizardOpened, requiredInExplain: true, prepare: () => openSettingsPageForLearning('security') }),
         simpleStep('encryption', 'Verify the encryption password', 'The active encryption password protects browser saves, snapshots, downloaded saves, Drive saves, and protected viewer packages. It is not recoverable unless a recovery package was created beforehand.', 'Review Encryption password status.', '#securityWizardSteps [data-security-check="encryption"]', { check: CHECKS.always, requiredInPractice: false }),
-        simpleStep('settings-access', 'Protect Settings access', 'Settings can require the Lock PIN, Eye PIN, encryption password, or an automatic fallback order. No prompt is available but should be intentional.', 'Open Settings access requirement and review the selected method.', '#securityWizardSteps [data-security-check="settings"]', { check: CHECKS.always, requiredInPractice: false }),
+        simpleStep('settings-access', 'Protect Settings access', 'Settings can require the Lock PIN, Presentation PIN, encryption password, or an automatic fallback order. No prompt is available but should be intentional.', 'Open Settings access requirement and review the selected method.', '#securityWizardSteps [data-security-check="settings"]', { check: CHECKS.always, requiredInPractice: false }),
         simpleStep('lock-pin', 'Configure the Lock PIN', 'The Lock PIN restores a normally locked or auto-locked page. It is stored as a salted PBKDF2 hash rather than plain text.', 'Review the Lock PIN row.', '#securityWizardSteps [data-security-check="lock"]', { check: CHECKS.always, requiredInPractice: false }),
-        simpleStep('eye-pin', 'Configure the Eye Mode PIN', 'Eye Mode hides disallowed details and uses its exit PIN without exposing the full encryption password during ordinary classroom display.', 'Review the Eye Mode PIN row.', '#securityWizardSteps [data-security-check="eye"]', { check: CHECKS.always, requiredInPractice: false }),
+        simpleStep('eye-pin', 'Configure the Presentation Mode PIN', 'Presentation Mode hides disallowed details and uses its exit PIN without exposing the full encryption password during ordinary classroom display.', 'Review the Presentation Mode PIN row.', '#securityWizardSteps [data-security-check="eye"]', { check: CHECKS.always, requiredInPractice: false }),
         simpleStep('autolock', 'Choose auto-lock triggers', 'Inactivity, window blur, hidden-tab, and return-after-time rules can protect an unattended classroom screen.', 'Review the Auto-lock rules row.', '#securityWizardSteps [data-security-check="autolock"]', { check: CHECKS.always, requiredInPractice: false }),
         simpleStep('storage', 'Confirm encrypted browser storage', 'After setup, save once so the current browser record and snapshot index are encrypted with the active password.', 'Review Storage encryption status.', '#securityWizardSteps [data-security-check="storage"]', { check: CHECKS.always, requiredInPractice: false }),
         simpleStep('finish', 'Save and finish deliberately', 'Valid fields auto-save; Save Security Setup provides an explicit checkpoint. Unmatched PIN fields prevent completion.', 'Use Save Security Setup or Done after the checklist reflects the intended policy.', '#securityWizardSaveBtn', { check: CHECKS.always, requiredInPractice: false })
@@ -33470,7 +33431,7 @@ const GuidedLearning = (() => {
         simpleStep('picker', 'Understand optional Google Picker', 'Picker is a deployment feature for browsing other Drive files. Teachers never enter API keys or project IDs.', 'Check the Picker deployment status on the Google page.', '#googleHubPickerStatus', { check: CHECKS.always, requiredInPractice: false }),
         simpleStep('classroom-auth', 'Connect Google Classroom', 'Classroom uses separate read-only course and roster scopes.', 'Connect Classroom when authorized by the district.', '#googleHubClassroomConnectBtn', { check: CHECKS.classroomActionUsed, requiredInPractice: false }),
         simpleStep('course', 'Choose a Classroom course', 'Selecting a course loads its roster into the reconciliation preview instead of replacing the current class immediately.', 'Refresh courses, choose one, and review the roster preview.', '#googleHubClassroomCourseSelect', { check: CHECKS.always, requiredInPractice: false }),
-        simpleStep('privacy', 'Keep deployment and privacy boundaries clear', 'OAuth client IDs and restricted Picker keys belong to the deployment. Student data should follow district storage and retention policies.', 'Review the Google and district deployment guidance before broad rollout.', '#settingsPageDistrict', { check: CHECKS.always, requiredInPractice: false, prepare: () => openSettingsPageForLearning('district') })
+        simpleStep('privacy', 'Keep deployment and privacy boundaries clear', 'OAuth client IDs and restricted Picker keys belong to the deployment. Student data should follow district storage and retention policies.', 'Review the Google deployment and privacy guidance before broad rollout.', '#settingsPageGoogle', { check: CHECKS.always, requiredInPractice: false, prepare: () => openSettingsPageForLearning('google') })
       ]
     }
   ]);
