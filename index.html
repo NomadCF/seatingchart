@@ -5,7 +5,7 @@
   <meta name="license" content="MIT License" />
   <meta name="spdx-license-identifier" content="MIT" />
   <meta name="copyright" content="Copyright (c) 2026 Chris L. Franklin" />
-  <meta name="app-version" content="6.5.12" />
+  <meta name="app-version" content="6.5.13" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com https://www.paypalobjects.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://www.googleapis.com https://classroom.googleapis.com https://accounts.google.com https://www.paypal.com https://www.paypalobjects.com https://www.google-analytics.com https://*.google-analytics.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://www.paypal.com; img-src 'self' data: blob: https://www.paypalobjects.com https://www.google-analytics.com; font-src 'self' data:; worker-src 'self' blob:; manifest-src 'self'; media-src 'none'; object-src 'none'; base-uri 'none'; form-action 'self' https://www.paypal.com" />
   <meta name="application-name" content="Classroom Seating Planner" />
@@ -4659,7 +4659,8 @@ body.visibility-mode .presentation-exit-button:focus-visible{background:#7f1d1d;
   }
 }.mobile-room-mode-bar,
 .mobile-layout-tools-header-actions,
-.mobile-layout-options-backdrop{display:none
+.mobile-layout-options-backdrop,
+.mobile-canvas-focus-exit{display:none
 }#printBtn{width:40px;min-width:40px;height:40px;min-height:40px;color:var(--v4-primary, var(--accent));background:var(--v4-primary-soft, #edf3ff);border-color:var(--v4-border-strong, var(--border))
 }#printBtn .v4-icon{width:23px;height:23px;flex-basis:23px;stroke-width:2.25
 }body.product-v4.product-v43[data-theme="prismatic"]{background-attachment:fixed;isolation:isolate
@@ -4686,8 +4687,10 @@ body.product-v4.product-v43[data-theme="prismatic"] .v4-popover,
 body.product-v4.product-v43[data-theme="prismatic"] .mobile-room-actions-panel,
 body.product-v4.product-v43[data-theme="prismatic"] #layoutToolsPanel{animation:none;background:linear-gradient(135deg, rgba(255, 255, 255, .99), rgba(246, 241, 255, .98), rgba(236, 250, 255, .98));background-position:50% 50%;background-clip:padding-box;backdrop-filter:none;isolation:isolate
 }@media (max-width: 900px){body.product-v4[data-workflow="room"] .mobile-room-mode-bar:not([hidden]){display:grid;grid-template-columns:minmax(0, 1fr);gap:7px;flex:0 0 auto;padding:8px;border-bottom:1px solid var(--v4-border, var(--border));background:var(--v4-surface, #fff);box-shadow:0 4px 12px rgba(15, 23, 42, .06)
-  }.mobile-room-mode-copy{display:flex;align-items:baseline;justify-content:space-between;gap:8px;min-width:0
+  }.mobile-room-mode-copy{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0
+  }.mobile-room-mode-copy > div{display:grid;gap:1px;min-width:0
   }.mobile-room-mode-copy strong{min-width:0;overflow:hidden;color:var(--v4-ink, var(--text));font-size:12px;text-overflow:ellipsis;white-space:nowrap
+  }.mobile-canvas-focus-button{flex:0 0 auto;min-height:32px;padding:5px 9px;font-size:10.5px;white-space:nowrap
   }.mobile-room-mode-switch,
   .mobile-room-mode-actions{display:grid;grid-template-columns:repeat(2, minmax(0, 1fr));gap:6px
   }.mobile-room-mode-switch button,
@@ -4704,14 +4707,35 @@ body.product-v4.product-v43[data-theme="prismatic"] #layoutToolsPanel{animation:
   }body.product-v4.mobile-layout-options-open[data-workflow="room"] #layoutToolsPanel .toolbar-body{display:grid;flex:1 1 auto;grid-template-columns:repeat(2, minmax(0, 1fr));grid-auto-rows:max-content;align-content:start;align-items:start;min-height:0;padding:9px;padding-bottom:max(14px, env(safe-area-inset-bottom, 0px));overflow-x:hidden;overflow-y:auto
   }.mobile-layout-tools-header-actions{display:flex;flex:0 0 auto;align-items:center;gap:7px
   }.mobile-layout-tools-header-actions > span{max-width:112px;overflow:hidden;color:var(--v4-muted, var(--muted));font-size:10px;font-weight:800;text-overflow:ellipsis;white-space:nowrap
-  }body.product-v4 button[id^="close"]{width:36px;min-width:36px;height:36px;min-height:36px;padding:0;color:#fff;background:#b42318;border:1px solid #8f1c14;border-radius:999px;box-shadow:0 3px 10px rgba(127, 29, 29, .24);font-size:0;line-height:1
-  }body.product-v4 button[id^="close"]::before{content:"×";display:block;font-size:24px;font-weight:500;line-height:30px
-  }body.product-v4 button[id^="close"]:hover,
-  body.product-v4 button[id^="close"]:focus-visible{color:#fff;background:#8f1c14;border-color:#7f1d1d
+  }body.product-v4 .mobile-compact-close{width:34px;min-width:34px;height:34px;min-height:34px;padding:0;color:#9f1d18;background:var(--v4-surface, #fff);border:1px solid var(--v4-border-strong, var(--border));border-radius:8px;box-shadow:none;font-size:0;line-height:1
+  }body.product-v4 .mobile-compact-close::before{content:"×";display:block;font-size:23px;font-weight:600;line-height:30px
+  }body.product-v4 .mobile-compact-close:hover,
+  body.product-v4 .mobile-compact-close:focus-visible{color:#7f1d1d;background:#fff5f4;border-color:#efaaa3;box-shadow:none;transform:none
+  }body.product-v4.mobile-room-canvas-focus[data-workflow="room"]{--v4-topbar-height:0px;--v41-shell-height:0px;overflow:hidden
+  }body.product-v4.mobile-room-canvas-focus[data-workflow="room"] .v4-topbar,
+  body.product-v4.mobile-room-canvas-focus[data-workflow="room"] .v4-workflow-shell,
+  body.product-v4.mobile-room-canvas-focus[data-workflow="room"] .local-save-banner,
+  body.product-v4.mobile-room-canvas-focus[data-workflow="room"] #mobilePanelNav,
+  body.product-v4.mobile-room-canvas-focus[data-workflow="room"] .center-panel > .panel-header,
+  body.product-v4.mobile-room-canvas-focus[data-workflow="room"] #mobileRoomModeBar,
+  body.product-v4.mobile-room-canvas-focus[data-workflow="room"] #mobileRoomActionsToggleRow,
+  body.product-v4.mobile-room-canvas-focus[data-workflow="room"] #mobileRoomActionsPanel,
+  body.product-v4.mobile-room-canvas-focus[data-workflow="room"] #layoutToolsPanel{display:none
+  }body.product-v4.mobile-room-canvas-focus[data-workflow="room"] main.app,
+  body.product-v4.mobile-room-canvas-focus[data-workflow="room"].left-collapsed main.app,
+  body.product-v4.mobile-room-canvas-focus[data-workflow="room"].right-collapsed main.app,
+  body.product-v4.mobile-room-canvas-focus[data-workflow="room"].left-collapsed.right-collapsed main.app{width:100%;height:100dvh;max-height:100dvh;min-height:100dvh;padding:0;overflow:hidden
+  }body.product-v4.mobile-room-canvas-focus[data-workflow="room"] main.app > .center-panel{width:100%;height:100%;min-height:0;border:0;border-radius:0;box-shadow:none
+  }body.product-v4.mobile-room-canvas-focus[data-workflow="room"] .center-panel .grid-wrap{width:100%;height:100%;min-height:0;padding:6px;border-radius:0;overscroll-behavior:contain
+  }body.product-v4.mobile-room-canvas-focus[data-workflow="room"] .mobile-canvas-focus-exit:not([hidden]){position:fixed;top:max(8px, env(safe-area-inset-top, 0px));right:max(8px, env(safe-area-inset-right, 0px));z-index:16000;display:inline-grid;place-items:center;width:38px;min-width:38px;height:38px;min-height:38px;padding:0;color:var(--v4-ink, var(--text));background:rgba(255, 255, 255, .94);border:1px solid var(--v4-border-strong, var(--border));border-radius:9px;box-shadow:0 8px 22px rgba(15, 23, 42, .2);font-size:20px;line-height:1;backdrop-filter:blur(8px)
+  }body.product-v4.mobile-room-canvas-focus[data-workflow="room"] .mobile-canvas-focus-exit:hover,
+  body.product-v4.mobile-room-canvas-focus[data-workflow="room"] .mobile-canvas-focus-exit:focus-visible{color:var(--v4-primary, var(--accent));background:#fff;transform:none
   }#printBtn{width:42px;min-width:42px;height:42px;min-height:42px
   }#printBtn .v4-icon{width:25px;height:25px;flex-basis:25px
   }
-}@media (max-width: 360px){.mobile-room-mode-switch button,
+}@media (max-width: 360px){.mobile-canvas-focus-button{min-height:30px;padding:4px 7px;font-size:10px
+  }body.product-v4 .mobile-compact-close{width:32px;min-width:32px;height:32px;min-height:32px
+  }.mobile-room-mode-switch button,
   .mobile-room-mode-actions button{min-height:38px;font-size:11px
   }.mobile-layout-tools-header-actions > span{display:none
   }
@@ -6569,7 +6593,7 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
 const APP_CONFIG = Object.freeze({
   name: 'Classroom Seating Planner',
   shortName: 'Seating Planner',
-  version: '6.5.12',
+  version: '6.5.13',
   copyrightHolder: 'Chris L. Franklin',
   copyrightYear: '2026',
   releaseDate: '2026-07-16',
@@ -6835,17 +6859,30 @@ const PROJECT_FEATURES = [
   { title: 'Printing and room output', text: 'Prepare names-only, substitute, or detailed charts with selectable fields, notes, configuration details, paper sizes, scale, tiling, crop marks, and an optional crop-to-content mode that removes unused outer room space and enlarges the occupied Grid or Freeform layout while keeping the chart on one page. Selected notes and configuration may follow on supporting pages.' },
   { title: 'Security and privacy controls', text: 'Protect Settings, use Lock and Presentation Mode PINs, auto-lock the page, present a finished read-only chart, reveal sensitive notes deliberately, and erase browser-resident data through explicit recovery workflows.' },
   { title: 'Maintenance and diagnostics', text: 'Review build/schema information, storage health, privacy-safe activity/errors, import and integration recovery, deployment readiness, repair tools, sample data, cleanup, and Factory Reset.' },
-  { title: 'Accessible responsive workspace', text: 'Use keyboard navigation, focus-managed dialogs, live announcements, skip navigation, focus mode, collapsible regions, persistent mobile Grid/Freeform controls, full-height mobile option sheets, and reduced-motion support.' },
+  { title: 'Accessible responsive workspace', text: 'Use keyboard navigation, focus-managed dialogs, live announcements, skip navigation, focus mode, collapsible regions, persistent mobile Grid/Freeform controls, a full-screen Canvas-only Room Design view, full-height mobile option sheets, and reduced-motion support.' },
   { title: 'Themes and customization', text: 'Choose complete accessible themes including Default, Gradient Sky, Shimmer, Prismatic Flow, Aurora Focus, High Contrast, Windows XP, Windows 11, macOS Frosted, and Linux Terminal.' },
   { title: 'Offline and portable deployment', text: 'Run the self-contained HTML release or deploy the same application as a same-origin installable PWA with offline support and build verification.' }
 ];
 
 const RELEASE_HISTORY = [
   {
+    version: '6.5.13',
+    date: 'July 16, 2026',
+    title: 'Compact mobile close controls and full-screen room canvas',
+    current: true,
+    changes: [
+      'Replaced the filled red circular mobile Close treatment with a smaller square X button while retaining accessible names and full desktop Close labels.',
+      'Applied the compact X treatment consistently to modal, sheet, and dynamically rendered Close controls on mobile.',
+      'Added Canvas only to mobile Room Design so the top bar, workflow guidance, headers, menus, and tool panels can be hidden while the classroom canvas uses the full viewport.',
+      'Added a small floating controls button and Escape support to restore the Room Design interface without leaving the canvas.',
+      'Verified mobile Room Design controls, close-button normalization, responsive canvas focus, and the existing interaction and regression suites.'
+    ]
+  },
+  {
     version: '6.5.12',
     date: 'July 16, 2026',
     title: 'Direct mobile room controls and stable Prismatic surfaces',
-    current: true,
+    current: false,
     changes: [
       'Added persistent Grid and Freeform choices above the mobile Room Design canvas with direct mode-specific options.',
       'Opened Grid and Freeform tools in a full-height mobile sheet with backdrop, Escape, and compact red-X dismissal.',
@@ -7068,6 +7105,7 @@ const uiState = {
   mobileRoomPanPointer: null,
   mobileRoomActionsOpen: false,
   mobileLayoutOptionsOpen: false,
+  mobileRoomCanvasFocus: false,
   gridResizeModeActive: false,
   gridResizeOriginalRows: null,
   gridResizeOriginalCols: null,
@@ -19528,7 +19566,7 @@ const HELP_GUIDE_SECTIONS = [
       },
       {
         "title": "Grid and Freeform are always visible",
-        "text": "In Room Design, use the persistent Grid and Freeform buttons above the canvas. The adjacent Grid options or Freeform options button opens the complete matching tool set in a full-height mobile sheet."
+        "text": "In Room Design, use the persistent Grid and Freeform buttons above the canvas. The adjacent Grid options or Freeform options button opens the complete matching tool set in a full-height mobile sheet. Choose Canvas only to hide the surrounding interface and use the floating controls button to restore it."
       },
       {
         "title": "More room actions",
@@ -26708,6 +26746,7 @@ const ProductExperience = (() => {
   let installed = false;
   let activeWorkflow = 'setup';
   let observersInstalled = false;
+  let mobileCloseObserver = null;
 
   const WORKFLOWS = Object.freeze({
     setup: {
@@ -27170,7 +27209,10 @@ const ProductExperience = (() => {
       key = fallback;
     }
     if (!['room', 'seating', 'review'].includes(key)) uiState.mobileRoomActionsOpen = false;
-    if (key !== 'room') uiState.mobileLayoutOptionsOpen = false;
+    if (key !== 'room') {
+      uiState.mobileLayoutOptionsOpen = false;
+      uiState.mobileRoomCanvasFocus = false;
+    }
     activeWorkflow = key;
     document.body.dataset.workflow = key;
     safeStorageSet('sessionStorage', 'seatingPlannerWorkflow', key)
@@ -27280,7 +27322,7 @@ const ProductExperience = (() => {
     let bar = document.getElementById('mobileRoomModeBar');
     if (!bar) {
       bar = createElement('section', 'mobile-room-mode-bar no-print', `
-        <div class="mobile-room-mode-copy"><span class="class-setup-eyebrow">Room type</span><strong id="mobileRoomModeTitle">Standard Grid</strong></div>
+        <div class="mobile-room-mode-copy"><div><span class="class-setup-eyebrow">Room type</span><strong id="mobileRoomModeTitle">Standard Grid</strong></div><button id="mobileCanvasFocusBtn" class="secondary mobile-canvas-focus-button" type="button" aria-pressed="false" title="Hide the mobile interface and give the classroom canvas the full screen">Canvas only</button></div>
         <div class="mobile-room-mode-switch" role="group" aria-label="Choose room layout type">
           <button id="mobileGridModeBtn" class="secondary" type="button" data-mobile-layout-mode="grid" aria-pressed="true">Grid</button>
           <button id="mobileFreeformModeBtn" class="secondary" type="button" data-mobile-layout-mode="freeform" aria-pressed="false">Freeform</button>
@@ -27303,9 +27345,23 @@ const ProductExperience = (() => {
         }
         if (event.target.closest('#mobileMoreRoomActionsBtn')) {
           setMobileRoomActionsOpen(!uiState.mobileRoomActionsOpen);
+          return;
         }
+        if (event.target.closest('#mobileCanvasFocusBtn')) setMobileRoomCanvasFocus(true);
       });
       document.getElementById('closeMobileLayoutToolsBtn')?.addEventListener('click', () => setMobileLayoutOptionsOpen(false));
+    }
+    let focusExit = document.getElementById('mobileCanvasFocusExitBtn');
+    if (!focusExit) {
+      focusExit = createElement('button', 'mobile-canvas-focus-exit no-print');
+      focusExit.id = 'mobileCanvasFocusExitBtn';
+      focusExit.type = 'button';
+      focusExit.hidden = true;
+      focusExit.setAttribute('aria-label', 'Show Room Design controls');
+      focusExit.title = 'Show Room Design controls';
+      focusExit.innerHTML = '<span aria-hidden="true">☰</span>';
+      focusExit.addEventListener('click', () => setMobileRoomCanvasFocus(false));
+      document.body.appendChild(focusExit);
     }
     let backdrop = document.getElementById('mobileLayoutOptionsBackdrop');
     if (!backdrop) {
@@ -27321,7 +27377,7 @@ const ProductExperience = (() => {
   }
 
   function syncMobileLayoutOptionsUi() {
-    const available = isMobileViewport() && activeWorkflow === 'room' && !uiState.visibilityMode;
+    const available = isMobileViewport() && activeWorkflow === 'room' && !uiState.visibilityMode && !uiState.mobileRoomCanvasFocus;
     if (!available) uiState.mobileLayoutOptionsOpen = false;
     const open = Boolean(available && uiState.mobileLayoutOptionsOpen);
     document.body.classList.toggle('mobile-layout-options-open', open);
@@ -27349,7 +27405,7 @@ const ProductExperience = (() => {
   }
 
   function setMobileLayoutOptionsOpen(open, { announce = true } = {}) {
-    const allowed = isMobileViewport() && activeWorkflow === 'room' && !uiState.visibilityMode;
+    const allowed = isMobileViewport() && activeWorkflow === 'room' && !uiState.visibilityMode && !uiState.mobileRoomCanvasFocus;
     uiState.mobileLayoutOptionsOpen = Boolean(open && allowed);
     if (uiState.mobileLayoutOptionsOpen) {
       uiState.mobileRoomActionsOpen = false;
@@ -27362,6 +27418,57 @@ const ProductExperience = (() => {
         ? `${state.layoutMode === 'freeform' ? 'Freeform' : 'Grid'} layout options opened. Close the panel to return to the room.`
         : 'Layout options closed.');
     }
+  }
+
+  function syncMobileRoomCanvasFocus() {
+    const available = isMobileViewport() && activeWorkflow === 'room' && !uiState.visibilityMode;
+    if (!available) uiState.mobileRoomCanvasFocus = false;
+    const active = Boolean(available && uiState.mobileRoomCanvasFocus);
+    document.body.classList.toggle('mobile-room-canvas-focus', active);
+    const enter = document.getElementById('mobileCanvasFocusBtn');
+    if (enter) {
+      enter.setAttribute('aria-pressed', active ? 'true' : 'false');
+      enter.textContent = active ? 'Canvas only active' : 'Canvas only';
+    }
+    const exit = document.getElementById('mobileCanvasFocusExitBtn');
+    if (exit) exit.hidden = !active;
+  }
+
+  function setMobileRoomCanvasFocus(open, { announce = true } = {}) {
+    const allowed = isMobileViewport() && activeWorkflow === 'room' && !uiState.visibilityMode;
+    uiState.mobileRoomCanvasFocus = Boolean(open && allowed);
+    if (uiState.mobileRoomCanvasFocus) {
+      uiState.mobileRoomActionsOpen = false;
+      uiState.mobileLayoutOptionsOpen = false;
+    }
+    syncMobileRoomActions();
+    if (announce) setLiveStatusMessage(uiState.mobileRoomCanvasFocus
+      ? 'Canvas-only view active. Use the floating controls button to restore Room Design controls.'
+      : 'Room Design controls restored.');
+  }
+
+  function normalizeMobileCloseButtons(root = document) {
+    const candidates = [];
+    if (root instanceof HTMLButtonElement) candidates.push(root);
+    if (root?.querySelectorAll) candidates.push(...root.querySelectorAll('button'));
+    candidates.forEach(button => {
+      const text = String(button.textContent || '').trim().replace(/\s+/g, ' ');
+      const isClose = /^close$/i.test(text) || /^close[A-Z0-9_-]/.test(button.id || '') || /CancelTopBtn$/.test(button.id || '');
+      if (!isClose) return;
+      button.classList.add('mobile-compact-close');
+      if (!button.getAttribute('aria-label') && /^close$/i.test(text)) button.setAttribute('aria-label', 'Close');
+      if (!button.title && /^close$/i.test(text)) button.title = 'Close';
+    });
+  }
+
+  function observeMobileCloseButtons() {
+    if (mobileCloseObserver || !document.body) return;
+    mobileCloseObserver = new MutationObserver(mutations => {
+      mutations.forEach(mutation => mutation.addedNodes.forEach(node => {
+        if (node.nodeType === Node.ELEMENT_NODE) normalizeMobileCloseButtons(node);
+      }));
+    });
+    mobileCloseObserver.observe(document.body, { childList: true, subtree: true });
   }
 
   function renderMobileRoomActions() {
@@ -27405,7 +27512,7 @@ const ProductExperience = (() => {
     panel.innerHTML = `
       <div class="mobile-room-actions-header">
         <div><span class="class-setup-eyebrow">Workspace controls</span><strong>${title}</strong><small>${buttons.length} available</small></div>
-        <button id="closeMobileRoomActionsBtn" class="secondary" type="button">Close</button>
+        <button id="closeMobileRoomActionsBtn" class="secondary mobile-compact-close" type="button" aria-label="Close room actions" title="Close room actions">Close</button>
       </div>
       <div class="mobile-room-actions-grid"></div>`;
     const grid = panel.querySelector('.mobile-room-actions-grid');
@@ -27422,6 +27529,7 @@ const ProductExperience = (() => {
         : mobileRoomActionLabel(button);
       grid.appendChild(proxy);
     });
+    normalizeMobileCloseButtons(panel);
     return panel;
   }
 
@@ -27430,14 +27538,16 @@ const ProductExperience = (() => {
     const modeBar = renderMobileRoomModeBar();
     const available = isMobileViewport() && ['room', 'seating', 'review'].includes(activeWorkflow) && !uiState.visibilityMode;
     const roomAvailable = available && activeWorkflow === 'room';
+    if (!roomAvailable) uiState.mobileRoomCanvasFocus = false;
+    const controlsAvailable = available && !uiState.mobileRoomCanvasFocus;
     if (!available) uiState.mobileRoomActionsOpen = false;
     if (!roomAvailable) uiState.mobileLayoutOptionsOpen = false;
-    if (panel) panel.hidden = !(available && uiState.mobileRoomActionsOpen);
-    if (modeBar) modeBar.hidden = !roomAvailable;
-    document.body.classList.toggle('mobile-room-actions-open', Boolean(available && uiState.mobileRoomActionsOpen));
+    if (panel) panel.hidden = !(controlsAvailable && uiState.mobileRoomActionsOpen);
+    if (modeBar) modeBar.hidden = !(roomAvailable && !uiState.mobileRoomCanvasFocus);
+    document.body.classList.toggle('mobile-room-actions-open', Boolean(controlsAvailable && uiState.mobileRoomActionsOpen));
     const toggleRow = document.getElementById('mobileRoomActionsToggleRow');
     const toggle = document.getElementById('mobileRoomActionsToggleBtn');
-    if (toggleRow) toggleRow.hidden = !(available && activeWorkflow !== 'room');
+    if (toggleRow) toggleRow.hidden = !(controlsAvailable && activeWorkflow !== 'room');
     if (toggle) {
       toggle.textContent = uiState.mobileRoomActionsOpen ? `Close ${mobileRoomActionTitle().toLowerCase()}` : mobileRoomActionTitle();
       toggle.setAttribute('aria-expanded', uiState.mobileRoomActionsOpen ? 'true' : 'false');
@@ -27447,6 +27557,7 @@ const ProductExperience = (() => {
       moreButton.textContent = uiState.mobileRoomActionsOpen ? 'Close actions' : 'More actions';
       moreButton.setAttribute('aria-expanded', uiState.mobileRoomActionsOpen ? 'true' : 'false');
     }
+    syncMobileRoomCanvasFocus();
     syncMobileLayoutOptionsUi();
     const primary = document.getElementById('v4ContextPrimary');
     if (primary && roomAvailable) {
@@ -27461,7 +27572,7 @@ const ProductExperience = (() => {
   }
 
   function setMobileRoomActionsOpen(open) {
-    uiState.mobileRoomActionsOpen = Boolean(open && isMobileViewport() && ['room', 'seating', 'review'].includes(activeWorkflow) && !uiState.visibilityMode);
+    uiState.mobileRoomActionsOpen = Boolean(open && isMobileViewport() && ['room', 'seating', 'review'].includes(activeWorkflow) && !uiState.visibilityMode && !uiState.mobileRoomCanvasFocus);
     if (uiState.mobileRoomActionsOpen) uiState.mobileLayoutOptionsOpen = false;
     syncMobileRoomActions();
     if (uiState.mobileRoomActionsOpen) {
@@ -27522,6 +27633,7 @@ const ProductExperience = (() => {
       if (event.key === 'Escape' && document.getElementById('v4CommandPalette')?.classList.contains('show')) closeCommandPalette();
       else if (event.key === 'Escape' && uiState.mobileLayoutOptionsOpen) setMobileLayoutOptionsOpen(false);
       else if (event.key === 'Escape' && uiState.mobileRoomActionsOpen) setMobileRoomActionsOpen(false);
+      else if (event.key === 'Escape' && uiState.mobileRoomCanvasFocus && !document.querySelector('.modal-backdrop.show')) setMobileRoomCanvasFocus(false);
     }, true);
     document.getElementById('classSelect')?.addEventListener('change', () => setTimeout(updateExperience, 0));
     window.addEventListener('resize', () => {
@@ -27578,6 +27690,8 @@ const ProductExperience = (() => {
     buildStudentSearch();
     buildCommandPalette();
     refineExistingCopy();
+    normalizeMobileCloseButtons();
+    observeMobileCloseButtons();
     installEvents();
     installObservers();
     const remembered = safeStorageGet('sessionStorage', 'seatingPlannerWorkflow') || '';
