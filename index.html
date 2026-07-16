@@ -5,7 +5,7 @@
   <meta name="license" content="MIT License" />
   <meta name="spdx-license-identifier" content="MIT" />
   <meta name="copyright" content="Copyright (c) 2026 Chris L. Franklin" />
-  <meta name="app-version" content="6.5.10" />
+  <meta name="app-version" content="6.5.11" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com https://www.paypalobjects.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://www.googleapis.com https://classroom.googleapis.com https://accounts.google.com https://www.paypal.com https://www.paypalobjects.com https://www.google-analytics.com https://*.google-analytics.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://www.paypal.com; img-src 'self' data: blob: https://www.paypalobjects.com https://www.google-analytics.com; font-src 'self' data:; worker-src 'self' blob:; manifest-src 'self'; media-src 'none'; object-src 'none'; base-uri 'none'; form-action 'self' https://www.paypal.com" />
   <meta name="application-name" content="Classroom Seating Planner" />
@@ -4653,6 +4653,10 @@ body.visibility-mode .presentation-exit-button:focus-visible{background:#7f1d1d;
 .seat-edit-modal.batch-edit #seatEditLockBtn{display:none
 }@media (max-width: 560px){.presentation-exit-button{top:max(7px, env(safe-area-inset-top, 0px));right:max(7px, env(safe-area-inset-right, 0px));min-height:38px;padding:7px 10px;font-size:11px
   }
+}@media (min-width: 901px) and (max-width: 1100px){.class-setup-top-nav{display:grid;grid-template-columns:repeat(4, minmax(0, 1fr));gap:4px;overflow:visible;padding:6px 8px
+  }.class-setup-top-nav button{min-width:0;min-height:42px;padding:7px 8px;border:1px solid var(--border);border-radius:8px;white-space:normal
+  }.class-setup-top-nav button.active{border-color:var(--accent)
+  }
 }body.visibility-mode.vis-hide-wizard #guidedLearningBtn,
 body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
 }
@@ -6504,7 +6508,7 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
 const APP_CONFIG = Object.freeze({
   name: 'Classroom Seating Planner',
   shortName: 'Seating Planner',
-  version: '6.5.10',
+  version: '6.5.11',
   copyrightHolder: 'Chris L. Franklin',
   copyrightYear: '2026',
   releaseDate: '2026-07-16',
@@ -6777,569 +6781,171 @@ const PROJECT_FEATURES = [
 
 const RELEASE_HISTORY = [
   {
-    version: '6.5.10',
+    version: '6.5.11',
     date: 'July 16, 2026',
-    title: 'Clear rule warnings, Freeform move safeguards, and SIS import repair',
+    title: 'Full codebase consolidation and runtime listener optimization',
     current: true,
     changes: [
-      'Replaced technical seat-unit rule messages with plain-language descriptions such as directly beside, very close, too close together, or outside the nearby area.',
-      'Added an override-or-move-back warning when dragging assigned Freeform seats or rule-sensitive room objects creates a new seating-rule conflict.',
-      'Kept selected and moved Freeform seats visually the same size as neighboring seats by moving the selection emphasis inside the object boundary.',
-      'Repaired the Class Setup SIS / OneRoster file chooser with delegated event handling so the dynamically created import control opens reliably.'
+      'Completed a project-wide reference, control, dependency, duplicate-code, compatibility, and performance audit without changing the data schema or encryption envelope.',
+      'Replaced per-render Freeform-object and zone-card listeners with fixed delegated handlers, preserving mouse, touch, drag, context-menu, and seat-settings behavior while reducing listener growth.',
+      'Consolidated behaviorally equivalent workflow forwarding functions, shared Grid-cell ordering, touch seat-settings gestures, and Freeform rotation suppression logic.',
+      'Condensed release history and removed reproducible or superseded audit artifacts from the maintained source package while retaining the tools that regenerate them.',
+      'Expanded static guards, repaired tablet Class Setup navigation overflow, and made the Chromium UI audit batchable with bounded command timeouts.',
+      'Reran the complete browser, regression, schema, export, accessibility, CSS, and performance release gates.'
+    ]
+  },
+  {
+    version: '6.5.10',
+    date: 'July 16, 2026',
+    title: 'Clear rule warnings, Freeform safeguards, and SIS import repair',
+    current: false,
+    changes: [
+      'Replaced technical seat-unit rule text with plain-language proximity descriptions.',
+      'Added override-or-move-back warnings when Freeform moves introduce new seating-rule conflicts.',
+      'Kept moved Freeform seats visually stable and repaired the dynamically created SIS / OneRoster file chooser.'
     ]
   },
   {
     version: '6.5.9',
     date: 'July 16, 2026',
-    title: 'Presentation exit, batch seat zones, and rule integrity audit',
+    title: 'Presentation exit, batch seat zones, and rule integrity',
     current: false,
     changes: [
-      'Added a persistent Exit Presentation button that remains reachable in Presentation Mode on desktop and mobile.',
-      'Expanded Class Setup to eight steps with a dedicated Groups & Zones Manager entry before Review Setup.',
-      'Added zone assignment to seat settings and batch group/zone editing for selected Grid or Freeform seats.',
-      'Unified review, manual-placement warnings, and generated seating around individual needs, group rules, zone links, room objects, reserved seats, and minimum-distance requirements.',
-      'Expanded browser and regression coverage for Presentation exit, Class Setup navigation, batch seat editing, zone persistence, and rule violations.'
+      'Added a persistent Presentation exit action and expanded Class Setup with a dedicated Groups & Zones Manager step.',
+      'Added individual and batch group/zone assignment to Grid and Freeform seat settings.',
+      'Unified review, placement warnings, and generated seating around student needs, groups, zones, room objects, reserved seats, and distance rules.'
     ]
   },
   {
-    version: '6.5.8',
-    date: 'July 16, 2026',
-    title: 'Real-browser seat settings interaction repair',
+    version: '6.5.7–6.5.8',
+    date: 'July 15–16, 2026',
+    title: 'Mobile control compaction and real-browser seat interaction repair',
     current: false,
     changes: [
-      'Fixed unlocked Freeform seats so a normal mouse press no longer starts and commits a zero-distance drag that replaces the seat before the browser can produce a double-click.',
-      'Added a movement threshold before Freeform drag state, undo history, pointer capture, and z-order changes activate, preserving normal click and double-click behavior without breaking dragging.',
-      'Stopped same-type Grid clicks from needlessly rerendering the seat, and deferred seat-conversion clicks long enough for a real double-click to cancel the pending room tool action.',
-      'Added a Chromium interaction test that performs actual mouse double-click sequences on unlocked Grid and Freeform seats, verifies the correct editable modal, confirms Freeform dragging still works, and confirms single-click Grid tools still apply.'
+      'Added stable mobile collapse states and workflow-specific compact room action menus.',
+      'Repaired unlocked Grid and Freeform seat settings for real mouse double-clicks, touch double-tap, and long-press while preserving dragging.',
+      'Restored Build/Resize as a visible, cancellable, undoable, and persistent mode, and added real Chromium interaction coverage.'
     ]
   },
   {
-    version: '6.5.7',
-    date: 'July 15, 2026',
-    title: 'Mobile control compaction and interaction repair',
+    version: '6.5.0–6.5.6',
+    date: 'July 14–15, 2026',
+    title: 'Security, Presentation, responsive UI, and import hardening',
     current: false,
     changes: [
-      'Added stable mobile collapse states for Class Setup, roster-import sources, Room Design controls, and other space-heavy panels so the active workspace receives most of the viewport.',
-      'Repaired unlocked-seat double-click handling, added conflict-aware double-tap and long-press seat settings gestures, and made locked-seat settings visibly read-only with an explicit Unlock path.',
-      'Restored Build/Resize as a staged, visible, cancellable room-grid mode with keyboard support, undo and redo history, and normal save persistence.',
-      'Replaced clipped mobile room action strips with workflow-specific compact action menus for Room Design, Seat Students, and Review while retaining the original command handlers.',
-      'Added a generated runtime control inventory and expanded real-browser viewport auditing across workflows, dialogs, Settings, Help, mobile, tablet, landscape, and desktop states.'
+      'Hardened encryption work limits, protected viewer packages, imports, downloads, service-worker boundaries, storage reset behavior, and privacy-safe diagnostics.',
+      'Expanded Presentation privacy and lockout behavior, universal room zoom/text controls, crop-to-content exports, and optional hosted analytics.',
+      'Completed responsive mobile and tablet audits, full-viewport room panning, workflow panel routing, theme contrast repair, and permanent UI/control release gates.',
+      'Removed obsolete settings and report clutter while preserving save, schema, Drive, Classroom, viewer, and recovery compatibility.'
     ]
   },
   {
-    version: '6.5.6',
-    date: 'July 15, 2026',
-    title: 'Complete responsive UI and mobile audit',
-    current: false,
-    changes: [
-      'Repaired mobile workflow panel routing so Seat Students can switch between the room and roster, Review can switch between the room and Chart Review, and single-panel workflows no longer show a misleading selector.',
-      'Collapsed Class Setup to a true full-width mobile workspace and added compact workflow labels, fitted controls, readable seat actions, and reliable narrow-screen search and password controls.',
-      'Aligned the mobile breakpoint across JavaScript and CSS, preserved two-axis Grid and Freeform reachability, and retained explicit Pan mode for protected Room Design and Presentation navigation.',
-      'Corrected late theme overrides that reduced contrast in dark themes, then browser-tested all themes, documented dialogs, settings pages, Help topics, workflows, and target viewports.',
-      'Added a permanent UI layout contract to the release gate so mobile routing, accessible workflow names, Presentation lockout, and desktop cleanup cannot regress silently.'
-    ]
-  },
-  {
-    version: '6.5.5',
-    date: 'July 15, 2026',
-    title: 'Mobile room controls and full-viewport panning',
-    current: false,
-    changes: [
-      'Reflowed Seat zoom and Text size into fitted mobile rows so labels, sliders, and percentages remain readable on narrow screens.',
-      'Changed the mobile room viewport to a start-aligned two-axis scrolling surface so oversized Grid and Freeform rooms no longer extend into unreachable centered space.',
-      'Added a mobile Pan room control that moves the viewport without moving seats or room objects, and turns on automatically in mobile Presentation Mode.',
-      'Allowed native room swipes in Seat Students and Review while preserving deliberate object editing in Room Design, with focused and real-browser mobile validation.'
-    ]
-  },
-  {
-    version: '6.5.4',
-    date: 'July 15, 2026',
-    title: 'Presentation Chart Review lockout repair',
-    current: false,
-    changes: [
-      'Corrected the Review workflow CSS specificity that could make the Chart Review sidebar visible during Presentation Mode.',
-      'Presentation Mode now marks the Chart Review panel hidden, inert, and unavailable to assistive technology until authenticated exit.',
-      'Added regression coverage proving the sidebar cannot be displayed or used in Presentation Mode and is restored after exit.'
-    ]
-  },
-  {
-    version: '6.5.3',
-    date: 'July 15, 2026',
-    title: 'Complete codebase audit, import hardening, and settings cleanup',
-    current: false,
-    changes: [
-      'Preflighted local and Google Drive import sizes before reading response bodies, while retaining full post-read UTF-8 byte validation and existing schema checks.',
-      'Removed the unused District Profile page and obsolete Presentation header-action option, and moved Google Analytics controls into Settings > Google.',
-      'Tightened Lock, Presentation, and viewer credential boundaries, rejected oversized verification input before PBKDF2, and removed predictable identifier fallback behavior.',
-      'Restricted Drive links, bounded service-worker navigation caching to the application shell, and made failed external-script loads retryable.',
-      'Removed stale release-audit artifacts, strengthened static connectivity and bounded-I/O checks, refreshed current documentation, and revalidated all supported workflows.'
-    ]
-  },
-  {
-    version: '6.5.2',
-    date: 'July 15, 2026',
-    title: 'Presentation workspace and universal room display controls',
-    current: false,
-    changes: [
-      'Leaving Room Design now turns Design Mode off automatically before another workflow opens.',
-      'Added persistent Zoom and Text sliders anywhere the interactive Grid or Freeform room is visible.',
-      'Presentation Mode now switches to Review and hides the workflow strip, roster, Chart Review sidebar, Undo, Redo, Help, snapshots, command search, saving, settings, layout tools, and editing controls.',
-      'Presentation Mode blocks Grid, Freeform, drag, keyboard, rotation, context-menu, student, group, and room mutations while keeping Zoom and Text controls available for readability.',
-      'Exiting Presentation Mode restores the prior workflow after credential verification.',
-      'Updated Help, settings guidance, release metadata, and regression coverage while retaining legacy visibility and eye field names for save compatibility.'
-    ]
-  },
-  {
-    version: '6.5.1',
-    date: 'July 15, 2026',
-    title: 'Presentation privacy, workspace labels, analytics, and crop-to-content exports',
-    current: false,
-    changes: [
-      'Presentation Mode always removes the Students, Groups & Zones panel and blocks every Freeform rotation path.',
-      'Added empty-seat-title and room-object-type display options.',
-      'Added optional hosted Google Analytics with a browser-local opt-out and no custom classroom-data events.',
-      'Added PDF and SVG crop-to-content framing that enlarges occupied Grid or Freeform content while keeping the room chart on one page.'
-    ]
-  },
-  {
-    version: '6.5.0',
-    date: 'July 14, 2026',
-    title: 'Complete security, encryption, codebase, and interface audit',
-    current: false,
-    changes: [
-      'Bounded imported PBKDF2 work factors and stored lock credentials before any expensive key derivation, while retaining generation-6 encrypted-save compatibility.',
-      'Hardened password-protected read-only HTML by validating its envelope and sanitizing decrypted markup before insertion.',
-      'Scoped Factory Reset to planner-owned storage, neutralized spreadsheet formulas in rejected-row CSV exports, and made persisted diagnostic errors privacy-safe.',
-      'Consolidated Google API fetches and external script loading behind bounded timeout helpers, and restricted the hosted service worker to the declared application shell.',
-      'Consolidated object-URL downloads, tightened the portable Content Security Policy, refreshed deployment and security guidance, and added automated guards for the repaired boundaries.',
-      'Removed obsolete release-report clutter from the maintained source package and revalidated UI controls, Help, schemas, exports, collaboration, themes, encryption, recovery, and performance.'
-    ]
-  },
-  {
-    version: '6.4.8',
-    date: 'July 14, 2026',
-    title: 'Per-collaborator interface access and one-page Freeform PDFs',
-    current: false,
-    changes: [
-      'Added per-person planner access profiles to Google Drive sharing, with Hidden, View only, or Can edit modes for class setup, room design, seating, review/printing, saving, sharing, settings, and class management.',
-      'Added Full editor, Seating assistant, Room designer, Roster and rules editor, Reviewer and printer, and Custom presets while keeping Google Drive Viewer as an overriding read-only role.',
-      'Stored collaborator profiles in the encrypted save, matched the signed-in Google account by Drive permission ID, hid disallowed workflows and commands, and blocked form, Grid, Freeform, drag, context-menu, and keyboard mutation paths in view-only areas.',
-      'Clarified that interface profiles are workflow controls rather than cryptographic data redaction; encrypted read-only packages remain the correct option when data itself must be excluded.',
-      'Forced the complete Freeform room drawing to fit on one PDF chart page even when the room canvas is configured for tiled or actual-size output. Selected notes, groups, and zones can still use additional supporting pages.',
-      'Added focused regression coverage for oversized Freeform PDFs, permission normalization, hidden workflows, view-only mutation guards, command visibility, and save/import compatibility.'
-    ]
-  },
-  {
-    version: '6.4.7',
-    date: 'July 14, 2026',
-    title: 'Faithful print exports, Drive reload continuity, and Prismatic Flow',
-    current: false,
-    changes: [
-      'Replaced the generic PDF and SVG exporters with one shared vector renderer that preserves Standard Grid and Freeform room geometry, object styling, labels, colors, rotation, locking, front-of-room orientation, and Freeform page scaling.',
-      'Wired Print Preview, Download PDF, and Download SVG to the same selected option snapshot so names, nickname, grade, ID, chart details, note categories, group configuration, and zone configuration now change every output consistently.',
-      'Added multipage PDF and SVG output for selected notes, groups, and zones while keeping unselected sensitive fields out of the files.',
-      'Restored unexpired Google Drive access tokens after a same-tab reload and reacquires expired access without forcing the consent screen on every ordinary Drive action.',
-      'Removed the obsolete Default Students, Groups & Zones tab setting and clarified the remaining product-workspace collapse defaults.',
-      'Added the animated Prismatic Flow theme with flowing jewel-tone gradients, glass surfaces, luminous room elements, and a reduced-motion fallback.',
-      'Added focused regression coverage for print option fidelity, Grid and Freeform export geometry, Google token session restoration, stale Appearance cleanup, and the new theme.'
-    ]
-  },
-  {
-    version: '6.4.6',
-    date: 'July 14, 2026',
-    title: 'Drive sharing and false save conflicts repaired',
-    current: false,
-    changes: [
-      'Fixed the disk-menu Share Drive Save with People command so the central Save-menu dispatcher opens the Google Drive collaborator picker instead of swallowing the click.',
-      'Removed the redundant document-level sharing listener and routed the action through one maintained handler.',
-      'Replaced the generic run-this-control tooltip with a clear description of Viewer and Editor permission management.',
-      'Added regression coverage for the actual disk-menu command.',
-      'Captured the exact uploaded or loaded Drive document as the merge base instead of regenerating timestamps after the transfer.',
-      'Stopped export timestamps, save hashes and revisions, backup manifests, record update times, and device-local settings from appearing as classroom conflicts.',
-      'Allowed metadata-only Drive revision changes to continue saving without opening the conflict dialog.',
-      'Regenerated the SHA-256 backup manifest after merging and added regression coverage for automatic and genuine-conflict paths.'
-    ]
-  },
-  {
-    version: '6.4.5',
-    date: 'July 14, 2026',
-    title: 'Read-only package profile details restored',
-    current: false,
-    changes: [
-      'Made the Read-only Classroom HTML renderer display the information promised by the selected package profile instead of retaining fields invisibly or discarding them before rendering.',
-      'Substitute packages now include student grades plus clearly labeled public and substitute notes while continuing to exclude private notes, seating requirements, cloud settings, and editing controls.',
-      'Added an on-screen package contents summary in Safe Sharing and inside every generated viewer so users can verify what the selected profile includes before and after download.',
-      'Added regression coverage for student-facing, substitute, anonymous, room-only, and password-protected package contents.'
-    ]
-  },
-  {
-    version: '6.4.4',
-    date: 'July 14, 2026',
-    title: 'Complete help, how-to, wizard, and collaboration guidance audit',
-    current: false,
-    changes: [
-      'Added a dedicated Google Drive collaboration guide that shows exactly where the owner chooses people, assigns Viewer or Editor access, and reviews or removes permissions.',
-      'Added focused guided lessons for editable Drive sharing and security/privacy setup, including context-aware entry points inside their working dialogs.',
-      'Documented every major wizard and guided workflow, including first-run security, CSV mapping, Safe Sharing, selective restore, roster reconciliation, class merge, Drive merge, and recovery flows.',
-      'Clarified that Drive collaboration is revision-aware shared-file editing rather than live Google Docs-style cursor streaming, and documented how recipients open a shared file under the narrow per-file Drive scope.',
-      'Added automated help-coverage checks so collaboration, security, read-only package protection, and wizard documentation cannot quietly disappear from future builds.'
-    ]
-  },
-  {
-    version: '6.4.3',
-    date: 'July 14, 2026',
-    title: 'Protected read-only packages and menu layering',
-    current: false,
-    changes: [
-      'Raised the compact Save menu above the application header and workflow shell while retaining viewport-aware positioning and scrolling.',
-      'Added an optional viewer password and confirmation directly to the Read-only Classroom HTML export.',
-      'Encrypted protected HTML package contents with PBKDF2-SHA-256 and AES-256-GCM so classroom names, students, notes, and room markup are not stored as readable HTML.',
-      'Unified encrypted HTML downloads with the faithful Grid and Freeform read-only renderer introduced in 6.4.2.'
-    ]
-  },
-  {
-    version: '6.4.2',
-    date: 'July 14, 2026',
-    title: 'Faithful read-only classroom packages',
-    current: false,
-    changes: [
-      'Corrected read-only Grid exports to use the same 1-based cell keys as the classroom editor.',
-      'Preserved Grid dimensions, room-object styling, coordinates, and assigned student names in static classroom packages.',
-      'Preserved Freeform canvas dimensions, grid spacing, front orientation, object coordinates, sizes, rotations, colors, z-order, labels, and assignment state.',
-      'Added asymmetric Grid and Freeform regression fixtures while keeping private records, credentials, editing controls, groups, zones, and recovery data excluded.'
-    ]
-  },
-  {
-    version: '6.4.1',
-    date: 'July 14, 2026',
-    title: 'Verified cleanup and grid rendering optimization',
-    current: false,
-    changes: [
-      'Delegated standard-grid interaction handling to the persistent grid container so rerenders no longer recreate listeners for every cell and assigned student.',
-      'Consolidated repeated placement-completion, settings-control, optional-column, and JSON-clone helpers without changing public identifiers or stored data.',
-      'Removed 100 exact duplicate CSS declarations that had identical selectors, values, cascade layers, and media contexts.',
-      'Added static and regression guards for delegated grid behavior, duplicate CSS declarations, save compatibility, and release-build integrity.',
-      'Kept data schema 13, encryption envelope 3, storage keys, current field names, and legacy schema-12 import compatibility unchanged.'
-    ]
-  },
-  {
-    version: '6.4.0',
-    date: 'July 14, 2026',
-    title: 'Direct Freeform rotation controls',
-    current: false,
-    changes: [
-      'Added a counterclockwise rotation handle to the top-left corner of every Freeform object while retaining clockwise rotation in the top-right.',
-      'Made either corner handle clickable for a 15-degree step and draggable for continuous pointer-based rotation around the object center.',
-      'Added Shift-drag 15-degree snapping, live collision checks, grouped-selection rotation, keyboard-accessible click controls, and reliable one-step Undo restoration.'
-    ]
-  },
-  {
-    version: '6.3.4',
-    date: 'July 14, 2026',
-    title: 'Roster and Freeform workspace fixes',
-    current: false,
-    changes: [
-      'Kept student Edit actions visible on desktop and corrected student-context access checks.',
-      'Removed redundant Student List section chrome in Class Setup and made the Add Student panel collapse into a narrow rail so the roster uses the reclaimed space.',
-      'Fully hid the manual-seating guide control whenever the Class Setup or Students panel is minimized.',
-      'Made Freeform seat pass-through and overlap-on-drop enabled by default, preserved intentionally empty Freeform rooms, and added a confirmed Clear Room action.'
-    ]
-  },
-  {
-    version: '6.3.3',
-    date: 'July 14, 2026',
-    title: 'Stable Page Load Defaults',
-    current: false,
-    changes: [
-      'Separated saved Page Load Defaults from the currently open workspace so editing a default no longer collapses or resizes the page behind Settings.',
-      'Mapped workflow and side-panel defaults to the modern product workspace state instead of applying incompatible legacy header and panel classes.',
-      'Added Apply Defaults to Current View for deliberate immediate use while preserving normal next-load behavior.',
-      'Prevented mobile first-load handling from restoring legacy collapse classes and added regression coverage for desktop and mobile layout state.'
-    ]
-  },
-  {
-    version: '6.3.2',
-    date: 'July 13, 2026',
-    title: 'Optional About-page support button',
-    current: false,
-    changes: [
-      'Added an optional PayPal donation button beside the author and version information in About.',
-      'Kept the support language explicitly no-pressure: donations are never expected, unlock no features, and are not promoted elsewhere.',
-      'Lazy-loads the PayPal donation SDK only when About is opened, with an offline-safe unavailable message if the service cannot load.',
-      'Expanded the Content Security Policy only for the PayPal donation hosts required by this opt-in About-page control.'
-    ]
-  },
-  {
-    version: '6.3.1',
-    date: 'July 13, 2026',
-    title: 'Data integrity and cleanup hardening',
-    current: false,
-    changes: [
-      'Made destructive confirmations fail closed when the custom confirmation dialog is unavailable.',
-      'Made selective restore atomic by rolling back the complete document when an apply step fails.',
-      'Prevented delayed browser autosaves from recreating data after Clear Local Data, Start Fresh, or Factory Reset.',
-      'Limited reset workflows to planner-owned browser storage so other applications on the same origin are not erased.',
-      'Consolidated repeated credential, notes-summary, and file-download helpers and removed verified unused CSS selectors.'
-    ]
-  },
-  {
-    version: '6.3.0',
-    date: 'July 14, 2026',
-    title: 'Complete Groups migration and manager interaction repair',
-    current: false,
-    changes: [
-      'Completed the Groups terminology migration across the interface, runtime state, functions, selectors, exports, and current save fields.',
-      'Repaired the Student / Group / Zone Manager with pointer-based desktop drag-and-drop, native drag fallback, and correct nested member payload handling.',
-      'Added Pick Up and tap destination controls so group and zone membership management works on touch devices and narrow mobile layouts.',
-      'Advanced new saves to schema 13 and added an isolated schema-12 terminology translator so generation-6 saves continue to import safely.',
-      'Added regression and real-browser coverage for student-to-group drops, group-to-zone attachment, member removal, and the touch-safe manager workflow.'
-    ]
-  },
-  {
-    version: '6.2.1',
-    date: 'July 14, 2026',
-    title: 'Responsive dialog fit repair',
-    current: false,
-    changes: [
-      'Repaired the startup unlock and recovery dialog so explanatory text retains full width and every recovery action wraps beneath it.',
-      'Hardened the shared modal shell so dialog bodies remain inside the viewport, scroll vertically, and no longer create horizontal page-sized overflow.',
-      'Restored the intended responsive width of the three-column Student / Group / Zone Manager.',
-      'Added regression checks for modal overflow guards and recovery-action wrapping.'
-    ]
-  },
-  {
-    version: '6.2.0',
-    date: 'July 13, 2026',
-    title: 'Conflict insight, class merging, and recovery workflows',
-    current: false,
-    changes: [
-      'Added a rule-conflict preflight inspector that explains blocking geometry, capacity, zone, accessibility, lock, and opposing-rule problems before candidate generation.',
-      'Added an atomic class comparison and selective merge workflow with student matching, reference remapping, optional encrypted snapshots, and rollback on failure.',
-      'Added an operation Recovery Center for failed imports and Google integrations, including privacy-safe support reports, retry actions, and rejected-row downloads.',
-      'Added an optional encryption-password recovery package protected by a separately stored 192-bit recovery code, including first-run unlock support and package self-verification.',
-      'Alphabetized Settings navigation and its mobile selector while keeping About at the bottom.'
-    ]
-  },
-  {
-    version: '6.1.3',
-    date: 'July 13, 2026',
-    title: 'Verified cleanup and render optimization',
-    current: false,
-    changes: [
-      'Consolidated immutable room-object and seating-rule lookup tables so render and analysis paths no longer recreate identical objects on every call.',
-      'Removed duplicate per-card drag handlers and retained the existing delegated drag workflow, including student-to-rule and zone-to-rule drops.',
-      'Batched student, rule, zone, grid-cell, and Freeform object insertion through document fragments to reduce repeated live-DOM mutations.',
-      'Built reusable assignment and group membership lookups for roster and status rendering instead of repeatedly scanning cells and rules for every student.',
-      'Merged adjacent CSS rules with identical declarations without changing cascade order, selectors, responsive behavior, or theme behavior.'
-    ]
-  },
-  {
-    version: '6.1.2',
-    date: 'July 13, 2026',
-    title: 'State-aware guided learning',
-    current: false,
-    changes: [
-      'Stopped lessons from advancing into controls inside windows or panels that were never opened.',
-      'Added state checks for the expected workflow, dialog, panel, and visible target before highlighting a step.',
-      'Added Open it for me, Close blocking window, Try again, and Skip recovery actions when lesson context is missing.',
-      'Required Explain-mode opening steps to verify that Today Mode, Save Options, Print Options, candidate generation, Safe Sharing, and Drive management actually opened.',
-      'Replaced impossible synthetic conflict and roster-preview steps with stable explanatory targets that appear during normal use.'
-    ]
-  },
-  {
-    version: '6.1.1',
-    date: 'July 13, 2026',
-    title: 'Unified popup and guided-learning layering',
-    current: false,
-    changes: [
-      'Placed guided lessons above the Settings dialog while allowing child dialogs to open above the lesson when needed.',
-      'Replaced fixed dialog-level classes with one dynamic stack calculation and documented CSS custom properties.',
-      'Added focus restoration and Escape ownership across guided lessons, parent dialogs, child dialogs, and the command palette.',
-      'Moved the command palette into the managed dialog stack and closed transient menus whenever a dialog opens.',
-      'Reserved the highest application layer for Page Lock and reduced canvas-only helper layers so they cannot cover dialogs.'
-    ]
-  },
-  {
-    version: '6.1.0',
-    date: 'July 13, 2026',
-    title: 'Guided learning and readable source architecture',
-    current: false,
-    changes: [
-      'Replaced the retired linear spotlight tour with an eight-step Quick Start and twelve focused guided lessons.',
-      'Added action-validated practice lessons, disposable practice classes, resume progress, contextual Guide me entry points, and a Help progress checklist.',
-      'Added hands-on lessons for Grid and Freeform rooms, manual and random seating, candidate generation, groups, rules, zones, Today Mode, saving, printing, and Google tools.',
-      'Removed retired tour and setup-wizard code, styling, controls, and stale Help content.',
-      'Split CSS into ordered human-readable component files and added enforced JavaScript and CSS formatting checks.'
-    ]
-  },
-  {
-    version: '6.0.4',
-    date: 'July 13, 2026',
-    title: 'Tour controls and CSS maintainability',
-    current: false,
-    changes: [
-      'Fixed the Groups & Rules tour step so a large highlighted container cannot cover the tour controls.',
-      'Added Enter, Space, and Right Arrow navigation for the next tour step, with Left Arrow moving backward.',
-      'Changed the Groups & Rules step to highlight its compact section heading instead of raising the full editor.',
-      'Consolidated the stylesheet into one app-base layer and one app-priority layer with canonical human-readable formatting.',
-      'Added an enforced CSS formatting check to the normal test pipeline.'
-    ]
-  },
-  {
-    version: '6.0.3',
-    date: 'July 13, 2026',
-    title: 'Help, tour, and Class Setup polish',
-    changes: [
-      'Made Help Guide navigation readable in every theme for inactive, hover, focus, and selected states.',
-      'Replaced the twelve-item tour sampler with an ordered 31-step walkthrough of the complete planning workflow.',
-      'Scoped guided-tour scrolling to application panels so advancing the tour cannot shift the document shell.',
-      'Removed the unused Groups & Rules guide block and its responsive styling.',
-      'Corrected the workflow guidance collapse icon to point upward while the guidance is expanded.'
-    ]
-  },
-  {
-    version: '6.0.2',
-    date: 'July 13, 2026',
-    title: 'Global Search navigation containment',
-    current: false,
-    changes: [
-      'Prevented Global Search results from scrolling the document root and exposing retired header content below the workspace.',
-      'Replaced root-level scrollIntoView calls with workspace-scoped scrolling for workflow tabs and student results.',
-      'Permanently hid retired header controls retained only for internal compatibility and locked the product shell to the viewport.',
-      'Added regression coverage for class, student, rule, and zone search-result navigation.'
-    ]
-  },
-  {
-    version: '6.0.1',
-    date: 'July 12, 2026',
-    title: 'Schema-based save compatibility',
-    current: false,
-    changes: [
-      'Decoupled application releases from save compatibility so producing app versions are informational rather than load gates.',
-      'Established schema 12 as the minimum supported data contract and added minimumReaderSchemaVersion for declared forward compatibility.',
-      'Allowed future application versions and additive future schemas when they explicitly declare compatibility with reader schema 12.',
-      'Changed Google Drive discovery to filter by schema compatibility instead of exact application version.',
-      'Moved the one-click full-app snapshot control beside Settings and added busy, success, and failure feedback.',
-      'Compacted generated CSS and removed source comments only from distribution JavaScript while preserving readable source files.'
-    ]
-  },
-  {
-    version: '6.0.0',
-    date: 'July 12, 2026',
-    title: 'Clean format-generation reset',
-    changes: [
-      'Started format generation 6 with schema 12, envelope 3, new browser namespaces, and no pre-generation migrations.',
-      'Removed loose loading, historical KDF guesses, unstamped imports, old snapshot indexes, and prior-schema loaders.'
-    ]
-  },
-  {
-    version: '5.8.0',
-    date: 'July 12, 2026',
-    title: 'Project-wide reliability, recovery, and deployment audit',
-    changes: [
-      'Removed verified dead seating, rendering, Google Drive, and mobile workflow code while adding enforced linting and stronger release audits.',
-      'Corrected save identity hashing and revision advancement, added atomic browser-save backups, and recovered interrupted primary writes from staged or backup records.',
-      'Added multi-tab write protection so a second open planner cannot silently overwrite the active working copy.',
-      'Completed hosted PWA assets, offline caching, update notification, accessible form labeling, and consolidated maintenance documentation.'
-    ]
-  },
-  {
-    version: '5.7.x',
+    version: '6.4.0–6.4.8',
     date: 'July 2026',
-    title: 'District integrations and cloud lifecycle management',
+    title: 'Drive collaboration, protected sharing, Freeform rotation, and export fidelity',
+    current: false,
     changes: [
-      'Added Google Classroom and SIS roster reconciliation, purpose-limited read-only classroom packages, and a unified Google Settings hub.',
-      'Added deployment-owned Google Picker support, Drive file management, revision browsing, stronger conflict detection, and Classroom CSP coverage.',
-      'Added SHA-256 backup manifests, bounded import validation, targeted rendering, Settings auto-save, complete Factory Reset cleanup, and responsive Settings repairs.'
+      'Added direct Freeform rotation controls, cleanup and rendering optimizations, and complete Help and collaboration guidance.',
+      'Added faithful encrypted read-only classroom packages, protected package profiles, revision-aware Drive sharing, conflict handling, and collaborator-specific workflow access.',
+      'Improved print, PDF, and Freeform one-page output, Drive reload continuity, visual themes, and regression coverage.'
     ]
   },
   {
-    version: '5.6.0',
+    version: '6.3.0–6.3.4',
     date: 'July 2026',
-    title: 'Cascade architecture and history consolidation',
+    title: 'Groups migration, data integrity, stable startup, and workspace repair',
+    current: false,
     changes: [
-      'Replaced 1,969 forced-priority declarations with ordered app-base and app-priority cascade layers.',
-      'Removed historical CSS patch blocks and condensed the embedded release history into durable milestones.'
+      'Completed the Groups migration and manager interaction repair, including touch-friendly membership workflows.',
+      'Hardened data cleanup and startup defaults, added optional About-page support, and repaired roster and Freeform workspace behavior.'
     ]
   },
   {
-    version: '5.4–5.5',
+    version: '6.2.0–6.2.1',
     date: 'July 2026',
-    title: 'Class Setup, reliable saving, and Google Drive recovery',
+    title: 'Conflict insight, class merging, recovery, and responsive dialogs',
+    current: false,
     changes: [
-      'Centered the workflow around Class Setup, improved Freeform selection and grouping, and repaired mobile placement and Settings access.',
-      'Added guarded browser-save recovery, verified IndexedDB reset, bounded autosave deadlines, and selectable encrypted Google Drive loading.'
+      'Added conflict inspection, class merge and recovery workflows, and improved candidate explanations.',
+      'Repaired responsive dialog sizing and narrow-screen action reachability.'
     ]
   },
   {
-    version: '5.0–5.3',
+    version: '6.1.0–6.1.3',
     date: 'July 2026',
-    title: 'Production readiness and classroom workflow',
+    title: 'Guided learning, readable source architecture, and render optimization',
+    current: false,
     changes: [
-      'Completed interface, accessibility, diagnostics, theme, deployment, Freeform, mobile, printing, help, and resilient Settings systems.',
-      'Organized the application around classroom planning stages and clearer rule visibility.'
+      'Introduced state-aware guided learning and unified popup, tour, and modal layering.',
+      'Improved source organization, verified cleanup, and reduced unnecessary rendering while retaining dynamic workflows.'
+    ]
+  },
+  {
+    version: '6.0.0–6.0.4',
+    date: 'July 2026',
+    title: 'Clean generation reset, schema compatibility, search, Help, and CSS maintenance',
+    current: false,
+    changes: [
+      'Reset format generation around a clean architecture while retaining schema-based save compatibility.',
+      'Improved Global Search containment, Help and tour controls, Class Setup polish, and CSS maintainability.'
+    ]
+  },
+  {
+    version: '5.7–5.8',
+    date: '2026',
+    title: 'District integrations, cloud lifecycle, reliability, and deployment',
+    current: false,
+    changes: [
+      'Expanded Google Drive and Classroom integration, cloud-file lifecycle management, recovery, diagnostics, and hosted deployment safeguards.',
+      'Completed project-wide reliability and production-readiness audits.'
+    ]
+  },
+  {
+    version: '5.0–5.6',
+    date: '2026',
+    title: 'Production classroom workflow, saving, Class Setup, and cascade cleanup',
+    current: false,
+    changes: [
+      'Matured the classroom workflow, Class Setup, reliable local and Drive saving, recovery, and production packaging.',
+      'Consolidated CSS cascade structure and version history while preserving established behavior.'
     ]
   },
   {
     version: '4.0–4.6',
-    date: 'July 2026',
+    date: '2026',
     title: 'Workflow-first product redesign',
+    current: false,
     changes: [
-      'Introduced the product shell, collapsible workspaces, focus behavior, compact onboarding, themes, and human-readable security controls.',
-      'Added startup encrypted-save recovery and explainable seating-option comparisons.'
+      'Reorganized the product around setup, room design, seating, review, and sharing workflows.',
+      'Expanded responsive navigation, presentation, printing, settings, and classroom-facing usability.'
     ]
   },
   {
     version: '3.0–3.1',
-    date: 'July 2026',
+    date: '2026',
     title: 'Hosted deployment and complete Freeform rooms',
+    current: false,
     changes: [
-      'Added portable and hosted deployment foundations, structured save handling, and offline-oriented architecture.',
-      'Built rotation-aware Freeform rooms with collision handling, groups, layers, alignment, minimap navigation, history, audits, and print boundaries.'
+      'Added hosted deployment support and the complete Freeform room-design model, including persistent objects and canvas behavior.'
     ]
   },
   {
     version: '2.0',
-    date: 'July 2026',
+    date: '2026',
     title: 'Architecture stabilization',
+    current: false,
     changes: [
-      'Replaced runtime function reassignment with explicit workflow composition, strict mode, canonical public functions, and architecture regression checks.',
-      'Preserved the single-file release while making startup, save/load, encryption, and workflow behavior more deterministic.'
+      'Stabilized application state, save/load behavior, rendering, and maintainable separation of major responsibilities.'
     ]
   },
   {
-    version: '1.18–1.19',
-    date: 'June–July 2026',
-    title: 'Security, recovery, maintenance, and data integrity',
+    version: '1.0–1.19',
+    date: '2026',
+    title: 'Seating planner foundation and operational classroom tools',
+    current: false,
     changes: [
-      'Added first-run encryption, Lock and Presentation Modes, protected notes, encrypted snapshots, password rotation, save health, repair tools, and Factory Reset.',
-      'Completed broad code and data-integrity audits and expanded Freeform data across templates, exports, and restores.'
-    ]
-  },
-  {
-    version: '1.14–1.17',
-    date: 'June 2026',
-    title: 'Operational classroom tools',
-    changes: [
-      'Added undo and redo, snapshots, room templates, CSV mapping, notes, bulk editing, print and export controls, seating analysis, zones, and mobile actions.',
-      'Established browser autosave and full-dataset snapshots with encryption warnings for sensitive notes.'
-    ]
-  },
-  {
-    version: '1.11–1.13',
-    date: 'June 2026',
-    title: 'Mobile workspace, Settings, and privacy controls',
-    changes: [
-      'Created the mobile single-panel workspace, touch placement, Design Mode, consolidated save/load tools, protected Settings, page locking, and visibility controls.'
-    ]
-  },
-  {
-    version: '1.0–1.10',
-    date: 'June 2026',
-    title: 'Seating planner foundation',
-    changes: [
-      'Built the original single-file planner with rosters, groups, rules, grid rooms, drag-and-drop assignment, generation, locking, anchors, local saves, and JSON import/export.',
-      'Added multiple classes, room objects, selection tools, print preview, custom confirmation dialogs, and early interface improvements.'
+      'Established roster management, Grid seating, rules, assignment, review, print, undo/redo, settings, and privacy controls.',
+      'Added mobile workspace support, substitute and operational tools, security, recovery, maintenance, and data-integrity improvements.'
     ]
   }
 ];
@@ -10089,11 +9695,15 @@ function normalizeFreeformLayout(layout) {
   };
 }
 
+function compareGridCellEntries(a, b) {
+  return (Number(a[1].row) - Number(b[1].row)) || (Number(a[1].col) - Number(b[1].col));
+}
+
 function gridSeatEntriesSorted() {
   ensureGrid();
   return Object.entries(state.cells)
     .filter(([, cell]) => cell.type === 'seat')
-    .sort((a, b) => (Number(a[1].row) - Number(b[1].row)) || (Number(a[1].col) - Number(b[1].col)));
+    .sort(compareGridCellEntries);
 }
 
 function freeformObjectsSorted(objects = state.freeformLayout?.objects || []) {
@@ -10220,7 +9830,7 @@ function prepareGridMirrorFromFreeformSeats({ clearUnlockedAssignments = false }
    
    
   seats = freeformSeatObjectsSorted();
-  const entries = Object.entries(state.cells).sort((a, b) => (Number(a[1].row) - Number(b[1].row)) || (Number(a[1].col) - Number(b[1].col)));
+  const entries = Object.entries(state.cells).sort(compareGridCellEntries);
   entries.forEach(([, cell]) => {
     cell.type = 'empty';
     cell.assignedStudentId = null;
@@ -11135,85 +10745,13 @@ function renderFreeformLayout() {
     node.style.transform = `rotate(${Number(obj.rotation) || 0}deg)`;
     node.title = `${freeformObjectLabel(obj, lookups)} · x ${Math.round(obj.x)}, y ${Math.round(obj.y)}${obj.rotation ? ` · ${obj.rotation}°` : ''}${groupDisplay?.titleText ? ` · ${groupDisplay.titleText}` : ''}`;
     node.innerHTML = `${freeformObjectInnerHtml(obj, lookups)}<button type="button" class="freeform-rotate-handle freeform-rotate-counterclockwise no-print" data-freeform-rotate="${escapeHtml(obj.id)}" data-freeform-rotate-direction="-1" aria-label="Rotate counterclockwise. Click for 15 degrees or drag for free rotation." title="Rotate counterclockwise 15°; drag for free rotation">⟲</button><button type="button" class="freeform-rotate-handle freeform-rotate-clockwise no-print" data-freeform-rotate="${escapeHtml(obj.id)}" data-freeform-rotate-direction="1" aria-label="Rotate clockwise. Click for 15 degrees or drag for free rotation." title="Rotate clockwise 15°; drag for free rotation">⟳</button><span class="freeform-resize-handle no-print" data-freeform-resize="${escapeHtml(obj.id)}" title="Resize"></span>`;
-    node.addEventListener('pointerdown', event => {
-      if (isMobileViewport() && uiState.mobileCarryItem) return;
-      beginFreeformPointerDrag(event, obj.id);
-    });
-    node.addEventListener('click', event => {
-      const rotateControl = event.target.closest('[data-freeform-rotate]');
-      if (rotateControl) {
-        event.preventDefault();
-        event.stopPropagation();
-        const suppression = uiState.suppressFreeformRotateClick;
-        uiState.suppressFreeformRotateClick = null;
-        if (suppression && suppression.id === obj.id && suppression.until >= Date.now()) return;
-        const direction = Number(rotateControl.dataset.freeformRotateDirection) < 0 ? -1 : 1;
-        rotateFreeformObject(obj.id, direction * 15);
-        return;
-      }
-      if (isMobileViewport() && uiState.mobileCarryItem && obj.type === 'seat') {
-        event.preventDefault();
-        event.stopImmediatePropagation();
-        if (eyeModeBlocksSeatEditing()) { blockEyeModeAction('seat'); return; }
-        applyMobileCarryToFreeformObject(obj.id);
-        return;
-      }
-      if (event.target.closest('[data-freeform-clear-seat], [data-freeform-lock], [data-freeform-delete]')) return;
-      event.stopPropagation();
-      const selectedIds = uiState.freeformSelectedObjectIds || new Set();
-      if (!event.shiftKey && !event.altKey && selectedIds.size > 1 && selectedIds.has(String(obj.id))) {
-        updateFreeformSelectionVisuals();
-        return;
-      }
-      selectFreeformObject(obj.id, event.shiftKey, event.altKey);
-    });
-    node.addEventListener('contextmenu', event => {
-      event.preventDefault();
-      event.stopPropagation();
-      selectFreeformObject(obj.id, event.shiftKey, event.altKey);
-      if (eyeModeBlocksRoomEditing()) return blockEyeModeAction('room');
-      showFreeformObjectContextMenu(obj.id, event.clientX, event.clientY);
-    });
-    node.addEventListener('dblclick', event => {
-      event.stopPropagation();
-      if (obj.type !== 'seat') return;
-      const cellKey = ensureFreeformSeatGridLink(obj);
-      if (!cellKey || !state.cells[cellKey]) return;
-      mirrorFreeformSeatToGrid(obj, { clearStudentDuplicates: false });
-      openSeatEditModal(cellKey, { freeformObjectId: obj.id });
-    });
     if (obj.type === 'seat') {
       node.title += ' · Double-click with a mouse, or double-tap or press and hold on touch, to open seat settings.';
-      installSeatSettingsPointerGesture(node, () => {
-        if (eyeModeBlocksSeatEditing() || eyeModeBlocksRoomEditing()) {
-          blockEyeModeAction(eyeModeBlocksSeatEditing() ? 'seat' : 'room');
-          return false;
-        }
-        const cellKey = ensureFreeformSeatGridLink(obj);
-        if (!cellKey || !state.cells[cellKey]) return false;
-        mirrorFreeformSeatToGrid(obj, { clearStudentDuplicates: false });
-        openSeatEditModal(cellKey, { freeformObjectId: obj.id });
-        return true;
-      });
     }
-    node.addEventListener('dragover', event => {
-      if (obj.type === 'seat' && !obj.locked && !eyeModeBlocksSeatEditing()) { event.preventDefault(); event.stopPropagation(); node.classList.add('drop-target'); }
-    });
-    node.addEventListener('dragleave', () => node.classList.remove('drop-target'));
-    node.addEventListener('drop', event => {
-      event.preventDefault();
-      event.stopPropagation();
-      node.classList.remove('drop-target');
-      if (obj.type !== 'seat') return;
-      if (obj.locked) return blockLockedSeatEditAction();
-      if (eyeModeBlocksSeatEditing()) return blockEyeModeAction('seat');
-      let data;
-      try { data = JSON.parse(event.dataTransfer.getData('application/json')); } catch { return; }
-      if (data.type === 'student') assignStudentToFreeformObject(data.id, obj.id, true);
-    });
     fragment.appendChild(node);
   });
   grid.appendChild(fragment);
+  installFreeformEventDelegation(grid);
   grid.onclick = event => { if (uiState.suppressFreeformCanvasClick) { uiState.suppressFreeformCanvasClick = false; return; } if (!event.target.closest('.freeform-object')) selectFreeformObject(null); };
   grid.ondragover = event => { if (state.layoutMode === 'freeform') event.preventDefault(); };
   grid.ondrop = event => {
@@ -11256,6 +10794,14 @@ function normalizedRotation(value) {
   return Math.round(normalized * 10) / 10;
 }
 
+function suppressNextFreeformRotateClick(objectId) {
+  const suppression = { id: objectId, until: Date.now() + 700 };
+  uiState.suppressFreeformRotateClick = suppression;
+  setTimeout(() => {
+    if (uiState.suppressFreeformRotateClick === suppression) uiState.suppressFreeformRotateClick = null;
+  }, 0);
+}
+
 function beginFreeformPointerRotation(event, id, direction = 1) {
   if (event.button !== 0 || eyeModeBlocksRoomEditing()) return;
   const targets = freeformRotationTargets(id);
@@ -11263,7 +10809,7 @@ function beginFreeformPointerRotation(event, id, direction = 1) {
     setLiveStatusMessage('Unlock the Freeform object before rotating it.');
     return;
   }
-  const objectNode = event.currentTarget;
+  const objectNode = event.target.closest('.freeform-object[data-object-id]');
   const handle = event.target.closest('[data-freeform-rotate]');
   if (!objectNode || !handle) return;
   const rect = objectNode.getBoundingClientRect();
@@ -11362,16 +10908,12 @@ function finishFreeformPointerRotation(event) {
   if (!rotation.active) {
     if (event.type === 'pointercancel') return;
     event.preventDefault();
-    const suppression = { id: rotation.id, until: Date.now() + 700 };
-    uiState.suppressFreeformRotateClick = suppression;
-    setTimeout(() => { if (uiState.suppressFreeformRotateClick === suppression) uiState.suppressFreeformRotateClick = null; }, 0);
+    suppressNextFreeformRotateClick(rotation.id);
     rotateFreeformObject(rotation.id, rotation.direction * 15);
     return;
   }
   event.preventDefault();
-  const suppression = { id: rotation.id, until: Date.now() + 700 };
-  uiState.suppressFreeformRotateClick = suppression;
-  setTimeout(() => { if (uiState.suppressFreeformRotateClick === suppression) uiState.suppressFreeformRotateClick = null; }, 0);
+  suppressNextFreeformRotateClick(rotation.id);
   if (!rotation.changed) {
     setLiveStatusMessage(rotation.blocked
       ? 'The object stayed at its previous angle because the requested rotation would overlap another room object.'
@@ -11418,7 +10960,7 @@ function beginFreeformPointerDrag(event, id) {
     resize,
     activated: false,
     pointerId: event.pointerId,
-    handle: event.currentTarget,
+    handle: event.target.closest('.freeform-object[data-object-id]') || event.currentTarget,
     startX: event.clientX,
     startY: event.clientY,
     originals,
@@ -13522,6 +13064,52 @@ function renderGroups() {
 }
 
 
+function installZoneListEventDelegation(list) {
+  if (!list || list.dataset.zoneEventsInstalled === 'true') return;
+  list.dataset.zoneEventsInstalled = 'true';
+
+  const zoneCard = event => {
+    const target = event.target instanceof Element ? event.target : null;
+    const card = target?.closest('.zone-list-card[data-zone-id]');
+    return card && list.contains(card) ? card : null;
+  };
+
+  list.addEventListener('dragstart', event => {
+    const card = zoneCard(event);
+    if (!card) return;
+    card.classList.add('dragging');
+    const payload = JSON.stringify({ type: 'zone', id: card.dataset.zoneId });
+    event.dataTransfer?.setData('application/json', payload);
+    event.dataTransfer?.setData('text/plain', payload);
+    if (event.dataTransfer) event.dataTransfer.effectAllowed = 'copyMove';
+  });
+
+  list.addEventListener('dragend', event => zoneCard(event)?.classList.remove('dragging'));
+  list.addEventListener('dragover', event => {
+    const card = zoneCard(event);
+    if (!card) return;
+    event.preventDefault();
+    card.classList.add('drop-target');
+    if (event.dataTransfer) event.dataTransfer.dropEffect = 'copy';
+  });
+  list.addEventListener('dragleave', event => {
+    const card = zoneCard(event);
+    if (!card || (event.relatedTarget instanceof Node && card.contains(event.relatedTarget))) return;
+    card.classList.remove('drop-target');
+  });
+  list.addEventListener('drop', event => {
+    const card = zoneCard(event);
+    if (!card) return;
+    event.preventDefault();
+    event.stopPropagation();
+    card.classList.remove('drop-target');
+    const data = readDragData(event);
+    if (!data) return;
+    if (data.type === 'student' || data.type === 'groupMember') addStudentToZone(card.dataset.zoneId, data.id, true);
+    if (data.type === 'group') attachGroupToZone(data.id, card.dataset.zoneId, true);
+  });
+}
+
 function renderZones() {
   const zoneCount = el('zoneCount');
   const zoneSubCount = el('zoneSubCount');
@@ -13530,6 +13118,7 @@ function renderZones() {
   if (zoneCount) zoneCount.textContent = zones.length;
   if (zoneSubCount) zoneSubCount.textContent = zones.length;
   if (!list) return;
+  installZoneListEventDelegation(list);
   list.innerHTML = '';
   if (!zones.length) {
     list.innerHTML = '<div class="hint">No zones yet. Select cells in the room grid, then save them as a zone.</div>';
@@ -13559,32 +13148,6 @@ function renderZones() {
           <div class="pill-row">${groups.map(b => `<span class="pill ${escapeHtml(b.type)}">${escapeHtml(b.name)}</span>`).join('') || '<span class="muted">No attached groups</span>'}</div>
           <div>${students.map(student => `<div class="zone-member-row"><span>${studentGroupDots(student.id)} ${escapeHtml(studentDisplay(student))}</span><button class="tiny secondary" type="button" data-remove-zone-student="${escapeHtml(zone.id)}" data-remove-student-id="${escapeHtml(student.id)}">Remove</button></div>`).join('')}</div>
         `;
-    card.addEventListener('dragstart', event => {
-      card.classList.add('dragging');
-      event.dataTransfer.setData('application/json', JSON.stringify({ type: 'zone', id: zone.id }));
-      event.dataTransfer.setData('text/plain', JSON.stringify({ type: 'zone', id: zone.id }));
-      event.dataTransfer.effectAllowed = 'copyMove';
-    });
-    card.addEventListener('dragend', () => card.classList.remove('dragging'));
-    card.addEventListener('dragover', event => {
-      event.preventDefault();
-      card.classList.add('drop-target');
-      if (event.dataTransfer) event.dataTransfer.dropEffect = 'copy';
-    });
-    card.addEventListener('dragleave', event => {
-      const related = event.relatedTarget;
-      if (related && card.contains(related)) return;
-      card.classList.remove('drop-target');
-    });
-    card.addEventListener('drop', event => {
-      event.preventDefault();
-      event.stopPropagation();
-      card.classList.remove('drop-target');
-      const data = readDragData(event);
-      if (!data) return;
-      if (data.type === 'student' || data.type === 'groupMember') addStudentToZone(zone.id, data.id, true);
-      if (data.type === 'group') attachGroupToZone(data.id, zone.id, true);
-    });
     fragment.appendChild(card);
   });
   list.appendChild(fragment);
@@ -14097,113 +13660,68 @@ function seatGestureTargetIsAction(target) {
   ].join(',')));
 }
 
-function installSeatSettingsPointerGesture(node, openSettings) {
-  if (!node || node.dataset.seatSettingsGestureInstalled === 'true') return;
-  node.dataset.seatSettingsGestureInstalled = 'true';
-  let pointer = null;
-  let lastTapAt = 0;
-  let suppressUntil = 0;
-  const clearPointer = () => {
-    if (pointer?.timer) clearTimeout(pointer.timer);
-    pointer = null;
-  };
-  const open = reason => {
-    const opened = openSettings?.();
-    if (opened === false) return false;
-    suppressUntil = Date.now() + 650;
-    node.dataset.suppressSeatContextUntil = String(suppressUntil);
-    setLiveStatusMessage(reason === 'long-press'
-      ? 'Seat settings opened. Press and hold is the touch equivalent of double-click.'
-      : 'Seat settings opened from a double-tap.');
-    return true;
-  };
-
-  node.addEventListener('pointerdown', event => {
-    if (!['touch', 'pen'].includes(event.pointerType) || event.isPrimary === false || event.button !== 0) return;
-    if (uiState.mobileRoomPanActive || seatGestureTargetIsAction(event.target)) return;
-    clearPointer();
-    pointer = {
-      id: event.pointerId,
-      startX: event.clientX,
-      startY: event.clientY,
-      moved: false,
-      longPress: false,
-      timer: setTimeout(() => {
-        if (!pointer || pointer.id !== event.pointerId || pointer.moved) return;
-        pointer.longPress = open('long-press');
-      }, 550)
-    };
-  }, true);
-
-  node.addEventListener('pointermove', event => {
-    if (!pointer || pointer.id !== event.pointerId) return;
-    if (Math.hypot(event.clientX - pointer.startX, event.clientY - pointer.startY) > 10) {
-      pointer.moved = true;
-      if (pointer.timer) clearTimeout(pointer.timer);
-      pointer.timer = null;
-    }
-  }, true);
-
-  node.addEventListener('pointerup', event => {
-    if (!pointer || pointer.id !== event.pointerId) return;
-    const completed = pointer;
-    clearPointer();
-    if (completed.moved) {
-      lastTapAt = 0;
-      return;
-    }
-    if (completed.longPress) {
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      lastTapAt = 0;
-      return;
-    }
-    const now = Date.now();
-    if (now - lastTapAt <= 360) {
-      lastTapAt = 0;
-      if (open('double-tap')) {
-        event.preventDefault();
-        event.stopImmediatePropagation();
-      }
-    } else {
-      lastTapAt = now;
-    }
-  }, true);
-
-  node.addEventListener('pointercancel', clearPointer, true);
-  node.addEventListener('click', event => {
-    if (Date.now() > suppressUntil) return;
-    event.preventDefault();
-    event.stopImmediatePropagation();
-  }, true);
-  node.addEventListener('contextmenu', event => {
-    const until = Number(node.dataset.suppressSeatContextUntil || 0);
-    if (Date.now() > until) return;
-    event.preventDefault();
-    event.stopImmediatePropagation();
-  }, true);
+function delegatedFreeformObject(event) {
+  const target = event.target instanceof Element ? event.target : null;
+  const node = target?.closest('.freeform-object[data-object-id]');
+  const grid = el('seatGrid');
+  return node && grid?.contains(node) ? node : null;
 }
 
-function installDelegatedGridSeatSettingsGesture(grid) {
+function freeformObjectFromNode(node) {
+  const objectId = String(node?.dataset?.objectId || '');
+  return objectId ? (state.freeformLayout?.objects || []).find(item => String(item.id) === objectId) || null : null;
+}
+
+function openFreeformSeatSettings(objectId) {
+  if (eyeModeBlocksSeatEditing() || eyeModeBlocksRoomEditing()) {
+    blockEyeModeAction(eyeModeBlocksSeatEditing() ? 'seat' : 'room');
+    return false;
+  }
+  const obj = (state.freeformLayout?.objects || []).find(item => String(item.id) === String(objectId) && item.type === 'seat');
+  if (!obj) return false;
+  const cellKey = ensureFreeformSeatGridLink(obj);
+  if (!cellKey || !state.cells[cellKey]) return false;
+  mirrorFreeformSeatToGrid(obj, { clearStudentDuplicates: false });
+  return openSeatEditModal(cellKey, { freeformObjectId: obj.id });
+}
+
+function seatSettingsGestureContext(event) {
+  if (state.layoutMode === 'freeform') {
+    const node = delegatedFreeformObject(event);
+    const obj = freeformObjectFromNode(node);
+    return obj?.type === 'seat' ? { key: `freeform:${obj.id}`, kind: 'freeform', id: obj.id } : null;
+  }
+  const node = delegatedGridCell(event);
+  const cellKey = String(node?.dataset?.cellKey || '');
+  const cell = cellKey ? state.cells[cellKey] : null;
+  return cell?.type === 'seat' && !uiState.designMode ? { key: `grid:${cellKey}`, kind: 'grid', id: cellKey } : null;
+}
+
+function openSeatSettingsGesture(context) {
+  if (!context) return false;
+  if (context.kind === 'freeform') return openFreeformSeatSettings(context.id);
+  if (eyeModeBlocksSeatEditing() || eyeModeBlocksRoomEditing()) {
+    blockEyeModeAction(eyeModeBlocksSeatEditing() ? 'seat' : 'room');
+    return false;
+  }
+  return openSeatEditModal(context.id);
+}
+
+function installDelegatedSeatSettingsGesture(grid) {
+  if (!grid || grid.dataset.seatSettingsGestureInstalled === 'true') return;
+  grid.dataset.seatSettingsGestureInstalled = 'true';
   let pointer = null;
-  let lastTapAt = 0;
-  let lastTapCellKey = '';
-  let suppressUntil = 0;
-  let suppressCellKey = '';
+  let lastTap = null;
+  let suppression = null;
+
   const clearPointer = () => {
     if (pointer?.timer) clearTimeout(pointer.timer);
     pointer = null;
   };
-  const open = (cellKey, reason) => {
-    const cell = state.cells[cellKey];
-    if (!cell || cell.type !== 'seat' || uiState.designMode) return false;
-    if (eyeModeBlocksSeatEditing() || eyeModeBlocksRoomEditing()) {
-      blockEyeModeAction(eyeModeBlocksSeatEditing() ? 'seat' : 'room');
-      return false;
-    }
-    if (!openSeatEditModal(cellKey)) return false;
-    suppressUntil = Date.now() + 650;
-    suppressCellKey = cellKey;
+  const resetLastTap = () => { lastTap = null; };
+  const open = (context, reason) => {
+    if (!openSeatSettingsGesture(context)) return false;
+    suppression = { key: context.key, until: Date.now() + 650 };
     setLiveStatusMessage(reason === 'long-press'
       ? 'Seat settings opened. Press and hold is the touch equivalent of double-click.'
       : 'Seat settings opened from a double-tap.');
@@ -14211,33 +13729,30 @@ function installDelegatedGridSeatSettingsGesture(grid) {
   };
 
   grid.addEventListener('pointerdown', event => {
-    const cellNode = delegatedGridCell(event);
-    const cell = cellNode ? state.cells[cellNode.dataset.cellKey] : null;
-    if (!cellNode || cell?.type !== 'seat' || uiState.designMode) return;
-    if (!['touch', 'pen'].includes(event.pointerType) || event.isPrimary === false || event.button !== 0) return;
+    const context = seatSettingsGestureContext(event);
+    if (!context || !['touch', 'pen'].includes(event.pointerType) || event.isPrimary === false || event.button !== 0) return;
     if (uiState.mobileRoomPanActive || seatGestureTargetIsAction(event.target)) return;
     clearPointer();
     pointer = {
       id: event.pointerId,
-      cellKey: cellNode.dataset.cellKey,
+      context,
       startX: event.clientX,
       startY: event.clientY,
       moved: false,
       longPress: false,
       timer: setTimeout(() => {
         if (!pointer || pointer.id !== event.pointerId || pointer.moved) return;
-        pointer.longPress = open(pointer.cellKey, 'long-press');
+        pointer.longPress = open(pointer.context, 'long-press');
       }, 550)
     };
   }, true);
 
   grid.addEventListener('pointermove', event => {
     if (!pointer || pointer.id !== event.pointerId) return;
-    if (Math.hypot(event.clientX - pointer.startX, event.clientY - pointer.startY) > 10) {
-      pointer.moved = true;
-      if (pointer.timer) clearTimeout(pointer.timer);
-      pointer.timer = null;
-    }
+    if (Math.hypot(event.clientX - pointer.startX, event.clientY - pointer.startY) <= 10) return;
+    pointer.moved = true;
+    if (pointer.timer) clearTimeout(pointer.timer);
+    pointer.timer = null;
   }, true);
 
   grid.addEventListener('pointerup', event => {
@@ -14245,53 +13760,135 @@ function installDelegatedGridSeatSettingsGesture(grid) {
     const completed = pointer;
     clearPointer();
     if (completed.moved) {
-      lastTapAt = 0;
-      lastTapCellKey = '';
+      resetLastTap();
       return;
     }
     if (completed.longPress) {
       event.preventDefault();
       event.stopImmediatePropagation();
-      lastTapAt = 0;
-      lastTapCellKey = '';
+      resetLastTap();
       return;
     }
     const now = Date.now();
-    if (completed.cellKey === lastTapCellKey && now - lastTapAt <= 360) {
-      lastTapAt = 0;
-      lastTapCellKey = '';
-      if (open(completed.cellKey, 'double-tap')) {
+    if (lastTap?.key === completed.context.key && now - lastTap.at <= 360) {
+      resetLastTap();
+      if (open(completed.context, 'double-tap')) {
         event.preventDefault();
         event.stopImmediatePropagation();
       }
-    } else {
-      lastTapAt = now;
-      lastTapCellKey = completed.cellKey;
+      return;
     }
+    lastTap = { key: completed.context.key, at: now };
   }, true);
 
   grid.addEventListener('pointercancel', clearPointer, true);
+  ['click', 'contextmenu'].forEach(type => grid.addEventListener(type, event => {
+    if (!suppression || Date.now() > suppression.until) return;
+    if (seatSettingsGestureContext(event)?.key !== suppression.key) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+  }, true));
+}
+
+function installFreeformEventDelegation(grid) {
+  if (!grid || grid.dataset.freeformEventsInstalled === 'true') return;
+  grid.dataset.freeformEventsInstalled = 'true';
+
+  grid.addEventListener('pointerdown', event => {
+    const node = delegatedFreeformObject(event);
+    const obj = freeformObjectFromNode(node);
+    if (!obj || (isMobileViewport() && uiState.mobileCarryItem)) return;
+    beginFreeformPointerDrag(event, obj.id);
+  });
+
   grid.addEventListener('click', event => {
-    if (Date.now() > suppressUntil) return;
-    const cellNode = delegatedGridCell(event);
-    if (!cellNode || cellNode.dataset.cellKey !== suppressCellKey) return;
-    event.preventDefault();
-    event.stopImmediatePropagation();
-  }, true);
+    const node = delegatedFreeformObject(event);
+    const obj = freeformObjectFromNode(node);
+    if (!obj || !(event.target instanceof Element)) return;
+    const rotateControl = event.target.closest('[data-freeform-rotate]');
+    if (rotateControl) {
+      event.preventDefault();
+      event.stopPropagation();
+      const suppression = uiState.suppressFreeformRotateClick;
+      uiState.suppressFreeformRotateClick = null;
+      if (suppression && suppression.id === obj.id && suppression.until >= Date.now()) return;
+      rotateFreeformObject(obj.id, Number(rotateControl.dataset.freeformRotateDirection) < 0 ? -15 : 15);
+      return;
+    }
+    if (isMobileViewport() && uiState.mobileCarryItem && obj.type === 'seat') {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      if (eyeModeBlocksSeatEditing()) return blockEyeModeAction('seat');
+      applyMobileCarryToFreeformObject(obj.id);
+      return;
+    }
+    if (event.target.closest('[data-freeform-clear-seat], [data-freeform-lock], [data-freeform-delete]')) return;
+    event.stopPropagation();
+    const selectedIds = uiState.freeformSelectedObjectIds || new Set();
+    if (!event.shiftKey && !event.altKey && selectedIds.size > 1 && selectedIds.has(String(obj.id))) {
+      updateFreeformSelectionVisuals();
+      return;
+    }
+    selectFreeformObject(obj.id, event.shiftKey, event.altKey);
+  });
+
   grid.addEventListener('contextmenu', event => {
-    if (Date.now() > suppressUntil) return;
-    const cellNode = delegatedGridCell(event);
-    if (!cellNode || cellNode.dataset.cellKey !== suppressCellKey) return;
+    const node = delegatedFreeformObject(event);
+    const obj = freeformObjectFromNode(node);
+    if (!obj) return;
     event.preventDefault();
-    event.stopImmediatePropagation();
-  }, true);
+    event.stopPropagation();
+    selectFreeformObject(obj.id, event.shiftKey, event.altKey);
+    if (eyeModeBlocksRoomEditing()) return blockEyeModeAction('room');
+    showFreeformObjectContextMenu(obj.id, event.clientX, event.clientY);
+  });
+
+  grid.addEventListener('dblclick', event => {
+    const node = delegatedFreeformObject(event);
+    const obj = freeformObjectFromNode(node);
+    if (obj?.type !== 'seat' || seatGestureTargetIsAction(event.target)) return;
+    event.preventDefault();
+    event.stopPropagation();
+    openFreeformSeatSettings(obj.id);
+  });
+
+  grid.addEventListener('dragover', event => {
+    const node = delegatedFreeformObject(event);
+    const obj = freeformObjectFromNode(node);
+    if (obj?.type !== 'seat' || obj.locked || eyeModeBlocksSeatEditing()) return;
+    event.preventDefault();
+    event.stopPropagation();
+    node.classList.add('drop-target');
+  });
+
+  grid.addEventListener('dragleave', event => {
+    const node = delegatedFreeformObject(event);
+    if (!node || (event.relatedTarget instanceof Node && node.contains(event.relatedTarget))) return;
+    node.classList.remove('drop-target');
+  });
+
+  grid.addEventListener('drop', event => {
+    const node = delegatedFreeformObject(event);
+    const obj = freeformObjectFromNode(node);
+    if (!obj) return;
+    event.preventDefault();
+    event.stopPropagation();
+    node.classList.remove('drop-target');
+    if (obj.type !== 'seat') return;
+    if (obj.locked) return blockLockedSeatEditAction();
+    if (eyeModeBlocksSeatEditing()) return blockEyeModeAction('seat');
+    let data;
+    try { data = JSON.parse(event.dataTransfer.getData('application/json')); } catch { return; }
+    if (data.type === 'student') assignStudentToFreeformObject(data.id, obj.id, true);
+  });
 }
 
 function installGridEventDelegation() {
   const grid = el('seatGrid');
   if (!grid || grid.dataset.delegatedEventsInstalled === 'true') return;
   grid.dataset.delegatedEventsInstalled = 'true';
-  installDelegatedGridSeatSettingsGesture(grid);
+  installDelegatedSeatSettingsGesture(grid);
+  installFreeformEventDelegation(grid);
 
   const pendingSeatToolClicks = new Map();
   const cancelPendingSeatToolClick = cellKey => {
@@ -16285,9 +15882,24 @@ function updatePasswordStrengthDisplay(inputId, targetId) {
   target.innerHTML = value ? renderPasswordStrengthHtml(value) : '<div class="password-strength-label">Strength: Not entered</div><div>Use a memorable passphrase, ideally 4+ unrelated words or 16+ mixed characters. No recovery exists for encrypted saves.</div>';
 }
 
-function shouldShowWelcomeSecuritySetup() { return !currentSessionEncryptionKey(); }
-function showWelcomeSecurityError(message) { const node = el('welcomeEncryptionError'); if (!node) return; node.textContent = String(message || 'Could not set the encryption password.'); node.hidden = false; }
-function clearWelcomeSecurityError() { const node = el('welcomeEncryptionError'); if (!node) return; node.textContent = ''; node.hidden = true; }
+function shouldShowWelcomeSecuritySetup() {
+  return !currentSessionEncryptionKey();
+}
+
+function showWelcomeSecurityError(message) {
+  const node = el('welcomeEncryptionError');
+  if (!node) return;
+  node.textContent = String(message || 'Could not set the encryption password.');
+  node.hidden = false;
+}
+
+function clearWelcomeSecurityError() {
+  const node = el('welcomeEncryptionError');
+  if (!node) return;
+  node.textContent = '';
+  node.hidden = true;
+}
+
 function setWelcomePasswordVisibility(targetId, visible) {
   const input = el(targetId);
   if (input) input.type = visible ? 'text' : 'password';
@@ -16300,25 +15912,60 @@ function setWelcomePasswordVisibility(targetId, visible) {
     btn.title = visible ? 'Hide this password' : 'Show this password';
   }
 }
+
 function setWelcomePasswordFieldsHidden() {
   setWelcomePasswordVisibility('welcomeEncryptionKeyInput', false);
   setWelcomePasswordVisibility('welcomeEncryptionKeyConfirmInput', false);
 }
+
 function toggleWelcomePasswordVisibility(targetId = 'welcomeEncryptionKeyInput') {
   const input = el(targetId);
   setWelcomePasswordVisibility(targetId, !(input && input.type === 'text'));
 }
-function openWelcomeSecurityModalCore() { const modal = el('welcomeSecurityModal'); const input = el('welcomeEncryptionKeyInput'); const confirm = el('welcomeEncryptionKeyConfirmInput'); if (!modal || !input || !confirm) return; input.value = ''; confirm.value = ''; setWelcomePasswordFieldsHidden(); clearWelcomeSecurityError(); updatePasswordStrengthDisplay('welcomeEncryptionKeyInput', 'welcomePasswordStrength'); document.body.classList.add('welcome-security-active'); modal.classList.add('show'); setTimeout(() => input.focus(), 50); }
-function closeWelcomeSecurityModalCore() { el('welcomeSecurityModal')?.classList.remove('show'); document.body.classList.remove('welcome-security-active'); clearWelcomeSecurityError(); }
+
+function openWelcomeSecurityModalCore() {
+  const modal = el('welcomeSecurityModal');
+  const input = el('welcomeEncryptionKeyInput');
+  const confirm = el('welcomeEncryptionKeyConfirmInput');
+  if (!modal || !input || !confirm) return;
+  input.value = '';
+  confirm.value = '';
+  setWelcomePasswordFieldsHidden();
+  clearWelcomeSecurityError();
+  updatePasswordStrengthDisplay('welcomeEncryptionKeyInput', 'welcomePasswordStrength');
+  document.body.classList.add('welcome-security-active');
+  modal.classList.add('show');
+  setTimeout(() => input.focus(), 50);
+}
+
+function closeWelcomeSecurityModalCore() {
+  el('welcomeSecurityModal')?.classList.remove('show');
+  document.body.classList.remove('welcome-security-active');
+  clearWelcomeSecurityError();
+}
+
 async function completeWelcomeSecuritySetupCore() {
   const input = el('welcomeEncryptionKeyInput');
   const confirmInput = el('welcomeEncryptionKeyConfirmInput');
   const password = String(input?.value || '');
   const confirm = String(confirmInput?.value || '');
-  if (!window.crypto || !crypto.subtle) { showWelcomeSecurityError('This browser does not support Web Crypto. Use a modern browser before storing student data.'); return; }
+  if (!window.crypto || !crypto.subtle) {
+    showWelcomeSecurityError('This browser does not support Web Crypto. Use a modern browser before storing student data.');
+    return;
+  }
   const strength = passwordStrengthDetails(password);
-  if (!strength.acceptable) { showWelcomeSecurityError('Use a stronger encryption password. A 4-word passphrase or 16+ mixed characters is recommended.'); updatePasswordStrengthDisplay('welcomeEncryptionKeyInput', 'welcomePasswordStrength'); input?.focus(); return; }
-  if (password !== confirm) { showWelcomeSecurityError('The encryption password entries do not match.'); confirmInput?.select(); confirmInput?.focus(); return; }
+  if (!strength.acceptable) {
+    showWelcomeSecurityError('Use a stronger encryption password. A 4-word passphrase or 16+ mixed characters is recommended.');
+    updatePasswordStrengthDisplay('welcomeEncryptionKeyInput', 'welcomePasswordStrength');
+    input?.focus();
+    return;
+  }
+  if (password !== confirm) {
+    showWelcomeSecurityError('The encryption password entries do not match.');
+    confirmInput?.select();
+    confirmInput?.focus();
+    return;
+  }
   try {
     setSessionEncryptionKey(password);
     uiState.encryptionEnabled = true;
@@ -16341,12 +15988,17 @@ async function completeWelcomeSecuritySetupCore() {
     showWelcomeSecurityError(err.message || 'Could not complete secure setup.');
   }
 }
+
 function chooseExistingSaveFromWelcome() {
   const input = el('welcomeImportJson');
-  if (!input) { showWelcomeSecurityError('The file picker is not available in this browser.'); return; }
+  if (!input) {
+    showWelcomeSecurityError('The file picker is not available in this browser.');
+    return;
+  }
   input.value = '';
   input.click();
 }
+
 async function importExistingSaveFromWelcome(event) {
   const file = event?.target?.files?.[0];
   if (!file) return;
@@ -16378,13 +16030,112 @@ async function loadGoogleDriveSaveFromWelcome() {
   return openGoogleDriveFileChooser({ skipConfirm: true, direct: true, fromWelcome: true });
 }
 
-function sanitizedStudentForVisibility(student) { const source = normalizeStudent(student); const cfg = pageSettings().visibility || {}; return { ...source, grade: cfg.disableStudentEditing ? '' : source.grade, notesPrivate: '', notesSubstitute: '', notesPublic: cfg.disableStudentEditing ? '' : source.notesPublic }; }
-function sanitizedCellForVisibility(cell) { const source = cell && typeof cell === 'object' ? { ...cell } : {}; if (pageSettings().visibility.hideGroupDetails) { source.anchorGroupIds = []; source.zoneIds = []; } return source; }
-function sanitizedClassForVisibilityMode(classRecord) { const cls = normalizeClassRecord(classRecord); const cfg = pageSettings().visibility; const cells = {}; Object.entries(cls.cells || {}).forEach(([key, cell]) => { cells[key] = sanitizedCellForVisibility(cell); }); return { ...cls, students: (cls.students || []).map(sanitizedStudentForVisibility), groups: cfg.hideGroupDetails ? [] : (cls.groups || []).map(group => ({ ...group })), zones: cfg.hideGroupDetails ? [] : (cls.zones || []).map(zone => ({ ...zone })), cells, snapshots: [], chartMeta: normalizeChartMeta(cls.chartMeta || {}) }; }
-function sanitizeInMemoryForVisibilityMode() { persistActiveClass(); const activeId = state.activeClassId; state.classes = (state.classes || []).map(sanitizedClassForVisibilityMode); state.roomTemplates = []; uiState.undoStack = []; uiState.redoStack = []; uiState.csvImportDraft = null; uiState.noteEditorContext = null; uiState.noteEditorDraft = null; uiState.restoreImportDraft = null; uiState.mobileCarryItem = null; if (uiState.selectedCellKeys) uiState.selectedCellKeys.clear(); if (state.classes.some(cls => cls.id === activeId)) state.activeClassId = activeId; applyClassToState(state.activeClassId || state.classes[0]?.id); hideMobileActionDrawer?.(); updateUndoRedoButtons(); }
-async function protectVisibilityModeData(secret = '') { const protector = String(secret || currentSessionEncryptionKey() || ''); if (!protector) return false; let plain = exportState('all'); const encrypted = await encryptTextWithSecret(plain, protector, 'visibility-session', { visibilityProtected: true, protectedAt: new Date().toISOString() }); plain = ''; if (!safeStorageSet('sessionStorage', VISIBILITY_DATA_SESSION_KEY, encrypted)) throw new Error('Presentation Mode could not store its encrypted recovery copy. Check browser storage permissions or available space; the chart was not hidden.'); sanitizeInMemoryForVisibilityMode(); return true; }
-async function restoreVisibilityModeData(secret = '') { const stored = safeStorageGet('sessionStorage', VISIBILITY_DATA_SESSION_KEY); if (!stored) return false; const parsed = JSON.parse(stored); const candidates = []; [currentSessionEncryptionKey(), secret].forEach(value => { const text = String(value || ''); if (text && !candidates.includes(text)) candidates.push(text); }); let lastError = null; for (const candidate of candidates) { try { const decrypted = await decryptTextEnvelope(parsed, candidate); importState(decrypted); safeStorageRemove('sessionStorage', VISIBILITY_DATA_SESSION_KEY); return true; } catch (err) { lastError = err; } } throw lastError || new Error('Could not restore Presentation Mode protected data.'); }
-async function snapshotDataForStorage(plainText) { const plain = String(plainText || ''); if (!currentSessionEncryptionKey()) return plain; return encryptTextWithSecret(plain, currentSessionEncryptionKey(), 'snapshot', { payloadKind: 'snapshot', snapshotEncrypted: true }); }
+function sanitizedStudentForVisibility(student) {
+  const source = normalizeStudent(student);
+  const cfg = pageSettings().visibility || {};
+  return {
+    ...source,
+    grade: cfg.disableStudentEditing ? '' : source.grade,
+    notesPrivate: '',
+    notesSubstitute: '',
+    notesPublic: cfg.disableStudentEditing ? '' : source.notesPublic
+  };
+}
+
+function sanitizedCellForVisibility(cell) {
+  const source = cell && typeof cell === 'object' ? { ...cell } : {};
+  if (pageSettings().visibility.hideGroupDetails) {
+    source.anchorGroupIds = [];
+    source.zoneIds = [];
+  }
+  return source;
+}
+
+function sanitizedClassForVisibilityMode(classRecord) {
+  const cls = normalizeClassRecord(classRecord);
+  const cfg = pageSettings().visibility;
+  const cells = {};
+  Object.entries(cls.cells || {}).forEach(([key, cell]) => {
+    cells[key] = sanitizedCellForVisibility(cell);
+  });
+  return {
+    ...cls,
+    students: (cls.students || []).map(sanitizedStudentForVisibility),
+    groups: cfg.hideGroupDetails ? [] : (cls.groups || []).map(group => ({ ...group })),
+    zones: cfg.hideGroupDetails ? [] : (cls.zones || []).map(zone => ({ ...zone })),
+    cells,
+    snapshots: [],
+    chartMeta: normalizeChartMeta(cls.chartMeta || {})
+  };
+}
+
+function sanitizeInMemoryForVisibilityMode() {
+  persistActiveClass();
+  const activeId = state.activeClassId;
+  state.classes = (state.classes || []).map(sanitizedClassForVisibilityMode);
+  state.roomTemplates = [];
+  uiState.undoStack = [];
+  uiState.redoStack = [];
+  uiState.csvImportDraft = null;
+  uiState.noteEditorContext = null;
+  uiState.noteEditorDraft = null;
+  uiState.restoreImportDraft = null;
+  uiState.mobileCarryItem = null;
+  uiState.selectedCellKeys?.clear();
+  if (state.classes.some(cls => cls.id === activeId)) state.activeClassId = activeId;
+  applyClassToState(state.activeClassId || state.classes[0]?.id);
+  hideMobileActionDrawer?.();
+  updateUndoRedoButtons();
+}
+
+async function protectVisibilityModeData(secret = '') {
+  const protector = String(secret || currentSessionEncryptionKey() || '');
+  if (!protector) return false;
+  let plain = exportState('all');
+  const encrypted = await encryptTextWithSecret(plain, protector, 'visibility-session', {
+    visibilityProtected: true,
+    protectedAt: new Date().toISOString()
+  });
+  plain = '';
+  if (!safeStorageSet('sessionStorage', VISIBILITY_DATA_SESSION_KEY, encrypted)) {
+    throw new Error('Presentation Mode could not store its encrypted recovery copy. Check browser storage permissions or available space; the chart was not hidden.');
+  }
+  sanitizeInMemoryForVisibilityMode();
+  return true;
+}
+
+async function restoreVisibilityModeData(secret = '') {
+  const stored = safeStorageGet('sessionStorage', VISIBILITY_DATA_SESSION_KEY);
+  if (!stored) return false;
+  const parsed = JSON.parse(stored);
+  const candidates = [];
+  [currentSessionEncryptionKey(), secret].forEach(value => {
+    const text = String(value || '');
+    if (text && !candidates.includes(text)) candidates.push(text);
+  });
+  let lastError = null;
+  for (const candidate of candidates) {
+    try {
+      const decrypted = await decryptTextEnvelope(parsed, candidate);
+      importState(decrypted);
+      safeStorageRemove('sessionStorage', VISIBILITY_DATA_SESSION_KEY);
+      return true;
+    } catch (err) {
+      lastError = err;
+    }
+  }
+  throw lastError || new Error('Could not restore Presentation Mode protected data.');
+}
+
+async function snapshotDataForStorage(plainText) {
+  const plain = String(plainText || '');
+  if (!currentSessionEncryptionKey()) return plain;
+  return encryptTextWithSecret(plain, currentSessionEncryptionKey(), 'snapshot', {
+    payloadKind: 'snapshot',
+    snapshotEncrypted: true
+  });
+}
+
 async function snapshotDataForRestore(data) {
   const text = String(data || '');
   if (!text) return text;
@@ -24262,113 +24013,36 @@ const WorkflowExpansion = (() => {
 })();
 
  
-function mergePageSettings(value) {
-  return WorkflowExpansion.mergePageSettings(value);
-}
-
-function updatePageSettingsForm() {
-  return WorkflowExpansion.updatePageSettingsForm();
-}
-
-function readPageSettingsForm() {
-  return WorkflowExpansion.readPageSettingsForm();
-}
-
-function updateSecurityStatusPanel() {
-  return WorkflowExpansion.updateSecurityStatusPanel();
-}
-
-function revealNoteLineInEditor(noteKey) {
-  return WorkflowExpansion.revealNoteLineInEditor(noteKey);
-}
-
-function closeStudentNotesModal() {
-  return WorkflowExpansion.closeStudentNotesModal();
-}
-
-function saveAppSnapshots(items) {
-  return WorkflowExpansion.saveAppSnapshots(items);
-}
-
-function renderSnapshotList() {
-  return WorkflowExpansion.renderSnapshotList();
-}
-
-function startPrintPreviewFromOptions() {
-  return WorkflowExpansion.startPrintPreviewFromOptions();
-}
-
-function exportChartPdf() {
-  return WorkflowExpansion.exportChartPdf();
-}
-
-function exportChartSvg() {
-  return WorkflowExpansion.exportChartSvg();
-}
-
-function exportAndDownload(scope = 'all') {
-  return WorkflowExpansion.exportAndDownload(scope);
-}
-
-function downloadSavePackage() {
-  return WorkflowExpansion.downloadSavePackage();
-}
-
-function downloadStudentDataJson() {
-  return WorkflowExpansion.downloadStudentDataJson();
-}
-
-function downloadGroupConfigJson() {
-  return WorkflowExpansion.downloadGroupConfigJson();
-}
-
-function downloadRoomLayoutJson() {
-  return WorkflowExpansion.downloadRoomLayoutJson();
-}
-
-function pushUndoSnapshot(reason = 'change') {
-  return WorkflowExpansion.pushUndoSnapshot(reason);
-}
-
-function undoLastChange() {
-  return WorkflowExpansion.undoLastChange();
-}
-
-function redoLastChange() {
-  return WorkflowExpansion.redoLastChange();
-}
-
-function importState(json) {
-  return WorkflowExpansion.importState(json);
-}
-
-async function importStateDirectFromText(text, sourceLabel = 'local save') {
-  return WorkflowExpansion.importStateDirectFromText(text, sourceLabel);
-}
-
-async function applySettingsEncryptionKeyChange() {
-  return WorkflowExpansion.applySettingsEncryptionKeyChange();
-}
-
-function renderCsvMappingWizard() {
-  return WorkflowExpansion.renderCsvMappingWizard();
-}
-
-async function importMappedCsvStudents() {
-  return WorkflowExpansion.importMappedCsvStudents();
-}
-
-function renderChangeLog() {
-  return WorkflowExpansion.renderChangeLog();
-}
-
-function openSettingsModal() {
-  return WorkflowExpansion.openSettingsModal();
-}
-
-function closeSettingsModal() {
-  return WorkflowExpansion.closeSettingsModal();
-}
+let {
+  mergePageSettings,
+  updatePageSettingsForm,
+  readPageSettingsForm,
+  updateSecurityStatusPanel,
+  revealNoteLineInEditor,
+  closeStudentNotesModal,
+  saveAppSnapshots,
+  renderSnapshotList,
+  startPrintPreviewFromOptions,
+  exportChartPdf,
+  exportChartSvg,
+  exportAndDownload,
+  downloadSavePackage,
+  downloadStudentDataJson,
+  downloadGroupConfigJson,
+  downloadRoomLayoutJson,
+  pushUndoSnapshot,
+  undoLastChange,
+  redoLastChange,
+  importState,
+  importStateDirectFromText,
+  applySettingsEncryptionKeyChange,
+  renderCsvMappingWizard,
+  importMappedCsvStudents,
+  renderChangeLog,
+  openSettingsModal,
+  closeSettingsModal,
+  closeWelcomeSecurityModal
+} = WorkflowExpansion;
 
 function openWelcomeSecurityModal() {
   const result = WorkflowExpansion.openWelcomeSecurityModal();
@@ -24376,16 +24050,10 @@ function openWelcomeSecurityModal() {
   return result;
 }
 
-function closeWelcomeSecurityModal() {
-  return WorkflowExpansion.closeWelcomeSecurityModal();
-}
-
 async function completeWelcomeSecuritySetup() {
   if (typeof StartupRecoveryV45 !== 'undefined') return StartupRecoveryV45.handlePrimaryAction();
   return WorkflowExpansion.completeWelcomeSecuritySetup();
 }
-
-
 
 
 
