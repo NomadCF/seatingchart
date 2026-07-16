@@ -5,7 +5,7 @@
   <meta name="license" content="MIT License" />
   <meta name="spdx-license-identifier" content="MIT" />
   <meta name="copyright" content="Copyright (c) 2026 Chris L. Franklin" />
-  <meta name="app-version" content="6.5.13" />
+  <meta name="app-version" content="6.6.0" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com https://www.paypalobjects.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://www.googleapis.com https://classroom.googleapis.com https://accounts.google.com https://www.paypal.com https://www.paypalobjects.com https://www.google-analytics.com https://*.google-analytics.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://www.paypal.com; img-src 'self' data: blob: https://www.paypalobjects.com https://www.google-analytics.com; font-src 'self' data:; worker-src 'self' blob:; manifest-src 'self'; media-src 'none'; object-src 'none'; base-uri 'none'; form-action 'self' https://www.paypal.com" />
   <meta name="application-name" content="Classroom Seating Planner" />
@@ -2756,6 +2756,104 @@ body[data-theme="linux"] .guided-learning-status.waiting{border-color:var(--bord
   }.guided-progress-row{grid-template-columns:auto minmax(0, 1fr)
   }.guided-progress-row > button{grid-column:1 / -1;width:100%
   }
+}.seat-guidance-banner,
+.scheduled-plan-banner,
+.remote-drive-change-banner{position:fixed;left:50%;bottom:18px;z-index:39000;width:min(860px, calc(100vw - 28px));transform:translateX(-50%);display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border:1px solid #93c5fd;border-radius:14px;background:rgba(239, 246, 255, .98);color:#1e3a8a;box-shadow:0 18px 44px rgba(15, 23, 42, .24)
+}.seat-guidance-banner[hidden],
+.scheduled-plan-banner[hidden],
+.remote-drive-change-banner[hidden]{display:none
+}.seat-guidance-copy,
+.scheduled-plan-banner > div:first-child,
+.remote-drive-change-banner > div:first-child{min-width:0;display:grid;gap:3px
+}.seat-guidance-copy strong,
+.scheduled-plan-banner strong,
+.remote-drive-change-banner strong{color:#172554;font-size:12.5px
+}.seat-guidance-copy span,
+.scheduled-plan-banner span,
+.remote-drive-change-banner span{color:#31508a;font-size:11.5px;line-height:1.35
+}.cell.seat-validity-valid,
+.freeform-object.seat-validity-valid{outline:4px solid #16a34a;outline-offset:2px;box-shadow:0 0 0 7px rgba(22, 163, 74, .15), 0 8px 18px rgba(15, 23, 42, .12)
+}.cell.seat-validity-caution,
+.freeform-object.seat-validity-caution{outline:4px solid #d97706;outline-offset:2px;box-shadow:0 0 0 7px rgba(217, 119, 6, .16), 0 8px 18px rgba(15, 23, 42, .12)
+}.cell.seat-validity-invalid,
+.cell.seat-validity-blocked,
+.freeform-object.seat-validity-invalid,
+.freeform-object.seat-validity-blocked{outline:4px solid #dc2626;outline-offset:2px;box-shadow:0 0 0 7px rgba(220, 38, 38, .15), 0 8px 18px rgba(15, 23, 42, .12)
+}.planning-tools-modal{width:min(1120px, calc(100vw - 24px));max-width:1120px
+}.planning-tools-shell{min-height:0;display:grid;grid-template-columns:210px minmax(0, 1fr);flex:1 1 auto;overflow:hidden
+}.planning-tools-tabs{min-height:0;display:grid;align-content:start;gap:5px;padding:10px;overflow:auto;border-right:1px solid var(--border);background:#f1f4f8
+}.planning-tools-tabs button{justify-content:flex-start;color:var(--text);background:#fff;border:1px solid transparent;box-shadow:none;white-space:normal;text-align:left
+}.planning-tools-tabs button.active,
+.planning-tools-tabs button:hover{color:var(--accent-dark);background:#edf3ff;border-color:#b7cbff
+}.planning-tools-body{min-width:0;overflow:auto;padding:12px;background:#f8fafc
+}.planning-finding-list,
+.planning-schedule-list,
+.planning-template-list,
+.planning-duplicate-list,
+.planning-preset-grid,
+.shortcut-config-list{display:grid;gap:8px
+}.planning-finding,
+.planning-schedule-card,
+.planning-template-card,
+.planning-duplicate-card,
+.planning-preset-card,
+.planning-comparison-row,
+.planning-override,
+.shortcut-config-row{display:grid;gap:7px;padding:9px;border:1px solid var(--border);border-radius:11px;background:#fff
+}.planning-finding{grid-template-columns:minmax(0, 1fr) auto;align-items:center
+}.planning-finding.bad{border-color:#fecaca;background:#fff1f2
+}.planning-finding.warn{border-color:#fed7aa;background:#fffbeb
+}.planning-finding > div:first-child,
+.planning-schedule-card .section-header-row > div,
+.planning-template-card > div:first-child,
+.planning-duplicate-card,
+.planning-preset-card{min-width:0;display:grid;gap:3px
+}.planning-finding span,
+.planning-schedule-card span,
+.planning-template-card span,
+.planning-duplicate-card span,
+.planning-preset-card span,
+.planning-comparison-row span,
+.planning-override span,
+.shortcut-config-row span{color:var(--muted);font-size:11px;line-height:1.35
+}.table-scroll{overflow:auto;max-width:100%
+}.planning-table{width:100%;border-collapse:collapse;font-size:11.5px
+}.planning-table th,
+.planning-table td{padding:7px 8px;border-bottom:1px solid var(--border);text-align:left;white-space:nowrap
+}.planning-table th{position:sticky;top:0;z-index:1;background:#f1f5f9
+}.planning-days{display:flex;flex-wrap:wrap;gap:6px 12px
+}.planning-comparison-summary{display:grid;gap:3px;margin:10px 0 7px;padding:9px;border:1px solid #bfdbfe;border-radius:10px;background:#eff6ff
+}.bulk-student-list{display:grid;grid-template-columns:repeat(auto-fit, minmax(190px, 1fr));gap:5px;max-height:260px;overflow:auto;margin-top:8px
+}.bulk-student-row{display:flex;align-items:center;gap:7px;padding:6px 7px;border:1px solid var(--border);border-radius:9px;background:#fff;color:var(--text);font-size:12px;font-weight:700;text-transform:none;letter-spacing:0
+}.bulk-student-row input{width:auto
+}.planning-preset-grid{grid-template-columns:repeat(auto-fit, minmax(210px, 1fr))
+}.planning-template-card{grid-template-columns:minmax(0, 1fr) auto;align-items:center
+}.student-advanced-filters{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-bottom:8px;padding:7px;border:1px solid var(--border);border-radius:10px;background:#fff
+}.student-advanced-filters .checkline{margin:0;font-size:11px
+}.export-support-modal{width:min(960px, calc(100vw - 24px));max-width:960px
+}.export-support-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:10px
+}.export-support-grid .workflow-card button{margin-top:auto
+}.drive-polling-modal,
+.shortcut-locale-modal{width:min(760px, calc(100vw - 24px))
+}.shortcut-config-row{grid-template-columns:minmax(0, 1fr) minmax(150px, 220px);align-items:center;color:var(--text);font-size:12px;font-weight:700;text-transform:none;letter-spacing:0
+}.shortcut-config-row input{width:100%
+}#seatCommentSection textarea{min-height:76px
+}.planning-preview-pair{display:grid;grid-template-columns:repeat(2, minmax(0, 1fr));gap:10px;margin-bottom:8px
+}.planning-plan-preview{min-width:0;padding:9px;border:1px solid var(--border);border-radius:11px;background:#fff
+}.planning-plan-preview h4{margin:0 0 8px;color:var(--text);font-size:12px
+}.planning-mini-grid{display:grid;grid-template-columns:repeat(var(--planning-cols, 1), minmax(12px, 1fr));gap:3px;min-height:120px;padding:6px;border:1px solid var(--border);border-radius:9px;background:#f1f5f9
+}.planning-mini-freeform{position:relative;min-height:210px;overflow:hidden;border:1px solid var(--border);border-radius:9px;background-image:linear-gradient(rgba(148, 163, 184, .13) 1px, transparent 1px), linear-gradient(90deg, rgba(148, 163, 184, .13) 1px, transparent 1px);background-size:16px 16px;background-color:#f8fafc
+}.planning-mini-seat{min-width:0;min-height:14px;display:grid;place-items:center;overflow:hidden;border:1px solid #9db7ef;border-radius:4px;background:#e7efff;color:#1e3a8a;font-size:8px;font-weight:900;line-height:1
+}.planning-mini-freeform .planning-mini-seat{position:absolute
+}.planning-mini-seat.empty{border-style:dashed;border-color:#d7deea;background:transparent
+}.planning-mini-seat.changed{border:2px solid #d97706;background:#fef3c7;color:#92400e;box-shadow:0 0 0 2px rgba(217, 119, 6, .18)
+}.planning-zone-comment-list{display:grid;gap:8px
+}.planning-zone-comment-card{display:grid;grid-template-columns:minmax(150px, .7fr) minmax(220px, 1.4fr) auto;gap:8px;align-items:center;padding:8px;border:1px solid var(--border);border-radius:10px;background:#fff
+}.planning-zone-comment-card > div{min-width:0;display:grid;gap:3px
+}.planning-zone-comment-card span{color:var(--muted);font-size:11px;line-height:1.3
+}.planning-zone-comment-card textarea,
+.planning-template-card textarea{min-height:58px
+}.requirements-grid select[multiple]{min-height:92px
 }
 }@layer app-priority{.cell.multi-selected{outline:3px solid rgba(47, 111, 237, 0.55)
 }body.print-preview-active header,
@@ -4741,6 +4839,33 @@ body.product-v4.product-v43[data-theme="prismatic"] #layoutToolsPanel{animation:
   }
 }body.visibility-mode.vis-hide-wizard #guidedLearningBtn,
 body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
+}@media (max-width: 760px){.seat-guidance-banner,
+  .scheduled-plan-banner,
+  .remote-drive-change-banner{bottom:calc(var(--mobile-bottom-nav-height, 64px) + 8px);align-items:stretch;flex-direction:column
+  }.seat-guidance-banner .button-row,
+  .scheduled-plan-banner .button-row,
+  .remote-drive-change-banner .button-row{display:grid;grid-template-columns:1fr 1fr;width:100%
+  }.planning-tools-modal{width:100%;max-width:100%;height:100dvh;max-height:100dvh;border-radius:0
+  }.planning-tools-shell{grid-template-columns:1fr;grid-template-rows:auto minmax(0, 1fr)
+  }.planning-tools-tabs{display:flex;gap:5px;overflow-x:auto;border-right:0;border-bottom:1px solid var(--border)
+  }.planning-tools-tabs button{flex:0 0 auto;min-height:32px;padding:6px 8px;font-size:10.5px
+  }.planning-finding,
+  .planning-template-card,
+  .shortcut-config-row{grid-template-columns:1fr
+  }.planning-finding .button-row,
+  .planning-template-card .button-row{justify-content:stretch
+  }.planning-finding .button-row button,
+  .planning-template-card .button-row button,
+  .shortcut-config-row input{width:100%
+  }.export-support-modal,
+  .drive-polling-modal,
+  .shortcut-locale-modal{width:100%;max-width:100%;height:100dvh;max-height:100dvh;border-radius:0
+  }
+}@media (max-width: 760px){.planning-preview-pair,
+  .planning-zone-comment-card{grid-template-columns:1fr
+  }.planning-mini-freeform{min-height:180px
+  }.planning-zone-comment-card button{width:100%
+  }
 }
 }
 </style>
@@ -6593,7 +6718,7 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
 const APP_CONFIG = Object.freeze({
   name: 'Classroom Seating Planner',
   shortName: 'Seating Planner',
-  version: '6.5.13',
+  version: '6.6.0',
   copyrightHolder: 'Chris L. Franklin',
   copyrightYear: '2026',
   releaseDate: '2026-07-16',
@@ -6846,6 +6971,10 @@ const APP_LICENSE = {
 };
 
 const PROJECT_FEATURES = [
+  { title: 'Live seat guidance', text: 'Preview valid, caution, conflicting, and locked seats while selecting or dragging a student, explain each result in plain language, and place the student in the best currently available seat.' },
+  { title: 'Conflict resolution and intentional overrides', text: 'Move to a suggested seat, compare alternatives, keep an intentional exception, and retain the override for Review rather than silently discarding the teacher’s decision.' },
+  { title: 'Planning history and fairness', text: 'Compare named plans, review repeated neighbors and location patterns, schedule plans by weekday or date, and use bulk requirement presets without assigning behavioral scores to students.' },
+  { title: 'Portable templates and public formats', text: 'Exchange shared room-template libraries, locale packs, assignment and violation CSV files, sanitized support bundles, and documented JSON-schema data contracts while keeping the final release as one portable HTML file.' },
   { title: 'Five-stage planning workflow', text: 'Move from Class Setup to Room Design, Seat Students, Review, and Save & Share without exposing every advanced control at once.' },
   { title: 'Roster and class management', text: 'Maintain multiple classes, compare and merge class records, import or reconcile CSV rosters, preserve notes and requirements, archive classes, and roll classes into a new term.' },
   { title: 'Seating rules and student needs', text: 'Model together, avoid, anchored, spread, location, zone, object-distance, accessibility, and individual student requirements.' },
@@ -6866,10 +6995,24 @@ const PROJECT_FEATURES = [
 
 const RELEASE_HISTORY = [
   {
+    version: '6.6.0',
+    date: 'July 16, 2026',
+    title: 'Live seat guidance, planning intelligence, portable data tools, and modular source',
+    current: true,
+    changes: [
+      'Added live Grid and Freeform seat-validity previews, valid-seat highlighting, best-seat placement, plain-language conflict explanations, and intentional rule overrides.',
+      'Added seating-history and fairness analysis, scheduled plans, visual plan comparison, bulk student requirement presets, duplicate-roster suggestions, and advanced student filters.',
+      'Added shared room-template libraries, assignment and violation CSV exports, sanitized support bundles, chart-image copying, blank-layout printing, comments, configurable shortcuts, and a locale-pack framework.',
+      'Added optional revision polling and remote-change notices for Google Drive collaboration without claiming server-style live co-editing.',
+      'Split new planning capabilities into maintained source modules while the build still produces one self-contained portable HTML release.',
+      'Published JSON Schema contracts, example files, and validation tooling for saves, class records, room-template libraries, and locale packs without changing schema 13 or encryption envelope 3.'
+    ]
+  },
+  {
     version: '6.5.13',
     date: 'July 16, 2026',
     title: 'Compact mobile close controls and full-screen room canvas',
-    current: true,
+    current: false,
     changes: [
       'Replaced the filled red circular mobile Close treatment with a smaller square X button while retaining accessible names and full desktop Close labels.',
       'Applied the compact X treatment consistently to modal, sheet, and dynamically rendered Close controls on mobile.',
@@ -7078,6 +7221,8 @@ const state = {
   todaySession: null,
   seatingPlans: [],
   importProfiles: [],
+  requirementPresets: [],
+  ruleOverrides: [],
   collaborationAccess: { version: COLLABORATION_ACCESS_VERSION, updatedAt: '', policies: {} }
 };
 
@@ -7137,6 +7282,7 @@ const uiState = {
   linkedSaveMaxTimer: null,
   autosaveDirtySince: 0,
   autosaveInProgress: false,
+  autosaveGeneration: 0,
   browserSaveEpoch: 0,
   googleDriveAccessToken: '',
   googleDriveTokenExpiresAt: 0,
@@ -7178,6 +7324,7 @@ const uiState = {
   welcomeSecurityJustCompleted: false,
   suppressEncryptionPromptUntil: 0,
   saveIdentity: null,
+  previewSaveIdentity: null,
   keyboardCarryStudentId: '',
   seatingWorker: null,
   seatingCandidates: [],
@@ -9716,7 +9863,8 @@ function ensureGrid(options = {}) {
         assignedStudentId: null,
         manual: false,
         anchorGroupIds: [],
-        zoneIds: []
+        zoneIds: [],
+        comment: ''
       };
       next[key].row = r;
       next[key].col = c;
@@ -9724,6 +9872,7 @@ function ensureGrid(options = {}) {
       next[key].anchorGroupIds = next[key].anchorGroupIds || [];
       next[key].zoneIds = Array.isArray(next[key].zoneIds) ? next[key].zoneIds : [];
       next[key].manual = Boolean(next[key].manual);
+      next[key].comment = String(next[key].comment || '').slice(0, 1200);
     }
   }
   state.cells = next;
@@ -9757,7 +9906,8 @@ function normalizeFreeformObject(object, index = 0) {
     locked: Boolean(source.locked),
     zIndex: clampNumber(source.zIndex ?? (index + 1), 1, 100000),
     color: safeColor(source.color, objectTypeColor(type)),
-    groupId: source.groupId ? String(source.groupId) : ''
+    groupId: source.groupId ? String(source.groupId) : '',
+    comment: String(source.comment || '').trim().slice(0, 1200)
   };
 }
 
@@ -9964,6 +10114,7 @@ function prepareGridMirrorFromFreeformSeats({ clearUnlockedAssignments = false }
     cell.manual = Boolean(cell.assignedStudentId && (obj.locked || obj.manual));
     cell.anchorGroupIds = deepClone(obj.anchorGroupIds || []);
     cell.zoneIds = deepClone(obj.zoneIds || []);
+    cell.comment = String(obj.comment || '').slice(0, 1200);
   });
   return true;
 }
@@ -9987,6 +10138,7 @@ function createFreeformObjectsFromGrid({ keepAssignments = true } = {}) {
       manual: keepAssignments && type === 'seat' ? Boolean(cell.manual) : false,
       anchorGroupIds: keepAssignments && type === 'seat' ? deepClone(cell.anchorGroupIds || []) : [],
       zoneIds: deepClone(cell.zoneIds || []),
+      comment: String(cell.comment || '').slice(0, 1200),
       x: 40 + (Number(cell.col) - 1) * (cellWidth + gap),
       y: 40 + (Number(cell.row) - 1) * (cellHeight + gap),
       width,
@@ -10582,6 +10734,7 @@ function mirrorGridSeatToFreeformObject(obj) {
   obj.locked = Boolean(cell.manual);
   obj.anchorGroupIds = deepClone(cell.anchorGroupIds || []);
   obj.zoneIds = deepClone(cell.zoneIds || []);
+  obj.comment = String(cell.comment || '').slice(0, 1200);
   return true;
 }
 
@@ -10619,6 +10772,7 @@ function mirrorFreeformSeatToGrid(obj, { clearStudentDuplicates = true, preserve
   if (!preserveObjectLock) obj.locked = Boolean(cell.manual);
   cell.anchorGroupIds = deepClone(obj.anchorGroupIds || []);
   cell.zoneIds = deepClone(obj.zoneIds || []);
+  cell.comment = String(obj.comment || '').slice(0, 1200);
   return true;
 }
 
@@ -11898,7 +12052,8 @@ function evaluateCurrentRuleViolations(options = {}) {
     add(`conflicting-rules:${key}`, 'warn', `Colliding group rules: ${label(studentById.get(ids[0]))} and ${label(studentById.get(ids[1]))} are included in both proximity and separation rules.`, ids, 'group');
   });
 
-  return findings;
+  const ignored = new Set((state.ruleOverrides || []).map(item => String(item.id || item)));
+  return findings.filter(item => !ignored.has(String(item.id)));
 }
 
 function freeformCollisionMessagesForStudents(studentIds) {
@@ -12358,7 +12513,8 @@ function normalizeCellsRecord(cells) {
       assignedStudentId: cell.assignedStudentId ? String(cell.assignedStudentId) : null,
       manual: Boolean(cell.manual),
       anchorGroupIds: Array.from(new Set((Array.isArray(cell.anchorGroupIds) ? cell.anchorGroupIds : Array.isArray(cell[LEGACY_SCHEMA_12_GROUP_FIELDS.anchorIds]) ? cell[LEGACY_SCHEMA_12_GROUP_FIELDS.anchorIds] : []).map(String))),
-      zoneIds: Array.isArray(cell.zoneIds) ? Array.from(new Set(cell.zoneIds.map(String))) : []
+      zoneIds: Array.isArray(cell.zoneIds) ? Array.from(new Set(cell.zoneIds.map(String))) : [],
+      comment: String(cell.comment || '').trim().slice(0, 1200)
     };
   });
   return normalized;
@@ -12373,7 +12529,8 @@ function normalizeZoneRecord(zone, index = 0) {
     name: label,
     color: safeColor(source.color, defaultGroupColor(index + 3)),
     studentIds: Array.isArray(source.studentIds) ? Array.from(new Set(source.studentIds.map(String))) : [],
-    groupIds: Array.from(new Set((Array.isArray(source.groupIds) ? source.groupIds : Array.isArray(source[LEGACY_SCHEMA_12_GROUP_FIELDS.zoneIds]) ? source[LEGACY_SCHEMA_12_GROUP_FIELDS.zoneIds] : []).map(String)))
+    groupIds: Array.from(new Set((Array.isArray(source.groupIds) ? source.groupIds : Array.isArray(source[LEGACY_SCHEMA_12_GROUP_FIELDS.zoneIds]) ? source[LEGACY_SCHEMA_12_GROUP_FIELDS.zoneIds] : []).map(String))),
+    comment: String(source.comment || '').trim().slice(0, 1200)
   };
 }
 
@@ -12389,6 +12546,9 @@ function normalizeRoomTemplateRecord(template, index = 0) {
     freeformLayout: normalizeFreeformLayout(source.freeformLayout),
     zones: Array.isArray(source.zones) ? source.zones.map(normalizeZoneRecord) : [],
     customObjects: Array.isArray(source.customObjects) ? source.customObjects.map(normalizeCustomObject).filter(Boolean) : [],
+    description: String(source.description || '').trim().slice(0, 500),
+    librarySource: String(source.librarySource || '').trim().slice(0, 160),
+    shared: Boolean(source.shared),
     createdAt: source.createdAt || new Date().toISOString()
   };
 }
@@ -12434,15 +12594,52 @@ function normalizeTodaySession(value) {
   };
 }
 
+function normalizePlanSchedule(value) {
+  const source = value && typeof value === 'object' ? value : {};
+  const days = Array.isArray(source.daysOfWeek) ? source.daysOfWeek.map(Number).filter(day => Number.isInteger(day) && day >= 0 && day <= 6) : [];
+  return {
+    enabled: Boolean(source.enabled),
+    daysOfWeek: Array.from(new Set(days)),
+    startDate: String(source.startDate || '').slice(0, 10),
+    endDate: String(source.endDate || '').slice(0, 10),
+    period: String(source.period || '').trim().slice(0, 60),
+    autoSuggest: source.autoSuggest !== false,
+    lastAppliedAt: String(source.lastAppliedAt || '').slice(0, 40)
+  };
+}
+
+function normalizeRequirementPreset(value, index = 0) {
+  const source = value && typeof value === 'object' ? value : {};
+  const sample = normalizeStudent({ id: `preset-${index}`, requirements: source.requirements || {} });
+  return {
+    id: source.id ? String(source.id) : uid('requirement-preset'),
+    name: String(source.name || `Requirement Preset ${index + 1}`).trim().slice(0, 80) || `Requirement Preset ${index + 1}`,
+    requirements: sample.requirements,
+    createdAt: source.createdAt || new Date().toISOString(),
+    updatedAt: source.updatedAt || new Date().toISOString()
+  };
+}
+
+function normalizeRuleOverride(value) {
+  const source = value && typeof value === 'object' ? value : {};
+  return {
+    id: String(source.id || '').slice(0, 240),
+    reason: String(source.reason || '').trim().slice(0, 500),
+    createdAt: source.createdAt || new Date().toISOString()
+  };
+}
+
 function normalizeSeatingPlan(value, index = 0) {
   const source = value && typeof value === 'object' ? value : {};
   return {
     id: source.id ? String(source.id) : uid('seating-plan'),
     name: String(source.name || `Plan ${index + 1}`).trim().slice(0, 80) || `Plan ${index + 1}`,
     reason: String(source.reason || '').trim().slice(0, 160),
-    notes: String(source.notes || '').trim().slice(0, 1200),
+    notes: String(source.notes || source.comment || '').trim().slice(0, 1200),
+    comment: String(source.comment || source.notes || '').trim().slice(0, 1200),
     status: ['current','previous','archived'].includes(source.status) ? source.status : 'previous',
     createdAt: source.createdAt || new Date().toISOString(),
+    schedule: normalizePlanSchedule(source.schedule),
     layoutMode: source.layoutMode === 'freeform' ? 'freeform' : 'grid',
     rows: Math.max(1, Math.min(30, Number(source.rows) || 5)),
     cols: Math.max(1, Math.min(30, Number(source.cols) || 6)),
@@ -12490,6 +12687,8 @@ function createClassRecord(name = 'Class 1') {
     todaySession: normalizeTodaySession(null),
     seatingPlans: [],
     importProfiles: [],
+    requirementPresets: [],
+    ruleOverrides: [],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
   });
@@ -12516,6 +12715,8 @@ function normalizeClassRecord(record, index = 0) {
     todaySession: normalizeTodaySession(cls.todaySession),
     seatingPlans: Array.isArray(cls.seatingPlans) ? cls.seatingPlans.map(normalizeSeatingPlan) : [],
     importProfiles: Array.isArray(cls.importProfiles) ? cls.importProfiles.map(normalizeImportProfile) : [],
+    requirementPresets: Array.isArray(cls.requirementPresets) ? cls.requirementPresets.map(normalizeRequirementPreset) : [],
+    ruleOverrides: Array.isArray(cls.ruleOverrides) ? cls.ruleOverrides.map(normalizeRuleOverride).filter(item => item.id) : [],
     guidedPractice: Boolean(cls.guidedPractice),
     guidedLessonId: String(cls.guidedLessonId || '').slice(0, 80),
     guidedCreatedAt: String(cls.guidedCreatedAt || '').slice(0, 40),
@@ -12552,6 +12753,8 @@ function snapshotCurrentClassData() {
     todaySession: normalizeTodaySession(state.todaySession),
     seatingPlans: deepClone(state.seatingPlans || []),
     importProfiles: deepClone(state.importProfiles || []),
+    requirementPresets: deepClone(state.requirementPresets || []),
+    ruleOverrides: deepClone(state.ruleOverrides || []),
     updatedAt: new Date().toISOString()
   };
 }
@@ -12585,6 +12788,8 @@ function applyClassToState(classId, { restoreGeometrySession = true } = {}) {
   state.todaySession = normalizeTodaySession(cls.todaySession);
   state.seatingPlans = deepClone(cls.seatingPlans || []);
   state.importProfiles = deepClone(cls.importProfiles || []);
+  state.requirementPresets = deepClone(cls.requirementPresets || []);
+  state.ruleOverrides = deepClone(cls.ruleOverrides || []);
   if (restoreGeometrySession) restoreFreeformGeometrySessionForCurrentClass();
   resetFreeformGeometryCache();
   ensureGrid();
@@ -12613,7 +12818,9 @@ function ensureClassSystem() {
       chartMeta: state.chartMeta,
       todaySession: state.todaySession,
       seatingPlans: state.seatingPlans,
-      importProfiles: state.importProfiles
+      importProfiles: state.importProfiles,
+      requirementPresets: state.requirementPresets,
+      ruleOverrides: state.ruleOverrides
     });
     state.classes.push(first);
     state.activeClassId = first.id;
@@ -13102,6 +13309,8 @@ function renderStudents() {
     fragment.appendChild(card);
   });
   list.appendChild(fragment);
+  window.SeatGuidanceV66?.enhanceStudentCards?.(list);
+  window.PlanningToolsV66?.refreshStudentFilters?.();
 }
 
 function renderGroupMemberPicker() {
@@ -16278,18 +16487,35 @@ async function snapshotDataForRestore(data) {
 }
 
 async function prepareExportPayload(scope = 'all') {
-  const previousIdentity = uiState.saveIdentity ? deepClone(uiState.saveIdentity) : null;
-  const plain = await addBackupManifest(exportState(scope, { advanceRevision: true }), scope);
-  const proposedIdentity = uiState.saveIdentity ? deepClone(uiState.saveIdentity) : null;
-  uiState.saveIdentity = previousIdentity;
+  const baseIdentity = uiState.saveIdentity || uiState.previewSaveIdentity ? deepClone(uiState.saveIdentity || uiState.previewSaveIdentity) : null;
+  const plain = await addBackupManifest(exportState(scope, {
+    advanceRevision: true,
+    saveIdentityBase: baseIdentity,
+    commitIdentity: false
+  }), scope);
   if (!currentSessionEncryptionKey()) {
     throw new Error('A session encryption password is required before saving or exporting app data. Use the Welcome screen or Settings > Saving to set it.');
   }
-  return { payload: await encryptText(plain, scope), saveIdentity: proposedIdentity, document: JSON.parse(plain) };
+  const document = JSON.parse(plain);
+  return {
+    payload: await encryptText(plain, scope),
+    saveIdentity: deepClone(document.saveIdentity),
+    baseIdentity,
+    document
+  };
 }
 
 function commitPreparedSave(prepared) {
-  if (prepared?.saveIdentity) uiState.saveIdentity = deepClone(prepared.saveIdentity);
+  if (!prepared?.saveIdentity) return false;
+  const proposed = prepared.saveIdentity;
+  const current = uiState.saveIdentity;
+  const proposedRevision = Math.max(0, Number(proposed.revisionNumber || 0));
+  const currentRevision = Math.max(0, Number(current?.revisionNumber || 0));
+  if (current && proposedRevision < currentRevision) return false;
+  if (current && proposedRevision === currentRevision && String(current.contentHash || '') !== String(proposed.contentHash || '')) return false;
+  uiState.saveIdentity = deepClone(proposed);
+  uiState.previewSaveIdentity = null;
+  return true;
 }
 
 async function exportPayload(scope = 'all') {
@@ -16586,6 +16812,7 @@ function restoreEntireImportedFile() {
   if (!draft || draft.parsed?.format !== SAVE_DOCUMENT_FORMAT) throw unsupportedFormatError('restore draft', 'Only a current full save can replace the complete application state.');
   const parsed = assertSupportedSaveDocument(draft.parsed, draft.sourceLabel || 'restore draft');
   uiState.saveIdentity = parsed.saveIdentity || null;
+  uiState.previewSaveIdentity = null;
   state.classes = parsed.classes.map(normalizeClassRecord);
   state.activeClassId = parsed.activeClassId;
   state.roomTemplates = (parsed.roomTemplates || []).map(normalizeRoomTemplateRecord);
@@ -16642,6 +16869,8 @@ async function applySelectiveRestore() {
   if (!draft) return;
   const source = restoreSourceClass();
   if (!source) return;
+  const rollbackSaveIdentity = uiState.saveIdentity ? deepClone(uiState.saveIdentity) : null;
+  const rollbackPreviewSaveIdentity = uiState.previewSaveIdentity ? deepClone(uiState.previewSaveIdentity) : null;
   const rollbackDocument = exportState('all');
   let snapshotCreated = false;
   try {
@@ -16656,6 +16885,8 @@ async function applySelectiveRestore() {
     let rollbackError = null;
     try {
       importStateCore(rollbackDocument);
+      uiState.saveIdentity = rollbackSaveIdentity;
+      uiState.previewSaveIdentity = rollbackPreviewSaveIdentity;
     } catch (failure) {
       rollbackError = failure;
     }
@@ -17460,6 +17691,7 @@ async function writeGoogleDriveSaveFile(options = {}) {
   const announce = options.announce !== false;
   let preparedSave = null;
   try {
+    if (!autosaveRequestStillCurrent(options)) return false;
     if (uiState.googleDriveBusy) return false;
     syncGoogleDriveInputsToSettings(document.activeElement?.id?.startsWith('saveOption') ? 'saveOptions' : 'settings');
     if (!googleDriveConfigured()) throw new Error('Google Drive is not configured for this build.');
@@ -17468,7 +17700,7 @@ async function writeGoogleDriveSaveFile(options = {}) {
       const fallbackMessage = 'Google Drive auto-save needs a fresh sign-in token. Saved an encrypted browser fallback until Google Drive saves successfully again.';
       updateGoogleDriveStatus('Google Drive auto-save is pending. Use Save to Google Drive or Load from Google Drive to refresh access.');
       setSaveFallbackWarning(fallbackMessage);
-      await writeLocalBrowserSave({ reason: 'google-drive-fallback', announce: false, preserveFallbackWarning: true });
+      await writeLocalBrowserSave({ reason: 'google-drive-fallback', announce: false, preserveFallbackWarning: true, autosaveGeneration: options.autosaveGeneration });
       return false;
     }
     uiState.googleDriveBusy = true;
@@ -17510,7 +17742,9 @@ async function writeGoogleDriveSaveFile(options = {}) {
       }
     }
     preparedSave = await prepareExportPayload('all');
+    if (!autosaveRequestStillCurrent(options)) return false;
     const saved = await uploadGoogleDriveCurrentSave(preparedSave.payload, folderId);
+    if (!autosaveRequestStillCurrent(options)) return false;
     commitPreparedSave(preparedSave);
     const now = saved.modifiedTime || new Date().toISOString();
     updateGoogleDriveSettings({
@@ -17532,15 +17766,16 @@ async function writeGoogleDriveSaveFile(options = {}) {
     if (announce) setLiveStatusMessage(`Saved encrypted copy to Google Drive: ${saved.name || 'current save'}.`);
     updateSaveSetupDismissed(true);
     updateSaveHealthPanel();
-    await writeLocalBrowserSave({ reason: 'google-drive-mirror', announce: false, preparedSave });
+    await writeLocalBrowserSave({ reason: 'google-drive-mirror', announce: false, preparedSave, autosaveGeneration: options.autosaveGeneration });
     SharedDriveCollaborationV64.captureBaseDocument(preparedSave.document, saved.id || pageSettings().googleDriveFileId || '');
     SharedDriveCollaborationV64.applyDriveCapabilities(saved.capabilities || uiState.googleDriveCapabilities);
     await SharedDriveCollaborationV64.refreshCurrentUserAccess(false);
     return true;
   } catch (err) {
+    if (!autosaveRequestStillCurrent(options)) return false;
     const fallbackMessage = `Google Drive save failed: ${err.message}. Saved an encrypted browser fallback for now. The warning will clear after the next successful Google Drive save.`;
     updateGoogleDriveStatus(`Google Drive save failed: ${err.message}`);
-    await writeLocalBrowserSave({ reason: 'google-drive-fallback', announce: false, preserveFallbackWarning: true, preparedSave });
+    await writeLocalBrowserSave({ reason: 'google-drive-fallback', announce: false, preserveFallbackWarning: true, preparedSave, autosaveGeneration: options.autosaveGeneration });
     setSaveFallbackWarning(fallbackMessage);
     if (announce || reason !== 'auto') {
       setLiveStatusMessage(fallbackMessage);
@@ -17866,12 +18101,13 @@ function forgetGoogleDriveLink() {
 }
 
 async function writeLinkedSaveFile(options = {}) {
+  if (!autosaveRequestStillCurrent(options)) return false;
   if (!CrossTabCoordinator.canWrite({ announce: options.announce !== false })) return false;
   const reason = options.reason || 'manual';
   const announce = options.announce !== false;
   if (pageSettings().preferredStorage === 'googleDrive' && googleDriveConfigured()) return writeGoogleDriveSaveFile(options);
   if (!uiState.linkedSaveHandle) {
-    if (reason === 'auto') return writeLocalBrowserSave({ reason: 'auto', announce: false });
+    if (reason === 'auto') return writeLocalBrowserSave({ reason: 'auto', announce: false, autosaveGeneration: options.autosaveGeneration });
     const proceed = await offerEncryptionBeforeFirstSave();
     if (!proceed) return false;
     if (!linkedSaveApiSupported()) return writeLocalBrowserSave({ reason: 'manual', announce: true });
@@ -17899,9 +18135,11 @@ async function writeLinkedSaveFile(options = {}) {
       });
     }
     preparedSave = await prepareExportPayload('all');
+    if (!autosaveRequestStillCurrent(options)) return false;
     const writable = await uiState.linkedSaveHandle.createWritable();
     await writable.write(new Blob([preparedSave.payload], { type: 'application/json' }));
     await writable.close();
+    if (!autosaveRequestStillCurrent(options)) return false;
     commitPreparedSave(preparedSave);
     try { uiState.linkedFileLastModified = Number((await uiState.linkedSaveHandle.getFile()).lastModified || Date.now()); }
     catch (err) { uiState.linkedFileLastModified = Date.now(); }
@@ -17919,7 +18157,7 @@ async function writeLinkedSaveFile(options = {}) {
   } catch (err) {
     uiState.linkedSaveStatus = `Linked save failed: ${err.message}`;
     const fallbackMessage = `Linked save failed: ${err.message}. Saved an encrypted browser fallback for now. The warning will clear after the next successful linked-file save.`;
-    await writeLocalBrowserSave({ reason: 'linked-file-fallback', announce: false, preserveFallbackWarning: true, preparedSave });
+    await writeLocalBrowserSave({ reason: 'linked-file-fallback', announce: false, preserveFallbackWarning: true, preparedSave, autosaveGeneration: options.autosaveGeneration });
     setSaveFallbackWarning(fallbackMessage);
     if (announce || reason !== 'auto') setLiveStatusMessage(fallbackMessage);
     updateSaveHealthPanel();
@@ -17968,6 +18206,7 @@ async function loadFromLinkedSaveFile() {
 }
 
 async function writeLocalBrowserSave(options = {}) {
+  if (!autosaveRequestStillCurrent(options)) return false;
   if (!CrossTabCoordinator.canWrite({ announce: options.announce !== false })) return false;
   const saveEpoch = uiState.browserSaveEpoch;
   const reason = options.reason || 'auto';
@@ -17978,8 +18217,9 @@ async function writeLocalBrowserSave(options = {}) {
   }
   try {
     const preparedSave = options.preparedSave || await prepareExportPayload('all');
-    if (saveEpoch !== uiState.browserSaveEpoch) return false;
+    if (!autosaveRequestStillCurrent(options) || saveEpoch !== uiState.browserSaveEpoch) return false;
     if (!await BrowserDataStore.setPrimarySave(preparedSave.payload)) throw new Error('Browser storage is unavailable or full. No local save was written. Choose a linked file, Google Drive, or download a backup.');
+    if (!autosaveRequestStillCurrent(options) || saveEpoch !== uiState.browserSaveEpoch) return false;
     commitPreparedSave(preparedSave);
     const now = new Date().toISOString();
     uiState.linkedSaveLastSignature = currentSaveSignature();
@@ -18060,7 +18300,11 @@ function maybePromptDurableSaveAfterLocalChanges() {
   });
 }
 
-function clearAutosaveSchedule({ keepDirty = false } = {}) {
+function clearAutosaveSchedule({ keepDirty = false, invalidateInFlight = true } = {}) {
+  if (invalidateInFlight) {
+    uiState.autosaveGeneration = Number(uiState.autosaveGeneration || 0) + 1;
+    uiState.browserSaveEpoch = Number(uiState.browserSaveEpoch || 0) + 1;
+  }
   clearTimeout(uiState.linkedSaveAutoTimer);
   clearTimeout(uiState.linkedSaveMaxTimer);
   uiState.linkedSaveAutoTimer = null;
@@ -18069,8 +18313,17 @@ function clearAutosaveSchedule({ keepDirty = false } = {}) {
 }
 
 function completeAutosaveCycle() {
-  clearAutosaveSchedule();
+  clearAutosaveSchedule({ invalidateInFlight: false });
   uiState.autosaveInProgress = false;
+}
+
+function autosaveRequestStillCurrent(options = {}) {
+  const expectedGeneration = Number(options.autosaveGeneration);
+  if (!Number.isFinite(expectedGeneration)) return true;
+  return expectedGeneration === Number(uiState.autosaveGeneration || 0)
+    && uiState.appReady
+    && !uiState.pageLocked
+    && !uiState.startupRecoveryPending;
 }
 
 async function runScheduledAutoSave(trigger = 'idle') {
@@ -18081,15 +18334,16 @@ async function runScheduledAutoSave(trigger = 'idle') {
     return true;
   }
   uiState.autosaveInProgress = true;
+  const autosaveGeneration = Number(uiState.autosaveGeneration || 0);
   clearTimeout(uiState.linkedSaveAutoTimer);
   clearTimeout(uiState.linkedSaveMaxTimer);
   uiState.linkedSaveAutoTimer = null;
   uiState.linkedSaveMaxTimer = null;
   let saved = false;
   try {
-    if (pageSettings().preferredStorage === 'googleDrive' && googleDriveConfigured()) saved = await writeGoogleDriveSaveFile({ reason: 'auto', announce: false, autosaveTrigger: trigger });
-    else if (uiState.linkedSaveHandle) saved = await writeLinkedSaveFile({ reason: 'auto', announce: false, autosaveTrigger: trigger });
-    else saved = await writeLocalBrowserSave({ reason: 'auto', announce: false, autosaveTrigger: trigger });
+    if (pageSettings().preferredStorage === 'googleDrive' && googleDriveConfigured()) saved = await writeGoogleDriveSaveFile({ reason: 'auto', announce: false, autosaveTrigger: trigger, autosaveGeneration });
+    else if (uiState.linkedSaveHandle) saved = await writeLinkedSaveFile({ reason: 'auto', announce: false, autosaveTrigger: trigger, autosaveGeneration });
+    else saved = await writeLocalBrowserSave({ reason: 'auto', announce: false, autosaveTrigger: trigger, autosaveGeneration });
     return saved;
   } finally {
     uiState.autosaveInProgress = false;
@@ -18764,6 +19018,46 @@ const HELP_GUIDE_SECTIONS = [
     ],
     "warnings": [
       "Browser-managed data stays in the current browser. Use Save Now with a chosen file, Download All Classes, or Download Complete Backup Package when the data needs to be safe, portable, or stored elsewhere."
+    ]
+  },
+  {
+    "id": "planning-intelligence",
+    "category": "Planning",
+    "title": "Seat Guidance, Planning History, and Advanced Tools",
+    "keywords": "valid seats live preview best seat conflict override fairness history schedule bulk requirements template library comments duplicate filters csv support bundle image shortcuts language collaboration polling",
+    "intro": "Advanced classroom tools connect the seating rules to daily placement, long-term planning, exports, and shared-file checks without changing the portable single-file workflow.",
+    "items": [
+      {
+        "title": "Show valid seats",
+        "text": "Use Valid seats on a student card or Advanced tools > Seat guidance. Green seats satisfy current required rules, yellow seats need preference review, and red seats are locked, unavailable, or create a required conflict. Hover or focus a highlighted seat for the plain-language reason."
+      },
+      {
+        "title": "Resolve or override conflicts",
+        "text": "From Seat guidance, show alternatives, move the student to the best current seat, or intentionally ignore a specific finding. Recorded overrides remain visible and can be restored later."
+      },
+      {
+        "title": "History, fairness, comparison, and schedules",
+        "text": "History & fairness summarizes repeated seats, neighbors, and room areas across the current chart and named plans. Compare two plans side by side, add plan comments, and schedule a plan as a suggestion for selected days or date ranges. Scheduled plans never replace the current chart automatically."
+      },
+      {
+        "title": "Bulk needs and roster quality",
+        "text": "Apply reusable requirements to selected students, choose preferred or excluded zones, create a together group, or keep selected students separated. Roster quality suggests possible duplicate records but never merges them automatically."
+      },
+      {
+        "title": "Shared templates, comments, and exports",
+        "text": "Export or import room-template libraries through a shared Drive folder or district repository. Seat, zone, and plan comments remain optional. Export assignments or rule findings as CSV, copy the chart as an image, print a blank room, or download a privacy-sanitized support bundle."
+      },
+      {
+        "title": "Drive checks, shortcuts, and language packs",
+        "text": "Optional Drive change checks look for newer shared-file revisions while the page is open and send them through the existing merge workflow. Shortcuts can be reassigned, and translation packs can add interface dictionaries without changing classroom data."
+      }
+    ],
+    "tips": [
+      "Use valid-seat preview before placing a student instead of waiting for Review to report a conflict.",
+      "Save named plans periodically so fairness analysis has meaningful history."
+    ],
+    "warnings": [
+      "Drive polling provides revision notices and merge assistance, not simultaneous live seat movement or cursor presence."
     ]
   },
   {
@@ -19880,7 +20174,11 @@ function exportState(scope = 'all', options = {}) {
   const activeId = scope === 'current' ? active.id : state.activeClassId;
   const activeForExport = classesToExport.find(cls => cls.id === activeId) || classesToExport[0] || active;
   const collaborationAccess = collaborationAccessDocument();
-  const saveIdentity = nextSaveIdentity({ classes: classesToExport, activeClassId: activeForExport.id, roomTemplates: state.roomTemplates || [], collaborationAccess }, { advanceRevision: options.advanceRevision === true });
+  const saveIdentity = nextSaveIdentity({ classes: classesToExport, activeClassId: activeForExport.id, roomTemplates: state.roomTemplates || [], collaborationAccess }, {
+    advanceRevision: options.advanceRevision === true,
+    baseIdentity: Object.prototype.hasOwnProperty.call(options, 'saveIdentityBase') ? options.saveIdentityBase : undefined,
+    commitIdentity: options.commitIdentity !== false
+  });
   return JSON.stringify({
     format: SAVE_DOCUMENT_FORMAT,
     app: APP_NAME,
@@ -19905,6 +20203,7 @@ function importStateCore(json) {
   assertImportTextWithinLimits(json, 'save data');
   const parsed = assertSupportedSaveDocument(JSON.parse(json), 'save data');
   uiState.saveIdentity = parsed.saveIdentity || null;
+  uiState.previewSaveIdentity = null;
   state.roomTemplates = (parsed.roomTemplates || []).map(normalizeRoomTemplateRecord);
   state.collaborationAccess = normalizeCollaborationAccess(parsed.collaborationAccess);
   uiState.pageSettings = mergeImportedPageSettings(parsed.pageSettings || {});
@@ -21756,6 +22055,8 @@ function resetInMemoryAppToFactory() {
   state.todaySession = null;
   state.seatingPlans = [];
   state.importProfiles = [];
+  state.requirementPresets = [];
+  state.ruleOverrides = [];
   uiState.pageSettings = mergePageSettings(null);
   uiState.namesOnlyLayout = uiState.pageSettings.defaultNamesOnly;
   uiState.activeSideTab = 'students';
@@ -21832,6 +22133,7 @@ function resetInMemoryAppToFactory() {
   uiState.welcomeSecurityJustCompleted = false;
   uiState.suppressEncryptionPromptUntil = 0;
   uiState.saveIdentity = null;
+  uiState.previewSaveIdentity = null;
   uiState.seatingWorker?.terminate?.();
   uiState.seatingWorker = null;
   uiState.seatingCandidates = [];
@@ -24571,7 +24873,10 @@ function appDeviceId() {
 }
 
 function nextSaveIdentity(exportedState, options = {}) {
-  const previous = uiState.saveIdentity && typeof uiState.saveIdentity === 'object' ? uiState.saveIdentity : {};
+  const suppliedBase = Object.prototype.hasOwnProperty.call(options, 'baseIdentity');
+  const fallbackIdentity = uiState.saveIdentity || uiState.previewSaveIdentity;
+  const previousSource = suppliedBase ? (options.baseIdentity || fallbackIdentity) : fallbackIdentity;
+  const previous = previousSource && typeof previousSource === 'object' ? previousSource : {};
   const advanceRevision = options.advanceRevision === true;
   const previousRevision = Math.max(0, Number(previous.revisionNumber || 0));
   const revisionNumber = advanceRevision ? previousRevision + 1 : previousRevision;
@@ -24590,7 +24895,12 @@ function nextSaveIdentity(exportedState, options = {}) {
       collaborationAccess: exportedState?.collaborationAccess || state.collaborationAccess || normalizeCollaborationAccess(null)
     }))
   };
-  if (advanceRevision) uiState.saveIdentity = identity;
+  if (advanceRevision && options.commitIdentity !== false) {
+    uiState.saveIdentity = identity;
+    uiState.previewSaveIdentity = null;
+  } else if (!uiState.saveIdentity && !suppliedBase) {
+    uiState.previewSaveIdentity = identity;
+  }
   return identity;
 }
 
@@ -34179,6 +34489,1873 @@ window.initializeClassroomSeatingPlanner = initializeApp;
 
 'use strict';
 
+window.SeatGuidanceV66 = (() => {
+  let activeStudentId = '';
+  let pinned = false;
+  let installed = false;
+  let observer = null;
+  let results = [];
+  let renderTimer = null;
+
+  function studentName(studentId) {
+    return studentDisplay(getStudent(studentId) || { id: studentId });
+  }
+
+  function resultKeyForElement(element) {
+    if (!element) return '';
+    if (state.layoutMode === 'freeform') return String(element.dataset.objectId || '');
+    return String(element.dataset.cellKey || '');
+  }
+
+  function seatElements() {
+    const grid = el('seatGrid');
+    if (!grid) return [];
+    return state.layoutMode === 'freeform'
+      ? [...grid.querySelectorAll('.freeform-object.seat[data-object-id]')]
+      : [...grid.querySelectorAll('.cell.seat[data-cell-key]')];
+  }
+
+  function affectedStudentIds(studentId, seat) {
+    const ids = new Set([String(studentId || '')]);
+    if (seat?.assignedStudentId) ids.add(String(seat.assignedStudentId));
+    return [...ids].filter(Boolean);
+  }
+
+  function findingsForStudents(findings, studentIds) {
+    const ids = new Set(studentIds.map(String));
+    return findings.filter(item => (item.studentIds || []).some(id => ids.has(String(id))));
+  }
+
+  function classifySeat(studentId, target) {
+    const student = getStudent(studentId);
+    if (!student || !target) return null;
+    const locked = Boolean(target.locked || target.manual) && String(target.assignedStudentId || '') !== String(studentId);
+    if (locked) {
+      return {
+        key: String(target.id || target.key || ''),
+        status: 'blocked',
+        score: 10000,
+        messages: ['This seat is locked.'],
+        target
+      };
+    }
+    const snapshot = snapshotAssignments();
+    const affected = affectedStudentIds(studentId, target);
+    const before = findingsForStudents(evaluateCurrentRuleViolations({ includeUnseated: false }), affected);
+    if (state.layoutMode === 'freeform') applyFreeformStudentAssignmentDirect(student, target);
+    else applyMoveOrSwap(studentId, String(target.key), true);
+    const after = findingsForStudents(evaluateCurrentRuleViolations({ includeUnseated: false }), affected);
+    restoreAssignments(snapshot);
+    const introduced = newRuleFindings(before, after);
+    const bad = introduced.filter(item => item.severity === 'bad');
+    const warnings = introduced.filter(item => item.severity !== 'bad');
+    const occupiedPenalty = target.assignedStudentId && String(target.assignedStudentId) !== String(studentId) ? 3 : 0;
+    return {
+      key: String(target.id || target.key || ''),
+      status: bad.length ? 'invalid' : warnings.length ? 'caution' : 'valid',
+      score: bad.length * 100 + warnings.length * 10 + occupiedPenalty,
+      messages: introduced.map(item => item.message),
+      target
+    };
+  }
+
+  function candidateTargets() {
+    if (state.layoutMode === 'freeform') {
+      return (state.freeformLayout?.objects || []).filter(item => item.type === 'seat').map(item => ({ ...item, key: item.id }));
+    }
+    return Object.entries(state.cells || {})
+      .filter(([, cell]) => cell?.type === 'seat')
+      .map(([key, cell]) => ({ ...cell, key, id: key, locked: Boolean(cell.manual) }));
+  }
+
+  function calculate(studentId) {
+    return candidateTargets().map(target => classifySeat(studentId, target)).filter(Boolean).sort((a, b) => a.score - b.score || a.key.localeCompare(b.key));
+  }
+
+  function statusText(result) {
+    if (!result) return '';
+    if (result.status === 'valid') return 'Meets the configured rules and needs.';
+    if (result.status === 'caution') return result.messages[0] || 'This seat breaks a preference.';
+    if (result.status === 'invalid') return result.messages[0] || 'This seat breaks a required rule.';
+    return result.messages[0] || 'This seat is unavailable.';
+  }
+
+  function ensureBanner() {
+    let banner = el('seatGuidanceBanner');
+    if (banner) return banner;
+    banner = document.createElement('section');
+    banner.id = 'seatGuidanceBanner';
+    banner.className = 'seat-guidance-banner no-print';
+    banner.hidden = true;
+    banner.innerHTML = `
+      <div class="seat-guidance-copy">
+        <strong id="seatGuidanceTitle">Seat guidance</strong>
+        <span id="seatGuidanceMessage">Choose a student to preview valid seats.</span>
+      </div>
+      <div class="button-row">
+        <button id="seatGuidanceBestBtn" type="button">Place in best seat</button>
+        <button id="seatGuidanceClearBtn" class="secondary" type="button">Clear</button>
+      </div>`;
+    document.body.appendChild(banner);
+    el('seatGuidanceBestBtn')?.addEventListener('click', () => placeBestSeat(activeStudentId));
+    el('seatGuidanceClearBtn')?.addEventListener('click', clear);
+    return banner;
+  }
+
+  function applyVisuals() {
+    const banner = ensureBanner();
+    const byKey = new Map(results.map(item => [item.key, item]));
+    seatElements().forEach(node => {
+      const result = byKey.get(resultKeyForElement(node));
+      node.classList.remove('seat-validity-valid', 'seat-validity-caution', 'seat-validity-invalid', 'seat-validity-blocked');
+      node.removeAttribute('data-seat-validity-message');
+      if (!result) return;
+      node.classList.add(`seat-validity-${result.status}`);
+      node.dataset.seatValidityMessage = statusText(result);
+      node.setAttribute('aria-description', statusText(result));
+    });
+    if (!activeStudentId) {
+      banner.hidden = true;
+      return;
+    }
+    const valid = results.filter(item => item.status === 'valid').length;
+    const caution = results.filter(item => item.status === 'caution').length;
+    const invalid = results.length - valid - caution;
+    banner.hidden = false;
+    el('seatGuidanceTitle').textContent = `Valid seats for ${studentName(activeStudentId)}`;
+    el('seatGuidanceMessage').textContent = `${valid} valid · ${caution} possible with a preference warning · ${invalid} unavailable or conflicting. Green is best, yellow needs review, and red should be avoided.`;
+    const bestButton = el('seatGuidanceBestBtn');
+    if (bestButton) bestButton.disabled = !results.some(item => item.status === 'valid');
+  }
+
+  function refreshVisualsSoon() {
+    clearTimeout(renderTimer);
+    renderTimer = setTimeout(() => {
+      if (!activeStudentId) return;
+      results = calculate(activeStudentId);
+      applyVisuals();
+    }, 20);
+  }
+
+  function show(studentId, options = {}) {
+    if (!getStudent(studentId)) return false;
+    activeStudentId = String(studentId);
+    pinned = options.pinned !== false;
+    results = calculate(activeStudentId);
+    applyVisuals();
+    setLiveStatusMessage(`Showing valid seats for ${studentName(activeStudentId)}. Green seats meet current rules; yellow seats need review; red seats conflict or are unavailable.`);
+    return true;
+  }
+
+  function clear(options = {}) {
+    activeStudentId = '';
+    pinned = false;
+    results = [];
+    seatElements().forEach(node => {
+      node.classList.remove('seat-validity-valid', 'seat-validity-caution', 'seat-validity-invalid', 'seat-validity-blocked');
+      node.removeAttribute('data-seat-validity-message');
+      node.removeAttribute('aria-description');
+    });
+    const banner = el('seatGuidanceBanner');
+    if (banner) banner.hidden = true;
+    if (options.announce !== false) setLiveStatusMessage('Seat guidance cleared.');
+  }
+
+  function bestSeatForStudent(studentId) {
+    const calculated = String(studentId) === activeStudentId && results.length ? results : calculate(studentId);
+    return calculated.find(item => item.status === 'valid') || calculated.find(item => item.status === 'caution') || null;
+  }
+
+  function placeBestSeat(studentId) {
+    const best = bestSeatForStudent(studentId);
+    if (!best) {
+      setLiveStatusMessage(`No available seat satisfies the configured requirements for ${studentName(studentId)}.`);
+      return false;
+    }
+    if (state.layoutMode === 'freeform') assignStudentToFreeformObject(studentId, best.key, true, true);
+    else assignStudentToCell(studentId, best.key, true, true);
+    clear({ announce: false });
+    setLiveStatusMessage(`${studentName(studentId)} was placed in the best currently available seat.`);
+    return true;
+  }
+
+  function ignoreFinding(findingId, reason = 'Teacher override') {
+    const id = String(findingId || '');
+    if (!id) return false;
+    state.ruleOverrides = Array.isArray(state.ruleOverrides) ? state.ruleOverrides : [];
+    if (!state.ruleOverrides.some(item => String(item.id) === id)) {
+      state.ruleOverrides.push(normalizeRuleOverride({ id, reason, createdAt: new Date().toISOString() }));
+      persistActiveClass();
+      scheduleLinkedAutoSave('rule-override');
+      renderTargeted(['rules', 'status'], { reason: 'rule-override' });
+    }
+    return true;
+  }
+
+  function injectStudentButtons(root = document) {
+    const cards = [];
+    if (root?.matches?.('.student-card[data-student-id]')) cards.push(root);
+    root?.querySelectorAll?.('.student-card[data-student-id]').forEach(card => cards.push(card));
+    cards.forEach(card => {
+      if (card.closest('#groupManagerModal') || card.querySelector('[data-show-valid-seats]')) return;
+      const actions = card.querySelector('.card-actions') || card;
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'tiny secondary';
+      button.dataset.showValidSeats = card.dataset.studentId;
+      button.textContent = 'Valid seats';
+      button.title = 'Highlight seats that satisfy this student’s configured rules and needs.';
+      actions.appendChild(button);
+    });
+  }
+
+
+
+  function installEvents() {
+    document.addEventListener('click', event => {
+      const button = event.target.closest?.('[data-show-valid-seats]');
+      if (!button) return;
+      event.preventDefault();
+      event.stopPropagation();
+      show(button.dataset.showValidSeats, { pinned: true });
+    });
+    document.addEventListener('dragstart', event => {
+      const card = event.target.closest?.('.student-card[data-student-id]');
+      if (!card || card.closest('#groupManagerModal')) return;
+      show(card.dataset.studentId, { pinned: false });
+    }, true);
+    const clearTransientGuidance = () => {
+      if (!pinned) clear({ announce: false });
+    };
+    document.addEventListener('dragend', clearTransientGuidance, true);
+    document.addEventListener('drop', clearTransientGuidance, true);
+    document.addEventListener('pointerover', event => {
+      if (!activeStudentId) return;
+      const seat = event.target.closest?.('.cell.seat[data-seat-validity-message], .freeform-object.seat[data-seat-validity-message]');
+      if (!seat) return;
+      const message = el('seatGuidanceMessage');
+      if (message) message.textContent = seat.dataset.seatValidityMessage;
+    });
+    document.addEventListener('pointerout', event => {
+      if (!activeStudentId || !event.target.closest?.('[data-seat-validity-message]')) return;
+      const message = el('seatGuidanceMessage');
+      if (message) message.textContent = 'Green seats meet current rules, yellow seats need review, and red seats conflict or are unavailable.';
+    });
+  }
+
+  function install() {
+    if (installed) return;
+    installed = true;
+    ensureBanner();
+    installEvents();
+    const grid = el('seatGrid');
+    if (grid) {
+      observer = new MutationObserver(() => {
+        if (activeStudentId) refreshVisualsSoon();
+      });
+      observer.observe(grid, { childList: true, subtree: true });
+    }
+  }
+
+  function afterReady() {
+    injectStudentButtons();
+  }
+
+  return Object.freeze({
+    install,
+    afterReady,
+    show,
+    clear,
+    calculate,
+    bestSeatForStudent,
+    placeBestSeat,
+    ignoreFinding,
+    enhanceStudentCards: injectStudentButtons,
+    refresh: refreshVisualsSoon,
+    activeStudentId: () => activeStudentId,
+    results: () => results.map(item => ({ ...item, target: undefined }))
+  });
+})();
+
+'use strict';
+
+window.PlanningToolsV66 = (() => {
+  let installed = false;
+  let activeTab = 'guidance';
+  let scheduledBannerTimer = null;
+  let seatModalObserver = null;
+
+  const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+  function planAssignmentMap(plan) {
+    const map = new Map();
+    Object.entries(plan?.cells || {}).forEach(([key, cell]) => {
+      if (cell?.assignedStudentId) map.set(String(cell.assignedStudentId), `Grid ${key}`);
+    });
+    (plan?.freeformLayout?.objects || []).forEach(object => {
+      if (object?.type === 'seat' && object.assignedStudentId) map.set(String(object.assignedStudentId), `Freeform ${object.id}`);
+    });
+    return map;
+  }
+
+  function planSeatDescriptors(plan) {
+    const descriptors = [];
+    Object.entries(plan?.cells || {}).forEach(([key, cell]) => {
+      if (cell?.type !== 'seat') return;
+      descriptors.push({ key, x: Number(cell.col) || 0, y: Number(cell.row) || 0, studentId: String(cell.assignedStudentId || '') });
+    });
+    (plan?.freeformLayout?.objects || []).forEach(object => {
+      if (object?.type !== 'seat') return;
+      descriptors.push({ key: String(object.id), x: Number(object.x) || 0, y: Number(object.y) || 0, studentId: String(object.assignedStudentId || '') });
+    });
+    return descriptors;
+  }
+
+  function historyPlans() {
+    const current = normalizeSeatingPlan({
+      id: 'current-live-chart',
+      name: 'Current live chart',
+      status: 'current',
+      createdAt: new Date().toISOString(),
+      layoutMode: state.layoutMode,
+      rows: state.rows,
+      cols: state.cols,
+      cells: state.cells,
+      freeformLayout: state.freeformLayout
+    });
+    return [current, ...(state.seatingPlans || []).filter(plan => plan.status !== 'archived').map(normalizeSeatingPlan)];
+  }
+
+  function fairnessAnalysis() {
+    const plans = historyPlans();
+    const metrics = new Map((state.students || []).map(student => [String(student.id), {
+      student,
+      observed: 0,
+      positions: new Map(),
+      neighbors: new Map(),
+      front: 0,
+      edge: 0
+    }]));
+    plans.forEach(plan => {
+      const seats = planSeatDescriptors(plan);
+      const maxY = Math.max(1, ...seats.map(seat => seat.y));
+      const maxX = Math.max(1, ...seats.map(seat => seat.x));
+      seats.filter(seat => seat.studentId).forEach(seat => {
+        const metric = metrics.get(seat.studentId);
+        if (!metric) return;
+        metric.observed += 1;
+        metric.positions.set(seat.key, (metric.positions.get(seat.key) || 0) + 1);
+        if (seat.y <= Math.max(1, maxY * 0.4)) metric.front += 1;
+        if (seat.x <= 1 || seat.y <= 1 || seat.x >= maxX || seat.y >= maxY) metric.edge += 1;
+      });
+      for (let index = 0; index < seats.length; index += 1) {
+        const first = seats[index];
+        if (!first.studentId) continue;
+        for (let next = index + 1; next < seats.length; next += 1) {
+          const second = seats[next];
+          if (!second.studentId || Math.hypot(first.x - second.x, first.y - second.y) > 1.6) continue;
+          const firstMetric = metrics.get(first.studentId);
+          const secondMetric = metrics.get(second.studentId);
+          if (firstMetric) firstMetric.neighbors.set(second.studentId, (firstMetric.neighbors.get(second.studentId) || 0) + 1);
+          if (secondMetric) secondMetric.neighbors.set(first.studentId, (secondMetric.neighbors.get(first.studentId) || 0) + 1);
+        }
+      }
+    });
+    return [...metrics.values()].map(metric => {
+      const repeatedSeat = [...metric.positions.entries()].sort((a, b) => b[1] - a[1])[0] || ['', 0];
+      const repeatedNeighbor = [...metric.neighbors.entries()].sort((a, b) => b[1] - a[1])[0] || ['', 0];
+      return {
+        studentId: String(metric.student.id),
+        name: studentDisplay(metric.student),
+        observed: metric.observed,
+        distinctSeats: metric.positions.size,
+        repeatedSeatCount: repeatedSeat[1],
+        repeatedNeighborId: repeatedNeighbor[0],
+        repeatedNeighborCount: repeatedNeighbor[1],
+        frontCount: metric.front,
+        edgeCount: metric.edge
+      };
+    }).sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  function matchingScheduledPlans(date = new Date()) {
+    const iso = date.toISOString().slice(0, 10);
+    const day = date.getDay();
+    return (state.seatingPlans || []).map(normalizeSeatingPlan).filter(plan => {
+      const schedule = plan.schedule;
+      if (!schedule.enabled || !schedule.autoSuggest) return false;
+      if (schedule.startDate && iso < schedule.startDate) return false;
+      if (schedule.endDate && iso > schedule.endDate) return false;
+      if (schedule.daysOfWeek.length && !schedule.daysOfWeek.includes(day)) return false;
+      return true;
+    });
+  }
+
+  function ensureScheduledBanner() {
+    let banner = el('scheduledPlanBanner');
+    if (banner) return banner;
+    banner = document.createElement('section');
+    banner.id = 'scheduledPlanBanner';
+    banner.className = 'scheduled-plan-banner no-print';
+    banner.hidden = true;
+    banner.innerHTML = `
+      <div><strong id="scheduledPlanBannerTitle">Scheduled seating plan available</strong><span id="scheduledPlanBannerText"></span></div>
+      <div class="button-row"><button id="applyScheduledPlanBtn" type="button">Apply</button><button id="dismissScheduledPlanBtn" class="secondary" type="button">Dismiss</button></div>`;
+    document.body.appendChild(banner);
+    el('applyScheduledPlanBtn')?.addEventListener('click', () => {
+      const planId = banner.dataset.planId;
+      if (!planId) return;
+      ClassroomWorkflowV53?.openSeatingPlans?.();
+      setTimeout(() => document.querySelector(`[data-plan-full="${cssEscape(planId)}"]`)?.click(), 50);
+      const plan = (state.seatingPlans || []).find(item => String(item.id) === String(planId));
+      if (plan) plan.schedule = { ...normalizePlanSchedule(plan.schedule), lastAppliedAt: new Date().toISOString() };
+      persistActiveClass();
+      banner.hidden = true;
+    });
+    el('dismissScheduledPlanBtn')?.addEventListener('click', () => {
+      safeStorageSet('sessionStorage', `scheduled-plan-dismissed:${banner.dataset.planId}`, new Date().toISOString().slice(0, 10));
+      banner.hidden = true;
+    });
+    return banner;
+  }
+
+  function refreshScheduledPlanBanner() {
+    clearTimeout(scheduledBannerTimer);
+    scheduledBannerTimer = setTimeout(() => {
+      const banner = ensureScheduledBanner();
+      const plan = matchingScheduledPlans()[0];
+      if (!plan || safeStorageGet('sessionStorage', `scheduled-plan-dismissed:${plan.id}`) === new Date().toISOString().slice(0, 10)) {
+        banner.hidden = true;
+        return;
+      }
+      banner.dataset.planId = plan.id;
+      el('scheduledPlanBannerTitle').textContent = `Scheduled plan: ${plan.name}`;
+      el('scheduledPlanBannerText').textContent = plan.schedule.period ? `Suggested for ${plan.schedule.period}. Review and apply when ready.` : 'Review and apply this plan when ready.';
+      banner.hidden = false;
+    }, 80);
+  }
+
+  function ensureModal() {
+    let modal = el('planningToolsModal');
+    if (modal) return modal;
+    modal = document.createElement('div');
+    modal.id = 'planningToolsModal';
+    modal.className = 'modal-backdrop';
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-labelledby', 'planningToolsTitle');
+    modal.innerHTML = `
+      <div class="modal planning-tools-modal">
+        <div class="panel-header"><div><span class="v44-modal-eyebrow">Planning and analysis</span><h2 id="planningToolsTitle">Advanced classroom tools</h2></div><button id="closePlanningToolsBtn" class="secondary mobile-compact-close" type="button" aria-label="Close">Close</button></div>
+        <div class="planning-tools-shell">
+          <nav class="planning-tools-tabs" aria-label="Advanced classroom tools">
+            <button type="button" data-planning-tab="guidance">Seat guidance</button>
+            <button type="button" data-planning-tab="history">History & fairness</button>
+            <button type="button" data-planning-tab="schedules">Schedules</button>
+            <button type="button" data-planning-tab="bulk">Bulk needs</button>
+            <button type="button" data-planning-tab="templates">Template library</button>
+            <button type="button" data-planning-tab="duplicates">Roster quality</button>
+          </nav>
+          <div id="planningToolsBody" class="planning-tools-body"></div>
+        </div>
+      </div>`;
+    document.body.appendChild(modal);
+    el('closePlanningToolsBtn')?.addEventListener('click', close);
+    modal.addEventListener('click', event => {
+      if (event.target === modal) close();
+      const tab = event.target.closest('[data-planning-tab]');
+      if (tab) setTab(tab.dataset.planningTab);
+      const show = event.target.closest('[data-guidance-student]');
+      if (show) SeatGuidanceV66.show(show.dataset.guidanceStudent, { pinned: true });
+      const best = event.target.closest('[data-best-seat-student]');
+      if (best) SeatGuidanceV66.placeBestSeat(best.dataset.bestSeatStudent);
+      const ignore = event.target.closest('[data-ignore-finding]');
+      if (ignore) {
+        SeatGuidanceV66.ignoreFinding(ignore.dataset.ignoreFinding, 'Ignored from Advanced classroom tools');
+        renderGuidance();
+      }
+      const applyPlan = event.target.closest('[data-schedule-apply-plan]');
+      if (applyPlan) applyPlanById(applyPlan.dataset.scheduleApplyPlan);
+      const saveSchedule = event.target.closest('[data-save-plan-schedule]');
+      if (saveSchedule) savePlanSchedule(saveSchedule.dataset.savePlanSchedule);
+      const removeOverride = event.target.closest('[data-remove-rule-override]');
+      if (removeOverride) {
+        state.ruleOverrides = (state.ruleOverrides || []).filter(item => String(item.id) !== String(removeOverride.dataset.removeRuleOverride));
+        persistActiveClass();
+        renderGuidance();
+      }
+      const applyPreset = event.target.closest('[data-apply-requirement-preset]');
+      if (applyPreset) applyBulkPreset(applyPreset.dataset.applyRequirementPreset);
+      const deletePreset = event.target.closest('[data-delete-requirement-preset]');
+      if (deletePreset) deleteRequirementPreset(deletePreset.dataset.deleteRequirementPreset);
+      const templateApply = event.target.closest('[data-library-template-apply]');
+      if (templateApply) applyTemplate(templateApply.dataset.libraryTemplateApply);
+      const templateComment = event.target.closest('[data-library-template-comment]');
+      if (templateComment) saveTemplateComment(templateComment.dataset.libraryTemplateComment);
+      const zoneComment = event.target.closest('[data-zone-comment-save]');
+      if (zoneComment) saveZoneComment(zoneComment.dataset.zoneCommentSave);
+    });
+    modal.addEventListener('change', event => {
+      if (event.target.matches('[data-bulk-student-toggle="all"]')) {
+        modal.querySelectorAll('[data-bulk-student-id]').forEach(input => { input.checked = event.target.checked; });
+      }
+    });
+    return modal;
+  }
+
+  function open(tab = activeTab) {
+    ensureModal().classList.add('show');
+    DialogManager.synchronize();
+    setTab(tab);
+  }
+
+  function close() {
+    el('planningToolsModal')?.classList.remove('show');
+    DialogManager.synchronize();
+  }
+
+  function setTab(tab) {
+    activeTab = ['guidance', 'history', 'schedules', 'bulk', 'templates', 'duplicates'].includes(tab) ? tab : 'guidance';
+    document.querySelectorAll('[data-planning-tab]').forEach(button => {
+      const selected = button.dataset.planningTab === activeTab;
+      button.classList.toggle('active', selected);
+      button.setAttribute('aria-selected', selected ? 'true' : 'false');
+    });
+    if (activeTab === 'guidance') renderGuidance();
+    else if (activeTab === 'history') renderHistory();
+    else if (activeTab === 'schedules') renderSchedules();
+    else if (activeTab === 'bulk') renderBulk();
+    else if (activeTab === 'templates') renderTemplates();
+    else renderDuplicates();
+  }
+
+  function renderGuidance() {
+    const body = el('planningToolsBody');
+    if (!body) return;
+    const findings = evaluateCurrentRuleViolations();
+    const studentOptions = (state.students || []).map(student => `<option value="${escapeHtml(student.id)}">${escapeHtml(studentDisplay(student))}</option>`).join('');
+    const findingsMarkup = findings.length ? findings.map(item => {
+      const studentId = item.studentIds?.[0] || '';
+      return `<article class="planning-finding ${item.severity === 'bad' ? 'bad' : 'warn'}"><div><strong>${escapeHtml(item.message)}</strong><span>${escapeHtml(item.category || 'rule')} · ${escapeHtml(item.severity)}</span></div><div class="button-row">${studentId ? `<button class="tiny secondary" type="button" data-guidance-student="${escapeHtml(studentId)}">Show valid seats</button><button class="tiny secondary" type="button" data-best-seat-student="${escapeHtml(studentId)}">Move to best seat</button>` : ''}<button class="tiny ghost" type="button" data-ignore-finding="${escapeHtml(item.id)}">Ignore this finding</button></div></article>`;
+    }).join('') : '<div class="successbox">No active seating-rule or student-need conflicts were found.</div>';
+    const overrides = (state.ruleOverrides || []).length ? `<section class="section"><h3>Recorded overrides</h3>${state.ruleOverrides.map(item => `<div class="planning-override"><span>${escapeHtml(item.id)}</span><button class="tiny secondary" type="button" data-remove-rule-override="${escapeHtml(item.id)}">Restore warning</button></div>`).join('')}</section>` : '';
+    body.innerHTML = `
+      <section class="section"><h3>Live seat-validity preview</h3><p class="muted">Choose a student to highlight every Grid or Freeform seat. Green seats meet current rules, yellow seats break a preference, and red seats are unavailable or create a required conflict.</p><div class="inline-control"><select id="planningGuidanceStudent"><option value="">Choose a student</option>${studentOptions}</select><button id="planningShowValidSeatsBtn" type="button">Show valid seats</button></div></section>
+      <section class="section"><h3>Conflict-resolution actions</h3><div class="planning-finding-list">${findingsMarkup}</div></section>${overrides}`;
+    el('planningShowValidSeatsBtn')?.addEventListener('click', () => {
+      const id = el('planningGuidanceStudent')?.value;
+      if (id) SeatGuidanceV66.show(id, { pinned: true });
+    });
+  }
+
+  function renderHistory() {
+    const body = el('planningToolsBody');
+    if (!body) return;
+    const metrics = fairnessAnalysis();
+    const rows = metrics.map(metric => {
+      const neighbor = getStudent(metric.repeatedNeighborId);
+      const repeated = metric.observed ? Math.round((metric.repeatedSeatCount / metric.observed) * 100) : 0;
+      return `<tr><td>${escapeHtml(metric.name)}</td><td>${metric.observed}</td><td>${metric.distinctSeats}</td><td>${metric.repeatedSeatCount} (${repeated}%)</td><td>${neighbor ? `${escapeHtml(studentDisplay(neighbor))} (${metric.repeatedNeighborCount})` : 'None repeated'}</td><td>${metric.frontCount}</td><td>${metric.edgeCount}</td></tr>`;
+    }).join('');
+    body.innerHTML = `
+      <section class="section"><h3>Seating-history and fairness analysis</h3><p class="muted">This report describes repeated placements across the current chart and saved named plans. It does not assign behavioral or student-quality scores.</p><div class="table-scroll"><table class="planning-table"><thead><tr><th>Student</th><th>Plans</th><th>Distinct seats</th><th>Most repeated seat</th><th>Most repeated neighbor</th><th>Front count</th><th>Edge count</th></tr></thead><tbody>${rows || '<tr><td colspan="7">No seating history is available yet.</td></tr>'}</tbody></table></div></section>
+      <section class="section"><h3>Plan comparison</h3><div class="row"><div class="field"><label for="planningCompareA">Plan A</label><select id="planningCompareA"></select></div><div class="field"><label for="planningCompareB">Plan B</label><select id="planningCompareB"></select></div></div><button id="planningComparePlansBtn" type="button">Compare visually</button><div id="planningVisualComparison" class="planning-visual-comparison"></div></section>`;
+    const options = historyPlans().map(plan => `<option value="${escapeHtml(plan.id)}">${escapeHtml(plan.name)}</option>`).join('');
+    ['planningCompareA', 'planningCompareB'].forEach(id => { if (el(id)) el(id).innerHTML = options; });
+    if (el('planningCompareB')?.options.length > 1) el('planningCompareB').selectedIndex = 1;
+    el('planningComparePlansBtn')?.addEventListener('click', renderVisualComparison);
+  }
+
+  function studentInitialsText(student) {
+    if (!student) return '';
+    const first = String(student.firstName || '').trim().charAt(0);
+    const last = String(student.lastName || '').trim().charAt(0);
+    return `${first}${last}`.toUpperCase() || String(student.nickName || student.id || '').trim().slice(0, 2).toUpperCase();
+  }
+
+  function planVisualMarkup(plan, changedStudentIds, label) {
+    const changed = new Set(changedStudentIds);
+    if (plan.layoutMode === 'freeform') {
+      const objects = (plan.freeformLayout?.objects || []).filter(object => object.type === 'seat');
+      const canvas = plan.freeformLayout?.canvas || {};
+      const width = Math.max(1, Number(canvas.width) || 1200);
+      const height = Math.max(1, Number(canvas.height) || 800);
+      return `<article class="planning-plan-preview"><h4>${escapeHtml(label)}: ${escapeHtml(plan.name)}</h4><div class="planning-mini-freeform" aria-label="${escapeHtml(label)} Freeform seating preview">${objects.map((object, index) => {
+        const studentId = String(object.assignedStudentId || '');
+        const student = getStudent(studentId);
+        const left = Math.max(0, Math.min(96, (Number(object.x || 0) / width) * 100));
+        const top = Math.max(0, Math.min(94, (Number(object.y || 0) / height) * 100));
+        const seatWidth = Math.max(3, Math.min(22, (Number(object.width || 160) / width) * 100));
+        const seatHeight = Math.max(4, Math.min(20, (Number(object.height || 100) / height) * 100));
+        return `<span class="planning-mini-seat${changed.has(studentId) ? ' changed' : ''}" style="left:${left}%;top:${top}%;width:${seatWidth}%;height:${seatHeight}%" title="${escapeHtml(student ? studentDisplay(student) : object.label || `Seat ${index + 1}`)}">${escapeHtml(student ? studentInitialsText(student) : '')}</span>`;
+      }).join('')}</div></article>`;
+    }
+    const cells = Object.entries(plan.cells || {}).filter(([, cell]) => cell?.type === 'seat');
+    const seatMap = new Map(cells.map(([key, cell]) => [`${cell.row}:${cell.col}`, { key, cell }]));
+    const rows = Math.max(1, Number(plan.rows) || 1);
+    const cols = Math.max(1, Number(plan.cols) || 1);
+    const markup = [];
+    for (let row = 1; row <= rows; row += 1) {
+      for (let col = 1; col <= cols; col += 1) {
+        const entry = seatMap.get(`${row}:${col}`);
+        if (!entry) {
+          markup.push('<span class="planning-mini-seat empty" aria-hidden="true"></span>');
+          continue;
+        }
+        const studentId = String(entry.cell.assignedStudentId || '');
+        const student = getStudent(studentId);
+        markup.push(`<span class="planning-mini-seat${changed.has(studentId) ? ' changed' : ''}" title="${escapeHtml(student ? studentDisplay(student) : `Seat ${row},${col}`)}">${escapeHtml(student ? studentInitialsText(student) : '')}</span>`);
+      }
+    }
+    return `<article class="planning-plan-preview"><h4>${escapeHtml(label)}: ${escapeHtml(plan.name)}</h4><div class="planning-mini-grid" style="--planning-cols:${cols}" aria-label="${escapeHtml(label)} Grid seating preview">${markup.join('')}</div></article>`;
+  }
+
+  function renderVisualComparison() {
+    const plans = historyPlans();
+    const a = plans.find(plan => String(plan.id) === String(el('planningCompareA')?.value));
+    const b = plans.find(plan => String(plan.id) === String(el('planningCompareB')?.value));
+    const out = el('planningVisualComparison');
+    if (!out || !a || !b) return;
+    const mapA = planAssignmentMap(a);
+    const mapB = planAssignmentMap(b);
+    const students = new Set([...mapA.keys(), ...mapB.keys()]);
+    const changes = [...students].map(id => ({ id, student: getStudent(id), from: mapA.get(id) || 'Unassigned', to: mapB.get(id) || 'Unassigned' })).filter(item => item.from !== item.to);
+    const changedIds = changes.map(item => item.id);
+    out.innerHTML = `<div class="planning-comparison-summary"><strong>${changes.length} student placement${changes.length === 1 ? '' : 's'} changed</strong><span>${escapeHtml(a.name)} compared with ${escapeHtml(b.name)}. Highlighted seats contain students whose placement changed.</span></div><div class="planning-preview-pair">${planVisualMarkup(a, changedIds, 'Plan A')}${planVisualMarkup(b, changedIds, 'Plan B')}</div>${changes.map(item => `<div class="planning-comparison-row"><strong>${escapeHtml(studentDisplay(item.student || { id: 'Unknown' }))}</strong><span>${escapeHtml(item.from)} → ${escapeHtml(item.to)}</span></div>`).join('') || '<div class="successbox">The assignments are identical.</div>'}`;
+  }
+
+  function applyPlanById(planId) {
+    const id = String(planId || '');
+    if (!id || !(state.seatingPlans || []).some(plan => String(plan.id) === id)) return false;
+    close();
+    ClassroomWorkflowV53?.openSeatingPlans?.();
+    setTimeout(() => {
+      const button = document.querySelector(`[data-plan-full="${cssEscape(id)}"]`);
+      if (button) button.click();
+      else setLiveStatusMessage('The selected seating plan could not be opened.');
+    }, 50);
+    return true;
+  }
+
+  function renderSchedules() {
+    const body = el('planningToolsBody');
+    if (!body) return;
+    const plans = (state.seatingPlans || []).map(normalizeSeatingPlan);
+    body.innerHTML = `<section class="section"><h3>Scheduled seating plans</h3><p class="muted">Schedules suggest a plan on matching days. The application never silently replaces the current chart.</p><div class="planning-schedule-list">${plans.map(plan => {
+      const days = WEEKDAYS.map((day, index) => `<label class="checkline"><input type="checkbox" data-plan-day="${index}" ${plan.schedule.daysOfWeek.includes(index) ? 'checked' : ''}> ${day}</label>`).join('');
+      return `<article class="planning-schedule-card" data-plan-schedule-card="${escapeHtml(plan.id)}"><div class="section-header-row"><div><strong>${escapeHtml(plan.name)}</strong><span>${escapeHtml(plan.reason || 'Named seating plan')}</span></div><label class="checkline"><input data-plan-schedule-enabled type="checkbox" ${plan.schedule.enabled ? 'checked' : ''}> Enabled</label></div><div class="planning-days">${days}</div><div class="row"><div class="field"><label>Start date</label><input data-plan-start-date type="date" value="${escapeHtml(plan.schedule.startDate)}"></div><div class="field"><label>End date</label><input data-plan-end-date type="date" value="${escapeHtml(plan.schedule.endDate)}"></div></div><div class="field"><label>Class period or use</label><input data-plan-period value="${escapeHtml(plan.schedule.period)}" placeholder="Period 2, Monday lab, testing day"></div><div class="field"><label>Plan comment</label><textarea data-plan-comment rows="2" maxlength="1200" placeholder="Optional context for this saved plan">${escapeHtml(plan.comment || plan.notes || '')}</textarea></div><div class="button-row"><button type="button" data-save-plan-schedule="${escapeHtml(plan.id)}">Save schedule and comment</button><button class="secondary" type="button" data-schedule-apply-plan="${escapeHtml(plan.id)}">Apply now</button></div></article>`;
+    }).join('') || '<div class="restore-empty">Save a named seating plan before adding a schedule.</div>'}</div></section>`;
+  }
+
+  function savePlanSchedule(planId) {
+    const plan = (state.seatingPlans || []).find(item => String(item.id) === String(planId));
+    const card = document.querySelector(`[data-plan-schedule-card="${cssEscape(planId)}"]`);
+    if (!plan || !card) return;
+    plan.comment = String(card.querySelector('[data-plan-comment]')?.value || '').trim().slice(0, 1200);
+    plan.notes = plan.comment;
+    plan.schedule = normalizePlanSchedule({
+      enabled: card.querySelector('[data-plan-schedule-enabled]')?.checked,
+      daysOfWeek: [...card.querySelectorAll('[data-plan-day]:checked')].map(input => Number(input.dataset.planDay)),
+      startDate: card.querySelector('[data-plan-start-date]')?.value,
+      endDate: card.querySelector('[data-plan-end-date]')?.value,
+      period: card.querySelector('[data-plan-period]')?.value,
+      autoSuggest: true,
+      lastAppliedAt: plan.schedule?.lastAppliedAt
+    });
+    persistActiveClass();
+    scheduleLinkedAutoSave('plan-schedule');
+    refreshScheduledPlanBanner();
+    setLiveStatusMessage(`Schedule saved for “${plan.name}”.`);
+  }
+
+  function builtInPresets() {
+    return [
+      normalizeRequirementPreset({ id: 'builtin-front', name: 'Prefer front', requirements: { front: 'prefer' } }),
+      normalizeRequirementPreset({ id: 'builtin-near-teacher', name: 'Near teacher', requirements: { nearTeacher: true } }),
+      normalizeRequirementPreset({ id: 'builtin-away-door', name: 'Away from door', requirements: { awayDoor: true } }),
+      normalizeRequirementPreset({ id: 'builtin-away-window', name: 'Away from window', requirements: { awayWindow: true } }),
+      normalizeRequirementPreset({ id: 'builtin-aisle', name: 'Aisle access', requirements: { aisle: true } }),
+      normalizeRequirementPreset({ id: 'builtin-ada', name: 'Accessibility area required', requirements: { ada: true } })
+    ];
+  }
+
+  function renderBulk() {
+    const body = el('planningToolsBody');
+    if (!body) return;
+    const presets = [...builtInPresets(), ...(state.requirementPresets || []).map(normalizeRequirementPreset)];
+    const studentRows = (state.students || []).map(student => `<label class="bulk-student-row"><input type="checkbox" data-bulk-student-id="${escapeHtml(student.id)}"><span>${escapeHtml(studentDisplay(student))}</span></label>`).join('');
+    body.innerHTML = `
+      <section class="section"><h3>Choose students</h3><label class="checkline"><input type="checkbox" data-bulk-student-toggle="all"> Select all active students</label><div class="bulk-student-list">${studentRows}</div></section>
+      <section class="section"><h3>Apply a requirement preset</h3><div class="planning-preset-grid">${presets.map(preset => `<article class="planning-preset-card"><strong>${escapeHtml(preset.name)}</strong><span>${escapeHtml(requirementSummary(preset.requirements))}</span><div class="button-row"><button class="tiny secondary" type="button" data-apply-requirement-preset="${escapeHtml(preset.id)}">Apply</button>${preset.id.startsWith('builtin-') ? '' : `<button class="tiny danger" type="button" data-delete-requirement-preset="${escapeHtml(preset.id)}">Delete</button>`}</div></article>`).join('')}</div></section>
+      <section class="section"><h3>Create a reusable preset</h3><div class="field"><label for="bulkPresetName">Preset name</label><input id="bulkPresetName" maxlength="80"></div>${requirementsEditorMarkup('bulk')}<div class="button-row"><button id="applyBulkRequirementsBtn" type="button">Apply these needs</button><button id="saveRequirementPresetBtn" class="secondary" type="button">Save as preset</button><button id="createBulkGroupRuleBtn" class="secondary" type="button">Create group rule</button></div></section>`;
+    el('applyBulkRequirementsBtn')?.addEventListener('click', () => applyBulkRequirements(readRequirementsEditor('bulk')));
+    el('saveRequirementPresetBtn')?.addEventListener('click', saveRequirementPreset);
+    el('createBulkGroupRuleBtn')?.addEventListener('click', createBulkGroupRule);
+  }
+
+  function selectedBulkStudentIds() {
+    return [...document.querySelectorAll('[data-bulk-student-id]:checked')].map(input => String(input.dataset.bulkStudentId));
+  }
+
+  function requirementsEditorMarkup(prefix) {
+    const zoneOptions = (state.zones || []).map(zone => `<option value="${escapeHtml(zone.id)}">${escapeHtml(zone.name)}</option>`).join('');
+    return `<div class="requirements-grid"><div class="field"><label for="${prefix}Front">Front</label><select id="${prefix}Front"><option value="none">No front requirement</option><option value="prefer">Prefer front</option><option value="require">Require front</option></select></div><div class="field"><label for="${prefix}Side">Side</label><select id="${prefix}Side"><option value="none">No side preference</option><option value="left">Prefer left</option><option value="right">Prefer right</option></select></div><label class="checkline"><input id="${prefix}NearTeacher" type="checkbox"> Near teacher</label><label class="checkline"><input id="${prefix}Aisle" type="checkbox"> Aisle access</label><label class="checkline"><input id="${prefix}Ada" type="checkbox"> Accessibility area</label><label class="checkline"><input id="${prefix}AwayDoor" type="checkbox"> Away from door</label><label class="checkline"><input id="${prefix}AwayWindow" type="checkbox"> Away from window</label><div class="field"><label for="${prefix}PreferredZones">Preferred zones</label><select id="${prefix}PreferredZones" multiple>${zoneOptions}</select></div><div class="field"><label for="${prefix}ExcludedZones">Excluded zones</label><select id="${prefix}ExcludedZones" multiple>${zoneOptions}</select></div><label class="checkline"><input id="${prefix}SeparateSelected" type="checkbox"> Keep the selected students separated from one another</label></div>`;
+  }
+
+  function readRequirementsEditor(prefix) {
+    const requirements = normalizeStudent({ requirements: {
+      front: el(`${prefix}Front`)?.value,
+      side: el(`${prefix}Side`)?.value,
+      nearTeacher: el(`${prefix}NearTeacher`)?.checked,
+      aisle: el(`${prefix}Aisle`)?.checked,
+      ada: el(`${prefix}Ada`)?.checked,
+      awayDoor: el(`${prefix}AwayDoor`)?.checked,
+      awayWindow: el(`${prefix}AwayWindow`)?.checked,
+      preferredZoneIds: selectedValues(el(`${prefix}PreferredZones`)),
+      excludedZoneIds: selectedValues(el(`${prefix}ExcludedZones`))
+    } }).requirements;
+    requirements.separateSelected = Boolean(el(`${prefix}SeparateSelected`)?.checked);
+    return requirements;
+  }
+
+  function requirementSummary(requirements) {
+    const req = normalizeStudent({ requirements }).requirements;
+    const parts = [];
+    if (req.front !== 'none') parts.push(req.front === 'require' ? 'Require front' : 'Prefer front');
+    if (req.side !== 'none') parts.push(`Prefer ${req.side}`);
+    if (req.nearTeacher) parts.push('Near teacher');
+    if (req.aisle) parts.push('Aisle');
+    if (req.ada) parts.push('Accessibility');
+    if (req.awayDoor) parts.push('Away door');
+    if (req.awayWindow) parts.push('Away window');
+    if (req.preferredZoneIds.length) parts.push(`${req.preferredZoneIds.length} preferred zone${req.preferredZoneIds.length === 1 ? '' : 's'}`);
+    if (req.excludedZoneIds.length) parts.push(`${req.excludedZoneIds.length} excluded zone${req.excludedZoneIds.length === 1 ? '' : 's'}`);
+    if (requirements?.separateSelected) parts.push('Separate selected students');
+    return parts.join(', ') || 'No requirements';
+  }
+
+  function applyBulkRequirements(requirements) {
+    const ids = new Set(selectedBulkStudentIds());
+    if (!ids.size) return setLiveStatusMessage('Select at least one student first.');
+    pushUndoSnapshot('Before bulk student needs update');
+    const requested = deepClone(requirements);
+    const separateSelected = Boolean(requested.separateSelected);
+    delete requested.separateSelected;
+    state.students.forEach(student => {
+      if (!ids.has(String(student.id))) return;
+      const existing = effectiveStudentRequirements(student);
+      student.requirements = { ...existing, ...deepClone(requested) };
+      if (separateSelected) {
+        student.requirements.minDistanceStudentIds = [...new Set([...(existing.minDistanceStudentIds || []), ...[...ids].filter(id => id !== String(student.id))])];
+      }
+    });
+    persistActiveClass();
+    renderTargeted(['roster', 'rules', 'status'], { reason: 'bulk-requirements' });
+    scheduleLinkedAutoSave('bulk-requirements');
+    setLiveStatusMessage(`Updated seating needs for ${ids.size} student${ids.size === 1 ? '' : 's'}.`);
+  }
+
+  function saveRequirementPreset() {
+    const name = String(el('bulkPresetName')?.value || '').trim();
+    if (!name) return setLiveStatusMessage('Enter a preset name first.');
+    state.requirementPresets = Array.isArray(state.requirementPresets) ? state.requirementPresets : [];
+    state.requirementPresets.push(normalizeRequirementPreset({ name, requirements: readRequirementsEditor('bulk') }, state.requirementPresets.length));
+    persistActiveClass();
+    renderBulk();
+  }
+
+  function applyBulkPreset(presetId) {
+    const preset = [...builtInPresets(), ...(state.requirementPresets || [])].find(item => String(item.id) === String(presetId));
+    if (preset) applyBulkRequirements(preset.requirements);
+  }
+
+  function deleteRequirementPreset(presetId) {
+    state.requirementPresets = (state.requirementPresets || []).filter(item => String(item.id) !== String(presetId));
+    persistActiveClass();
+    renderBulk();
+  }
+
+  function createBulkGroupRule() {
+    const ids = selectedBulkStudentIds();
+    if (!ids.length) return setLiveStatusMessage('Select at least one student first.');
+    const name = String(el('bulkPresetName')?.value || '').trim() || `Bulk group ${state.groups.length + 1}`;
+    addGroup({ name, type: 'together', priority: 6, studentIds: ids, color: defaultGroupColor(state.groups.length), zoneId: '' });
+    renderBulk();
+  }
+
+  function renderTemplates() {
+    const body = el('planningToolsBody');
+    if (!body) return;
+    const templates = (state.roomTemplates || []).map(template => `<article class="planning-template-card"><div><strong>${escapeHtml(template.name)}</strong><span>${template.rows} × ${template.cols} · ${escapeHtml(template.layoutMode)}${template.librarySource ? ` · ${escapeHtml(template.librarySource)}` : ''}</span><div class="field"><label>Template comment</label><textarea rows="2" maxlength="500" data-template-description="${escapeHtml(template.id)}">${escapeHtml(template.description || '')}</textarea></div></div><div class="button-row"><button class="tiny secondary" type="button" data-library-template-apply="${escapeHtml(template.id)}">Apply</button><button class="tiny ghost" type="button" data-library-template-comment="${escapeHtml(template.id)}">Save comment</button></div></article>`).join('') || '<div class="restore-empty">No room templates are saved yet.</div>';
+    const zones = (state.zones || []).map(zone => `<article class="planning-zone-comment-card"><div><strong>${escapeHtml(zone.name)}</strong><span>Comment stored with this class and shared room templates.</span></div><textarea rows="2" maxlength="1200" data-zone-comment-input="${escapeHtml(zone.id)}" aria-label="Comment for ${escapeHtml(zone.name)}">${escapeHtml(zone.comment || '')}</textarea><button class="tiny secondary" type="button" data-zone-comment-save="${escapeHtml(zone.id)}">Save zone comment</button></article>`).join('') || '<div class="restore-empty">Create a zone before adding zone comments.</div>';
+    body.innerHTML = `<section class="section"><h3>Shared template library</h3><p class="muted">Export this library file to a shared Drive folder or district repository. Other teachers can import the same file without a server.</p><div class="button-row"><button id="exportTemplateLibraryBtn" type="button">Export library</button><button id="importTemplateLibraryBtn" class="secondary" type="button">Import library file</button><input id="templateLibraryFileInput" type="file" accept="application/json,.json" aria-label="Choose room-template library file" hidden></div><div class="planning-template-list">${templates}</div></section><section class="section"><h3>Zone comments</h3><p class="muted">Use zone comments for instructional intent, equipment, accessibility, or room reminders. They do not change seating rules.</p><div class="planning-zone-comment-list">${zones}</div></section>`;
+    el('exportTemplateLibraryBtn')?.addEventListener('click', exportTemplateLibrary);
+    el('importTemplateLibraryBtn')?.addEventListener('click', () => el('templateLibraryFileInput')?.click());
+    el('templateLibraryFileInput')?.addEventListener('change', event => void importTemplateLibrary(event.target.files?.[0]));
+  }
+
+  function exportTemplateLibrary() {
+    const payload = {
+      format: 'classroom-seating-planner-template-library-v1',
+      app: APP_NAME,
+      version: APP_REVISION,
+      dataSchemaVersion: DATA_SCHEMA_VERSION,
+      exportedAt: new Date().toISOString(),
+      source: activeClassName(),
+      templates: (state.roomTemplates || []).map(normalizeRoomTemplateRecord)
+    };
+    downloadText(`classroom-room-template-library-${new Date().toISOString().slice(0, 10)}.json`, JSON.stringify(payload, null, 2), 'application/json');
+  }
+
+  async function importTemplateLibrary(file) {
+    if (!file) return;
+    try {
+      const text = await readTextFileWithinLimits(file, 'room-template library', IMPORT_LIMITS.saveBytes);
+      const payload = JSON.parse(text);
+      if (payload?.format !== 'classroom-seating-planner-template-library-v1' || !Array.isArray(payload.templates)) throw new Error('This is not a supported room-template library.');
+      const existing = new Map((state.roomTemplates || []).map(item => [String(item.id), normalizeRoomTemplateRecord(item)]));
+      payload.templates.forEach((item, index) => {
+        const template = normalizeRoomTemplateRecord({ ...item, librarySource: payload.source || file.name, shared: true }, index);
+        if (existing.has(template.id)) template.id = uid('room-template');
+        existing.set(template.id, template);
+      });
+      state.roomTemplates = [...existing.values()].slice(0, 200);
+      scheduleLinkedAutoSave('template-library-import');
+      renderTemplates();
+      setLiveStatusMessage(`Imported ${payload.templates.length} shared room template${payload.templates.length === 1 ? '' : 's'}.`);
+    } catch (error) {
+      setLiveStatusMessage(`Template library import failed: ${error.message}`);
+    } finally {
+      if (el('templateLibraryFileInput')) el('templateLibraryFileInput').value = '';
+    }
+  }
+
+  function applyTemplate(templateId) {
+    const button = document.querySelector(`[data-apply-room-template="${cssEscape(templateId)}"]`);
+    if (button) button.click();
+    else {
+      const template = (state.roomTemplates || []).find(item => String(item.id) === String(templateId));
+      if (!template) return;
+      pushUndoSnapshot('Before applying shared room template');
+      state.rows = template.rows;
+      state.cols = template.cols;
+      state.cells = normalizeCellsRecord(deepClone(template.cells));
+      state.layoutMode = template.layoutMode;
+      state.freeformLayout = normalizeFreeformLayout(deepClone(template.freeformLayout));
+      state.zones = deepClone(template.zones || []);
+      state.customObjects = deepClone(template.customObjects || []);
+      renderAll();
+    }
+    close();
+  }
+
+  function saveTemplateComment(templateId) {
+    const template = (state.roomTemplates || []).find(item => String(item.id) === String(templateId));
+    const input = document.querySelector(`[data-template-description="${cssEscape(templateId)}"]`);
+    if (!template || !input) return;
+    template.description = String(input.value || '').trim().slice(0, 500);
+    persistActiveClass();
+    scheduleLinkedAutoSave('template-comment');
+    setLiveStatusMessage(`Comment saved for room template “${template.name}”.`);
+  }
+
+  function saveZoneComment(zoneId) {
+    const zone = (state.zones || []).find(item => String(item.id) === String(zoneId));
+    const input = document.querySelector(`[data-zone-comment-input="${cssEscape(zoneId)}"]`);
+    if (!zone || !input) return;
+    zone.comment = String(input.value || '').trim().slice(0, 1200);
+    persistActiveClass();
+    scheduleLinkedAutoSave('zone-comment');
+    setLiveStatusMessage(`Comment saved for zone “${zone.name}”.`);
+  }
+
+  function normalizedName(student) {
+    return `${student.firstName || ''} ${student.lastName || ''}`.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+  }
+
+  function levenshtein(a, b) {
+    const previous = Array.from({ length: b.length + 1 }, (_, index) => index);
+    for (let i = 1; i <= a.length; i += 1) {
+      let diagonal = previous[0];
+      previous[0] = i;
+      for (let j = 1; j <= b.length; j += 1) {
+        const above = previous[j];
+        previous[j] = Math.min(previous[j] + 1, previous[j - 1] + 1, diagonal + (a[i - 1] === b[j - 1] ? 0 : 1));
+        diagonal = above;
+      }
+    }
+    return previous[b.length];
+  }
+
+  function duplicateSuggestions() {
+    const students = state.students || [];
+    const pairs = [];
+    for (let i = 0; i < students.length; i += 1) {
+      const first = normalizedName(students[i]);
+      if (!first) continue;
+      for (let j = i + 1; j < students.length; j += 1) {
+        const second = normalizedName(students[j]);
+        if (!second) continue;
+        const distance = levenshtein(first, second);
+        const sameId = students[i].id && String(students[i].id) === String(students[j].id);
+        const sameSource = students[i].sourceUserId && String(students[i].sourceUserId) === String(students[j].sourceUserId);
+        if (sameId || sameSource || first === second || (Math.max(first.length, second.length) >= 6 && distance <= 2)) pairs.push({ first: students[i], second: students[j], distance, sameId, sameSource });
+      }
+    }
+    return pairs;
+  }
+
+  function renderDuplicates() {
+    const body = el('planningToolsBody');
+    if (!body) return;
+    const suggestions = duplicateSuggestions();
+    body.innerHTML = `<section class="section"><h3>Duplicate-detection suggestions</h3><p class="muted">Suggestions are based on matching IDs, source identifiers, exact normalized names, or very similar names. Nothing is merged automatically.</p><div class="planning-duplicate-list">${suggestions.map(item => `<article class="planning-duplicate-card"><strong>${escapeHtml(studentDisplay(item.first))} ↔ ${escapeHtml(studentDisplay(item.second))}</strong><span>${item.sameId ? 'Matching student ID' : item.sameSource ? 'Matching source-system ID' : item.distance === 0 ? 'Matching normalized name' : `Names differ by ${item.distance} character${item.distance === 1 ? '' : 's'}`}</span><div class="button-row"><button class="tiny secondary" type="button" data-edit-student-id="${escapeHtml(item.first.id)}">Review first</button><button class="tiny secondary" type="button" data-edit-student-id="${escapeHtml(item.second.id)}">Review second</button></div></article>`).join('') || '<div class="successbox">No likely duplicate roster records were found.</div>'}</div></section>`;
+  }
+
+  function ensureSeatCommentEditor() {
+    const modal = el('seatEditModal');
+    const body = modal?.querySelector('.modal-body');
+    if (!body || el('seatCommentSection')) return;
+    const section = document.createElement('section');
+    section.id = 'seatCommentSection';
+    section.className = 'section';
+    section.innerHTML = '<h3>Seat comment</h3><div class="field"><label for="seatCommentInput">Optional comment for this seat</label><textarea id="seatCommentInput" rows="3" maxlength="1200" placeholder="Instructional use, equipment note, or room-specific reminder"></textarea></div><button id="saveSeatCommentBtn" class="secondary" type="button">Save comment</button>';
+    body.appendChild(section);
+    el('saveSeatCommentBtn')?.addEventListener('click', saveSeatComment);
+  }
+
+  function populateSeatComment() {
+    ensureSeatCommentEditor();
+    const input = el('seatCommentInput');
+    if (!input) return;
+    const obj = activeSeatEditFreeformObject();
+    const cell = uiState.activeSeatEditCellKey ? state.cells[uiState.activeSeatEditCellKey] : null;
+    input.value = String(obj?.comment || cell?.comment || '');
+    input.disabled = Boolean(uiState.activeSeatEditBatchCellKeys?.length || uiState.activeSeatEditBatchFreeformObjectIds?.length);
+  }
+
+  function saveSeatComment() {
+    const text = String(el('seatCommentInput')?.value || '').trim().slice(0, 1200);
+    const obj = activeSeatEditFreeformObject();
+    const cell = uiState.activeSeatEditCellKey ? state.cells[uiState.activeSeatEditCellKey] : null;
+    if (obj) {
+      obj.comment = text;
+      mirrorFreeformSeatToGrid(obj, { clearStudentDuplicates: false });
+    } else if (cell) {
+      cell.comment = text;
+      mirrorLinkedFreeformSeatsFromGrid(uiState.activeSeatEditCellKey);
+    }
+    persistActiveClass();
+    scheduleLinkedAutoSave('seat-comment');
+    setLiveStatusMessage('Seat comment saved.');
+  }
+
+  function installSeatCommentObserver() {
+    ensureSeatCommentEditor();
+    const modal = el('seatEditModal');
+    if (!modal || seatModalObserver) return;
+    seatModalObserver = new MutationObserver(() => {
+      if (modal.classList.contains('show')) populateSeatComment();
+    });
+    seatModalObserver.observe(modal, { attributes: true, attributeFilter: ['class'] });
+  }
+
+  function ensureStudentFilters() {
+    const list = el('studentList');
+    if (!list || el('studentAdvancedFilters')) return;
+    const filters = document.createElement('div');
+    filters.id = 'studentAdvancedFilters';
+    filters.className = 'student-advanced-filters';
+    filters.innerHTML = '<label class="checkline"><input type="checkbox" value="unseated"> Unseated</label><label class="checkline"><input type="checkbox" value="conflict"> Rule conflict</label><label class="checkline"><input type="checkbox" value="notes"> Notes</label><label class="checkline"><input type="checkbox" value="locked"> Locked</label><label class="checkline"><input type="checkbox" value="absent"> Absent today</label><button id="clearStudentAdvancedFiltersBtn" class="tiny secondary" type="button">Clear filters</button>';
+    list.parentElement?.insertBefore(filters, list);
+    filters.addEventListener('change', applyStudentFilters);
+    el('clearStudentAdvancedFiltersBtn')?.addEventListener('click', () => {
+      filters.querySelectorAll('input').forEach(input => { input.checked = false; });
+      applyStudentFilters();
+    });
+  }
+
+  function applyStudentFilters() {
+    const cards = [...document.querySelectorAll('.student-card[data-student-id]')];
+    const filters = new Set([...document.querySelectorAll('#studentAdvancedFilters input:checked')].map(input => input.value));
+    if (!filters.size) {
+      cards.forEach(card => { card.hidden = false; });
+      return;
+    }
+    const assigned = filters.has('unseated') ? assignedStudentIds() : new Set();
+    const conflicts = filters.has('conflict')
+      ? new Set(evaluateCurrentRuleViolations().flatMap(item => item.studentIds || []).map(String))
+      : new Set();
+    const locked = filters.has('locked')
+      ? new Set(Object.values(state.cells || {}).filter(cell => cell.manual && cell.assignedStudentId).map(cell => String(cell.assignedStudentId)))
+      : new Set();
+    if (filters.has('locked')) {
+      (state.freeformLayout?.objects || []).filter(object => object.type === 'seat' && object.locked && object.assignedStudentId).forEach(object => locked.add(String(object.assignedStudentId)));
+    }
+    const absent = filters.has('absent') ? new Set((state.todaySession?.absentStudentIds || []).map(String)) : new Set();
+    cards.forEach(card => {
+      const student = filters.has('notes') ? getStudent(card.dataset.studentId) : null;
+      const id = String(card.dataset.studentId);
+      const notes = Boolean(student?.notesPrivate || student?.notesSubstitute || student?.notesPublic);
+      const visible = (!filters.has('unseated') || !assigned.has(id))
+        && (!filters.has('conflict') || conflicts.has(id))
+        && (!filters.has('notes') || notes)
+        && (!filters.has('locked') || locked.has(id))
+        && (!filters.has('absent') || absent.has(id));
+      card.hidden = !visible;
+    });
+  }
+
+  function installEntryPoint() {
+    let button = el('openPlanningToolsBtn');
+    if (!button) {
+      button = document.createElement('button');
+      button.id = 'openPlanningToolsBtn';
+      button.type = 'button';
+      button.className = 'secondary';
+      button.textContent = 'Advanced tools';
+      button.title = 'Open live seat guidance, fairness analysis, schedules, bulk needs, template libraries, and roster-quality tools.';
+      const moreMenu = el('v4MoreMenu');
+      if (moreMenu) moreMenu.appendChild(button);
+      else document.querySelector('.center-panel > .panel-header .button-row')?.appendChild(button);
+    }
+    button.addEventListener('click', () => open());
+  }
+
+  function install() {
+    if (installed) return;
+    installed = true;
+    ensureModal();
+    ensureScheduledBanner();
+    installSeatCommentObserver();
+    document.addEventListener('click', event => {
+      if (event.target.closest('#openPlanningToolsBtn')) open();
+    });
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && el('planningToolsModal')?.classList.contains('show')) close();
+    });
+  }
+
+  function refreshStudentFilters() {
+    ensureStudentFilters();
+    applyStudentFilters();
+    if (activeTab === 'guidance' && el('planningToolsModal')?.classList.contains('show')) renderGuidance();
+  }
+
+  function afterReady() {
+    installEntryPoint();
+    refreshStudentFilters();
+    refreshScheduledPlanBanner();
+  }
+
+  return Object.freeze({
+    install,
+    afterReady,
+    open,
+    close,
+    setTab,
+    fairnessAnalysis,
+    matchingScheduledPlans,
+    refreshScheduledPlanBanner,
+    duplicateSuggestions,
+    refreshStudentFilters,
+    exportTemplateLibrary
+  });
+})();
+
+'use strict';
+
+window.ExportSupportV66 = (() => {
+  let installed = false;
+
+  function csvCell(value) {
+    let text = String(value ?? '');
+    if (/^[\t\r\n ]*[=+\-@]/.test(text)) text = `'${text}`;
+    return /[",\n\r]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
+  }
+
+  function csvText(headers, rows) {
+    return [headers, ...rows].map(row => row.map(csvCell).join(',')).join('\r\n');
+  }
+
+  function currentAssignmentRows() {
+    const lookups = {
+      zones: new Map((state.zones || []).map(zone => [String(zone.id), zone])),
+      groups: new Map((state.groups || []).map(group => [String(group.id), group]))
+    };
+    const rows = [];
+    if (state.layoutMode === 'freeform') {
+      (state.freeformLayout?.objects || []).filter(object => object.type === 'seat').forEach((object, index) => {
+        const student = getStudent(object.assignedStudentId);
+        rows.push([
+          activeClassName(),
+          'Freeform',
+          object.label || `Seat ${index + 1}`,
+          student?.id || '',
+          student ? studentDisplay(student) : '',
+          object.locked ? 'Yes' : 'No',
+          (object.zoneIds || []).map(id => lookups.zones.get(String(id))?.name || id).join('; '),
+          (object.anchorGroupIds || []).map(id => lookups.groups.get(String(id))?.name || id).join('; '),
+          object.comment || ''
+        ]);
+      });
+    } else {
+      Object.entries(state.cells || {}).filter(([, cell]) => cell.type === 'seat').sort(compareGridCellEntries).forEach(([key, cell]) => {
+        const student = getStudent(cell.assignedStudentId);
+        rows.push([
+          activeClassName(),
+          'Grid',
+          `Seat ${cell.row},${cell.col} (${key})`,
+          student?.id || '',
+          student ? studentDisplay(student) : '',
+          cell.manual ? 'Yes' : 'No',
+          (cell.zoneIds || []).map(id => lookups.zones.get(String(id))?.name || id).join('; '),
+          (cell.anchorGroupIds || []).map(id => lookups.groups.get(String(id))?.name || id).join('; '),
+          cell.comment || ''
+        ]);
+      });
+    }
+    return rows;
+  }
+
+  function exportAssignmentsCsv() {
+    const headers = ['Class', 'Layout', 'Seat', 'Student ID', 'Student', 'Locked', 'Zones', 'Reserved groups', 'Seat comment'];
+    downloadText(`seat-assignments-${new Date().toISOString().slice(0, 10)}.csv`, csvText(headers, currentAssignmentRows()), 'text/csv');
+    setLiveStatusMessage('Current seat assignments exported as CSV.');
+  }
+
+  function exportViolationsCsv() {
+    const headers = ['Class', 'Severity', 'Category', 'Finding ID', 'Students', 'Message'];
+    const rows = evaluateCurrentRuleViolations().map(item => [
+      activeClassName(),
+      item.severity,
+      item.category,
+      item.id,
+      (item.studentIds || []).map(id => studentDisplay(getStudent(id) || { id })).join('; '),
+      item.message
+    ]);
+    downloadText(`seating-rule-findings-${new Date().toISOString().slice(0, 10)}.csv`, csvText(headers, rows), 'text/csv');
+    setLiveStatusMessage('Current seating-rule findings exported as CSV.');
+  }
+
+  function sanitizedSupportBundle() {
+    const settings = pageSettings();
+    const audit = typeof AppAudit?.read === 'function' ? AppAudit.read() : [];
+    return {
+      format: 'classroom-seating-planner-support-bundle-v1',
+      generatedAt: new Date().toISOString(),
+      application: {
+        name: APP_NAME,
+        version: APP_REVISION,
+        dataSchemaVersion: DATA_SCHEMA_VERSION,
+        encryptionEnvelopeVersion: ENCRYPTION_ENVELOPE_VERSION,
+        environment: APP_CONFIG.environment
+      },
+      browser: {
+        userAgent: navigator.userAgent,
+        language: navigator.language,
+        platform: navigator.platform,
+        online: navigator.onLine,
+        viewport: { width: window.innerWidth, height: window.innerHeight, pixelRatio: window.devicePixelRatio }
+      },
+      workspace: {
+        classCount: state.classes?.length || 0,
+        activeStudentCount: state.students?.length || 0,
+        archivedStudentCount: state.rosterArchive?.length || 0,
+        groupCount: state.groups?.length || 0,
+        zoneCount: state.zones?.length || 0,
+        layoutMode: state.layoutMode,
+        grid: { rows: state.rows, cols: state.cols, cellCount: Object.keys(state.cells || {}).length },
+        freeformObjectCount: state.freeformLayout?.objects?.length || 0,
+        namedPlanCount: state.seatingPlans?.length || 0,
+        templateCount: state.roomTemplates?.length || 0,
+        ruleFindingCounts: evaluateCurrentRuleViolations().reduce((counts, item) => {
+          counts[item.severity] = (counts[item.severity] || 0) + 1;
+          return counts;
+        }, {})
+      },
+      capabilities: {
+        indexedDb: Boolean(window.indexedDB),
+        fileSystemAccess: Boolean(window.showSaveFilePicker),
+        clipboardImage: Boolean(navigator.clipboard && window.ClipboardItem),
+        serviceWorker: Boolean(navigator.serviceWorker),
+        googleDriveConnected: Boolean(googleDriveConfig().accessToken),
+        linkedSaveConfigured: Boolean(uiState.linkedSaveHandle)
+      },
+      safeSettings: {
+        theme: settings.theme,
+        defaultNamesOnly: settings.defaultNamesOnly,
+        autoSaveMinutes: settings.autoSaveMinutes,
+        freeformSnapToGrid: settings.freeformSnapToGrid,
+        freeformMagneticGuides: settings.freeformMagneticGuides,
+        reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      },
+      recentActivity: (Array.isArray(audit) ? audit : []).slice(-40).map(item => ({
+        time: item.time || item.createdAt || '',
+        type: item.type || item.action || '',
+        status: item.status || '',
+        message: String(item.message || item.summary || '').slice(0, 500)
+      })),
+      privacyNotice: 'Student names, notes, IDs, assignments, credentials, encryption material, OAuth tokens, and file contents are intentionally omitted.'
+    };
+  }
+
+  function downloadSupportBundle() {
+    downloadText(`classroom-seating-planner-support-${new Date().toISOString().slice(0, 10)}.json`, JSON.stringify(sanitizedSupportBundle(), null, 2), 'application/json');
+    setLiveStatusMessage('Sanitized support bundle downloaded. Student records, notes, credentials, and tokens were excluded.');
+  }
+
+  function chartCanvas() {
+    const scale = 2;
+    const padding = 32;
+    let width = 1200;
+    let height = 800;
+    const seats = [];
+    if (state.layoutMode === 'freeform') {
+      const canvas = state.freeformLayout?.canvas || {};
+      const ratio = Math.min(1, 1200 / Math.max(1, Number(canvas.width) || 1200), 800 / Math.max(1, Number(canvas.height) || 800));
+      width = Math.max(500, Math.round((Number(canvas.width) || 1200) * ratio) + padding * 2);
+      height = Math.max(350, Math.round((Number(canvas.height) || 800) * ratio) + padding * 2);
+      (state.freeformLayout?.objects || []).filter(object => object.type === 'seat').forEach(object => seats.push({
+        x: padding + Number(object.x || 0) * ratio,
+        y: padding + Number(object.y || 0) * ratio,
+        width: Math.max(40, Number(object.width || 160) * ratio),
+        height: Math.max(30, Number(object.height || 100) * ratio),
+        student: getStudent(object.assignedStudentId),
+        label: object.label || '',
+        locked: object.locked
+      }));
+    } else {
+      const cellWidth = Math.max(90, Math.min(160, Math.floor((1200 - padding * 2) / Math.max(1, state.cols))));
+      const cellHeight = Math.max(70, Math.min(120, Math.floor((800 - padding * 2) / Math.max(1, state.rows))));
+      width = padding * 2 + state.cols * cellWidth;
+      height = padding * 2 + state.rows * cellHeight;
+      Object.values(state.cells || {}).filter(cell => cell.type === 'seat').forEach(cell => seats.push({
+        x: padding + (Number(cell.col) - 1) * cellWidth,
+        y: padding + (Number(cell.row) - 1) * cellHeight,
+        width: cellWidth - 8,
+        height: cellHeight - 8,
+        student: getStudent(cell.assignedStudentId),
+        label: `Seat ${cell.row},${cell.col}`,
+        locked: cell.manual
+      }));
+    }
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.round(width * scale);
+    canvas.height = Math.round(height * scale);
+    const context = canvas.getContext('2d');
+    context.scale(scale, scale);
+    context.fillStyle = '#ffffff';
+    context.fillRect(0, 0, width, height);
+    context.fillStyle = '#172033';
+    context.font = '700 20px system-ui, sans-serif';
+    context.fillText(`${activeClassName()} seating chart`, padding, 23);
+    seats.forEach(seat => {
+      context.fillStyle = seat.student ? '#e7efff' : '#f8fafc';
+      context.strokeStyle = seat.locked ? '#6d28d9' : '#94a3b8';
+      context.lineWidth = seat.locked ? 3 : 1;
+      context.beginPath();
+      if (typeof context.roundRect === 'function') context.roundRect(seat.x, seat.y, seat.width, seat.height, 8);
+      else context.rect(seat.x, seat.y, seat.width, seat.height);
+      context.fill();
+      context.stroke();
+      context.fillStyle = '#172033';
+      context.font = '700 13px system-ui, sans-serif';
+      const title = seat.student ? studentDisplay(seat.student) : seat.label || 'Empty seat';
+      const line = title.length > 24 ? `${title.slice(0, 23)}…` : title;
+      context.fillText(line, seat.x + 8, seat.y + 23, Math.max(20, seat.width - 16));
+    });
+    return canvas;
+  }
+
+  async function copyChartAsImage() {
+    const canvas = chartCanvas();
+    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+    if (!blob) throw new Error('The browser could not create the chart image.');
+    if (navigator.clipboard && window.ClipboardItem && window.isSecureContext) {
+      await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+      setLiveStatusMessage('Seating chart image copied to the clipboard.');
+      return;
+    }
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `seating-chart-${new Date().toISOString().slice(0, 10)}.png`;
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    setLiveStatusMessage('Clipboard image copying is unavailable in this browser, so the chart image was downloaded instead.');
+  }
+
+  function blankRoomMarkup() {
+    if (state.layoutMode === 'freeform') {
+      const canvas = state.freeformLayout?.canvas || {};
+      const objects = (state.freeformLayout?.objects || []).map(object => `<div class="object ${escapeHtml(object.type)}" style="left:${Number(object.x) || 0}px;top:${Number(object.y) || 0}px;width:${Number(object.width) || 100}px;height:${Number(object.height) || 70}px;transform:rotate(${Number(object.rotation) || 0}deg)">${escapeHtml(object.type === 'seat' ? (object.label || 'Seat') : (object.label || objectLabel(object.type)))}</div>`).join('');
+      return `<div class="freeform" style="width:${Number(canvas.width) || 1200}px;height:${Number(canvas.height) || 800}px">${objects}</div>`;
+    }
+    const cells = [];
+    for (let row = 1; row <= state.rows; row += 1) {
+      for (let col = 1; col <= state.cols; col += 1) {
+        const cell = state.cells[keyOf(row, col)] || { type: 'empty' };
+        cells.push(`<div class="cell ${escapeHtml(cell.type)}">${escapeHtml(cell.type === 'seat' ? 'Seat' : objectLabel(cell.type))}</div>`);
+      }
+    }
+    return `<div class="grid" style="grid-template-columns:repeat(${state.cols},110px)">${cells.join('')}</div>`;
+  }
+
+  function printBlankRoom() {
+    const popup = window.open('', '_blank');
+    if (!popup) return setLiveStatusMessage('The browser blocked the printable blank-room window. Allow pop-ups and try again.');
+    try { popup.opener = null; } catch {   }
+    popup.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Blank room layout</title><style>body{font-family:system-ui,sans-serif;margin:24px;color:#172033}h1{font-size:20px}.grid{display:grid;gap:8px}.cell,.object{box-sizing:border-box;border:1px solid #94a3b8;border-radius:8px;display:grid;place-items:center;min-height:70px;background:#fff}.freeform{position:relative;transform-origin:top left;transform:scale(.55);border:1px solid #cbd5e1}.object{position:absolute}.seat{background:#eff6ff}.door{background:#fce8ee}.window{background:#e0f2fe}.teacher{background:#fff3d6}@media print{button{display:none}}</style></head><body><h1>${escapeHtml(activeClassName())} — blank room layout</h1>${blankRoomMarkup()}<script>window.addEventListener('load',()=>setTimeout(()=>window.print(),100));<\/script></body></html>`);
+    popup.document.close();
+  }
+
+  function ensureModal() {
+    let modal = el('exportSupportModal');
+    if (modal) return modal;
+    modal = document.createElement('div');
+    modal.id = 'exportSupportModal';
+    modal.className = 'modal-backdrop';
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-labelledby', 'exportSupportTitle');
+    modal.innerHTML = `
+      <div class="modal export-support-modal"><div class="panel-header"><div><span class="v44-modal-eyebrow">Export and support</span><h2 id="exportSupportTitle">Data, image, and support tools</h2></div><button id="closeExportSupportBtn" class="secondary mobile-compact-close" type="button" aria-label="Close">Close</button></div><div class="modal-body export-support-grid">
+        <article class="workflow-card"><h3>Current assignments CSV</h3><p>Export the current seat, student, lock, zone, group, and seat-comment data.</p><button id="exportAssignmentsCsvBtn" type="button">Export assignments CSV</button></article>
+        <article class="workflow-card"><h3>Rule findings CSV</h3><p>Export the current review findings for documentation or follow-up.</p><button id="exportViolationsCsvBtn" type="button">Export rule findings CSV</button></article>
+        <article class="workflow-card"><h3>Copy chart as image</h3><p>Copy a clean PNG chart for email or presentations. Unsupported browsers download it instead.</p><button id="copyChartImageBtn" type="button">Copy chart image</button></article>
+        <article class="workflow-card"><h3>Printable blank room</h3><p>Print the current room and object layout without student assignments.</p><button id="printBlankRoomBtn" type="button">Print blank layout</button></article>
+        <article class="workflow-card"><h3>Sanitized support bundle</h3><p>Download diagnostics without student names, notes, IDs, assignments, credentials, or tokens.</p><button id="downloadSupportBundleBtn" type="button">Download support bundle</button></article>
+      </div></div>`;
+    document.body.appendChild(modal);
+    el('closeExportSupportBtn')?.addEventListener('click', close);
+    el('exportAssignmentsCsvBtn')?.addEventListener('click', exportAssignmentsCsv);
+    el('exportViolationsCsvBtn')?.addEventListener('click', exportViolationsCsv);
+    el('copyChartImageBtn')?.addEventListener('click', () => void copyChartAsImage().catch(error => setLiveStatusMessage(`Chart image could not be copied: ${error.message}`)));
+    el('printBlankRoomBtn')?.addEventListener('click', printBlankRoom);
+    el('downloadSupportBundleBtn')?.addEventListener('click', downloadSupportBundle);
+    modal.addEventListener('click', event => { if (event.target === modal) close(); });
+    return modal;
+  }
+
+  function open() {
+    ensureModal().classList.add('show');
+    DialogManager.synchronize();
+  }
+
+  function close() {
+    el('exportSupportModal')?.classList.remove('show');
+    DialogManager.synchronize();
+  }
+
+  function installEntryPoint() {
+    let button = el('openExportSupportBtn');
+    if (!button) {
+      button = document.createElement('button');
+      button.id = 'openExportSupportBtn';
+      button.type = 'button';
+      button.className = 'secondary';
+      button.textContent = 'Export & support';
+      button.title = 'Open CSV, image, blank-layout, and sanitized support exports.';
+      (el('v4MoreMenu') || document.querySelector('.center-panel > .panel-header .button-row'))?.appendChild(button);
+      button.addEventListener('click', open);
+    }
+    const shareGrid = document.querySelector('.v4-share-grid');
+    if (shareGrid && !el('exportSupportShareCard')) {
+      const card = document.createElement('article');
+      card.id = 'exportSupportShareCard';
+      card.className = 'v4-share-card';
+      card.innerHTML = '<div class="v4-share-icon" aria-hidden="true">⇩</div><h3>Data, image, and support exports</h3><p>Export current assignments, rule findings, a chart image, a blank room, or a privacy-sanitized support bundle.</p><button type="button" data-open-export-support>Open export tools</button>';
+      card.querySelector('[data-open-export-support]')?.addEventListener('click', open);
+      shareGrid.appendChild(card);
+    }
+  }
+
+  function install() {
+    if (installed) return;
+    installed = true;
+    ensureModal();
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && el('exportSupportModal')?.classList.contains('show')) close();
+    });
+  }
+
+  function afterReady() {
+    installEntryPoint();
+  }
+
+  return Object.freeze({
+    install,
+    afterReady,
+    open,
+    exportAssignmentsCsv,
+    exportViolationsCsv,
+    sanitizedSupportBundle,
+    currentAssignmentRows,
+    csvText,
+    chartCanvas,
+    copyChartAsImage,
+    printBlankRoom
+  });
+})();
+
+'use strict';
+
+window.DrivePollingV66 = (() => {
+  const STORAGE_KEY = 'classroom-seating-planner-drive-polling-v1';
+  let installed = false;
+  let timer = null;
+  let checking = false;
+  let settings = { enabled: false, minutes: 5 };
+
+  function loadSettings() {
+    try {
+      const parsed = JSON.parse(safeStorageGet('localStorage', STORAGE_KEY) || '{}');
+      settings = {
+        enabled: Boolean(parsed.enabled),
+        minutes: [2, 5, 10, 15, 30].includes(Number(parsed.minutes)) ? Number(parsed.minutes) : 5
+      };
+    } catch {
+      settings = { enabled: false, minutes: 5 };
+    }
+    return settings;
+  }
+
+  function saveSettings() {
+    safeStorageSet('localStorage', STORAGE_KEY, JSON.stringify(settings));
+  }
+
+  function ensureBanner() {
+    let banner = el('remoteDriveChangeBanner');
+    if (banner) return banner;
+    banner = document.createElement('section');
+    banner.id = 'remoteDriveChangeBanner';
+    banner.className = 'remote-drive-change-banner no-print';
+    banner.hidden = true;
+    banner.innerHTML = `
+      <div><strong>Remote Google Drive changes are available</strong><span id="remoteDriveChangeText">Another editor saved a newer copy.</span></div>
+      <div class="button-row"><button id="reviewRemoteDriveChangeBtn" type="button">Review and merge</button><button id="dismissRemoteDriveChangeBtn" class="secondary" type="button">Dismiss</button></div>`;
+    document.body.appendChild(banner);
+    el('reviewRemoteDriveChangeBtn')?.addEventListener('click', async () => {
+      try {
+        banner.hidden = true;
+        await SharedDriveCollaborationV64.mergeRemoteDriveChanges({ reason: 'polling-merge' });
+      } catch (error) {
+        setLiveStatusMessage(`Remote changes could not be merged: ${error.message}`);
+        SharedDriveCollaborationV64.openManager();
+      }
+    });
+    el('dismissRemoteDriveChangeBtn')?.addEventListener('click', () => { banner.hidden = true; });
+    return banner;
+  }
+
+  function updatePresence() {
+    state.collaborationAccess = state.collaborationAccess && typeof state.collaborationAccess === 'object'
+      ? state.collaborationAccess
+      : { version: COLLABORATION_ACCESS_VERSION, updatedAt: '', policies: {} };
+    const user = uiState.googleDriveCurrentUser || {};
+    state.collaborationAccess.presence = {
+      deviceId: appDeviceId(),
+      email: String(user.email || '').slice(0, 200),
+      displayName: String(user.name || user.displayName || '').slice(0, 120),
+      workflow: document.body.dataset.workflow || 'setup',
+      activeClassId: state.activeClassId,
+      updatedAt: new Date().toISOString()
+    };
+    state.collaborationAccess.updatedAt = new Date().toISOString();
+  }
+
+  async function checkNow(options = {}) {
+    if (checking) return false;
+    const config = googleDriveConfig();
+    if (!config.fileId || !hasUsableGoogleDriveToken()) {
+      if (options.announce !== false) setLiveStatusMessage('Connect and load a Google Drive save before checking for collaborator changes.');
+      return false;
+    }
+    checking = true;
+    const status = el('drivePollingStatus');
+    if (status) status.textContent = 'Checking the linked Drive file…';
+    try {
+      const inspection = await SharedDriveCollaborationV64.inspectRemoteDriveChange(config.fileId);
+      const changed = Boolean(inspection.remote && !inspection.metadataOnly);
+      if (changed) {
+        const banner = ensureBanner();
+        banner.hidden = false;
+        el('remoteDriveChangeText').textContent = `A remote save differs from this tab. Review and merge before continuing to save.`;
+        if (status) status.textContent = 'Remote changes found. Review and merge them before saving.';
+        setLiveStatusMessage('Remote Google Drive changes are available for review and merge.');
+      } else {
+        if (status) status.textContent = `No remote changes found at ${new Date().toLocaleTimeString()}.`;
+        if (options.announce !== false) setLiveStatusMessage('The linked Google Drive save matches this tab.');
+      }
+      safeStorageSet('sessionStorage', 'classroom-seating-planner-drive-last-check-v1', new Date().toISOString());
+      return changed;
+    } catch (error) {
+      if (status) status.textContent = `Drive check failed: ${error.message}`;
+      if (options.announce !== false) setLiveStatusMessage(`Google Drive change check failed: ${error.message}`);
+      return false;
+    } finally {
+      checking = false;
+    }
+  }
+
+  function schedule() {
+    clearInterval(timer);
+    timer = null;
+    if (!settings.enabled) return;
+    timer = setInterval(() => void checkNow({ announce: false }), settings.minutes * 60 * 1000);
+  }
+
+  function ensureModal() {
+    let modal = el('drivePollingModal');
+    if (modal) return modal;
+    modal = document.createElement('div');
+    modal.id = 'drivePollingModal';
+    modal.className = 'modal-backdrop';
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-labelledby', 'drivePollingTitle');
+    modal.innerHTML = `
+      <div class="modal drive-polling-modal"><div class="panel-header"><div><span class="v44-modal-eyebrow">Collaboration without a server</span><h2 id="drivePollingTitle">Near-live Google Drive checks</h2></div><button id="closeDrivePollingBtn" class="secondary mobile-compact-close" type="button" aria-label="Close">Close</button></div><div class="modal-body"><div class="warningbox">This periodically checks the shared Drive file while the planner is open. It provides remote-change notices and three-way merge, not live cursors or instant seat movement.</div><section class="section"><label class="checkline"><input id="drivePollingEnabled" type="checkbox"> Check for remote changes while this page is open</label><div class="field"><label for="drivePollingMinutes">Check interval</label><select id="drivePollingMinutes"><option value="2">Every 2 minutes</option><option value="5">Every 5 minutes</option><option value="10">Every 10 minutes</option><option value="15">Every 15 minutes</option><option value="30">Every 30 minutes</option></select></div><div class="button-row"><button id="saveDrivePollingBtn" type="button">Save collaboration checks</button><button id="checkDriveNowBtn" class="secondary" type="button">Check now</button><button id="openSharedDriveFromPollingBtn" class="secondary" type="button">Open sharing manager</button></div><p id="drivePollingStatus" class="hint">Checks are disabled.</p></section><section class="section"><h3>Shared-file editing notice</h3><p class="muted">The next save records this device’s current workflow and timestamp in the shared planner metadata. Other editors see the information after loading or checking the file.</p><button id="recordDrivePresenceBtn" class="secondary" type="button">Record my editing notice</button></section></div></div>`;
+    document.body.appendChild(modal);
+    el('closeDrivePollingBtn')?.addEventListener('click', close);
+    el('saveDrivePollingBtn')?.addEventListener('click', () => {
+      settings.enabled = Boolean(el('drivePollingEnabled')?.checked);
+      settings.minutes = Number(el('drivePollingMinutes')?.value) || 5;
+      saveSettings();
+      schedule();
+      el('drivePollingStatus').textContent = settings.enabled ? `Remote changes will be checked every ${settings.minutes} minutes while this page is open.` : 'Checks are disabled.';
+    });
+    el('checkDriveNowBtn')?.addEventListener('click', () => void checkNow());
+    el('openSharedDriveFromPollingBtn')?.addEventListener('click', () => {
+      close();
+      SharedDriveCollaborationV64.openManager();
+    });
+    el('recordDrivePresenceBtn')?.addEventListener('click', () => {
+      updatePresence();
+      persistActiveClass();
+      scheduleLinkedAutoSave('collaboration-presence');
+      setLiveStatusMessage('Editing notice recorded. Save the shared Drive file to publish it to collaborators.');
+    });
+    modal.addEventListener('click', event => { if (event.target === modal) close(); });
+    return modal;
+  }
+
+  function open() {
+    loadSettings();
+    ensureModal().classList.add('show');
+    if (el('drivePollingEnabled')) el('drivePollingEnabled').checked = settings.enabled;
+    if (el('drivePollingMinutes')) el('drivePollingMinutes').value = String(settings.minutes);
+    const last = safeStorageGet('sessionStorage', 'classroom-seating-planner-drive-last-check-v1');
+    if (el('drivePollingStatus')) el('drivePollingStatus').textContent = settings.enabled
+      ? `Checks run every ${settings.minutes} minutes.${last ? ` Last checked ${new Date(last).toLocaleString()}.` : ''}`
+      : 'Checks are disabled.';
+    DialogManager.synchronize();
+  }
+
+  function close() {
+    el('drivePollingModal')?.classList.remove('show');
+    DialogManager.synchronize();
+  }
+
+  function installEntryPoint() {
+    let button = el('openDrivePollingBtn');
+    if (!button) {
+      button = document.createElement('button');
+      button.id = 'openDrivePollingBtn';
+      button.type = 'button';
+      button.className = 'secondary';
+      button.textContent = 'Drive change checks';
+      button.title = 'Periodically check a shared Drive save for remote changes while this page is open.';
+      (el('v4MoreMenu') || document.querySelector('.center-panel > .panel-header .button-row'))?.appendChild(button);
+      button.addEventListener('click', open);
+    }
+    const shareGrid = document.querySelector('.v4-share-grid');
+    if (shareGrid && !el('drivePollingShareCard')) {
+      const card = document.createElement('article');
+      card.id = 'drivePollingShareCard';
+      card.className = 'v4-share-card';
+      card.innerHTML = '<div class="v4-share-icon" aria-hidden="true">↻</div><h3>Shared-file change checks</h3><p>Check a linked Google Drive save for newer collaborator revisions and open the existing merge workflow. No server or live cursor service is required.</p><button type="button" data-open-drive-polling>Configure Drive checks</button>';
+      card.querySelector('[data-open-drive-polling]')?.addEventListener('click', open);
+      shareGrid.appendChild(card);
+    }
+  }
+
+  function install() {
+    if (installed) return;
+    installed = true;
+    loadSettings();
+    ensureBanner();
+    ensureModal();
+    window.addEventListener('online', () => { if (settings.enabled) void checkNow({ announce: false }); });
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden && settings.enabled) void checkNow({ announce: false });
+    });
+  }
+
+  function afterReady() {
+    installEntryPoint();
+    schedule();
+    if (settings.enabled) setTimeout(() => void checkNow({ announce: false }), 3000);
+  }
+
+  return Object.freeze({ install, afterReady, open, checkNow, updatePresence });
+})();
+
+'use strict';
+
+window.LocalizationShortcutsV66 = (() => {
+  const STORAGE_KEY = 'classroom-seating-planner-shortcuts-v1';
+  const LOCALE_KEY = 'classroom-seating-planner-locale-v1';
+  let installed = false;
+  let shortcuts = {};
+  let locale = 'en';
+  const dictionaries = new Map();
+
+  const ACTIONS = Object.freeze({
+    planning: { label: 'Open advanced classroom tools', defaultShortcut: 'Ctrl+Alt+P', run: () => PlanningToolsV66.open() },
+    exports: { label: 'Open export and support tools', defaultShortcut: 'Ctrl+Alt+E', run: () => ExportSupportV66.open() },
+    search: { label: 'Open global search', defaultShortcut: 'Ctrl+Alt+F', run: () => ClassroomWorkflowV53?.openGlobalSearch?.() },
+    save: { label: 'Save now', defaultShortcut: 'Ctrl+Alt+S', run: () => el('saveNowBtn')?.click() || el('saveBtn')?.click() },
+    presentation: { label: 'Toggle Presentation Mode', defaultShortcut: 'Ctrl+Alt+V', run: () => el('visibilityModeBtn')?.click() },
+    room: { label: 'Open Room Design', defaultShortcut: 'Ctrl+Alt+R', run: () => ProductExperience?.setWorkflow?.('room') },
+    seating: { label: 'Open Seat Students', defaultShortcut: 'Ctrl+Alt+A', run: () => ProductExperience?.setWorkflow?.('seating') },
+    review: { label: 'Open Review', defaultShortcut: 'Ctrl+Alt+Y', run: () => ProductExperience?.setWorkflow?.('review') }
+  });
+
+  dictionaries.set('en', Object.freeze({
+    'app.name': APP_NAME,
+    'planning.title': 'Advanced classroom tools',
+    'exports.title': 'Data, image, and support tools',
+    'seat.valid': 'Valid seat',
+    'seat.caution': 'Seat needs review',
+    'seat.invalid': 'Seat conflicts with a rule',
+    'common.close': 'Close',
+    'common.save': 'Save'
+  }));
+
+  function normalizeShortcut(value) {
+    const parts = String(value || '').trim().split('+').map(part => part.trim()).filter(Boolean);
+    const modifiers = [];
+    let key = '';
+    parts.forEach(part => {
+      const lower = part.toLowerCase();
+      if (['ctrl', 'control'].includes(lower)) modifiers.push('Ctrl');
+      else if (['alt', 'option'].includes(lower)) modifiers.push('Alt');
+      else if (['shift'].includes(lower)) modifiers.push('Shift');
+      else if (['meta', 'cmd', 'command'].includes(lower)) modifiers.push('Meta');
+      else key = part.length === 1 ? part.toUpperCase() : part;
+    });
+    return [...new Set(modifiers), key].filter(Boolean).join('+');
+  }
+
+  function eventShortcut(event) {
+    const parts = [];
+    if (event.ctrlKey) parts.push('Ctrl');
+    if (event.altKey) parts.push('Alt');
+    if (event.shiftKey) parts.push('Shift');
+    if (event.metaKey) parts.push('Meta');
+    const key = event.key.length === 1 ? event.key.toUpperCase() : event.key;
+    if (!['Control', 'Alt', 'Shift', 'Meta'].includes(key)) parts.push(key);
+    return parts.join('+');
+  }
+
+  function load() {
+    locale = safeStorageGet('localStorage', LOCALE_KEY) || 'en';
+    if (!dictionaries.has(locale)) locale = 'en';
+    try {
+      const saved = JSON.parse(safeStorageGet('localStorage', STORAGE_KEY) || '{}');
+      shortcuts = Object.fromEntries(Object.entries(ACTIONS).map(([id, action]) => [id, normalizeShortcut(saved[id] || action.defaultShortcut)]));
+    } catch {
+      shortcuts = Object.fromEntries(Object.entries(ACTIONS).map(([id, action]) => [id, action.defaultShortcut]));
+    }
+  }
+
+  function save() {
+    safeStorageSet('localStorage', STORAGE_KEY, JSON.stringify(shortcuts));
+    safeStorageSet('localStorage', LOCALE_KEY, locale);
+  }
+
+  function t(key, fallback = '') {
+    return dictionaries.get(locale)?.[key] || dictionaries.get('en')?.[key] || fallback || key;
+  }
+
+  function registerLocale(code, dictionary) {
+    const normalized = String(code || '').trim().toLowerCase();
+    if (!/^[a-z]{2,3}(?:-[a-z0-9]{2,8})?$/.test(normalized) || !dictionary || typeof dictionary !== 'object' || Array.isArray(dictionary)) return false;
+    const safe = Object.fromEntries(Object.entries(dictionary).slice(0, 2000).map(([key, value]) => [String(key).slice(0, 160), String(value).slice(0, 1000)]));
+    dictionaries.set(normalized, Object.freeze(safe));
+    return true;
+  }
+
+  function applyTranslations(root = document) {
+    root.querySelectorAll?.('[data-i18n]').forEach(node => {
+      const key = node.dataset.i18n;
+      const translated = t(key, node.textContent);
+      if (node instanceof HTMLInputElement && ['button', 'submit', 'reset'].includes(node.type)) node.value = translated;
+      else node.textContent = translated;
+    });
+    document.documentElement.lang = locale;
+  }
+
+  function ensureModal() {
+    let modal = el('shortcutLocaleModal');
+    if (modal) return modal;
+    modal = document.createElement('div');
+    modal.id = 'shortcutLocaleModal';
+    modal.className = 'modal-backdrop';
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-labelledby', 'shortcutLocaleTitle');
+    modal.innerHTML = `
+      <div class="modal shortcut-locale-modal"><div class="panel-header"><div><span class="v44-modal-eyebrow">Keyboard and language</span><h2 id="shortcutLocaleTitle">Shortcuts and localization</h2></div><button id="closeShortcutLocaleBtn" class="secondary mobile-compact-close" type="button" aria-label="Close">Close</button></div><div class="modal-body"><section class="section"><h3>Configurable keyboard shortcuts</h3><p class="muted">Shortcuts are ignored while typing in a field or while a dialog is open.</p><div id="shortcutConfigList" class="shortcut-config-list"></div><div class="button-row"><button id="saveShortcutConfigBtn" type="button">Save shortcuts</button><button id="resetShortcutConfigBtn" class="secondary" type="button">Restore defaults</button></div></section><section class="section"><h3>Localization framework</h3><div class="field"><label for="plannerLocaleSelect">Interface language</label><select id="plannerLocaleSelect"></select></div><p class="muted">English is built in. Additional translation packs can be imported without changing the save schema.</p><div class="button-row"><button id="importLocalePackBtn" class="secondary" type="button">Import translation pack</button><button id="exportLocaleTemplateBtn" class="secondary" type="button">Export translation template</button><input id="localePackFileInput" type="file" accept="application/json,.json" aria-label="Choose translation pack file" hidden></div></section></div></div>`;
+    document.body.appendChild(modal);
+    el('closeShortcutLocaleBtn')?.addEventListener('click', close);
+    el('saveShortcutConfigBtn')?.addEventListener('click', saveShortcutConfiguration);
+    el('resetShortcutConfigBtn')?.addEventListener('click', resetShortcuts);
+    el('plannerLocaleSelect')?.addEventListener('change', event => {
+      locale = event.target.value;
+      save();
+      applyTranslations();
+      setLiveStatusMessage(`Interface language set to ${locale}.`);
+    });
+    el('importLocalePackBtn')?.addEventListener('click', () => el('localePackFileInput')?.click());
+    el('localePackFileInput')?.addEventListener('change', event => void importLocalePack(event.target.files?.[0]));
+    el('exportLocaleTemplateBtn')?.addEventListener('click', exportLocaleTemplate);
+    modal.addEventListener('click', event => { if (event.target === modal) close(); });
+    return modal;
+  }
+
+  function renderModal() {
+    const list = el('shortcutConfigList');
+    if (list) list.innerHTML = Object.entries(ACTIONS).map(([id, action]) => `<label class="shortcut-config-row"><span>${escapeHtml(action.label)}</span><input data-shortcut-action="${escapeHtml(id)}" value="${escapeHtml(shortcuts[id] || '')}" placeholder="Ctrl+Alt+Key"></label>`).join('');
+    const localeSelect = el('plannerLocaleSelect');
+    if (localeSelect) {
+      localeSelect.innerHTML = [...dictionaries.keys()].sort().map(code => `<option value="${escapeHtml(code)}">${code === 'en' ? 'English' : escapeHtml(code)}</option>`).join('');
+      localeSelect.value = locale;
+    }
+  }
+
+  function saveShortcutConfiguration() {
+    const next = {};
+    document.querySelectorAll('[data-shortcut-action]').forEach(input => { next[input.dataset.shortcutAction] = normalizeShortcut(input.value); });
+    const values = Object.values(next).filter(Boolean);
+    if (new Set(values).size !== values.length) return setLiveStatusMessage('Each keyboard shortcut must be unique.');
+    shortcuts = { ...shortcuts, ...next };
+    save();
+    setLiveStatusMessage('Keyboard shortcuts saved.');
+  }
+
+  function resetShortcuts() {
+    shortcuts = Object.fromEntries(Object.entries(ACTIONS).map(([id, action]) => [id, action.defaultShortcut]));
+    save();
+    renderModal();
+  }
+
+  async function importLocalePack(file) {
+    if (!file) return;
+    try {
+      const payload = JSON.parse(await readTextFileWithinLimits(file, 'translation pack', IMPORT_LIMITS.saveBytes));
+      if (payload?.format !== 'classroom-seating-planner-locale-v1' || !registerLocale(payload.locale, payload.messages)) throw new Error('This is not a supported translation pack.');
+      locale = String(payload.locale).toLowerCase();
+      save();
+      renderModal();
+      applyTranslations();
+      setLiveStatusMessage(`Translation pack ${locale} imported.`);
+    } catch (error) {
+      setLiveStatusMessage(`Translation pack import failed: ${error.message}`);
+    } finally {
+      if (el('localePackFileInput')) el('localePackFileInput').value = '';
+    }
+  }
+
+  function exportLocaleTemplate() {
+    downloadText('classroom-seating-planner-locale-template.json', JSON.stringify({
+      format: 'classroom-seating-planner-locale-v1',
+      locale: 'xx',
+      basedOnVersion: APP_REVISION,
+      messages: dictionaries.get('en')
+    }, null, 2), 'application/json');
+  }
+
+  function open() {
+    load();
+    ensureModal().classList.add('show');
+    renderModal();
+    DialogManager.synchronize();
+  }
+
+  function close() {
+    el('shortcutLocaleModal')?.classList.remove('show');
+    DialogManager.synchronize();
+  }
+
+  function installEntryPoint() {
+    if (el('openShortcutLocaleBtn')) return;
+    const button = document.createElement('button');
+    button.id = 'openShortcutLocaleBtn';
+    button.type = 'button';
+    button.className = 'secondary';
+    button.textContent = 'Shortcuts & language';
+    button.title = 'Configure keyboard shortcuts and import interface translation packs.';
+    (el('v4MoreMenu') || document.querySelector('.center-panel > .panel-header .button-row'))?.appendChild(button);
+    button.addEventListener('click', open);
+  }
+
+  function handleShortcut(event) {
+    if (event.defaultPrevented || event.repeat || event.target.closest?.('input,textarea,select,[contenteditable="true"]') || document.querySelector('.modal-backdrop.show')) return;
+    const pressed = eventShortcut(event);
+    const match = Object.entries(shortcuts).find(([, shortcut]) => shortcut && shortcut === pressed);
+    if (!match) return;
+    event.preventDefault();
+    ACTIONS[match[0]]?.run();
+  }
+
+  function install() {
+    if (installed) return;
+    installed = true;
+    load();
+    ensureModal();
+    document.addEventListener('keydown', handleShortcut, true);
+  }
+
+  function afterReady() {
+    installEntryPoint();
+    applyTranslations();
+  }
+
+  return Object.freeze({ install, afterReady, open, t, registerLocale, applyTranslations, locale: () => locale });
+})();
+
+'use strict';
+
+window.ClassroomFeaturePackV66 = (() => {
+  let installed = false;
+
+  const modules = () => [
+    window.SeatGuidanceV66,
+    window.PlanningToolsV66,
+    window.ExportSupportV66,
+    window.DrivePollingV66,
+    window.LocalizationShortcutsV66
+  ].filter(Boolean);
+
+  function install() {
+    if (installed) return;
+    installed = true;
+    modules().forEach(module => module.install?.());
+  }
+
+  function afterReady() {
+    modules().forEach(module => module.afterReady?.());
+    document.body.dataset.featurePack = '6.6';
+  }
+
+  return Object.freeze({ install, afterReady });
+})();
+
+'use strict';
+
 const GuidedLearning = (() => {
   const STORAGE_KEY = 'classroom-seating-planner-guided-learning-v6';
   const PRACTICE_CLASS_PREFIX = '[Practice]';
@@ -35857,8 +38034,13 @@ window.GuidedLearningInstaller = GuidedLearning;
 
 'use strict';
 
+window.ClassroomFeaturePackV66?.install();
+
 window.initializeClassroomSeatingPlanner()
-  .then(() => window.GuidedLearningInstaller.install())
+  .then(() => {
+    window.ClassroomFeaturePackV66?.afterReady();
+    return window.GuidedLearningInstaller.install();
+  })
   .catch(error => {
     try {
       recordError('startup', error);
