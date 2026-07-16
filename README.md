@@ -89,3 +89,5 @@ Main Features
 
 - Privacy-focused local operation
   Keeps classroom information in the browser unless the user deliberately saves, exports, prints, or connects an approved external service.
+
+<!-- AI audit branch: source export trigger -->
