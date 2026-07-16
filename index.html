@@ -5,7 +5,7 @@
   <meta name="license" content="MIT License" />
   <meta name="spdx-license-identifier" content="MIT" />
   <meta name="copyright" content="Copyright (c) 2026 Chris L. Franklin" />
-  <meta name="app-version" content="6.5.7" />
+  <meta name="app-version" content="6.5.8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com https://www.paypalobjects.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://www.googleapis.com https://classroom.googleapis.com https://accounts.google.com https://www.paypal.com https://www.paypalobjects.com https://www.google-analytics.com https://*.google-analytics.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://www.paypal.com; img-src 'self' data: blob: https://www.paypalobjects.com https://www.google-analytics.com; font-src 'self' data:; worker-src 'self' blob:; manifest-src 'self'; media-src 'none'; object-src 'none'; base-uri 'none'; form-action 'self' https://www.paypal.com" />
   <meta name="application-name" content="Classroom Seating Planner" />
@@ -6477,10 +6477,10 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
 const APP_CONFIG = Object.freeze({
   name: 'Classroom Seating Planner',
   shortName: 'Seating Planner',
-  version: '6.5.7',
+  version: '6.5.8',
   copyrightHolder: 'Chris L. Franklin',
   copyrightYear: '2026',
-  releaseDate: '2026-07-15',
+  releaseDate: '2026-07-16',
   releaseDateDisplay: 'July 15, 2026',
   buildDate: '2026-07-15T00:00:00Z',
   commit: 'local',
@@ -6750,10 +6750,22 @@ const PROJECT_FEATURES = [
 
 const RELEASE_HISTORY = [
   {
+    version: '6.5.8',
+    date: 'July 16, 2026',
+    title: 'Real-browser seat settings interaction repair',
+    current: true,
+    changes: [
+      'Fixed unlocked Freeform seats so a normal mouse press no longer starts and commits a zero-distance drag that replaces the seat before the browser can produce a double-click.',
+      'Added a movement threshold before Freeform drag state, undo history, pointer capture, and z-order changes activate, preserving normal click and double-click behavior without breaking dragging.',
+      'Stopped same-type Grid clicks from needlessly rerendering the seat, and deferred seat-conversion clicks long enough for a real double-click to cancel the pending room tool action.',
+      'Added a Chromium interaction test that performs actual mouse double-click sequences on unlocked Grid and Freeform seats, verifies the correct editable modal, confirms Freeform dragging still works, and confirms single-click Grid tools still apply.'
+    ]
+  },
+  {
     version: '6.5.7',
     date: 'July 15, 2026',
     title: 'Mobile control compaction and interaction repair',
-    current: true,
+    current: false,
     changes: [
       'Added stable mobile collapse states for Class Setup, roster-import sources, Room Design controls, and other space-heavy panels so the active workspace receives most of the viewport.',
       'Repaired unlocked-seat double-click handling, added conflict-aware double-tap and long-press seat settings gestures, and made locked-seat settings visibly read-only with an explicit Unlock path.',
@@ -11316,15 +11328,14 @@ function beginFreeformPointerDrag(event, id) {
   const selectedIds = resize ? new Set([id]) : new Set(uiState.freeformSelectedObjectIds || [id]);
   const dragObjects = (state.freeformLayout?.objects || []).filter(item => selectedIds.has(item.id) && !item.locked);
   if (!dragObjects.length) return;
-  event.preventDefault();
-  pushUndoSnapshot('Before freeform pointer edit');
-  event.currentTarget.setPointerCapture?.(event.pointerId);
-  dragObjects.forEach(item => { item.zIndex = state.freeformLayout.nextZ++; });
   const originals = new Map(dragObjects.map(item => [item.id, { x:item.x, y:item.y, width:item.width, height:item.height }]));
   uiState.freeformDrag = {
     id,
     ids: new Set(dragObjects.map(item => item.id)),
     resize,
+    activated: false,
+    pointerId: event.pointerId,
+    handle: event.currentTarget,
     startX: event.clientX,
     startY: event.clientY,
     originals,
@@ -11334,21 +11345,31 @@ function beginFreeformPointerDrag(event, id) {
     temporarySnapOverride: false
   };
   const move = ev => updateFreeformPointerDrag(ev);
-  const up = ev => {
+  const finish = ev => {
     document.removeEventListener('pointermove', move);
-    document.removeEventListener('pointerup', up);
+    document.removeEventListener('pointerup', finish);
+    document.removeEventListener('pointercancel', finish);
     finishFreeformPointerDrag(ev);
   };
   document.addEventListener('pointermove', move);
-  document.addEventListener('pointerup', up, { once: true });
+  document.addEventListener('pointerup', finish, { once: true });
+  document.addEventListener('pointercancel', finish, { once: true });
 }
 
 function updateFreeformPointerDrag(event) {
   const drag = uiState.freeformDrag;
-  if (!drag) return;
+  if (!drag || (drag.pointerId !== undefined && event.pointerId !== undefined && drag.pointerId !== event.pointerId)) return;
   const objects = state.freeformLayout?.objects || [];
   const primary = objects.find(item => item.id === drag.id);
   if (!primary) return;
+  if (!drag.activated) {
+    if (Math.hypot(event.clientX - drag.startX, event.clientY - drag.startY) < 5) return;
+    drag.activated = true;
+    pushUndoSnapshot('Before freeform pointer edit');
+    drag.handle?.setPointerCapture?.(drag.pointerId);
+    objects.filter(item => drag.ids.has(item.id)).forEach(item => { item.zIndex = state.freeformLayout.nextZ++; });
+  }
+  event.preventDefault();
   const zoom = freeformCanvasZoom();
   let dx = (event.clientX - drag.startX) / zoom;
   let dy = (event.clientY - drag.startY) / zoom;
@@ -11471,6 +11492,10 @@ function updateFreeformPointerDrag(event) {
 
 function finishFreeformPointerDrag() {
   const drag = uiState.freeformDrag;
+  if (drag && !drag.activated) {
+    uiState.freeformDrag = null;
+    return;
+  }
   if (drag) {
     if (drag.dropInvalid) {
       drag.lastDropValid.forEach((value, objectId) => {
@@ -14014,6 +14039,24 @@ function installGridEventDelegation() {
   grid.dataset.delegatedEventsInstalled = 'true';
   installDelegatedGridSeatSettingsGesture(grid);
 
+  const pendingSeatToolClicks = new Map();
+  const cancelPendingSeatToolClick = cellKey => {
+    const timer = pendingSeatToolClicks.get(cellKey);
+    if (timer) clearTimeout(timer);
+    pendingSeatToolClicks.delete(cellKey);
+  };
+  const scheduleSeatToolClick = (cellKey, type) => {
+    cancelPendingSeatToolClick(cellKey);
+    const timer = setTimeout(() => {
+      pendingSeatToolClicks.delete(cellKey);
+      const cell = state.cells[cellKey];
+      if (!cell || state.layoutMode !== 'grid' || cell.type !== 'seat') return;
+      if (eyeModeBlocksRoomEditing()) return;
+      setCellType(cellKey, type);
+    }, 560);
+    pendingSeatToolClicks.set(cellKey, timer);
+  };
+
   grid.addEventListener('contextmenu', event => {
     const studentTarget = delegatedGridStudent(event);
     if (studentTarget) {
@@ -14036,6 +14079,7 @@ function installGridEventDelegation() {
     if (!cell || seatGestureTargetIsAction(target)) return;
     const button = target?.closest('button');
     if (button && !button.classList.contains('keyboard-seat-focus')) return;
+    cancelPendingSeatToolClick(cell.dataset.cellKey);
     event.preventDefault();
     event.stopPropagation();
     if (eyeModeBlocksSeatEditing() || eyeModeBlocksRoomEditing()) return blockEyeModeAction(eyeModeBlocksSeatEditing() ? 'seat' : 'room');
@@ -14115,7 +14159,22 @@ function installGridEventDelegation() {
       return;
     }
     if (eyeModeBlocksRoomEditing()) return blockEyeModeAction('room');
-    setCellType(cellKey, el('layoutTool').value);
+    const selectedType = el('layoutTool')?.value || 'seat';
+    const currentCell = state.cells[cellKey];
+    if (!currentCell || currentCell.type === selectedType) return;
+    if (currentCell.type === 'seat') {
+      if (event.detail > 1) {
+        cancelPendingSeatToolClick(cellKey);
+        return;
+      }
+      if (event.detail === 0) {
+        setCellType(cellKey, selectedType);
+        return;
+      }
+      scheduleSeatToolClick(cellKey, selectedType);
+      return;
+    }
+    setCellType(cellKey, selectedType);
   });
 
   grid.addEventListener('dragover', event => {
