@@ -5,7 +5,7 @@
   <meta name="license" content="MIT License" />
   <meta name="spdx-license-identifier" content="MIT" />
   <meta name="copyright" content="Copyright (c) 2026 Chris L. Franklin" />
-  <meta name="app-version" content="6.5.6" />
+  <meta name="app-version" content="6.5.7" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com https://www.paypalobjects.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://www.googleapis.com https://classroom.googleapis.com https://accounts.google.com https://www.paypal.com https://www.paypalobjects.com https://www.google-analytics.com https://*.google-analytics.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://www.paypal.com; img-src 'self' data: blob: https://www.paypalobjects.com https://www.google-analytics.com; font-src 'self' data:; worker-src 'self' blob:; manifest-src 'self'; media-src 'none'; object-src 'none'; base-uri 'none'; form-action 'self' https://www.paypal.com" />
   <meta name="application-name" content="Classroom Seating Planner" />
@@ -4530,6 +4530,119 @@ body.product-v4.product-v43[data-theme="macos"] .v4-workflow-step[aria-current="
 }body.product-v4.product-v43[data-theme="aurora"] .seat-empty{color:#c7d8eb
 }body.product-v4.product-v43[data-theme="prismatic"] .v4-brand strong,
 body.product-v4.product-v43[data-theme="windowsXp"] .v4-brand strong{color:#fff
+}.grid-resize-actions{display:grid;grid-template-columns:auto auto minmax(150px, 1fr);align-items:center;gap:7px;min-width:min(100%, 460px)
+}.grid-resize-actions #cancelGridResizeBtn[hidden]{display:none
+}.grid-resize-status{min-width:0;color:var(--muted);font-size:10px;line-height:1.25;overflow-wrap:anywhere
+}body.grid-resize-mode #rowsInput,
+body.grid-resize-mode #colsInput{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent)
+}body.grid-resize-mode #buildGridBtn.active-tool{border-color:var(--accent);background:var(--accent);color:#fff
+}.seat-edit-lock-notice{display:grid;gap:3px
+}.seat-edit-lock-notice[hidden]{display:none
+}.seat-edit-lock-notice span{font-size:11px;line-height:1.4
+}.seat-edit-locked .modal-body .section{border-style:dashed
+}.class-setup-mobile-nav,
+.mobile-collapse-toggle,
+#toggleClassSetupHeaderBtn{display:none
+}@media (max-width: 900px){body.product-v4.workspace-v41.product-v42 .v4-topbar .v4-icon-button,
+  body.product-v4.workspace-v41.product-v42 .v4-topbar .v4-action-button,
+  body.product-v4.workspace-v41 .v4-quick-dock > button,
+  body.product-v4.workspace-v41 .v4-utility-dock > button:not(.v4-command-button),
+  body.product-v4.workspace-v41 .v4-class-dock > .v4-icon-button,
+  body.product-v4.workspace-v41.product-v42 .class-manager select,
+  body.product-v4.workspace-v41 .v4-context-actions button{min-height:36px;height:36px
+  }body.product-v4.workspace-v41 .v41-guidance-toggle,
+  #toggleCsvImportBtn{min-width:36px
+  }.seat-display-control input[type="range"]{min-height:32px
+  }#toggleLayoutToolsBtn::before{content:attr(data-mobile-label);margin-right:5px;font-size:10px;font-weight:850;white-space:nowrap
+  }#toggleLayoutToolsBtn{width:auto;padding:0 9px
+  }#layoutToolsPanel{max-height:min(38dvh, 290px)
+  }#layoutToolsPanel .toolbar-body{grid-template-columns:repeat(2, minmax(0, 1fr));padding:7px
+  }#layoutToolsPanel .field label{margin-bottom:3px;font-size:9px
+  }#layoutToolsPanel .field input,
+  #layoutToolsPanel .field select{min-height:38px;padding:6px 8px
+  }#layoutToolsPanel .layout-mode-field,
+  #layoutToolsPanel .field.tool,
+  #layoutToolsPanel .grid-resize-actions,
+  #layoutToolsPanel .multi-select-controls,
+  #layoutToolsPanel .freeform-tools{grid-column:1 / -1
+  }#layoutToolsPanel .multi-select-controls{display:grid;grid-template-columns:repeat(2, minmax(0, 1fr));align-items:center;width:100%;min-width:0;overflow:visible
+  }#layoutToolsPanel .multi-select-controls > *{min-width:0;max-width:100%
+  }#layoutToolsPanel .selection-count{justify-self:stretch;text-align:center
+  }#layoutToolsPanel #designSizeControl{grid-column:1 / -1;display:grid;grid-template-columns:auto minmax(0, 1fr) auto;width:100%
+  }.grid-resize-actions{grid-template-columns:minmax(0, 1fr) auto;width:100%;min-width:0
+  }.grid-resize-actions #buildGridBtn{min-width:0
+  }.grid-resize-status{grid-column:1 / -1
+  }.class-setup-mobile-nav{display:grid;grid-template-columns:auto minmax(0, 1fr);align-items:center;gap:8px;padding:7px 9px;border-bottom:1px solid var(--border);background:var(--panel, #fff)
+  }.class-setup-mobile-nav label{margin:0;font-size:9px;white-space:nowrap
+  }.class-setup-mobile-nav select{min-width:0;min-height:38px
+  }.class-setup-top-nav{display:none
+  }#toggleClassSetupHeaderBtn,
+  .mobile-collapse-toggle{display:inline-flex;align-items:center;justify-content:center
+  }.class-setup-header{display:grid;grid-template-columns:minmax(0, 1fr);gap:7px;padding:9px 10px
+  }.class-setup-header-actions{display:grid;grid-template-columns:repeat(3, minmax(0, 1fr));width:100%;gap:5px
+  }.class-setup-header-actions button{min-width:0;min-height:36px;padding:5px 7px;font-size:10px;white-space:normal
+  }.class-setup-header-collapsed .class-setup-title-block p,
+  .class-setup-header-collapsed .class-setup-title-block .class-setup-eyebrow{display:none
+  }.class-setup-header-collapsed .class-setup-title-block h2{margin:0;font-size:18px
+  }.class-setup-content{padding:7px
+  }.class-setup-section-panel.active{gap:8px
+  }.class-setup-section-heading{display:grid;grid-template-columns:minmax(0, 1fr) auto;align-items:center;gap:7px;padding:9px 10px
+  }.class-setup-section-heading-actions{display:flex;align-items:center;justify-content:flex-end;gap:5px
+  }.class-setup-section-heading-actions > button{min-height:34px;padding:4px 7px;font-size:9.5px
+  }.class-setup-section-heading.mobile-collapsed p,
+  .class-setup-section-heading.mobile-collapsed .class-setup-eyebrow,
+  .class-setup-section-heading.mobile-collapsed .class-setup-inline-status{display:none
+  }.class-setup-section-heading.mobile-collapsed h3{margin:0;font-size:16px
+  }.class-setup-roster-source-grid{gap:7px
+  }.class-setup-roster-source-card{display:grid;grid-template-columns:minmax(0, 1fr) auto;align-items:center;gap:6px 8px;padding:10px
+  }.class-setup-roster-source-card > .class-setup-eyebrow,
+  .class-setup-roster-source-card > h4{grid-column:1
+  }.class-setup-roster-source-card > .mobile-collapse-toggle{grid-column:2;grid-row:1 / span 2;min-height:34px
+  }.class-setup-mobile-collapsible-body{grid-column:1 / -1;display:grid;gap:8px;min-width:0
+  }.class-setup-roster-source-card.mobile-collapsed .class-setup-mobile-collapsible-body{display:none
+  }.class-setup-roster-source-card.mobile-collapsed h4{margin:0;font-size:14px
+  }.class-setup-import-main #toggleCsvImportBtn{display:inline-flex
+  }.class-setup-import-main .csv-import-body.collapsed{display:none
+  }.class-setup-editor-card,
+  .class-setup-roster-source-card,
+  .class-setup-section-heading{border-radius:11px
+  }.seat-edit-modal .button-row{display:grid;grid-template-columns:repeat(2, minmax(0, 1fr))
+  }.seat-edit-modal .button-row button{min-width:0
+  }
+}@media (max-width: 430px){.class-setup-header-actions{grid-template-columns:repeat(2, minmax(0, 1fr))
+  }#toggleClassSetupHeaderBtn{grid-column:1 / -1
+  }.seat-display-controls,
+  body.visibility-mode .seat-display-controls{padding:5px 6px
+  }.seat-display-control{grid-template-columns:54px minmax(72px, 1fr) 40px;gap:5px
+  }.seat-display-control label{font-size:9px
+  }
+}.mobile-room-actions-panel,
+.mobile-room-actions-toggle-row,
+body.product-v4[data-workflow="room"] #guideRandomSeatingBtn,
+body.product-v4[data-workflow="review"] #guideRandomSeatingBtn,
+body.product-v4[data-workflow="seating"] #toggleLayoutToolsBtn{display:none
+}@media (max-width: 900px){body.product-v4[data-workflow="room"] .center-panel > .panel-header .button-row,
+  body.product-v4[data-workflow="seating"] .center-panel > .panel-header .button-row,
+  body.product-v4[data-workflow="review"] .center-panel > .panel-header .button-row{overflow:visible
+  }body.product-v4[data-workflow="room"] .center-panel > .panel-header .button-row > button,
+  body.product-v4[data-workflow="seating"] .center-panel > .panel-header .button-row > button,
+  body.product-v4[data-workflow="review"] .center-panel > .panel-header .button-row > button{display:none
+  }body.product-v4[data-workflow="room"] .center-panel > .panel-header .seat-display-controls,
+  body.product-v4[data-workflow="seating"] .center-panel > .panel-header .seat-display-controls,
+  body.product-v4[data-workflow="review"] .center-panel > .panel-header .seat-display-controls{flex:1 1 100%;width:100%;max-width:100%
+  }.mobile-room-actions-toggle-row{display:flex;justify-content:stretch;padding:7px 9px;border-bottom:1px solid var(--border);background:var(--panel, #fff)
+  }.mobile-room-actions-toggle-row[hidden]{display:none
+  }.mobile-room-actions-toggle-row button{width:100%;min-height:38px
+  }.mobile-room-actions-panel{display:grid;gap:8px;padding:9px;border-bottom:1px solid var(--border);background:var(--panel, #fff)
+  }.mobile-room-actions-panel[hidden]{display:none
+  }.mobile-room-actions-header{display:flex;align-items:center;justify-content:space-between;gap:10px
+  }.mobile-room-actions-header > div{display:grid;gap:1px;min-width:0
+  }.mobile-room-actions-header small{color:var(--muted);font-size:9px
+  }.mobile-room-actions-grid{display:grid;grid-template-columns:repeat(2, minmax(0, 1fr));gap:6px
+  }.mobile-room-actions-grid button{min-width:0;min-height:38px;padding:6px 8px;white-space:normal;overflow-wrap:anywhere
+  }
+}@media (max-width: 360px){.mobile-room-actions-grid{grid-template-columns:minmax(0, 1fr)
+  }
 }body.visibility-mode.vis-hide-wizard #guidedLearningBtn,
 body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
 }
@@ -5076,7 +5189,11 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
               <span id="designSizeValue" class="pill">28px</span>
             </div>
           </div>
-          <button type="button" id="buildGridBtn" class="secondary grid-only-tool">Build/Resize Grid</button>
+          <div class="grid-resize-actions grid-only-tool" role="group" aria-label="Grid build and resize controls">
+            <button type="button" id="buildGridBtn" class="secondary" aria-pressed="false" title="Enter grid resize mode, then apply the row and column values.">Build/Resize Grid</button>
+            <button type="button" id="cancelGridResizeBtn" class="ghost" hidden>Cancel</button>
+            <span id="gridResizeStatus" class="grid-resize-status" role="status" aria-live="polite">Current grid: 5 rows × 6 columns</span>
+          </div>
           <button type="button" id="makeAllSeatsBtn" class="secondary grid-only-tool">All Seats</button>
           <button type="button" id="emptyGridBtn" class="danger grid-only-tool">Empty Grid</button>
           <div id="freeformTools" class="freeform-tools freeform-only-tool" aria-label="Freeform room layout tools">
@@ -5885,6 +6002,10 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
       </div>
       <div class="modal-body">
         <div id="seatEditSummary" class="successbox"></div>
+        <div id="seatEditLockNotice" class="warningbox seat-edit-lock-notice" role="status" hidden>
+          <strong>This seat is locked.</strong>
+          <span>Its current settings are shown read-only. Use Unlock Seat before changing the student, groups, or cell type.</span>
+        </div>
         <section class="section">
           <h3>Assign User</h3>
           <div class="field">
@@ -6356,7 +6477,7 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
 const APP_CONFIG = Object.freeze({
   name: 'Classroom Seating Planner',
   shortName: 'Seating Planner',
-  version: '6.5.6',
+  version: '6.5.7',
   copyrightHolder: 'Chris L. Franklin',
   copyrightYear: '2026',
   releaseDate: '2026-07-15',
@@ -6629,10 +6750,23 @@ const PROJECT_FEATURES = [
 
 const RELEASE_HISTORY = [
   {
+    version: '6.5.7',
+    date: 'July 15, 2026',
+    title: 'Mobile control compaction and interaction repair',
+    current: true,
+    changes: [
+      'Added stable mobile collapse states for Class Setup, roster-import sources, Room Design controls, and other space-heavy panels so the active workspace receives most of the viewport.',
+      'Repaired unlocked-seat double-click handling, added conflict-aware double-tap and long-press seat settings gestures, and made locked-seat settings visibly read-only with an explicit Unlock path.',
+      'Restored Build/Resize as a staged, visible, cancellable room-grid mode with keyboard support, undo and redo history, and normal save persistence.',
+      'Replaced clipped mobile room action strips with workflow-specific compact action menus for Room Design, Seat Students, and Review while retaining the original command handlers.',
+      'Added a generated runtime control inventory and expanded real-browser viewport auditing across workflows, dialogs, Settings, Help, mobile, tablet, landscape, and desktop states.'
+    ]
+  },
+  {
     version: '6.5.6',
     date: 'July 15, 2026',
     title: 'Complete responsive UI and mobile audit',
-    current: true,
+    current: false,
     changes: [
       'Repaired mobile workflow panel routing so Seat Students can switch between the room and roster, Review can switch between the room and Chart Review, and single-panel workflows no longer show a misleading selector.',
       'Collapsed Class Setup to a true full-width mobile workspace and added compact workflow labels, fitted controls, readable seat actions, and reliable narrow-screen search and password controls.',
@@ -7187,6 +7321,11 @@ const uiState = {
   mobileCarryItem: null,
   mobileRoomPanActive: false,
   mobileRoomPanPointer: null,
+  mobileRoomActionsOpen: false,
+  gridResizeModeActive: false,
+  gridResizeOriginalRows: null,
+  gridResizeOriginalCols: null,
+  gridResizeDirty: false,
   visibilityPreviousMobileRoomPan: false,
   groupManagerCarryItem: null,
   visibilityMode: false,
@@ -8279,8 +8418,116 @@ function refreshLayoutToolsToggle() {
   if (!button) return;
   const collapsed = document.body.classList.contains('layout-tools-collapsed');
   button.textContent = collapsed ? '▾' : '▴';
+  button.dataset.mobileLabel = collapsed ? 'Layout tools' : 'Hide tools';
   button.setAttribute('aria-label', collapsed ? 'Expand layout tools' : 'Collapse layout tools');
   button.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+}
+
+function applyMobileLayoutToolsPreference(workflow = document.body.dataset.workflow || '') {
+  if (!isMobileViewport() || workflow !== 'room') return;
+  const stored = safeStorageGet('sessionStorage', 'seatingPlannerMobileLayoutTools');
+  const collapsed = stored === 'expanded' ? false : true;
+  document.body.classList.toggle('layout-tools-collapsed', collapsed);
+  refreshLayoutToolsToggle();
+}
+
+function normalizedGridInputValue(id, fallback) {
+  return Math.max(1, Math.min(30, Number(el(id)?.value) || Number(fallback) || 1));
+}
+
+function syncGridResizeControls() {
+  const active = Boolean(uiState.gridResizeModeActive && state.layoutMode === 'grid');
+  const nextRows = normalizedGridInputValue('rowsInput', state.rows || 5);
+  const nextCols = normalizedGridInputValue('colsInput', state.cols || 6);
+  const changed = nextRows !== Number(state.rows) || nextCols !== Number(state.cols);
+  uiState.gridResizeDirty = active && changed;
+  document.body.classList.toggle('grid-resize-mode', active);
+
+  const button = el('buildGridBtn');
+  if (button) {
+    button.textContent = active ? 'Apply Grid Size' : 'Build/Resize Grid';
+    button.classList.toggle('active-tool', active);
+    button.setAttribute('aria-pressed', active ? 'true' : 'false');
+    button.title = active
+      ? 'Apply the pending row and column values to the room grid.'
+      : 'Enter grid resize mode, then change rows or columns and apply the new size.';
+  }
+
+  const cancel = el('cancelGridResizeBtn');
+  if (cancel) cancel.hidden = !active;
+
+  const status = el('gridResizeStatus');
+  if (status) {
+    status.textContent = active
+      ? changed
+        ? `Pending: ${nextRows} rows × ${nextCols} columns. Current: ${state.rows} × ${state.cols}.`
+        : `Resize mode active. Current grid: ${state.rows} rows × ${state.cols} columns.`
+      : `Current grid: ${state.rows} rows × ${state.cols} columns`;
+  }
+}
+
+function enterGridResizeMode({ announce = true } = {}) {
+  if (state.layoutMode !== 'grid') {
+    setLiveStatusMessage('Switch to Standard Grid before changing rows or columns.');
+    return false;
+  }
+  if (eyeModeBlocksRoomEditing()) {
+    blockEyeModeAction('room');
+    return false;
+  }
+  if (!uiState.gridResizeModeActive) {
+    uiState.gridResizeModeActive = true;
+    uiState.gridResizeOriginalRows = Number(state.rows) || 5;
+    uiState.gridResizeOriginalCols = Number(state.cols) || 6;
+  }
+  document.body.classList.remove('layout-tools-collapsed');
+  refreshLayoutToolsToggle();
+  syncGridResizeControls();
+  if (announce) setLiveStatusMessage('Grid resize mode is active. Change Rows or Columns, then choose Apply Grid Size.');
+  return true;
+}
+
+function cancelGridResizeMode({ announce = true } = {}) {
+  const wasActive = uiState.gridResizeModeActive;
+  uiState.gridResizeModeActive = false;
+  uiState.gridResizeDirty = false;
+  uiState.gridResizeOriginalRows = null;
+  uiState.gridResizeOriginalCols = null;
+  if (el('rowsInput')) el('rowsInput').value = String(state.rows);
+  if (el('colsInput')) el('colsInput').value = String(state.cols);
+  syncGridResizeControls();
+  if (announce && wasActive) setLiveStatusMessage('Grid resize canceled. The room size was not changed.');
+}
+
+function applyGridResizeFromInputs() {
+  if (!uiState.gridResizeModeActive) return enterGridResizeMode();
+  if (state.layoutMode !== 'grid') {
+    cancelGridResizeMode({ announce: false });
+    setLiveStatusMessage('Switch to Standard Grid before changing rows or columns.');
+    return false;
+  }
+  if (eyeModeBlocksRoomEditing()) return blockEyeModeAction('room');
+  const nextRows = normalizedGridInputValue('rowsInput', state.rows || 5);
+  const nextCols = normalizedGridInputValue('colsInput', state.cols || 6);
+  const changed = nextRows !== Number(state.rows) || nextCols !== Number(state.cols);
+  if (!changed) {
+    cancelGridResizeMode({ announce: false });
+    setLiveStatusMessage(`Grid remains ${state.rows} rows by ${state.cols} columns.`);
+    return true;
+  }
+
+  pushUndoSnapshot(`Before resizing grid to ${nextRows}×${nextCols}`);
+  state.rows = nextRows;
+  state.cols = nextCols;
+  ensureGrid();
+  uiState.gridResizeModeActive = false;
+  uiState.gridResizeDirty = false;
+  uiState.gridResizeOriginalRows = null;
+  uiState.gridResizeOriginalCols = null;
+  renderAll();
+  syncGridResizeControls();
+  setLiveStatusMessage(`Grid resized to ${nextRows} rows by ${nextCols} columns. Undo is available.`);
+  return true;
 }
 
 function refreshNamesOnlyToggle() {
@@ -8465,6 +8712,7 @@ function keepMobileWorkspaceUsable() {
     setMobileRoomPanActive(false);
   }
   syncMobileRoomPanUi();
+  ClassSetupWorkspaceV54?.syncResponsiveCollapsibles?.();
 }
 
 
@@ -10145,6 +10393,7 @@ function switchLayoutMode(mode) {
   const nextMode = mode === 'freeform' ? 'freeform' : 'grid';
   if (nextMode === state.layoutMode) return;
   if (eyeModeBlocksRoomEditing()) return blockEyeModeAction('room');
+  if (uiState.gridResizeModeActive) cancelGridResizeMode({ announce: false });
   if (state.layoutMode === 'freeform') syncFreeformAssignmentsToGridByPosition();
   if (nextMode === 'freeform') {
     state.layoutMode = 'freeform';
@@ -10618,9 +10867,14 @@ function setSeatEditLockedControls(isLocked) {
     const node = el(id);
     if (!node) return;
     node.disabled = Boolean(isLocked);
+    node.setAttribute('aria-disabled', isLocked ? 'true' : 'false');
     if (isLocked) node.title = 'Unlock this seat before editing this value.';
     else node.removeAttribute('title');
   });
+  const modal = el('seatEditModal');
+  modal?.classList.toggle('seat-edit-locked', Boolean(isLocked));
+  const notice = el('seatEditLockNotice');
+  if (notice) notice.hidden = !isLocked;
 }
 
 function freeformObjectStudent(obj, lookups) {
@@ -10833,6 +11087,20 @@ function renderFreeformLayout() {
       mirrorFreeformSeatToGrid(obj, { clearStudentDuplicates: false });
       openSeatEditModal(cellKey, { freeformObjectId: obj.id });
     });
+    if (obj.type === 'seat') {
+      node.title += ' · Double-click with a mouse, or double-tap or press and hold on touch, to open seat settings.';
+      installSeatSettingsPointerGesture(node, () => {
+        if (eyeModeBlocksSeatEditing() || eyeModeBlocksRoomEditing()) {
+          blockEyeModeAction(eyeModeBlocksSeatEditing() ? 'seat' : 'room');
+          return false;
+        }
+        const cellKey = ensureFreeformSeatGridLink(obj);
+        if (!cellKey || !state.cells[cellKey]) return false;
+        mirrorFreeformSeatToGrid(obj, { clearStudentDuplicates: false });
+        openSeatEditModal(cellKey, { freeformObjectId: obj.id });
+        return true;
+      });
+    }
     node.addEventListener('dragover', event => {
       if (obj.type === 'seat' && !obj.locked && !eyeModeBlocksSeatEditing()) { event.preventDefault(); event.stopPropagation(); node.classList.add('drop-target'); }
     });
@@ -13531,10 +13799,220 @@ function delegatedGridStudent(event) {
   return student && grid?.contains(student) ? student : null;
 }
 
+function seatGestureTargetIsAction(target) {
+  return Boolean(target?.closest?.([
+    '[data-toggle-seat-lock]',
+    '[data-clear-seat]',
+    '[data-clear-anchor-seat]',
+    '[data-block-seat]',
+    '[data-make-seat]',
+    '[data-placement-why]',
+    '[data-freeform-clear-seat]',
+    '[data-freeform-lock]',
+    '[data-freeform-delete]',
+    '[data-freeform-rotate]',
+    '[data-freeform-resize]',
+    'input',
+    'select',
+    'textarea'
+  ].join(',')));
+}
+
+function installSeatSettingsPointerGesture(node, openSettings) {
+  if (!node || node.dataset.seatSettingsGestureInstalled === 'true') return;
+  node.dataset.seatSettingsGestureInstalled = 'true';
+  let pointer = null;
+  let lastTapAt = 0;
+  let suppressUntil = 0;
+  const clearPointer = () => {
+    if (pointer?.timer) clearTimeout(pointer.timer);
+    pointer = null;
+  };
+  const open = reason => {
+    const opened = openSettings?.();
+    if (opened === false) return false;
+    suppressUntil = Date.now() + 650;
+    node.dataset.suppressSeatContextUntil = String(suppressUntil);
+    setLiveStatusMessage(reason === 'long-press'
+      ? 'Seat settings opened. Press and hold is the touch equivalent of double-click.'
+      : 'Seat settings opened from a double-tap.');
+    return true;
+  };
+
+  node.addEventListener('pointerdown', event => {
+    if (!['touch', 'pen'].includes(event.pointerType) || event.isPrimary === false || event.button !== 0) return;
+    if (uiState.mobileRoomPanActive || seatGestureTargetIsAction(event.target)) return;
+    clearPointer();
+    pointer = {
+      id: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      moved: false,
+      longPress: false,
+      timer: setTimeout(() => {
+        if (!pointer || pointer.id !== event.pointerId || pointer.moved) return;
+        pointer.longPress = open('long-press');
+      }, 550)
+    };
+  }, true);
+
+  node.addEventListener('pointermove', event => {
+    if (!pointer || pointer.id !== event.pointerId) return;
+    if (Math.hypot(event.clientX - pointer.startX, event.clientY - pointer.startY) > 10) {
+      pointer.moved = true;
+      if (pointer.timer) clearTimeout(pointer.timer);
+      pointer.timer = null;
+    }
+  }, true);
+
+  node.addEventListener('pointerup', event => {
+    if (!pointer || pointer.id !== event.pointerId) return;
+    const completed = pointer;
+    clearPointer();
+    if (completed.moved) {
+      lastTapAt = 0;
+      return;
+    }
+    if (completed.longPress) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      lastTapAt = 0;
+      return;
+    }
+    const now = Date.now();
+    if (now - lastTapAt <= 360) {
+      lastTapAt = 0;
+      if (open('double-tap')) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+      }
+    } else {
+      lastTapAt = now;
+    }
+  }, true);
+
+  node.addEventListener('pointercancel', clearPointer, true);
+  node.addEventListener('click', event => {
+    if (Date.now() > suppressUntil) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+  }, true);
+  node.addEventListener('contextmenu', event => {
+    const until = Number(node.dataset.suppressSeatContextUntil || 0);
+    if (Date.now() > until) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+  }, true);
+}
+
+function installDelegatedGridSeatSettingsGesture(grid) {
+  let pointer = null;
+  let lastTapAt = 0;
+  let lastTapCellKey = '';
+  let suppressUntil = 0;
+  let suppressCellKey = '';
+  const clearPointer = () => {
+    if (pointer?.timer) clearTimeout(pointer.timer);
+    pointer = null;
+  };
+  const open = (cellKey, reason) => {
+    const cell = state.cells[cellKey];
+    if (!cell || cell.type !== 'seat' || uiState.designMode) return false;
+    if (eyeModeBlocksSeatEditing() || eyeModeBlocksRoomEditing()) {
+      blockEyeModeAction(eyeModeBlocksSeatEditing() ? 'seat' : 'room');
+      return false;
+    }
+    if (!openSeatEditModal(cellKey)) return false;
+    suppressUntil = Date.now() + 650;
+    suppressCellKey = cellKey;
+    setLiveStatusMessage(reason === 'long-press'
+      ? 'Seat settings opened. Press and hold is the touch equivalent of double-click.'
+      : 'Seat settings opened from a double-tap.');
+    return true;
+  };
+
+  grid.addEventListener('pointerdown', event => {
+    const cellNode = delegatedGridCell(event);
+    const cell = cellNode ? state.cells[cellNode.dataset.cellKey] : null;
+    if (!cellNode || cell?.type !== 'seat' || uiState.designMode) return;
+    if (!['touch', 'pen'].includes(event.pointerType) || event.isPrimary === false || event.button !== 0) return;
+    if (uiState.mobileRoomPanActive || seatGestureTargetIsAction(event.target)) return;
+    clearPointer();
+    pointer = {
+      id: event.pointerId,
+      cellKey: cellNode.dataset.cellKey,
+      startX: event.clientX,
+      startY: event.clientY,
+      moved: false,
+      longPress: false,
+      timer: setTimeout(() => {
+        if (!pointer || pointer.id !== event.pointerId || pointer.moved) return;
+        pointer.longPress = open(pointer.cellKey, 'long-press');
+      }, 550)
+    };
+  }, true);
+
+  grid.addEventListener('pointermove', event => {
+    if (!pointer || pointer.id !== event.pointerId) return;
+    if (Math.hypot(event.clientX - pointer.startX, event.clientY - pointer.startY) > 10) {
+      pointer.moved = true;
+      if (pointer.timer) clearTimeout(pointer.timer);
+      pointer.timer = null;
+    }
+  }, true);
+
+  grid.addEventListener('pointerup', event => {
+    if (!pointer || pointer.id !== event.pointerId) return;
+    const completed = pointer;
+    clearPointer();
+    if (completed.moved) {
+      lastTapAt = 0;
+      lastTapCellKey = '';
+      return;
+    }
+    if (completed.longPress) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      lastTapAt = 0;
+      lastTapCellKey = '';
+      return;
+    }
+    const now = Date.now();
+    if (completed.cellKey === lastTapCellKey && now - lastTapAt <= 360) {
+      lastTapAt = 0;
+      lastTapCellKey = '';
+      if (open(completed.cellKey, 'double-tap')) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+      }
+    } else {
+      lastTapAt = now;
+      lastTapCellKey = completed.cellKey;
+    }
+  }, true);
+
+  grid.addEventListener('pointercancel', clearPointer, true);
+  grid.addEventListener('click', event => {
+    if (Date.now() > suppressUntil) return;
+    const cellNode = delegatedGridCell(event);
+    if (!cellNode || cellNode.dataset.cellKey !== suppressCellKey) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+  }, true);
+  grid.addEventListener('contextmenu', event => {
+    if (Date.now() > suppressUntil) return;
+    const cellNode = delegatedGridCell(event);
+    if (!cellNode || cellNode.dataset.cellKey !== suppressCellKey) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+  }, true);
+}
+
 function installGridEventDelegation() {
   const grid = el('seatGrid');
   if (!grid || grid.dataset.delegatedEventsInstalled === 'true') return;
   grid.dataset.delegatedEventsInstalled = 'true';
+  installDelegatedGridSeatSettingsGesture(grid);
 
   grid.addEventListener('contextmenu', event => {
     const studentTarget = delegatedGridStudent(event);
@@ -13554,8 +14032,12 @@ function installGridEventDelegation() {
 
   grid.addEventListener('dblclick', event => {
     const cell = delegatedGridCell(event);
-    if (!cell || (event.target instanceof Element && event.target.closest('button'))) return;
+    const target = event.target instanceof Element ? event.target : null;
+    if (!cell || seatGestureTargetIsAction(target)) return;
+    const button = target?.closest('button');
+    if (button && !button.classList.contains('keyboard-seat-focus')) return;
     event.preventDefault();
+    event.stopPropagation();
     if (eyeModeBlocksSeatEditing() || eyeModeBlocksRoomEditing()) return blockEyeModeAction(eyeModeBlocksSeatEditing() ? 'seat' : 'room');
     openSeatEditModal(cell.dataset.cellKey);
   });
@@ -13749,6 +14231,9 @@ function renderGrid() {
                 <div class="cell-actions">${cell.type === 'blocked' ? `<button class="tiny secondary wide" data-make-seat="${cellKey}" title="Convert this blocked cell back into an assignable seat.">Make Seat</button>` : ''}</div>
               `}
             `;
+      }
+      if (cell.type === 'seat' && !uiState.designMode) {
+        div.title = `${div.title ? `${div.title} · ` : ''}Double-click with a mouse, or double-tap or press and hold on touch, to open seat settings.`;
       }
       fragment.appendChild(div);
     }
@@ -14235,8 +14720,9 @@ function renderAll() {
   persistActiveClass();
   const rowsInput = el('rowsInput');
   const colsInput = el('colsInput');
-  if (document.activeElement !== rowsInput) rowsInput.value = state.rows;
-  if (document.activeElement !== colsInput) colsInput.value = state.cols;
+  if (!uiState.gridResizeModeActive && document.activeElement !== rowsInput) rowsInput.value = state.rows;
+  if (!uiState.gridResizeModeActive && document.activeElement !== colsInput) colsInput.value = state.cols;
+  syncGridResizeControls();
   syncFreeformControlsFromState();
   renderClassManager();
   renderGroupMemberPicker();
@@ -18105,7 +18591,7 @@ function cellTypeOptionsHtml(selected = 'seat') {
 function openSeatEditModal(cellKey, options = {}) {
   if (eyeModeBlocksSeatEditing() || eyeModeBlocksRoomEditing()) return blockEyeModeAction(eyeModeBlocksSeatEditing() ? 'seat' : 'room');
   const cell = state.cells[cellKey];
-  if (!cell) return;
+  if (!cell) return false;
   uiState.activeSeatEditCellKey = cellKey;
   uiState.activeSeatEditFreeformObjectId = options.freeformObjectId || null;
   const freeformObj = activeSeatEditFreeformObject();
@@ -18114,7 +18600,7 @@ function openSeatEditModal(cellKey, options = {}) {
   const student = getStudent(cell.assignedStudentId);
   const anchors = (cell.anchorGroupIds || []).map(getGroup).filter(Boolean);
   el('seatEditTitle').textContent = `Edit Cell ${cell.row},${cell.col}`;
-  el('seatEditSummary').textContent = `Current: ${objectLabel(cell.type)}${student ? ` · ${studentDisplay(student)}` : ''}${anchors.length ? ` · Reserved for ${anchors.map(b => b.name).join(', ')}` : ''}`;
+  el('seatEditSummary').textContent = `Current: ${objectLabel(cell.type)}${student ? ` · ${studentDisplay(student)}` : ''}${anchors.length ? ` · Reserved for ${anchors.map(b => b.name).join(', ')}` : ''}${seatLocked ? ' · Locked (read-only until unlocked)' : ' · Unlocked'}`;
   const studentOptions = ['<option value="">No student selected</option>'].concat(
     [...state.students].sort((a,b) => studentDisplay(a).localeCompare(studentDisplay(b))).map(s => `<option value="${escapeHtml(s.id)}" ${String(s.id) === String(cell.assignedStudentId) ? 'selected' : ''}>${escapeHtml(studentDisplay(s))} - ${escapeHtml(studentMetaText(s))}</option>`)
   ).join('');
@@ -18132,6 +18618,8 @@ function openSeatEditModal(cellKey, options = {}) {
     el('seatEditSummary').textContent += freeformObj.locked ? ' · Freeform locked: unlock before changing assignment, groups, or type' : ' · Freeform unlocked';
   }
   el('seatEditModal').classList.add('show');
+  requestAnimationFrame(() => (seatLocked ? el('seatEditLockBtn') : el('seatEditStudentSelect'))?.focus());
+  return true;
 }
 
 function closeSeatEditModal() {
@@ -21497,25 +21985,25 @@ function wireEvents() {
   document.addEventListener('mousemove', selectCellFromPointer);
   document.addEventListener('mouseup', endCellSelection);
 
-  const updateGridFromInputs = () => {
-    if (state.layoutMode === 'freeform') return setLiveStatusMessage('Switch to Standard Grid before changing rows, columns, or rebuilding the row/column grid.');
-    if (eyeModeBlocksRoomEditing()) return blockEyeModeAction('room');
-    state.rows = Math.max(1, Math.min(30, Number(el('rowsInput').value) || state.rows || 5));
-    state.cols = Math.max(1, Math.min(30, Number(el('colsInput').value) || state.cols || 6));
-    ensureGrid();
-    if (state.layoutMode === 'freeform') ensureFreeformLayout({ rebuildMissing: true });
-    renderAll();
-  };
-
-  let resizeTimer = null;
-  const queueGridResize = () => {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(updateGridFromInputs, 250);
-  };
-
-  el('buildGridBtn').addEventListener('click', updateGridFromInputs);
-  el('rowsInput').addEventListener('input', queueGridResize);
-  el('colsInput').addEventListener('input', queueGridResize);
+  el('buildGridBtn').addEventListener('click', applyGridResizeFromInputs);
+  el('cancelGridResizeBtn')?.addEventListener('click', () => cancelGridResizeMode());
+  ['rowsInput', 'colsInput'].forEach(id => {
+    el(id)?.addEventListener('focus', () => enterGridResizeMode({ announce: false }));
+    el(id)?.addEventListener('input', () => {
+      enterGridResizeMode({ announce: false });
+      syncGridResizeControls();
+    });
+    el(id)?.addEventListener('keydown', event => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        applyGridResizeFromInputs();
+      }
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        cancelGridResizeMode();
+      }
+    });
+  });
 
   el('layoutModeSelect')?.addEventListener('change', event => switchLayoutMode(event.target.value));
   el('convertGridToFreeformBtn')?.addEventListener('click', () => {
@@ -21886,6 +22374,9 @@ function wireEvents() {
 
   el('toggleLayoutToolsBtn').addEventListener('click', () => {
     document.body.classList.toggle('layout-tools-collapsed');
+    if (isMobileViewport()) {
+      safeStorageSet('sessionStorage', 'seatingPlannerMobileLayoutTools', document.body.classList.contains('layout-tools-collapsed') ? 'collapsed' : 'expanded');
+    }
     refreshLayoutToolsToggle();
   });
 
@@ -25332,8 +25823,10 @@ const ModernizationSuite = (() => {
         node.appendChild(button);
       }
       button.dataset.keyboardCellKey = node.dataset.cellKey;
-      button.setAttribute('aria-label', `Cell ${cell?.row || ''},${cell?.col || ''}, ${objectLabel(cell?.type || 'empty')}${student ? `, assigned to ${studentDisplay(student)}` : ''}`);
-      button.title = uiState.keyboardCarryStudentId ? 'Place the selected student here' : 'Select this seat for keyboard placement';
+      button.setAttribute('aria-label', `Cell ${cell?.row || ''},${cell?.col || ''}, ${objectLabel(cell?.type || 'empty')}${student ? `, assigned to ${studentDisplay(student)}` : ''}. Double-click or press and hold for seat settings.`);
+      button.title = uiState.keyboardCarryStudentId
+        ? 'Place the selected student here'
+        : 'Double-click for seat settings. On touch, double-tap or press and hold.';
     });
     document.querySelectorAll('.freeform-object[data-object-id]').forEach(node => {
       node.tabIndex = -1;
@@ -26631,6 +27124,10 @@ const ProductExperience = (() => {
       openSaveSetupModal();
       return;
     }
+    if (action === 'room-tools' && isMobileViewport() && activeWorkflow === 'room') {
+      setMobileRoomActionsOpen(!uiState.mobileRoomActionsOpen);
+      return;
+    }
     const clicks = {
       'class-tools': 'classToolsBtn',
       'room-tools': 'openFreeformWorkspaceBtn',
@@ -26689,11 +27186,14 @@ const ProductExperience = (() => {
       if (!options.silent) setLiveStatusMessage('Presentation mode stays in Review. Exit Presentation mode to open editing workflows.');
       key = 'review';
     }
-    if (activeWorkflow === 'room' && key !== 'room' && uiState.designMode) {
-      uiState.designMode = false;
-      hideDesignModeTooltip();
-      applyDesignModeUi();
-      renderGrid();
+    if (activeWorkflow === 'room' && key !== 'room') {
+      if (uiState.gridResizeModeActive) cancelGridResizeMode({ announce: false });
+      if (uiState.designMode) {
+        uiState.designMode = false;
+        hideDesignModeTooltip();
+        applyDesignModeUi();
+        renderGrid();
+      }
     }
     const requestedAccessKey = `collab${key[0].toUpperCase()}${key.slice(1)}`;
     if (document.body.dataset[requestedAccessKey] === 'none') {
@@ -26702,9 +27202,11 @@ const ProductExperience = (() => {
       if (!options.silent) setLiveStatusMessage(`${WORKFLOWS[key].label} is hidden by your collaborator interface profile.`);
       key = fallback;
     }
+    if (!['room', 'seating', 'review'].includes(key)) uiState.mobileRoomActionsOpen = false;
     activeWorkflow = key;
     document.body.dataset.workflow = key;
     safeStorageSet('sessionStorage', 'seatingPlannerWorkflow', key)
+    applyMobileLayoutToolsPreference(key);
     if (isMobileViewport()) setMobilePanel('layout');
     else syncMobilePanelNavigation('layout');
     document.querySelectorAll('.v4-workflow-step[data-workflow]').forEach(button => {
@@ -26778,6 +27280,120 @@ const ProductExperience = (() => {
     if (shareState) shareState.textContent = document.getElementById('inlineSaveStatus')?.textContent || 'Browser save status unavailable';
     const title = document.querySelector('.center-panel > .panel-header > h2');
     if (title) title.textContent = activeWorkflow === 'room' ? 'Classroom canvas' : activeWorkflow === 'seating' ? 'Seating workspace' : activeWorkflow === 'review' ? 'Chart preview' : 'Classroom workspace';
+    syncMobileRoomActions();
+  }
+
+  function mobileRoomActionLabel(button) {
+    const visibleText = String(button?.textContent || '').trim().replace(/\s+/g, ' ');
+    if (/[A-Za-z0-9]/.test(visibleText)) return visibleText;
+    return String(button?.getAttribute('aria-label') || button?.title || 'Room action').trim().replace(/\s+/g, ' ');
+  }
+
+  function mobileRoomActionIds(workflow = activeWorkflow) {
+    const shared = ['todayModeBtn', 'hideUnassignedTitlesBtn', 'openSeatingPlansBtn', 'globalSearchBtn', 'layoutNamesOnlyBtn'];
+    if (workflow === 'room') return [...shared, 'openRoomTemplatesBtn', 'toggleLayoutToolsBtn'];
+    if (workflow === 'seating') return ['generateBtn', 'randomizeAllBtn', 'guideRandomSeatingBtn', 'clearAssignmentsBtn', 'clearAnchorsBtn', ...shared];
+    if (workflow === 'review') return shared;
+    return [];
+  }
+
+  function mobileRoomActionTitle(workflow = activeWorkflow) {
+    if (workflow === 'seating') return 'Seating actions';
+    if (workflow === 'review') return 'Review actions';
+    return 'Room actions';
+  }
+
+  function renderMobileRoomActions() {
+    const center = document.querySelector('main.app > .center-panel');
+    const source = center?.querySelector(':scope > .panel-header .button-row');
+    if (!center || !source) return null;
+    let toggleRow = document.getElementById('mobileRoomActionsToggleRow');
+    if (!toggleRow) {
+      toggleRow = createElement('div', 'mobile-room-actions-toggle-row no-print', '<button id="mobileRoomActionsToggleBtn" class="secondary" type="button" aria-expanded="false" aria-controls="mobileRoomActionsPanel">Room actions</button>');
+      toggleRow.id = 'mobileRoomActionsToggleRow';
+      center.insertBefore(toggleRow, document.getElementById('layoutToolsPanel') || center.firstChild);
+      toggleRow.querySelector('#mobileRoomActionsToggleBtn')?.addEventListener('click', () => setMobileRoomActionsOpen(!uiState.mobileRoomActionsOpen));
+    }
+    let panel = document.getElementById('mobileRoomActionsPanel');
+    if (!panel) {
+      panel = createElement('section', 'mobile-room-actions-panel no-print');
+      panel.id = 'mobileRoomActionsPanel';
+      panel.setAttribute('aria-label', 'Room actions');
+      center.insertBefore(panel, document.getElementById('layoutToolsPanel') || center.firstChild);
+      panel.addEventListener('click', event => {
+        const close = event.target.closest('#closeMobileRoomActionsBtn');
+        if (close) {
+          setMobileRoomActionsOpen(false);
+          return;
+        }
+        const proxy = event.target.closest('[data-mobile-room-action-target]');
+        if (!proxy) return;
+        const target = document.getElementById(proxy.dataset.mobileRoomActionTarget);
+        if (!target || target.disabled) return;
+        target.click();
+        requestAnimationFrame(() => {
+          renderMobileRoomActions();
+          if (target.id === 'toggleLayoutToolsBtn') setMobileRoomActionsOpen(false);
+        });
+      });
+    }
+
+    const buttons = mobileRoomActionIds().map(id => document.getElementById(id)).filter(button => button instanceof HTMLButtonElement && !button.hidden);
+    const title = mobileRoomActionTitle();
+    panel.setAttribute('aria-label', title);
+    panel.innerHTML = `
+      <div class="mobile-room-actions-header">
+        <div><span class="class-setup-eyebrow">Workspace controls</span><strong>${title}</strong><small>${buttons.length} available</small></div>
+        <button id="closeMobileRoomActionsBtn" class="secondary" type="button">Close</button>
+      </div>
+      <div class="mobile-room-actions-grid"></div>`;
+    const grid = panel.querySelector('.mobile-room-actions-grid');
+    buttons.forEach(button => {
+      const proxy = document.createElement('button');
+      proxy.type = 'button';
+      proxy.className = button.classList.contains('danger') ? 'danger' : 'secondary';
+      proxy.dataset.mobileRoomActionTarget = button.id;
+      proxy.disabled = button.disabled;
+      proxy.setAttribute('aria-disabled', button.disabled ? 'true' : 'false');
+      if (button.hasAttribute('aria-pressed')) proxy.setAttribute('aria-pressed', button.getAttribute('aria-pressed'));
+      proxy.textContent = button.id === 'toggleLayoutToolsBtn'
+        ? (document.body.classList.contains('layout-tools-collapsed') ? 'Show layout controls' : 'Hide layout controls')
+        : mobileRoomActionLabel(button);
+      grid.appendChild(proxy);
+    });
+    return panel;
+  }
+
+  function syncMobileRoomActions() {
+    const panel = renderMobileRoomActions();
+    const available = isMobileViewport() && ['room', 'seating', 'review'].includes(activeWorkflow) && !uiState.visibilityMode;
+    if (!available) uiState.mobileRoomActionsOpen = false;
+    if (panel) panel.hidden = !(available && uiState.mobileRoomActionsOpen);
+    document.body.classList.toggle('mobile-room-actions-open', Boolean(available && uiState.mobileRoomActionsOpen));
+    const toggleRow = document.getElementById('mobileRoomActionsToggleRow');
+    const toggle = document.getElementById('mobileRoomActionsToggleBtn');
+    if (toggleRow) toggleRow.hidden = !(available && activeWorkflow !== 'room');
+    if (toggle) {
+      toggle.textContent = uiState.mobileRoomActionsOpen ? `Close ${mobileRoomActionTitle().toLowerCase()}` : mobileRoomActionTitle();
+      toggle.setAttribute('aria-expanded', uiState.mobileRoomActionsOpen ? 'true' : 'false');
+    }
+    const primary = document.getElementById('v4ContextPrimary');
+    if (primary && activeWorkflow === 'room' && isMobileViewport()) {
+      primary.innerHTML = `<span>${uiState.mobileRoomActionsOpen ? 'Close room tools' : 'Open room tools'}</span>${svg(uiState.mobileRoomActionsOpen ? 'close' : 'arrow')}`;
+      primary.setAttribute('aria-expanded', uiState.mobileRoomActionsOpen ? 'true' : 'false');
+      primary.setAttribute('aria-controls', 'mobileRoomActionsPanel');
+    } else if (primary) {
+      primary.removeAttribute('aria-expanded');
+      primary.removeAttribute('aria-controls');
+    }
+  }
+
+  function setMobileRoomActionsOpen(open) {
+    uiState.mobileRoomActionsOpen = Boolean(open && isMobileViewport() && ['room', 'seating', 'review'].includes(activeWorkflow) && !uiState.visibilityMode);
+    syncMobileRoomActions();
+    if (uiState.mobileRoomActionsOpen) {
+      setLiveStatusMessage('Room actions expanded. Choose an action or close the panel to return to the canvas.');
+    }
   }
 
   function closePopovers(except = '') {
@@ -26896,7 +27512,7 @@ const ProductExperience = (() => {
     updateExperience();
   }
 
-  return Object.freeze({ install, afterReady, setWorkflow, updateExperience, openCommandPalette });
+  return Object.freeze({ install, afterReady, setWorkflow, updateExperience, openCommandPalette, syncMobileRoomActions });
 })();
 
 const WorkspaceLayoutV41 = (() => {
@@ -29444,6 +30060,114 @@ const ClassSetupWorkspaceV54 = (() => {
 
   function node(id) { return document.getElementById(id); }
 
+  function classSetupCollapseStorageKey(key) {
+    return `${STORAGE_KEY}:collapse:${key}`;
+  }
+
+  function storedCollapseState(key, defaultCollapsed = true) {
+    const stored = safeStorageGet('sessionStorage', classSetupCollapseStorageKey(key));
+    if (stored === 'expanded') return false;
+    if (stored === 'collapsed') return true;
+    return defaultCollapsed;
+  }
+
+  function rememberCollapseState(key, collapsed) {
+    safeStorageSet('sessionStorage', classSetupCollapseStorageKey(key), collapsed ? 'collapsed' : 'expanded');
+  }
+
+  function setClassSetupHeaderCollapsed(collapsed, { remember = true } = {}) {
+    const compact = Boolean(collapsed && isMobileViewport());
+    node('classSetupWorkspace')?.classList.toggle('class-setup-header-collapsed', compact);
+    const button = node('toggleClassSetupHeaderBtn');
+    if (button) {
+      button.textContent = compact ? 'Show details' : 'Hide details';
+      button.setAttribute('aria-expanded', compact ? 'false' : 'true');
+      button.setAttribute('aria-label', compact ? 'Expand Class Setup details' : 'Collapse Class Setup details');
+    }
+    if (remember) rememberCollapseState('header', Boolean(collapsed));
+  }
+
+  function setMobileCollapsibleState(container, key, collapsed, { remember = true } = {}) {
+    if (!container) return;
+    const compact = Boolean(collapsed && isMobileViewport());
+    container.classList.toggle('mobile-collapsed', compact);
+    container.dataset.mobileCollapsed = collapsed ? 'true' : 'false';
+    const button = container.querySelector(':scope > .mobile-collapse-toggle, :scope > .class-setup-section-heading-actions .mobile-collapse-toggle, :scope > .section-header-row .mobile-collapse-toggle');
+    if (button) {
+      button.textContent = compact ? 'Show' : 'Hide';
+      button.setAttribute('aria-expanded', compact ? 'false' : 'true');
+      button.setAttribute('aria-label', compact ? 'Expand this section' : 'Collapse this section');
+    }
+    if (remember) rememberCollapseState(key, Boolean(collapsed));
+  }
+
+  function ensureSectionHeadingCollapsibles() {
+    node('classSetupWorkspace')?.querySelectorAll('.class-setup-section-panel').forEach(panel => {
+      const heading = panel.querySelector(':scope > .class-setup-section-heading');
+      if (!heading || heading.dataset.mobileCollapsibleReady === 'true') return;
+      heading.dataset.mobileCollapsibleReady = 'true';
+      const key = `heading-${panel.dataset.classSetupPanel || panel.id}`;
+      const actions = document.createElement('div');
+      actions.className = 'class-setup-section-heading-actions no-print';
+      const existingAction = [...heading.children].find(child => child.tagName === 'BUTTON');
+      if (existingAction) actions.appendChild(existingAction);
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'secondary tiny mobile-collapse-toggle';
+      button.textContent = 'Show';
+      button.addEventListener('click', () => {
+        const next = heading.dataset.mobileCollapsed !== 'true';
+        heading.dataset.mobileCollapsed = next ? 'true' : 'false';
+        setMobileCollapsibleState(heading, key, next);
+      });
+      actions.appendChild(button);
+      heading.appendChild(actions);
+      const collapsed = storedCollapseState(key, true);
+      heading.dataset.mobileCollapsed = collapsed ? 'true' : 'false';
+      setMobileCollapsibleState(heading, key, collapsed, { remember: false });
+    });
+  }
+
+  function ensureRosterSourceCollapsibles() {
+    node('classSetupRosterSourceGrid')?.querySelectorAll('.class-setup-roster-source-card').forEach((card, index) => {
+      if (card.dataset.mobileCollapsibleReady === 'true') return;
+      card.dataset.mobileCollapsibleReady = 'true';
+      const key = `roster-source-${index}`;
+      const heading = card.querySelector('h4');
+      if (!heading) return;
+      const body = document.createElement('div');
+      body.className = 'class-setup-mobile-collapsible-body';
+      body.id = `classSetupRosterSourceBody-${index}`;
+      while (heading.nextSibling) body.appendChild(heading.nextSibling);
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'secondary tiny mobile-collapse-toggle no-print';
+      button.setAttribute('aria-controls', body.id);
+      button.addEventListener('click', () => {
+        const next = card.dataset.mobileCollapsed !== 'true';
+        card.dataset.mobileCollapsed = next ? 'true' : 'false';
+        setMobileCollapsibleState(card, key, next);
+      });
+      card.append(button, body);
+      const collapsed = storedCollapseState(key, true);
+      card.dataset.mobileCollapsed = collapsed ? 'true' : 'false';
+      setMobileCollapsibleState(card, key, collapsed, { remember: false });
+    });
+  }
+
+  function syncResponsiveCollapsibles() {
+    const headerCollapsed = storedCollapseState('header', true);
+    setClassSetupHeaderCollapsed(headerCollapsed, { remember: false });
+    ensureSectionHeadingCollapsibles();
+    ensureRosterSourceCollapsibles();
+    node('classSetupWorkspace')?.querySelectorAll('[data-mobile-collapsible-ready="true"]').forEach(container => {
+      const key = container.classList.contains('class-setup-section-heading')
+        ? `heading-${container.closest('.class-setup-section-panel')?.dataset.classSetupPanel || container.closest('.class-setup-section-panel')?.id}`
+        : `roster-source-${[...container.parentElement.children].indexOf(container)}`;
+      setMobileCollapsibleState(container, key, container.dataset.mobileCollapsed === 'true', { remember: false });
+    });
+  }
+
   function requirementCount(student) {
     const r = normalizeStudent(student || {}).requirements || {};
     return [
@@ -29522,11 +30246,16 @@ const ClassSetupWorkspaceV54 = (() => {
               <p id="classSetupDescription">Readiness, next steps, and class summary.</p>
             </div>
             <div class="class-setup-header-actions no-print">
+              <button id="toggleClassSetupHeaderBtn" class="secondary class-setup-collapse-button" type="button" aria-expanded="false">Show details</button>
               <button id="classSetupClassToolsBtn" class="secondary" type="button">Class tools</button>
               <button id="classSetupTopContinueBtn" type="button">Room Design</button>
             </div>
           </header>
           <nav id="classSetupTopNav" class="class-setup-top-nav no-print" aria-label="Class setup pages"></nav>
+          <div id="classSetupMobileNav" class="class-setup-mobile-nav no-print">
+            <label for="classSetupMobileSectionSelect">Setup section</label>
+            <select id="classSetupMobileSectionSelect" aria-label="Choose Class Setup section"></select>
+          </div>
           <div id="classSetupContent" class="class-setup-content">
             <section id="classSetupOverviewPanel" class="class-setup-section-panel active" data-class-setup-panel="overview"></section>
             <section id="classSetupImportPanel" class="class-setup-section-panel" data-class-setup-panel="import">
@@ -29566,6 +30295,7 @@ const ClassSetupWorkspaceV54 = (() => {
             <span class="class-setup-nav-state" id="classSetupNavState-${item.id}" aria-hidden="true"></span>
           </button>`).join('');
     node('classSetupTopNav').innerHTML = SECTIONS.map(item => `<button id="classSetup${item.id[0].toUpperCase()+item.id.slice(1)}Tab" type="button" data-class-setup-section="${item.id}" aria-selected="false">${item.label}</button>`).join('');
+    node('classSetupMobileSectionSelect').innerHTML = SECTIONS.map(item => `<option value="${item.id}">${item.label}</option>`).join('');
 
     const dashboard = node('v4SetupDashboard');
     if (dashboard) node('classSetupOverviewPanel').appendChild(dashboard);
@@ -29633,7 +30363,7 @@ const ClassSetupWorkspaceV54 = (() => {
               <span class="class-setup-eyebrow">SIS / OneRoster CSV</span>
               <h4>Quick standardized roster import</h4>
               <p>Automatically recognizes common SIS columns such as sourcedId, student ID, first name, last name, preferred name, and grade, then opens the same reconciliation review used by Classroom.</p>
-              <input id="classSetupSisCsvInput" type="file" accept=".csv,text/csv" hidden />
+              <input id="classSetupSisCsvInput" type="file" accept=".csv,text/csv" aria-label="Choose SIS CSV file" hidden />
               <button id="classSetupSisCsvBtn" class="secondary" type="button">Choose SIS / OneRoster CSV</button>
               <div id="classSetupSisStatus" class="hint class-setup-roster-source-status">No SIS file selected.</div>
             </section>`;
@@ -29778,6 +30508,7 @@ const ClassSetupWorkspaceV54 = (() => {
     decorateImportSection();
     decorateRuleSections();
     decorateZoneSections();
+    syncResponsiveCollapsibles();
   }
 
   function restoreSetupEditors() {
@@ -29799,11 +30530,14 @@ const ClassSetupWorkspaceV54 = (() => {
       button.setAttribute('aria-selected', active ? 'true' : 'false');
       if (active) button.setAttribute('aria-current', 'page'); else button.removeAttribute('aria-current');
     });
+    if (node('classSetupMobileSectionSelect') && node('classSetupMobileSectionSelect').value !== section) {
+      node('classSetupMobileSectionSelect').value = section;
+    }
     document.querySelectorAll('[data-class-setup-panel]').forEach(panel => panel.classList.toggle('active', panel.dataset.classSetupPanel === section));
     const meta = SECTIONS.find(item => item.id === section);
     if (node('classSetupTitle')) node('classSetupTitle').textContent = meta.label;
     if (node('classSetupDescription')) node('classSetupDescription').textContent = meta.description;
-    if (section === 'import') {
+    if (section === 'import' && !isMobileViewport()) {
       const body = node('csvImportBody');
       if (body?.classList.contains('collapsed')) node('toggleCsvImportBtn')?.click();
     }
@@ -29907,6 +30641,7 @@ const ClassSetupWorkspaceV54 = (() => {
     if (title) title.textContent = 'Class Setup';
     const remembered = safeStorageGet('sessionStorage', STORAGE_KEY) || '';
     setSection(SECTIONS.some(item => item.id === remembered) ? remembered : activeSection, { silent: true });
+    syncResponsiveCollapsibles();
     updateSummary();
   }
 
@@ -29954,6 +30689,11 @@ const ClassSetupWorkspaceV54 = (() => {
       if (event.target.closest('#groupMemberPicker')) updateRuleMemberTools();
     });
     node('classSetupGuidedHelpBtn')?.addEventListener('click', () => node('guidedLearningBtn')?.click());
+    node('toggleClassSetupHeaderBtn')?.addEventListener('click', () => {
+      const collapsed = !node('classSetupWorkspace')?.classList.contains('class-setup-header-collapsed');
+      setClassSetupHeaderCollapsed(collapsed);
+    });
+    node('classSetupMobileSectionSelect')?.addEventListener('change', event => setSection(event.target.value));
     [node('classSetupContinueRoomBtn'), node('classSetupTopContinueBtn'), node('classSetupReviewContinueBtn')].forEach(button => button?.addEventListener('click', () => ProductExperience?.setWorkflow?.('room')));
     node('classSetupClassToolsBtn')?.addEventListener('click', () => node('classToolsBtn')?.click());
     node('classSetupManageRulesBtn')?.addEventListener('click', () => node('openGroupManagerBtn')?.click());
@@ -30010,7 +30750,7 @@ const ClassSetupWorkspaceV54 = (() => {
     updateSummary();
   }
 
-  return Object.freeze({ install, afterReady, setSection, onWorkflowChange, updateSummary });
+  return Object.freeze({ install, afterReady, setSection, onWorkflowChange, updateSummary, syncResponsiveCollapsibles });
 })();
 
 
@@ -31136,7 +31876,7 @@ const WorkflowRecoveryV62 = (() => {
           <div class="modal-body class-merge-body">
             <div class="class-merge-source-row">
               <div class="field"><label for="classMergeSourceSelect">Source class</label><select id="classMergeSourceSelect"></select></div>
-              <div class="button-row"><button id="classMergeLoadFileBtn" class="secondary" type="button">Load Classes File</button><input id="classMergeFileInput" type="file" accept="application/json,.json,.txt" hidden /></div>
+              <div class="button-row"><button id="classMergeLoadFileBtn" class="secondary" type="button">Load Classes File</button><input id="classMergeFileInput" type="file" accept="application/json,.json,.txt" aria-label="Choose classes merge file" hidden /></div>
             </div>
             <div id="classMergeSourceStatus" class="hint">Choose another class in this save or load an encrypted classes file.</div>
             <div id="classMergeComparison" class="class-merge-comparison"></div>
@@ -31221,7 +31961,7 @@ const WorkflowRecoveryV62 = (() => {
       section.innerHTML = `
         <h3>Optional Encryption Password Recovery</h3>
         <div class="hint">Create a separate package that wraps the current encryption password with a one-time recovery code. Store the package and code in different secure locations. This does not change or weaken ordinary saves.</div>
-        <div class="button-row"><button id="openPasswordRecoveryPackageBtn" class="secondary" type="button">Create Password Recovery Package</button><button id="restorePasswordRecoveryPackageBtn" class="secondary" type="button">Restore Password from Package</button><input id="passwordRecoveryPackageInput" type="file" accept="application/json,.json" hidden /></div>
+        <div class="button-row"><button id="openPasswordRecoveryPackageBtn" class="secondary" type="button">Create Password Recovery Package</button><button id="restorePasswordRecoveryPackageBtn" class="secondary" type="button">Restore Password from Package</button><input id="passwordRecoveryPackageInput" type="file" accept="application/json,.json" aria-label="Choose password recovery package" hidden /></div>
         <div id="passwordRecoverySettingsStatus" class="muted">No recovery action performed in this session.</div>`;
       const firstSection = securityPage.querySelector('.settings-section');
       if (firstSection) firstSection.before(section);
