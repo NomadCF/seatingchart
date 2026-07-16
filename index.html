@@ -5,7 +5,7 @@
   <meta name="license" content="MIT License" />
   <meta name="spdx-license-identifier" content="MIT" />
   <meta name="copyright" content="Copyright (c) 2026 Chris L. Franklin" />
-  <meta name="app-version" content="6.5.9" />
+  <meta name="app-version" content="6.5.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com https://www.paypalobjects.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://www.googleapis.com https://classroom.googleapis.com https://accounts.google.com https://www.paypal.com https://www.paypalobjects.com https://www.google-analytics.com https://*.google-analytics.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://www.paypal.com; img-src 'self' data: blob: https://www.paypalobjects.com https://www.google-analytics.com; font-src 'self' data:; worker-src 'self' blob:; manifest-src 'self'; media-src 'none'; object-src 'none'; base-uri 'none'; form-action 'self' https://www.paypal.com" />
   <meta name="application-name" content="Classroom Seating Planner" />
@@ -1030,7 +1030,7 @@ body[data-theme="linux"] .settings-page-header{background:var(--panel-2);color:v
 }.freeform-object.seat.assigned{border-color:rgba(96,165,250,.55);background:linear-gradient(180deg, rgba(239,246,255,.96) 0%, rgba(232,242,255,.9) 100%)
 }.freeform-object.seat.unassigned{border-style:dashed;border-color:rgba(148,163,184,.52);background:linear-gradient(180deg, rgba(255,255,255,.94) 0%, rgba(248,250,252,.94) 100%)
 }.freeform-object:active{cursor:grabbing
-}.freeform-object.selected{outline:2px solid rgba(37,99,235,.68);outline-offset:2px;box-shadow:0 0 0 5px rgba(37,99,235,.14), 0 10px 22px rgba(15,23,42,.16)
+}.freeform-object.selected{outline:2px solid rgba(37,99,235,.68);outline-offset:-2px;box-shadow:inset 0 0 0 2px rgba(37,99,235,.12), 0 8px 20px rgba(15,23,42,.12)
 }.freeform-object.drop-target{outline:4px solid rgba(37,99,235,.4)
 }.freeform-object.locked{cursor:pointer;border-style:dashed
 }.freeform-object.locked:active{cursor:pointer
@@ -3555,8 +3555,8 @@ body.product-v4[data-workflow="review"] #openRoomTemplatesBtn,
 body.product-v4[data-workflow="review"] #toggleLayoutToolsBtn,
 body.product-v4[data-workflow="seating"] #layoutToolsPanel,
 body.product-v4[data-workflow="review"] #layoutToolsPanel{display:none
-}body.product-v4 .cell.multi-selected,
-body.product-v4 .freeform-object.selected{outline-color:rgba(37, 88, 216, .72);box-shadow:0 0 0 4px rgba(37, 88, 216, .12), 0 6px 18px rgba(15, 23, 42, .10)
+}body.product-v4 .cell.multi-selected{outline-color:rgba(37, 88, 216, .72);box-shadow:0 0 0 4px rgba(37, 88, 216, .12), 0 6px 18px rgba(15, 23, 42, .10)
+}body.product-v4 .freeform-object.selected{outline-color:rgba(37, 88, 216, .72);outline-offset:-2px;box-shadow:inset 0 0 0 2px rgba(37, 88, 216, .14), 0 6px 18px rgba(15, 23, 42, .10)
 }body.product-v4.print-preview-active .v4-topbar,
 body.product-v4.print-preview-active .v4-workflow-shell,
 body.product-v4.print-preview-active .v4-dashboard{display:none
@@ -6504,7 +6504,7 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
 const APP_CONFIG = Object.freeze({
   name: 'Classroom Seating Planner',
   shortName: 'Seating Planner',
-  version: '6.5.9',
+  version: '6.5.10',
   copyrightHolder: 'Chris L. Franklin',
   copyrightYear: '2026',
   releaseDate: '2026-07-16',
@@ -6777,10 +6777,22 @@ const PROJECT_FEATURES = [
 
 const RELEASE_HISTORY = [
   {
+    version: '6.5.10',
+    date: 'July 16, 2026',
+    title: 'Clear rule warnings, Freeform move safeguards, and SIS import repair',
+    current: true,
+    changes: [
+      'Replaced technical seat-unit rule messages with plain-language descriptions such as directly beside, very close, too close together, or outside the nearby area.',
+      'Added an override-or-move-back warning when dragging assigned Freeform seats or rule-sensitive room objects creates a new seating-rule conflict.',
+      'Kept selected and moved Freeform seats visually the same size as neighboring seats by moving the selection emphasis inside the object boundary.',
+      'Repaired the Class Setup SIS / OneRoster file chooser with delegated event handling so the dynamically created import control opens reliably.'
+    ]
+  },
+  {
     version: '6.5.9',
     date: 'July 16, 2026',
     title: 'Presentation exit, batch seat zones, and rule integrity audit',
-    current: true,
+    current: false,
     changes: [
       'Added a persistent Exit Presentation button that remains reachable in Presentation Mode on desktop and mobile.',
       'Expanded Class Setup to eight steps with a dedicated Groups & Zones Manager entry before Review Setup.',
@@ -9971,7 +9983,7 @@ function buildLookupMaps() {
   return { students, groups, zones, groupsByStudent };
 }
 
-function ensureGrid() {
+function ensureGrid(options = {}) {
   state.customObjects = Array.isArray(state.customObjects)
     ? state.customObjects.map(normalizeCustomObject).filter(Boolean)
     : [];
@@ -9997,7 +10009,7 @@ function ensureGrid() {
     }
   }
   state.cells = next;
-  cleanupInvalidAssignmentsAndAnchors();
+  if (options.cleanup !== false) cleanupInvalidAssignmentsAndAnchors();
 }
 
 
@@ -10812,7 +10824,7 @@ function gridSeatEntryForStudent(studentId) {
 
 function ensureFreeformSeatGridLink(obj) {
   if (!obj || obj.type !== 'seat') return '';
-  ensureGrid();
+  ensureGrid({ cleanup: false });
   if (obj.cellKey && state.cells[obj.cellKey] && state.cells[obj.cellKey].type === 'seat') return obj.cellKey;
   const assignedEntry = gridSeatEntryForStudent(obj.assignedStudentId);
   if (assignedEntry) {
@@ -10858,7 +10870,7 @@ function mirrorLinkedFreeformSeatsFromGrid(cellKey = '') {
 
 function mirrorFreeformSeatToGrid(obj, { clearStudentDuplicates = true, preserveObjectLock = true } = {}) {
   if (!obj) return false;
-  ensureGrid();
+  ensureGrid({ cleanup: false });
   if (obj.type !== 'seat') {
     if (obj.cellKey && state.cells[obj.cellKey]) applyCellTypeWithoutRender(obj.cellKey, obj.type || 'empty');
     return true;
@@ -11399,7 +11411,7 @@ function beginFreeformPointerDrag(event, id) {
   const selectedIds = resize ? new Set([id]) : new Set(uiState.freeformSelectedObjectIds || [id]);
   const dragObjects = (state.freeformLayout?.objects || []).filter(item => selectedIds.has(item.id) && !item.locked);
   if (!dragObjects.length) return;
-  const originals = new Map(dragObjects.map(item => [item.id, { x:item.x, y:item.y, width:item.width, height:item.height }]));
+  const originals = new Map(dragObjects.map(item => [item.id, { x:item.x, y:item.y, width:item.width, height:item.height, zIndex:item.zIndex }]));
   uiState.freeformDrag = {
     id,
     ids: new Set(dragObjects.map(item => item.id)),
@@ -11413,7 +11425,10 @@ function beginFreeformPointerDrag(event, id) {
     lastDropValid: new Map(dragObjects.map(item => [item.id, { ...originals.get(item.id) }])),
     blocked: false,
     dropInvalid: false,
-    temporarySnapOverride: false
+    temporarySnapOverride: false,
+    beforeRuleFindings: evaluateCurrentRuleViolations({ includeUnseated: false }),
+    undoStackLengthBefore: uiState.undoStack.length,
+    undoHistoryLengthBefore: (uiState.undoHistoryLabels || []).length
   };
   const move = ev => updateFreeformPointerDrag(ev);
   const finish = ev => {
@@ -11561,6 +11576,26 @@ function updateFreeformPointerDrag(event) {
   ModernizationSuite?.updateFreeformMinimap?.();
 }
 
+function restoreFreeformDragOriginals(drag) {
+  if (!drag) return;
+  drag.originals.forEach((value, objectId) => {
+    const item = (state.freeformLayout?.objects || []).find(candidate => candidate.id === objectId);
+    if (item) Object.assign(item, value);
+  });
+  uiState.undoStack.length = Math.min(uiState.undoStack.length, Number(drag.undoStackLengthBefore) || 0);
+  if (Array.isArray(uiState.undoHistoryLabels)) uiState.undoHistoryLabels.length = Math.min(uiState.undoHistoryLabels.length, Number(drag.undoHistoryLengthBefore) || 0);
+  updateUndoRedoButtons();
+  rememberFreeformGeometry(state.freeformLayout?.objects || []);
+  persistFreeformGeometrySession('freeform-drag-cancelled');
+}
+
+function commitFinishedFreeformDrag(drag, statusMessage = '') {
+  rememberFreeformGeometry(state.freeformLayout?.objects || []);
+  persistFreeformGeometrySession('freeform-drag-finish');
+  commitFreeformLayoutChange(drag?.resize ? 'freeform-resize' : 'freeform-move', { render: true, syncToGrid: false });
+  if (statusMessage) setLiveStatusMessage(statusMessage);
+}
+
 function finishFreeformPointerDrag() {
   const drag = uiState.freeformDrag;
   if (drag && !drag.activated) {
@@ -11587,10 +11622,31 @@ function finishFreeformPointerDrag() {
   const snapStatus = el('freeformSnapTarget');
   if (snapStatus) { snapStatus.classList.remove('active'); snapStatus.textContent = state.freeformLayout?.canvas?.snap === false ? 'Snap: guides only' : 'Snap: grid'; }
   document.querySelectorAll('.freeform-object.drop-invalid').forEach(node => node.classList.remove('drop-invalid'));
-  rememberFreeformGeometry(state.freeformLayout?.objects || []);
-  persistFreeformGeometrySession('freeform-drag-finish');
   uiState.freeformDrag = null;
-  commitFreeformLayoutChange('freeform-move', { render: true, syncToGrid: false });
+  if (!drag) return;
+
+  const afterRuleFindings = evaluateCurrentRuleViolations({ includeUnseated: false });
+  const createdFindings = newRuleFindings(drag.beforeRuleFindings, afterRuleFindings);
+  const warning = buildRuleFindingsWarning(createdFindings, drag.resize ? 'Resizing this Freeform selection' : 'Moving this Freeform selection');
+  if (!warning) {
+    commitFinishedFreeformDrag(drag);
+    return;
+  }
+
+  showInAppConfirm(`${warning}
+
+Choose Keep Move to override the warning, or Move Back to restore the previous position.`, () => {
+    commitFinishedFreeformDrag(drag, 'Freeform move kept after a seating-rule warning.');
+  }, {
+    title: 'Freeform Seating Rule Warning',
+    confirmText: 'Keep Move',
+    cancelText: 'Move Back',
+    onCancel: () => {
+      restoreFreeformDragOriginals(drag);
+      renderFreeformLayout();
+      setLiveStatusMessage('The Freeform selection was moved back because of the seating-rule warning.');
+    }
+  });
 }
 
 function addFreeformObject(type = null, overrides = {}) {
@@ -11734,18 +11790,23 @@ function lockSelectedFreeformObject(toggle = true) {
 }
 
 function applyFreeformStudentAssignmentDirect(student, target) {
+  const targetId = String(typeof target === 'string' ? target : target?.id || '');
+  ensureFreeformLayout();
+  const activeTarget = (state.freeformLayout.objects || []).find(obj => String(obj.id) === targetId && obj.type === 'seat');
+  if (!student || !activeTarget) return false;
   (state.freeformLayout.objects || []).forEach(obj => {
-    if (obj.type === 'seat' && obj.assignedStudentId === student.id && obj.id !== target.id) {
+    if (obj.type === 'seat' && obj.assignedStudentId === student.id && obj.id !== activeTarget.id) {
       obj.assignedStudentId = null;
       obj.manual = false;
       obj.locked = false;
       mirrorFreeformSeatToGrid(obj, { clearStudentDuplicates: false });
     }
   });
-  target.assignedStudentId = student.id;
-  target.manual = true;
-  target.locked = true;
-  mirrorFreeformSeatToGrid(target);
+  activeTarget.assignedStudentId = student.id;
+  activeTarget.manual = true;
+  activeTarget.locked = true;
+  mirrorFreeformSeatToGrid(activeTarget);
+  return true;
 }
 
 function affectedFreeformStudentIdsForAssignment(studentId, target) {
@@ -11994,6 +12055,37 @@ function ruleSeatDistance(a, b) {
                     (Number.isFinite(Number(a.ruleX)) ? Number(a.ruleX) : Number(a.col) || 0) - (Number.isFinite(Number(b.ruleX)) ? Number(b.ruleX) : Number(b.col) || 0));
 }
 
+function describeRuleProximity(value, target) {
+  const distanceValue = Number(value);
+  if (!Number.isFinite(distanceValue)) return `too close to ${target}`;
+  if (distanceValue <= 1.15) return `directly beside ${target}`;
+  if (distanceValue <= 2) return `very close to ${target}`;
+  return `closer to ${target} than the rule allows`;
+}
+
+function describeRuleSeparation(value) {
+  const distanceValue = Number(value);
+  if (!Number.isFinite(distanceValue)) return 'too close together';
+  if (distanceValue <= 1.15) return 'next to each other';
+  if (distanceValue <= 2) return 'very close together';
+  return 'too close together';
+}
+
+function newRuleFindings(beforeFindings, afterFindings) {
+  const beforeIds = new Set((beforeFindings || []).map(item => String(item?.id || '')));
+  return (afterFindings || []).filter(item => item?.id && !beforeIds.has(String(item.id)));
+}
+
+function buildRuleFindingsWarning(findings, actionText) {
+  if (!findings?.length) return '';
+  const readable = findings.slice(0, 5).map(item => String(item.message || '').trim()).filter(Boolean);
+  if (!readable.length) return '';
+  return `${actionText} creates a new seating-rule or student-need conflict.
+
+New issue${readable.length === 1 ? '' : 's'}:
+- ${readable.join('\n- ')}`;
+}
+
 function evaluateCurrentRuleViolations(options = {}) {
   const includeUnseated = options.includeUnseated !== false;
   const findings = [];
@@ -12037,17 +12129,17 @@ function evaluateCurrentRuleViolations(options = {}) {
     if (req.side === 'right' && side < .5) add(`student:${id}:side-right`, 'warn', `${label(student)} prefers the right side but is at ${seatLabel(seat)} on the opposite half.`, [id], 'student');
     if (req.nearTeacher) {
       noteMissingObject('near-teacher', 'teacherDistance', 'teacher desk object');
-      if (Number(seat.teacherDistance) < 999 && Number(seat.teacherDistance) > 2.5) add(`student:${id}:near-teacher`, 'warn', `${label(student)} needs to be near the teacher but ${seatLabel(seat)} is ${Number(seat.teacherDistance).toFixed(1)} seat units away.`, [id], 'student');
+      if (Number(seat.teacherDistance) < 999 && Number(seat.teacherDistance) > 2.5) add(`student:${id}:near-teacher`, 'warn', `${label(student)} needs a seat near the teacher, but ${seatLabel(seat)} is outside the nearby teacher area.`, [id], 'student');
     }
     if (req.aisle && !seat.edge) add(`student:${id}:aisle`, 'warn', `${label(student)} needs an aisle or room-edge seat, but ${seatLabel(seat)} is not one.`, [id], 'student');
     if (req.ada && !seat.nearAda) add(`student:${id}:ada`, 'bad', `${label(student)} requires an ADA/accessibility area, but ${seatLabel(seat)} is not in one.`, [id], 'student');
     if (req.awayDoor) {
       noteMissingObject('away-door', 'doorDistance', 'door object');
-      if (Number(seat.doorDistance) < 3) add(`student:${id}:away-door`, 'warn', `${label(student)} needs to be away from doors, but ${seatLabel(seat)} is only ${Number(seat.doorDistance).toFixed(1)} seat units from one.`, [id], 'student');
+      if (Number(seat.doorDistance) < 3) add(`student:${id}:away-door`, 'warn', `${label(student)} needs a seat away from doors, but ${seatLabel(seat)} is ${describeRuleProximity(seat.doorDistance, 'a door')}.`, [id], 'student');
     }
     if (req.awayWindow) {
       noteMissingObject('away-window', 'windowDistance', 'window object');
-      if (Number(seat.windowDistance) < 3) add(`student:${id}:away-window`, 'warn', `${label(student)} needs to be away from windows, but ${seatLabel(seat)} is only ${Number(seat.windowDistance).toFixed(1)} seat units from one.`, [id], 'student');
+      if (Number(seat.windowDistance) < 3) add(`student:${id}:away-window`, 'warn', `${label(student)} needs a seat away from windows, but ${seatLabel(seat)} is ${describeRuleProximity(seat.windowDistance, 'a window')}.`, [id], 'student');
     }
     if (req.preferredZoneIds.length && !req.preferredZoneIds.some(zoneId => zones.has(String(zoneId)))) {
       const names = req.preferredZoneIds.map(zoneId => zoneById(zoneId)?.name || zoneId).join(', ');
@@ -12065,7 +12157,7 @@ function evaluateCurrentRuleViolations(options = {}) {
       const pair = [id, String(otherId)].sort();
       if (pair[0] !== id) return;
       const d = ruleSeatDistance(seat, otherSeat);
-      if (d < 3) add(`student-distance:${pair.join('|')}`, 'bad', `${label(student)} and ${label(other)} must be separated, but their seats are only ${d.toFixed(1)} seat units apart.`, pair, 'student');
+      if (d < 3) add(`student-distance:${pair.join('|')}`, 'bad', `${label(student)} and ${label(other)} need to be seated apart, but their current seats are ${describeRuleSeparation(d)}.`, pair, 'student');
     });
   });
 
@@ -12081,13 +12173,13 @@ function evaluateCurrentRuleViolations(options = {}) {
     if (['avoid', 'spread'].includes(group.type)) {
       pairs.forEach(([a, b]) => {
         const d = ruleSeatDistance(a.seat, b.seat);
-        if (d < 2) add(`group:${groupId}:apart:${[a.id,b.id].sort().join('|')}`, 'bad', `${group.name}: ${label(a.student)} and ${label(b.student)} are only ${d.toFixed(1)} seat units apart, violating the ${group.type} rule.`, [a.id,b.id], 'group');
-        else if (d < 3) add(`group:${groupId}:apart:${[a.id,b.id].sort().join('|')}`, 'warn', `${group.name}: ${label(a.student)} and ${label(b.student)} are only ${d.toFixed(1)} seat units apart; this ${group.type} rule targets at least 3.`, [a.id,b.id], 'group');
+        if (d < 2) add(`group:${groupId}:apart:${[a.id,b.id].sort().join('|')}`, 'bad', `${group.name}: ${label(a.student)} and ${label(b.student)} are ${describeRuleSeparation(d)}, which breaks this separation rule.`, [a.id,b.id], 'group');
+        else if (d < 3) add(`group:${groupId}:apart:${[a.id,b.id].sort().join('|')}`, 'warn', `${group.name}: ${label(a.student)} and ${label(b.student)} are ${describeRuleSeparation(d)}, so this separation preference is not being met.`, [a.id,b.id], 'group');
       });
     }
     if (['together', 'special'].includes(group.type) && pairs.length) {
       const farthest = pairs.map(([a,b]) => ({ a, b, d: ruleSeatDistance(a.seat,b.seat) })).sort((a,b) => b.d-a.d)[0];
-      if (farthest.d > 4) add(`group:${groupId}:together`, priority >= 8 ? 'bad' : 'warn', `${group.name}: ${label(farthest.a.student)} and ${label(farthest.b.student)} are ${farthest.d.toFixed(1)} seat units apart; this ${group.type} rule targets 4 or fewer.`, [farthest.a.id,farthest.b.id], 'group');
+      if (farthest.d > 4) add(`group:${groupId}:together`, priority >= 8 ? 'bad' : 'warn', `${group.name}: ${label(farthest.a.student)} and ${label(farthest.b.student)} are too far apart for this nearby-seating rule.`, [farthest.a.id,farthest.b.id], 'group');
     }
     placed.forEach(({ id, student, seat }) => {
       const front = Number(seat.frontRatio || 0);
@@ -12095,11 +12187,11 @@ function evaluateCurrentRuleViolations(options = {}) {
       if (group.type === 'back' && front < .55) add(`group:${groupId}:back:${id}`, 'warn', `${group.name}: ${label(student)} is outside the back target at ${seatLabel(seat)}.`, [id], 'group');
       if (group.type === 'nearTeacher') {
         noteMissingObject('near-teacher', 'teacherDistance', 'teacher desk object');
-        if (Number(seat.teacherDistance) < 999 && Number(seat.teacherDistance) > 2.5) add(`group:${groupId}:teacher:${id}`, 'warn', `${group.name}: ${label(student)} is ${Number(seat.teacherDistance).toFixed(1)} seat units from the teacher area.`, [id], 'group');
+        if (Number(seat.teacherDistance) < 999 && Number(seat.teacherDistance) > 2.5) add(`group:${groupId}:teacher:${id}`, 'warn', `${group.name}: ${label(student)} is outside the nearby teacher area.`, [id], 'group');
       }
       if (group.type === 'nearBoard') {
         noteMissingObject('near-board', 'boardDistance', 'board or projector object');
-        if (Number(seat.boardDistance) < 999 && Number(seat.boardDistance) > 2.5) add(`group:${groupId}:board:${id}`, 'warn', `${group.name}: ${label(student)} is ${Number(seat.boardDistance).toFixed(1)} seat units from the board/projector area.`, [id], 'group');
+        if (Number(seat.boardDistance) < 999 && Number(seat.boardDistance) > 2.5) add(`group:${groupId}:board:${id}`, 'warn', `${group.name}: ${label(student)} is outside the nearby board or projector area.`, [id], 'group');
       }
       if (group.type === 'awayDoor') {
         noteMissingObject('away-door', 'doorDistance', 'door object');
@@ -25840,10 +25932,10 @@ const ModernizationSuite = (() => {
       const priority = Number(group.priority || 1);
       if (group.type === 'together' && members.length) {
         const d = Math.min(...members.map(other => distance(cell, other)));
-        details.push({ kind: d <= 2 ? 'good' : 'warn', text: `${group.name}: nearest group member is ${d.toFixed(1)} seat units away (priority ${priority}).` });
+        details.push({ kind: d <= 2 ? 'good' : 'warn', text: `${group.name}: the nearest group member is ${d <= 2 ? 'nearby' : 'farther away than preferred'} (priority ${priority}).` });
       } else if (['avoid','spread'].includes(group.type) && members.length) {
         const d = Math.min(...members.map(other => distance(cell, other)));
-        details.push({ kind: d >= 3 ? 'good' : 'bad', text: `${group.name}: nearest separated member is ${d.toFixed(1)} seat units away (priority ${priority}).` });
+        details.push({ kind: d >= 3 ? 'good' : 'bad', text: `${group.name}: the nearest separated member is ${d >= 3 ? 'far enough away' : describeRuleSeparation(d)} (priority ${priority}).` });
       } else if (group.type === 'zone' && group.zoneId) {
         const inZone = (cell.zoneIds || []).includes(String(group.zoneId));
         details.push({ kind: inZone ? 'good' : 'warn', text: `${group.name}: ${inZone ? 'inside' : 'outside'} preferred zone ${zoneById(group.zoneId)?.name || group.zoneId}.` });
@@ -31899,7 +31991,8 @@ const DistrictIntegrationsV57 = (() => {
   }
 
   function installEvents(){
-    document.addEventListener('click',event=>{const driveAction=event.target.closest('[data-drive-action]');if(driveAction){void handleDriveManagerAction(driveAction);return;}const revisionAction=event.target.closest('[data-revision-action]');if(revisionAction){void handleRevisionAction(revisionAction);return;}if(event.target.closest('[data-settings-nav="google"]'))setTimeout(syncGoogleSettingsHub,0);});
+    document.addEventListener('click',event=>{const sisButton=event.target.closest('#classSetupSisCsvBtn');if(sisButton){event.preventDefault();const input=node('classSetupSisCsvInput');if(input){const status=node('classSetupSisStatus');if(status)status.textContent='Choose a SIS / OneRoster CSV file to continue.';input.click();}return;}const driveAction=event.target.closest('[data-drive-action]');if(driveAction){void handleDriveManagerAction(driveAction);return;}const revisionAction=event.target.closest('[data-revision-action]');if(revisionAction){void handleRevisionAction(revisionAction);return;}if(event.target.closest('[data-settings-nav="google"]'))setTimeout(syncGoogleSettingsHub,0);});
+    document.addEventListener('change',event=>{if(event.target?.id==='classSetupSisCsvInput')void importSisCsv(event.target.files?.[0]);});
     node('openGoogleSettingsFromSavingBtn')?.addEventListener('click',()=>openSettingsPage('google'));
     node('googleHubOpenSavingBtn')?.addEventListener('click',()=>openSettingsPage('saving'));
     node('googleHubOpenClassSetupBtn')?.addEventListener('click',openClassSetupImport);
@@ -31918,8 +32011,6 @@ const DistrictIntegrationsV57 = (() => {
     node('classSetupGoogleClassroomImportBtn')?.addEventListener('click',()=>void loadClassroomRoster(node('classSetupGoogleClassroomCourseSelect')?.value));
     bindClassroomSelect(node('googleHubClassroomCourseSelect'));
     bindClassroomSelect(node('classSetupGoogleClassroomCourseSelect'));
-    node('classSetupSisCsvBtn')?.addEventListener('click',()=>node('classSetupSisCsvInput')?.click());
-    node('classSetupSisCsvInput')?.addEventListener('change',event=>void importSisCsv(event.target.files?.[0]));
     node('settingsGoogleDrivePickerBtn')?.addEventListener('click',()=>void openGooglePicker({direct:false}));node('googleDrivePickerBtn')?.addEventListener('click',()=>void openGooglePicker(uiState.googleDriveChooserContext||{}));
     node('settingsGoogleDriveManageBtn')?.addEventListener('click',()=>void openDriveManager());node('closeDriveManagerBtn')?.addEventListener('click',closeDriveManager);node('driveManagerRefreshBtn')?.addEventListener('click',()=>void refreshDriveManager());node('driveManagerPickerBtn')?.addEventListener('click',()=>void openGooglePicker({direct:false}));
     node('closeDriveRevisionBtn')?.addEventListener('click',()=>node('driveRevisionModal')?.classList.remove('show'));
@@ -32231,7 +32322,7 @@ const WorkflowRecoveryV62 = (() => {
         if (String(student.id).localeCompare(String(otherId)) >= 0) return;
         const other = studentById.get(String(otherId));
         if (!other) return;
-        if (maximumSeatDistance < 3) addConflict(findings, 'error', `${label(student)} and ${label(other)} cannot reach the required distance`, `The room’s farthest two usable seats are only ${maximumSeatDistance.toFixed(1)} seat units apart, while the rule requires at least 3.`, 'Increase room spacing in Freeform, add farther-apart Grid seats, or remove the minimum-distance rule.', 'room');
+        if (maximumSeatDistance < 3) addConflict(findings, 'error', `${label(student)} and ${label(other)} cannot reach the required distance`, `Even the two farthest usable seats are too close together to satisfy this rule.`, 'Increase room spacing in Freeform, add farther-apart Grid seats, or remove the minimum-distance rule.', 'room');
       });
     });
 
