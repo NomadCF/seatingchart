@@ -5,13 +5,13 @@
   <meta name="license" content="MIT License" />
   <meta name="spdx-license-identifier" content="MIT" />
   <meta name="copyright" content="Copyright (c) 2026 Chris L. Franklin" />
-  <meta name="app-version" content="6.5.8" />
+  <meta name="app-version" content="6.5.9" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com https://www.paypalobjects.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://www.googleapis.com https://classroom.googleapis.com https://accounts.google.com https://www.paypal.com https://www.paypalobjects.com https://www.google-analytics.com https://*.google-analytics.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://www.paypal.com; img-src 'self' data: blob: https://www.paypalobjects.com https://www.google-analytics.com; font-src 'self' data:; worker-src 'self' blob:; manifest-src 'self'; media-src 'none'; object-src 'none'; base-uri 'none'; form-action 'self' https://www.paypal.com" />
   <meta name="application-name" content="Classroom Seating Planner" />
   <meta name="theme-color" content="#1e3a8a" />
   
-  <meta name="build-date" content="2026-07-15T00:00:00Z" />
+  <meta name="build-date" content="2026-07-16T00:00:00Z" />
   <title>Classroom Seating Planner</title>
   <style>@layer app-base, app-priority;@layer app-base{:root{--bg:#f6f7fb;--panel-2:#f0f3f8;--text:#172033;--muted:#607089;--border:#d8deea;--accent:#2f6fed;--accent-dark:#1e55bd;--seat:#e8f0ff;--seat-border:#9db7ef;--teacher:#fff3d6;--table:#e8f7ec;--door:#fce8ee;--empty:#fbfcff;--shadow:0 12px 30px rgba(29, 39, 61, 0.08);--radius:14px;font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif
 }*{box-sizing:border-box
@@ -4643,6 +4643,16 @@ body.product-v4[data-workflow="seating"] #toggleLayoutToolsBtn{display:none
   }
 }@media (max-width: 360px){.mobile-room-actions-grid{grid-template-columns:minmax(0, 1fr)
   }
+}.presentation-exit-button{position:fixed;top:max(12px, env(safe-area-inset-top, 0px));right:max(12px, env(safe-area-inset-right, 0px));z-index:52000;display:none;align-items:center;gap:7px;min-height:42px;padding:9px 13px;color:#ffffff;background:#991b1b;border:2px solid rgba(255, 255, 255, .9);border-radius:999px;box-shadow:0 14px 34px rgba(15, 23, 42, .34);font-weight:900
+}body.visibility-mode .presentation-exit-button{display:inline-flex
+}body.visibility-mode .presentation-exit-button:hover,
+body.visibility-mode .presentation-exit-button:focus-visible{background:#7f1d1d;transform:none
+}.seat-edit-batch-notice{border-color:#93c5fd;background:#eff6ff;color:#1e3a8a
+}.seat-edit-modal.batch-edit #seatEditStudentSection,
+.seat-edit-modal.batch-edit #seatEditTypeSection,
+.seat-edit-modal.batch-edit #seatEditLockBtn{display:none
+}@media (max-width: 560px){.presentation-exit-button{top:max(7px, env(safe-area-inset-top, 0px));right:max(7px, env(safe-area-inset-right, 0px));min-height:38px;padding:7px 10px;font-size:11px
+  }
 }body.visibility-mode.vis-hide-wizard #guidedLearningBtn,
 body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
 }
@@ -4721,6 +4731,11 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
     <span>Use your browser menu or keyboard shortcut to print. Press Ctrl+P on Windows/ChromeOS or Cmd+P on Mac, then close this preview when done.</span>
     <button id="exitPrintPreviewBtn" class="secondary tiny" type="button">Exit Preview</button>
   </div>
+
+  <button id="presentationExitBtn" class="presentation-exit-button no-print" type="button" aria-label="Exit Presentation Mode" title="Exit Presentation Mode and restore editing controls. A Presentation PIN, Lock PIN, or encryption key may be required.">
+    <span aria-hidden="true">×</span>
+    <span>Exit Presentation</span>
+  </button>
 
 
   <div id="guidedLessonOverlay" class="guided-learning-overlay no-print" aria-live="polite" aria-hidden="true">
@@ -6002,11 +6017,12 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
       </div>
       <div class="modal-body">
         <div id="seatEditSummary" class="successbox"></div>
+        <div id="seatEditBatchNotice" class="hint seat-edit-batch-notice" role="status" hidden></div>
         <div id="seatEditLockNotice" class="warningbox seat-edit-lock-notice" role="status" hidden>
           <strong>This seat is locked.</strong>
-          <span>Its current settings are shown read-only. Use Unlock Seat before changing the student, groups, or cell type.</span>
+          <span>Its current settings are shown read-only. Use Unlock Seat before changing the student, groups, zones, or cell type.</span>
         </div>
-        <section class="section">
+        <section id="seatEditStudentSection" class="section">
           <h3>Assign User</h3>
           <div class="field">
             <label for="seatEditStudentSelect">Student</label>
@@ -6018,7 +6034,7 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
             <button id="seatEditLockBtn" class="secondary" type="button">Lock / Unlock</button>
           </div>
         </section>
-        <section class="section">
+        <section id="seatEditGroupSection" class="section">
           <h3>Assign Group to Seat</h3>
           <div class="field">
             <label for="seatEditGroupSelect">Group</label>
@@ -6029,7 +6045,18 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
             <button id="seatEditClearGroupsBtn" class="secondary" type="button">Clear Group Reservations</button>
           </div>
         </section>
-        <section class="section">
+        <section id="seatEditZoneSection" class="section">
+          <h3>Assign Zone to Seat</h3>
+          <div class="field">
+            <label for="seatEditZoneSelect">Zone</label>
+            <select id="seatEditZoneSelect"></select>
+          </div>
+          <div class="button-row">
+            <button id="seatEditAddZoneBtn" class="secondary" type="button">Assign Zone</button>
+            <button id="seatEditClearZonesBtn" class="secondary" type="button">Clear Zone Assignments</button>
+          </div>
+        </section>
+        <section id="seatEditTypeSection" class="section">
           <h3>Define Cell Type</h3>
           <div class="field">
             <label for="seatEditTypeSelect">Cell Type</label>
@@ -6477,12 +6504,12 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
 const APP_CONFIG = Object.freeze({
   name: 'Classroom Seating Planner',
   shortName: 'Seating Planner',
-  version: '6.5.8',
+  version: '6.5.9',
   copyrightHolder: 'Chris L. Franklin',
   copyrightYear: '2026',
   releaseDate: '2026-07-16',
-  releaseDateDisplay: 'July 15, 2026',
-  buildDate: '2026-07-15T00:00:00Z',
+  releaseDateDisplay: 'July 16, 2026',
+  buildDate: '2026-07-16T00:00:00Z',
   commit: 'local',
   environment: 'production',
   dataSchemaVersion: 13,
@@ -6750,10 +6777,23 @@ const PROJECT_FEATURES = [
 
 const RELEASE_HISTORY = [
   {
+    version: '6.5.9',
+    date: 'July 16, 2026',
+    title: 'Presentation exit, batch seat zones, and rule integrity audit',
+    current: true,
+    changes: [
+      'Added a persistent Exit Presentation button that remains reachable in Presentation Mode on desktop and mobile.',
+      'Expanded Class Setup to eight steps with a dedicated Groups & Zones Manager entry before Review Setup.',
+      'Added zone assignment to seat settings and batch group/zone editing for selected Grid or Freeform seats.',
+      'Unified review, manual-placement warnings, and generated seating around individual needs, group rules, zone links, room objects, reserved seats, and minimum-distance requirements.',
+      'Expanded browser and regression coverage for Presentation exit, Class Setup navigation, batch seat editing, zone persistence, and rule violations.'
+    ]
+  },
+  {
     version: '6.5.8',
     date: 'July 16, 2026',
     title: 'Real-browser seat settings interaction repair',
-    current: true,
+    current: false,
     changes: [
       'Fixed unlocked Freeform seats so a normal mouse press no longer starts and commits a zero-distance drag that replaces the seat before the browser can produce a double-click.',
       'Added a movement threshold before Freeform drag state, undo history, pointer capture, and z-order changes activate, preserving normal click and double-click behavior without breaking dragging.',
@@ -7321,6 +7361,8 @@ const uiState = {
   selectionAnchorKey: null,
   activeSeatEditCellKey: null,
   activeSeatEditFreeformObjectId: null,
+  activeSeatEditBatchCellKeys: [],
+  activeSeatEditBatchFreeformObjectIds: [],
   namesOnlyLayout: true,
   activeSideTab: 'students',
   encryptionEnabled: false,
@@ -9315,6 +9357,9 @@ function wipeInMemoryChartDataForLock() {
   state.chartMeta = {};
   if (uiState.selectedCellKeys) uiState.selectedCellKeys.clear();
   uiState.activeSeatEditCellKey = null;
+  uiState.activeSeatEditFreeformObjectId = null;
+  uiState.activeSeatEditBatchCellKeys = [];
+  uiState.activeSeatEditBatchFreeformObjectIds = [];
   uiState.mobileCarryItem = null;
   uiState.keyboardCarryStudentId = '';
   uiState.csvImportDraft = null;
@@ -10281,13 +10326,8 @@ function freeformObjectBounds(obj) {
   return { x, y, width: Math.max(1, Math.max(...xs) - x), height: Math.max(1, Math.max(...ys) - y) };
 }
 
-function freeformRectGapPx(a, b) {
-  if (!a || !b) return Number.POSITIVE_INFINITY;
-  const ar = freeformObjectBounds(a);
-  const br = freeformObjectBounds(b);
-  const dx = Math.max(0, Math.max(br.x - (ar.x + ar.width), ar.x - (br.x + br.width)));
-  const dy = Math.max(0, Math.max(br.y - (ar.y + ar.height), ar.y - (br.y + br.height)));
-  return Math.hypot(dx, dy);
+function freeformSeatCenter(obj) {
+  return { x: (Number(obj?.x) || 0) + (Number(obj?.width) || 0) / 2, y: (Number(obj?.y) || 0) + (Number(obj?.height) || 0) / 2 };
 }
 
 function findFreeformOverlap(obj, candidate = null, objects = state.freeformLayout?.objects || [], options = {}) {
@@ -10861,32 +10901,58 @@ function setFreeformObjectLocked(obj, locked) {
   return true;
 }
 
+function activeSeatEditIsBatch() {
+  return (uiState.activeSeatEditBatchCellKeys || []).length > 1;
+}
+
+function activeSeatEditTargets() {
+  const freeformById = new Map((state.freeformLayout?.objects || []).map(obj => [String(obj.id), obj]));
+  const freeformIds = new Set((uiState.activeSeatEditBatchFreeformObjectIds || []).map(String));
+  const keys = activeSeatEditIsBatch()
+    ? (uiState.activeSeatEditBatchCellKeys || [])
+    : [uiState.activeSeatEditCellKey].filter(Boolean);
+  return keys.map(key => {
+    const cell = state.cells?.[key] || null;
+    const object = [...freeformIds].map(id => freeformById.get(id)).find(obj => String(obj?.cellKey || '') === String(key))
+      || (String(activeSeatEditFreeformObject()?.cellKey || '') === String(key) ? activeSeatEditFreeformObject() : null);
+    return { key, cell, object, locked: object ? Boolean(object.locked) : Boolean(cell?.manual) };
+  }).filter(item => item.cell?.type === 'seat');
+}
+
+function editableSeatEditTargets() {
+  return activeSeatEditTargets().filter(item => !item.locked);
+}
+
 function activeSeatEditLocked() {
-  const obj = activeSeatEditFreeformObject();
-  if (obj) return Boolean(obj.locked);
-  const key = uiState.activeSeatEditCellKey;
-  return Boolean(key && state.cells[key]?.manual);
+  const targets = activeSeatEditTargets();
+  return targets.length > 0 && targets.every(item => item.locked);
 }
 
 function blockLockedSeatEditAction() {
-  setLiveStatusMessage('Unlock this seat before changing its student, groups, type, or assignment.');
+  setLiveStatusMessage(activeSeatEditIsBatch()
+    ? 'Every selected seat is locked. Unlock seats before changing their groups or zones.'
+    : 'Unlock this seat before changing its student, groups, zones, type, or assignment.');
   return true;
 }
 
 function setSeatEditLockedControls(isLocked) {
-  const ids = ['seatEditStudentSelect','seatEditAssignStudentBtn','seatEditClearStudentBtn','seatEditGroupSelect','seatEditAddGroupBtn','seatEditClearGroupsBtn','seatEditTypeSelect','seatEditApplyTypeBtn'];
+  const batch = activeSeatEditIsBatch();
+  const ids = ['seatEditStudentSelect','seatEditAssignStudentBtn','seatEditClearStudentBtn','seatEditGroupSelect','seatEditAddGroupBtn','seatEditClearGroupsBtn','seatEditZoneSelect','seatEditAddZoneBtn','seatEditClearZonesBtn','seatEditTypeSelect','seatEditApplyTypeBtn'];
   ids.forEach(id => {
     const node = el(id);
     if (!node) return;
-    node.disabled = Boolean(isLocked);
-    node.setAttribute('aria-disabled', isLocked ? 'true' : 'false');
-    if (isLocked) node.title = 'Unlock this seat before editing this value.';
-    else node.removeAttribute('title');
+    const batchAllowed = batch && ['seatEditGroupSelect','seatEditAddGroupBtn','seatEditClearGroupsBtn','seatEditZoneSelect','seatEditAddZoneBtn','seatEditClearZonesBtn'].includes(id);
+    const disabled = batchAllowed ? editableSeatEditTargets().length === 0 : Boolean(isLocked);
+    node.disabled = disabled;
+    node.setAttribute('aria-disabled', disabled ? 'true' : 'false');
+    if (disabled) node.title = batchAllowed ? 'Every selected seat is locked.' : 'Unlock this seat before editing this value.';
+    else if (!['seatEditZoneSelect','seatEditAddZoneBtn','seatEditClearZonesBtn'].includes(id)) node.removeAttribute('title');
   });
   const modal = el('seatEditModal');
   modal?.classList.toggle('seat-edit-locked', Boolean(isLocked));
+  modal?.querySelector('.seat-edit-modal')?.classList.toggle('batch-edit', batch);
   const notice = el('seatEditLockNotice');
-  if (notice) notice.hidden = !isLocked;
+  if (notice) notice.hidden = batch || !isLocked;
 }
 
 function freeformObjectStudent(obj, lookups) {
@@ -11082,6 +11148,11 @@ function renderFreeformLayout() {
       }
       if (event.target.closest('[data-freeform-clear-seat], [data-freeform-lock], [data-freeform-delete]')) return;
       event.stopPropagation();
+      const selectedIds = uiState.freeformSelectedObjectIds || new Set();
+      if (!event.shiftKey && !event.altKey && selectedIds.size > 1 && selectedIds.has(String(obj.id))) {
+        updateFreeformSelectionVisuals();
+        return;
+      }
       selectFreeformObject(obj.id, event.shiftKey, event.altKey);
     });
     node.addEventListener('contextmenu', event => {
@@ -11710,14 +11781,14 @@ function assignStudentToFreeformObject(studentId, objectId, render = true, warnO
       showInAppConfirm(`${warning}
 
 Choose Override Placement to keep this assignment anyway, or Move Back to leave the student where they started.`, () => assignStudentToFreeformObject(student.id, objectId, render, false, completion), {
-        title: 'Freeform Group Rule Warning',
+        title: 'Freeform Seating Rule Warning',
         confirmText: 'Override Placement',
         cancelText: 'Move Back',
         onCancel: () => {
           restoreAssignments(snapshot);
           rememberFreeformGeometry(state.freeformLayout?.objects || []);
           renderFreeformLayout();
-          setLiveStatusMessage('Freeform placement was moved back because of the group-rule warning.');
+          setLiveStatusMessage('Freeform placement was moved back because of the seating-rule warning.');
           notifyPlacementCompletion(completion, false, 'cancelled');
         }
       });
@@ -11881,123 +11952,214 @@ function affectedStudentIdsForMove(studentId, targetCellKey) {
   return [...ids].filter(Boolean);
 }
 
-function hasWaitingMemberForGroup(group, exceptStudentId = null) {
-  if (!group) return false;
-  return group.studentIds.some(id => id !== exceptStudentId && getStudent(id) && !assignedSeatForStudent(id));
-}
-
-function seatReservationConflicts(studentId, cell) {
-  if (!cell || cell.type !== 'seat') return [];
-  return (cell.anchorGroupIds || [])
-    .map(getGroup)
-    .filter(Boolean)
-    .filter(group => !group.studentIds.includes(studentId) && hasWaitingMemberForGroup(group));
-}
-
-
-function freeformSeatCenter(obj) {
-  return { x: (Number(obj.x) || 0) + (Number(obj.width) || 0) / 2, y: (Number(obj.y) || 0) + (Number(obj.height) || 0) / 2 };
-}
-
-function freeformSeatDistancePx(a, b) {
-  const ac = freeformSeatCenter(a);
-  const bc = freeformSeatCenter(b);
-  return Math.hypot(ac.x - bc.x, ac.y - bc.y);
-}
-
-function freeformSeatEdgeGapPx(a, b) {
-  return freeformRectGapPx(a, b);
-}
-
-function freeformConflictThresholdPx(seatsByStudent) {
-  const widths = Array.from(seatsByStudent.values()).map(obj => Number(obj.width) || DEFAULT_FREEFORM_SEAT_WIDTH).filter(Number.isFinite);
-  return Math.max(DEFAULT_FREEFORM_SEAT_WIDTH, ...widths);
-}
-
-function freeformCollisionMessagesForStudents(studentIds) {
-  if (!Array.isArray(state.freeformLayout?.objects)) return [];
-  const watched = new Set((studentIds || []).map(String).filter(Boolean));
-  const messages = [];
-  const seatsByStudent = new Map();
-  state.freeformLayout.objects.forEach(obj => {
-    if (obj.type === 'seat' && obj.assignedStudentId) seatsByStudent.set(String(obj.assignedStudentId), obj);
+function effectiveStudentRequirements(student) {
+  const normalized = normalizeStudent(student || {});
+  const requirements = deepClone(normalized.requirements || {});
+  const preferred = new Set((requirements.preferredZoneIds || []).map(String));
+  (state.zones || []).forEach(zone => {
+    if ((zone.studentIds || []).map(String).includes(String(student?.id || ''))) preferred.add(String(zone.id));
   });
-  const defaultSeatWidth = freeformConflictThresholdPx(seatsByStudent);
-  state.groups.forEach(group => {
-    const members = group.studentIds.map(getStudent).filter(Boolean);
-    const placedMembers = members.map(student => ({ student, seat: seatsByStudent.get(String(student.id)) })).filter(item => item.seat);
-    if (group.type === 'avoid' || group.type === 'spread') {
-      for (let i = 0; i < placedMembers.length; i++) {
-        for (let j = i + 1; j < placedMembers.length; j++) {
-          const a = placedMembers[i];
-          const b = placedMembers[j];
-          if (!watched.has(String(a.student.id)) && !watched.has(String(b.student.id))) continue;
-          const gap = freeformSeatEdgeGapPx(a.seat, b.seat);
-          if (gap < defaultSeatWidth) messages.push(`bad:${group.name}: ${studentDisplay(a.student)} and ${studentDisplay(b.student)} are closer than one default seat width in Freeform mode, but this is a ${group.type} group.`);
-          else if (gap < defaultSeatWidth * 1.5 && group.priority >= 8) messages.push(`warn:${group.name}: ${studentDisplay(a.student)} and ${studentDisplay(b.student)} are still very close for a high-priority ${group.type} group.`);
-        }
-      }
-    }
-    if (group.type === 'together' || group.type === 'special') {
-      placedMembers.forEach(item => {
-        if (!watched.has(String(item.student.id))) return;
-        const others = placedMembers.filter(other => other.student.id !== item.student.id);
-        if (others.length && group.priority >= 8) {
-          const nearest = Math.min(...others.map(other => freeformSeatDistancePx(item.seat, other.seat)));
-          if (nearest > defaultSeatWidth * 5) messages.push(`warn:${group.name}: ${studentDisplay(item.student)} is far from the nearest member of this high-priority ${group.type} group in Freeform mode.`);
-        }
-      });
-    }
-  });
-  return Array.from(new Set(messages));
+  requirements.preferredZoneIds = [...preferred];
+  requirements.excludedZoneIds = [...new Set((requirements.excludedZoneIds || []).map(String))];
+  requirements.minDistanceStudentIds = [...new Set((requirements.minDistanceStudentIds || []).map(String).filter(id => id && id !== String(student?.id || '')))];
+  return requirements;
 }
 
-function collisionMessagesForStudents(studentIds) {
-  if (state.layoutMode === 'freeform') return freeformCollisionMessagesForStudents(studentIds);
-  const watched = new Set(studentIds.filter(Boolean));
-  const messages = [];
-  const seatsByStudent = new Map();
-  Object.values(state.cells).forEach(cell => {
-    if (cell.assignedStudentId) seatsByStudent.set(cell.assignedStudentId, cell);
-  });
+function studentsWithEffectiveRuleRequirements() {
+  return seatingStudents().map(student => ({ ...deepClone(student), requirements: effectiveStudentRequirements(student) }));
+}
 
-  state.groups.forEach(group => {
-    const members = group.studentIds.map(getStudent).filter(Boolean);
-    const placedMembers = members.map(student => ({ student, seat: seatsByStudent.get(student.id) })).filter(item => item.seat);
-    if (group.type === 'avoid') {
-      for (let i = 0; i < placedMembers.length; i++) {
-        for (let j = i + 1; j < placedMembers.length; j++) {
-          const a = placedMembers[i];
-          const b = placedMembers[j];
-          if (!watched.has(a.student.id) && !watched.has(b.student.id)) continue;
-          const d = distance(a.seat, b.seat);
-          if (d <= 1) messages.push(`bad:${group.name}: ${studentDisplay(a.student)} and ${studentDisplay(b.student)} would be adjacent, but this is an avoid group.`);
-          else if (d <= 2 && group.priority >= 8) messages.push(`warn:${group.name}: ${studentDisplay(a.student)} and ${studentDisplay(b.student)} would still be very close for a high-priority avoid group.`);
-        }
-      }
+function currentRuleSeatDescriptors() {
+  try {
+    const seats = ModernizationSuite?.buildGeneratorSeats?.();
+    if (Array.isArray(seats)) return seats;
+  } catch {
+     
+  }
+  return Object.entries(state.cells || {}).filter(([, cell]) => cell?.type === 'seat').map(([key, cell]) => ({
+    key, label: `Seat ${cell.row},${cell.col}`, row: Number(cell.row) || 1, col: Number(cell.col) || 1,
+    ruleX: Number(cell.col) || 1, ruleY: Number(cell.row) || 1,
+    frontRatio: (Number(cell.row) - 1) / Math.max(1, Number(state.rows) - 1),
+    sideRatio: (Number(cell.col) - 1) / Math.max(1, Number(state.cols) - 1),
+    zoneIds: [...(cell.zoneIds || [])], anchorGroupIds: [...(cell.anchorGroupIds || [])],
+    assignedStudentId: cell.assignedStudentId || null, manual: Boolean(cell.manual),
+    edge: Number(cell.row) === 1 || Number(cell.col) === 1 || Number(cell.row) === Number(state.rows) || Number(cell.col) === Number(state.cols),
+    teacherDistance: 999, boardDistance: 999, doorDistance: 999, windowDistance: 999, nearAda: false
+  }));
+}
+
+function ruleSeatDistance(a, b) {
+  if (!a || !b) return Infinity;
+  return Math.hypot((Number.isFinite(Number(a.ruleY)) ? Number(a.ruleY) : Number(a.row) || 0) - (Number.isFinite(Number(b.ruleY)) ? Number(b.ruleY) : Number(b.row) || 0),
+                    (Number.isFinite(Number(a.ruleX)) ? Number(a.ruleX) : Number(a.col) || 0) - (Number.isFinite(Number(b.ruleX)) ? Number(b.ruleX) : Number(b.col) || 0));
+}
+
+function evaluateCurrentRuleViolations(options = {}) {
+  const includeUnseated = options.includeUnseated !== false;
+  const findings = [];
+  const seen = new Set();
+  const students = studentsWithEffectiveRuleRequirements();
+  const studentById = new Map(students.map(student => [String(student.id), student]));
+  const seats = currentRuleSeatDescriptors();
+  const seatByKey = new Map(seats.map(seat => [String(seat.key), seat]));
+  const seatsByStudent = new Map(seats.filter(seat => seat.assignedStudentId).map(seat => [String(seat.assignedStudentId), seat]));
+  const label = student => student ? studentDisplay(student) : 'Unknown student';
+  const seatLabel = seat => seat?.label || (seat ? `Seat ${seat.row},${seat.col}` : 'Unassigned');
+  const add = (id, severity, message, studentIds = [], category = 'rule') => {
+    const key = String(id || message);
+    if (seen.has(key)) return;
+    seen.add(key);
+    findings.push({ id: key, severity, message, studentIds: [...new Set(studentIds.map(String).filter(Boolean))], category });
+  };
+  const hasMeasuredObject = field => seats.some(seat => Number(seat[field]) < 999);
+  const roomObjectWarnings = new Set();
+  const noteMissingObject = (kind, field, description) => {
+    if (roomObjectWarnings.has(kind) || hasMeasuredObject(field)) return;
+    roomObjectWarnings.add(kind);
+    add(`room-object:${kind}`, 'warn', `The room has no ${description}, so active ${kind} rules and student needs cannot be measured.`, [], 'room');
+  };
+
+  students.forEach(student => {
+    const id = String(student.id);
+    const req = effectiveStudentRequirements(student);
+    const seat = seatsByStudent.get(id);
+    const configured = req.front !== 'none' || req.side !== 'none' || req.nearTeacher || req.aisle || req.ada || req.awayDoor || req.awayWindow || req.preferredZoneIds.length || req.excludedZoneIds.length || req.minDistanceStudentIds.length;
+    if (!seat) {
+      if (includeUnseated && configured) add(`student:${id}:unseated-needs`, req.front === 'require' || req.ada ? 'bad' : 'warn', `${label(student)} is unseated, so the configured individual seating needs cannot be satisfied.`, [id], 'student');
+      return;
     }
-
-    if (group.type === 'together' || group.type === 'special') {
-      placedMembers.forEach(item => {
-        if (!watched.has(item.student.id)) return;
-        const others = placedMembers.filter(other => other.student.id !== item.student.id);
-        if (others.length && group.priority >= 8) {
-          const nearest = Math.min(...others.map(other => distance(item.seat, other.seat)));
-          if (nearest > 5) messages.push(`warn:${group.name}: ${studentDisplay(item.student)} would be far from the nearest member of this high-priority ${group.type} group.`);
-        }
-      });
+    const front = Number.isFinite(Number(seat.frontRatio)) ? Number(seat.frontRatio) : 0;
+    const side = Number.isFinite(Number(seat.sideRatio)) ? Number(seat.sideRatio) : 0.5;
+    const zones = new Set((seat.zoneIds || []).map(String));
+    if (req.front === 'require' && front > .42) add(`student:${id}:front-required`, 'bad', `${label(student)} is at ${seatLabel(seat)}, outside the required front area.`, [id], 'student');
+    else if (req.front === 'prefer' && front > .45) add(`student:${id}:front-preferred`, 'warn', `${label(student)} prefers the front but is at ${seatLabel(seat)} outside the front target.`, [id], 'student');
+    if (req.side === 'left' && side > .5) add(`student:${id}:side-left`, 'warn', `${label(student)} prefers the left side but is at ${seatLabel(seat)} on the opposite half.`, [id], 'student');
+    if (req.side === 'right' && side < .5) add(`student:${id}:side-right`, 'warn', `${label(student)} prefers the right side but is at ${seatLabel(seat)} on the opposite half.`, [id], 'student');
+    if (req.nearTeacher) {
+      noteMissingObject('near-teacher', 'teacherDistance', 'teacher desk object');
+      if (Number(seat.teacherDistance) < 999 && Number(seat.teacherDistance) > 2.5) add(`student:${id}:near-teacher`, 'warn', `${label(student)} needs to be near the teacher but ${seatLabel(seat)} is ${Number(seat.teacherDistance).toFixed(1)} seat units away.`, [id], 'student');
     }
-  });
-
-  Object.values(state.cells).forEach(cell => {
-    const student = getStudent(cell.assignedStudentId);
-    if (!student || !watched.has(student.id)) return;
-    seatReservationConflicts(student.id, cell).forEach(group => {
-      messages.push(`warn:${group.name}: Seat ${cell.row},${cell.col} is reserved for this group while one of its members is still unassigned, but ${studentDisplay(student)} is not in it.`);
+    if (req.aisle && !seat.edge) add(`student:${id}:aisle`, 'warn', `${label(student)} needs an aisle or room-edge seat, but ${seatLabel(seat)} is not one.`, [id], 'student');
+    if (req.ada && !seat.nearAda) add(`student:${id}:ada`, 'bad', `${label(student)} requires an ADA/accessibility area, but ${seatLabel(seat)} is not in one.`, [id], 'student');
+    if (req.awayDoor) {
+      noteMissingObject('away-door', 'doorDistance', 'door object');
+      if (Number(seat.doorDistance) < 3) add(`student:${id}:away-door`, 'warn', `${label(student)} needs to be away from doors, but ${seatLabel(seat)} is only ${Number(seat.doorDistance).toFixed(1)} seat units from one.`, [id], 'student');
+    }
+    if (req.awayWindow) {
+      noteMissingObject('away-window', 'windowDistance', 'window object');
+      if (Number(seat.windowDistance) < 3) add(`student:${id}:away-window`, 'warn', `${label(student)} needs to be away from windows, but ${seatLabel(seat)} is only ${Number(seat.windowDistance).toFixed(1)} seat units from one.`, [id], 'student');
+    }
+    if (req.preferredZoneIds.length && !req.preferredZoneIds.some(zoneId => zones.has(String(zoneId)))) {
+      const names = req.preferredZoneIds.map(zoneId => zoneById(zoneId)?.name || zoneId).join(', ');
+      add(`student:${id}:preferred-zone`, 'warn', `${label(student)} is at ${seatLabel(seat)} outside the preferred zone${req.preferredZoneIds.length === 1 ? '' : 's'}: ${names}.`, [id], 'zone');
+    }
+    const excluded = req.excludedZoneIds.filter(zoneId => zones.has(String(zoneId)));
+    if (excluded.length) {
+      const names = excluded.map(zoneId => zoneById(zoneId)?.name || zoneId).join(', ');
+      add(`student:${id}:excluded-zone`, 'bad', `${label(student)} is at ${seatLabel(seat)} inside excluded zone${excluded.length === 1 ? '' : 's'}: ${names}.`, [id], 'zone');
+    }
+    req.minDistanceStudentIds.forEach(otherId => {
+      const other = studentById.get(String(otherId));
+      const otherSeat = seatsByStudent.get(String(otherId));
+      if (!other || !otherSeat) return;
+      const pair = [id, String(otherId)].sort();
+      if (pair[0] !== id) return;
+      const d = ruleSeatDistance(seat, otherSeat);
+      if (d < 3) add(`student-distance:${pair.join('|')}`, 'bad', `${label(student)} and ${label(other)} must be separated, but their seats are only ${d.toFixed(1)} seat units apart.`, pair, 'student');
     });
   });
 
-  return Array.from(new Set(messages));
+  (state.groups || []).forEach(group => {
+    const groupId = String(group.id || group.name || 'group');
+    const memberIds = (group.studentIds || []).map(String).filter(id => studentById.has(id));
+    const placed = memberIds.map(id => ({ id, student: studentById.get(id), seat: seatsByStudent.get(id) })).filter(item => item.seat);
+    const missing = memberIds.filter(id => !seatsByStudent.has(id));
+    const priority = Number(group.priority || 1);
+    if (includeUnseated && missing.length && priority >= 8) add(`group:${groupId}:unseated`, 'warn', `${group.name}: ${missing.length} high-priority member${missing.length === 1 ? ' is' : 's are'} not seated.`, missing, 'group');
+    const pairs = [];
+    for (let i = 0; i < placed.length; i++) for (let j = i + 1; j < placed.length; j++) pairs.push([placed[i], placed[j]]);
+    if (['avoid', 'spread'].includes(group.type)) {
+      pairs.forEach(([a, b]) => {
+        const d = ruleSeatDistance(a.seat, b.seat);
+        if (d < 2) add(`group:${groupId}:apart:${[a.id,b.id].sort().join('|')}`, 'bad', `${group.name}: ${label(a.student)} and ${label(b.student)} are only ${d.toFixed(1)} seat units apart, violating the ${group.type} rule.`, [a.id,b.id], 'group');
+        else if (d < 3) add(`group:${groupId}:apart:${[a.id,b.id].sort().join('|')}`, 'warn', `${group.name}: ${label(a.student)} and ${label(b.student)} are only ${d.toFixed(1)} seat units apart; this ${group.type} rule targets at least 3.`, [a.id,b.id], 'group');
+      });
+    }
+    if (['together', 'special'].includes(group.type) && pairs.length) {
+      const farthest = pairs.map(([a,b]) => ({ a, b, d: ruleSeatDistance(a.seat,b.seat) })).sort((a,b) => b.d-a.d)[0];
+      if (farthest.d > 4) add(`group:${groupId}:together`, priority >= 8 ? 'bad' : 'warn', `${group.name}: ${label(farthest.a.student)} and ${label(farthest.b.student)} are ${farthest.d.toFixed(1)} seat units apart; this ${group.type} rule targets 4 or fewer.`, [farthest.a.id,farthest.b.id], 'group');
+    }
+    placed.forEach(({ id, student, seat }) => {
+      const front = Number(seat.frontRatio || 0);
+      if (group.type === 'front' && front > .45) add(`group:${groupId}:front:${id}`, 'warn', `${group.name}: ${label(student)} is outside the front target at ${seatLabel(seat)}.`, [id], 'group');
+      if (group.type === 'back' && front < .55) add(`group:${groupId}:back:${id}`, 'warn', `${group.name}: ${label(student)} is outside the back target at ${seatLabel(seat)}.`, [id], 'group');
+      if (group.type === 'nearTeacher') {
+        noteMissingObject('near-teacher', 'teacherDistance', 'teacher desk object');
+        if (Number(seat.teacherDistance) < 999 && Number(seat.teacherDistance) > 2.5) add(`group:${groupId}:teacher:${id}`, 'warn', `${group.name}: ${label(student)} is ${Number(seat.teacherDistance).toFixed(1)} seat units from the teacher area.`, [id], 'group');
+      }
+      if (group.type === 'nearBoard') {
+        noteMissingObject('near-board', 'boardDistance', 'board or projector object');
+        if (Number(seat.boardDistance) < 999 && Number(seat.boardDistance) > 2.5) add(`group:${groupId}:board:${id}`, 'warn', `${group.name}: ${label(student)} is ${Number(seat.boardDistance).toFixed(1)} seat units from the board/projector area.`, [id], 'group');
+      }
+      if (group.type === 'awayDoor') {
+        noteMissingObject('away-door', 'doorDistance', 'door object');
+        if (Number(seat.doorDistance) < 3) add(`group:${groupId}:door:${id}`, 'warn', `${group.name}: ${label(student)} is too close to a door at ${seatLabel(seat)}.`, [id], 'group');
+      }
+      if (group.type === 'awayWindow') {
+        noteMissingObject('away-window', 'windowDistance', 'window object');
+        if (Number(seat.windowDistance) < 3) add(`group:${groupId}:window:${id}`, 'warn', `${group.name}: ${label(student)} is too close to a window at ${seatLabel(seat)}.`, [id], 'group');
+      }
+      if ((group.type === 'zone' || group.zoneId) && group.zoneId && !(seat.zoneIds || []).map(String).includes(String(group.zoneId))) {
+        add(`group:${groupId}:zone:${id}`, 'warn', `${group.name}: ${label(student)} is outside preferred zone ${zoneById(group.zoneId)?.name || group.zoneId}.`, [id], 'zone');
+      }
+    });
+    const anchors = new Set((group.anchorSeats || []).map(String).filter(key => seatByKey.has(key)));
+    if (anchors.size && placed.length) {
+      const needed = Math.min(anchors.size, placed.length);
+      const used = placed.filter(item => anchors.has(String(item.seat.key))).length;
+      if (used < needed) add(`group:${groupId}:anchors`, 'warn', `${group.name}: only ${used} of ${needed} reserved seat${needed === 1 ? '' : 's'} are occupied by group members.`, placed.map(item => item.id), 'group');
+    }
+  });
+
+  seats.forEach(seat => {
+    const studentId = String(seat.assignedStudentId || '');
+    if (!studentId || !(seat.anchorGroupIds || []).length) return;
+    const studentGroups = new Set((state.groups || []).filter(group => (group.studentIds || []).map(String).includes(studentId)).map(group => String(group.id)));
+    const conflicting = (seat.anchorGroupIds || []).map(String).filter(groupId => !studentGroups.has(groupId));
+    conflicting.forEach(groupId => {
+      const group = getGroup(groupId);
+      if (!group || !(group.studentIds || []).some(id => !seatsByStudent.has(String(id)))) return;
+      add(`reservation:${seat.key}:${groupId}`, 'warn', `${seatLabel(seat)} is reserved for ${group.name}, but ${label(studentById.get(studentId))} is not a member while a group member remains unseated.`, [studentId, ...(group.studentIds || [])], 'group');
+    });
+  });
+
+  const pairRules = new Map();
+  (state.groups || []).forEach(group => {
+    const ids = (group.studentIds || []).map(String).filter(id => studentById.has(id)).sort();
+    for (let i=0;i<ids.length;i++) for (let j=i+1;j<ids.length;j++) {
+      const key = `${ids[i]}|${ids[j]}`;
+      if (!pairRules.has(key)) pairRules.set(key, []);
+      pairRules.get(key).push(group);
+    }
+  });
+  pairRules.forEach((rules, key) => {
+    if (!rules.some(rule => ['avoid','spread'].includes(rule.type)) || !rules.some(rule => ['together','special'].includes(rule.type))) return;
+    const ids = key.split('|');
+    add(`conflicting-rules:${key}`, 'warn', `Colliding group rules: ${label(studentById.get(ids[0]))} and ${label(studentById.get(ids[1]))} are included in both proximity and separation rules.`, ids, 'group');
+  });
+
+  return findings;
+}
+
+function freeformCollisionMessagesForStudents(studentIds) {
+  return collisionMessagesForStudents(studentIds);
+}
+
+function collisionMessagesForStudents(studentIds) {
+  const watched = new Set((studentIds || []).map(String).filter(Boolean));
+  return evaluateCurrentRuleViolations({ includeUnseated: false })
+    .filter(item => item.studentIds?.some(id => watched.has(String(id))))
+    .map(item => `${item.severity === 'bad' ? 'bad' : 'warn'}:${item.message}`);
 }
 
 function buildCollisionWarning(beforeMessages, afterMessages, actionText) {
@@ -12005,7 +12167,7 @@ function buildCollisionWarning(beforeMessages, afterMessages, actionText) {
   const newMessages = afterMessages.filter(message => !beforeSet.has(message));
   if (!newMessages.length) return '';
   const readable = newMessages.slice(0, 5).map(message => message.replace(/^(bad|warn):/, ''));
-  return `${actionText} creates a new group-rule collision. Continue?\n\nNew possible issue(s):\n- ${readable.join('\n- ')}`;
+  return `${actionText} creates a new seating-rule or student-need conflict. Continue?\n\nNew possible issue(s):\n- ${readable.join('\n- ')}`;
 }
 
 function applyMoveOrSwap(studentId, targetCellKey, manual = true) {
@@ -12065,10 +12227,10 @@ function assignStudentToCell(studentId, cellKey, manual = true, warnOnRules = tr
         applyMoveOrSwap(studentId, cellKey, manual);
         mirrorLinkedFreeformSeatsFromGrid();
         renderAll();
-        setLiveStatusMessage('Move completed after group-rule warning.');
+        setLiveStatusMessage('Move completed after a seating-rule warning.');
         notifyPlacementCompletion(completion, true, 'confirmed');
       }, {
-        title: 'Group Rule Warning',
+        title: 'Seating Rule Warning',
         confirmText: 'Continue Move',
         cancelText: 'Cancel',
         onCancel: () => notifyPlacementCompletion(completion, false, 'cancelled')
@@ -14413,173 +14575,34 @@ function runAnalyzeReport() {
 function renderRuleReport() {
   const report = el('ruleReport');
   const findings = analyzeRules();
-  if (!state.groups.length) {
+  const hasNeeds = (state.students || []).some(student => {
+    const r = effectiveStudentRequirements(student);
+    return r.front !== 'none' || r.side !== 'none' || r.nearTeacher || r.aisle || r.ada || r.awayDoor || r.awayWindow || r.preferredZoneIds.length || r.excludedZoneIds.length || r.minDistanceStudentIds.length;
+  });
+  const hasZoneLinks = (state.zones || []).some(zone => (zone.studentIds || []).length || (zone.groupIds || []).length);
+  if (!state.groups.length && !hasNeeds && !hasZoneLinks) {
     const duplicates = duplicateStudentFindings();
     report.innerHTML = duplicates.length
       ? duplicates.map(item => `<div class="warningbox">${escapeHtml(item.message)}</div>`).join('')
-      : '<div class="hint">No groups or rules created yet.</div>';
+      : '<div class="hint">No group rules, zone links, or individual seating needs are configured yet.</div>';
     return;
   }
   if (!findings.length) {
-    report.innerHTML = '<div class="successbox">No obvious rule problems found in the current chart.</div>';
+    report.innerHTML = '<div class="successbox">No obvious group, zone, room-object, or individual-needs problems were found in the current chart.</div>';
     return;
   }
   report.innerHTML = findings.map(item => `<div class="${item.severity === 'warn' ? 'warningbox' : 'violation'}">${escapeHtml(item.message)}</div>`).join('');
 }
 
-function analyzeFreeformRules() {
-  const findings = [];
-  const layout = state.freeformLayout || {};
-  const canvas = layout.canvas || {};
-  const seats = (layout.objects || []).filter(obj => obj.type === 'seat');
-  const seatsByStudent = new Map(seats.filter(obj => obj.assignedStudentId).map(obj => [String(obj.assignedStudentId), obj]));
-  const seatSizes = seats.map(obj => ((Number(obj.width) || DEFAULT_FREEFORM_SEAT_WIDTH) + (Number(obj.height) || DEFAULT_FREEFORM_SEAT_HEIGHT)) / 2).sort((a,b) => a-b);
-  const scale = Math.max(60, seatSizes.length ? seatSizes[Math.floor(seatSizes.length / 2)] : DEFAULT_FREEFORM_SEAT_WIDTH);
-  const center = obj => freeformSeatCenter(obj);
-  const ruleDistance = (a,b) => freeformSeatDistancePx(a,b) / scale;
-  const roomObjects = (layout.objects || []).filter(obj => obj.type !== 'seat');
-  const distanceToType = (seat,type) => {
-    const targets = roomObjects.filter(obj => obj.type === type);
-    if (!targets.length) return 999;
-    const a = center(seat);
-    return Math.min(...targets.map(obj => {
-      const b = center(obj);
-      return Math.hypot(a.x-b.x,a.y-b.y)/scale;
-    }));
-  };
-  const frontRatio = seat => {
-    const point = center(seat);
-    const width = Math.max(1, Number(canvas.width) || 2800);
-    const height = Math.max(1, Number(canvas.height) || 1800);
-    const x = Math.max(0,Math.min(1,point.x/width));
-    const y = Math.max(0,Math.min(1,point.y/height));
-    const side = freeformRoomFrontSide();
-    if (side === 'bottom') return 1-y;
-    if (side === 'left') return x;
-    if (side === 'right') return 1-x;
-    return y;
-  };
-  state.groups.forEach(group => {
-    const members = (group.studentIds || []).map(getStudent).filter(Boolean);
-    const placed = members.map(student => ({ student, seat: seatsByStudent.get(String(student.id)) })).filter(item => item.seat);
-    const missing = members.length - placed.length;
-    if (missing && group.priority >= 8) findings.push({ severity:'warn', message:`${group.name}: ${missing} high-priority member(s) are not seated.` });
-    if (!placed.length) return;
-    const pairs = [];
-    for (let i=0;i<placed.length;i++) for (let j=i+1;j<placed.length;j++) pairs.push([placed[i],placed[j]]);
-    if ((group.type === 'avoid' || group.type === 'spread') && pairs.length) {
-      const closest = Math.min(...pairs.map(([a,b]) => ruleDistance(a.seat,b.seat)));
-      if (closest < 3) findings.push({ severity: closest < 2 ? 'bad' : 'warn', message:`${group.name}: the closest members are ${closest.toFixed(1)} seat widths apart in Freeform mode; this ${group.type} rule targets at least 3.` });
-    } else if ((group.type === 'together' || group.type === 'special') && pairs.length) {
-      const farthest = Math.max(...pairs.map(([a,b]) => ruleDistance(a.seat,b.seat)));
-      if (farthest > 4 && group.priority >= 5) findings.push({ severity:'warn', message:`${group.name}: the farthest members are ${farthest.toFixed(1)} seat widths apart in Freeform mode; this ${group.type} rule targets 4 or fewer.` });
-    } else if (group.type === 'front') {
-      const average = placed.reduce((sum,item) => sum + frontRatio(item.seat),0)/placed.length;
-      if (average > .4) findings.push({ severity:'warn', message:`${group.name}: members are not concentrated toward the selected front of the Freeform room.` });
-    } else if (group.type === 'back') {
-      const average = placed.reduce((sum,item) => sum + frontRatio(item.seat),0)/placed.length;
-      if (average < .6) findings.push({ severity:'warn', message:`${group.name}: members are not concentrated toward the back of the Freeform room.` });
-    } else if (group.type === 'nearTeacher') {
-      const average = placed.reduce((sum,item) => sum + distanceToType(item.seat,'teacher'),0)/placed.length;
-      if (average > 2.5) findings.push({ severity:'warn', message:`${group.name}: members average ${average.toFixed(1)} seat widths from the teacher area.` });
-    } else if (group.type === 'nearBoard') {
-      const average = placed.reduce((sum,item) => sum + distanceToType(item.seat,'board'),0)/placed.length;
-      if (average > 2.5) findings.push({ severity:'warn', message:`${group.name}: members average ${average.toFixed(1)} seat widths from the board.` });
-    } else if (group.type === 'awayDoor') {
-      const closest = Math.min(...placed.map(item => distanceToType(item.seat,'door')));
-      if (closest < 3) findings.push({ severity:'warn', message:`${group.name}: at least one member is only ${closest.toFixed(1)} seat widths from the door.` });
-    } else if (group.type === 'awayWindow') {
-      const closest = Math.min(...placed.map(item => distanceToType(item.seat,'window')));
-      if (closest < 3) findings.push({ severity:'warn', message:`${group.name}: at least one member is only ${closest.toFixed(1)} seat widths from a window.` });
-    } else if (group.type === 'zone' && group.zoneId) {
-      const outside = placed.filter(item => !(item.seat.zoneIds || []).map(String).includes(String(group.zoneId)));
-      if (outside.length) findings.push({ severity:'warn', message:`${group.name}: ${outside.length} member(s) are outside the preferred zone.` });
-    }
-    if ((group.anchorSeats || []).length) {
-      const anchors = new Set((group.anchorSeats || []).map(String));
-      const needed = Math.min(anchors.size, placed.length);
-      const used = placed.filter(item => anchors.has(String(item.seat.cellKey || ''))).length;
-      if (used < needed) findings.push({ severity:'warn', message:`${group.name}: ${used} of ${needed} reserved Freeform seat(s) are being used by group members.` });
-    }
-  });
-  const pairRules = new Map();
-  state.groups.forEach(group => {
-    const ids = (group.studentIds || []).filter(id => getStudent(id)).map(String).sort();
-    for (let i=0;i<ids.length;i++) for (let j=i+1;j<ids.length;j++) {
-      const key=`${ids[i]}|${ids[j]}`;
-      if (!pairRules.has(key)) pairRules.set(key,[]);
-      pairRules.get(key).push(group);
-    }
-  });
-  pairRules.forEach((rules,key) => {
-    const hasAvoid=rules.some(rule => rule.type==='avoid'||rule.type==='spread');
-    const hasTogether=rules.some(rule => rule.type==='together'||rule.type==='special');
-    if (!hasAvoid || !hasTogether) return;
-    const [aId,bId]=key.split('|');
-    findings.push({ severity:'warn', message:`Colliding group rules: ${studentDisplay(getStudent(aId))} and ${studentDisplay(getStudent(bId))} are included in both together and separation rules.` });
-  });
-  return findings;
-}
-
 function analyzeRules() {
-  if (state.layoutMode === 'freeform') return analyzeFreeformRules();
-  const findings = [];
-  const seatsByStudent = new Map();
-  Object.values(state.cells).forEach(cell => {
-    if (cell.assignedStudentId) seatsByStudent.set(cell.assignedStudentId, cell);
-  });
-  state.groups.forEach(group => {
-    const members = group.studentIds.map(getStudent).filter(Boolean);
-    const placedMembers = members.map(s => ({ student: s, seat: seatsByStudent.get(s.id) })).filter(x => x.seat);
-    const missing = members.filter(s => !seatsByStudent.has(s.id));
-    if (missing.length && group.priority >= 8) {
-      findings.push({ severity: 'warn', message: `${group.name}: ${missing.length} high-priority member(s) are not seated.` });
-    }
-    if (group.type === 'avoid') {
-      for (let i = 0; i < placedMembers.length; i++) {
-        for (let j = i + 1; j < placedMembers.length; j++) {
-          const d = distance(placedMembers[i].seat, placedMembers[j].seat);
-          if (d <= 1) findings.push({ severity: 'bad', message: `${group.name}: ${studentDisplay(placedMembers[i].student)} and ${studentDisplay(placedMembers[j].student)} are adjacent, but this is an avoid group.` });
-          else if (d <= 2 && group.priority >= 8) findings.push({ severity: 'warn', message: `${group.name}: ${studentDisplay(placedMembers[i].student)} and ${studentDisplay(placedMembers[j].student)} are still very close.` });
-        }
-      }
-    } else if (group.type === 'together' || group.type === 'special') {
-      if (placedMembers.length >= 2) {
-        let maxDistance = 0;
-        for (let i = 0; i < placedMembers.length; i++) {
-          for (let j = i + 1; j < placedMembers.length; j++) {
-            maxDistance = Math.max(maxDistance, distance(placedMembers[i].seat, placedMembers[j].seat));
-          }
-        }
-        if (maxDistance > 4 && group.priority >= 8) findings.push({ severity: 'warn', message: `${group.name}: members are spread out more than expected for a high-priority together/special group.` });
-      }
-    }
-  });
-
-  const pairRules = new Map();
-  state.groups.forEach(group => {
-    const ids = group.studentIds.filter(id => getStudent(id)).sort();
-    for (let i = 0; i < ids.length; i++) {
-      for (let j = i + 1; j < ids.length; j++) {
-        const key = `${ids[i]}|${ids[j]}`;
-        if (!pairRules.has(key)) pairRules.set(key, []);
-        pairRules.get(key).push(group);
-      }
-    }
-  });
-  pairRules.forEach((groups, key) => {
-    const hasAvoid = groups.some(b => b.type === 'avoid');
-    const hasTogether = groups.some(b => b.type === 'together' || b.type === 'special');
-    if (!hasAvoid || !hasTogether) return;
-    const [aId, bId] = key.split('|');
-    const a = getStudent(aId);
-    const b = getStudent(bId);
-    const names = groups.map(rule => `${rule.name} (${rule.type}, priority ${rule.priority})`).join(' vs ');
-    findings.push({ severity: 'warn', message: `Colliding group rules: ${studentDisplay(a)} and ${studentDisplay(b)} are included in both avoid and together/special rules: ${names}.` });
-  });
-
-  appendAdvancedRuleFindings(findings, seatsByStudent);
-  return findings.slice(0, 24);
+  const findings = [...evaluateCurrentRuleViolations({ includeUnseated: true }), ...duplicateStudentFindings()];
+  const seen = new Set();
+  return findings.filter(item => {
+    const key = item.id || item.message;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  }).slice(0, 48);
 }
 
 
@@ -14593,6 +14616,10 @@ const CONTROL_TOOLTIPS = {
   helpGuideBtn: 'Open the searchable help guide with explanations, tips, examples, security guidance, and troubleshooting for the whole application.',
   settingsBtn: 'Open Settings for page defaults, Presentation Mode, security PINs, encryption, recommended saving workflow, custom room objects, sample data, About, and the Change Log.',
   visibilityModeBtn: 'Enter or exit Presentation mode. Presentation switches to Review, hides editing/navigation controls, and protects hidden data. Exiting requires the Presentation PIN, Lock PIN, or current encryption key.',
+  presentationExitBtn: 'Exit Presentation Mode and restore the normal workflow. A Presentation PIN, Lock PIN, or encryption key may be required.',
+  seatEditZoneSelect: 'Choose a zone to assign to this seat or all selected seats.',
+  seatEditAddZoneBtn: 'Assign the selected zone to this seat or all selected seats.',
+  seatEditClearZonesBtn: 'Remove all zone assignments from this seat or all selected seats.',
   pageLockBtn: 'Lock the page with a PIN/password. If no lock PIN/password exists yet, you will be asked to create one before the screen locks.',
   saveLoadMenuBtn: 'Open the Save menu for Save Now, Load Save File, and More Save Options.',
   snapshotQuickBtn: 'Take a snapshot of the current class and open the snapshot list so snapshots can be restored later.',
@@ -18647,19 +18674,61 @@ function cellTypeOptionsHtml(selected = 'seat') {
   return built + custom;
 }
 
+function seatEditBatchContext(cellKey, options = {}) {
+  const primaryObjectId = String(options.freeformObjectId || '');
+  if (primaryObjectId && uiState.freeformSelectedObjectIds?.size > 1 && uiState.freeformSelectedObjectIds.has(primaryObjectId)) {
+    const objects = (state.freeformLayout?.objects || []).filter(obj => obj.type === 'seat' && uiState.freeformSelectedObjectIds.has(String(obj.id)));
+    const entries = objects.map(obj => {
+      const key = ensureFreeformSeatGridLink(obj);
+      if (key) mirrorFreeformSeatToGrid(obj, { clearStudentDuplicates: false, preserveObjectLock: true });
+      return { id: String(obj.id), key };
+    }).filter(item => item.key && state.cells[item.key]?.type === 'seat');
+    if (entries.length > 1) return { keys: [...new Set(entries.map(item => item.key))], objectIds: [...new Set(entries.map(item => item.id))] };
+  }
+  if (!primaryObjectId && isContextCellSelectionBatch(cellKey)) {
+    const keys = selectedCellKeysArray().filter(key => state.cells[key]?.type === 'seat');
+    if (keys.length > 1) return { keys, objectIds: [] };
+  }
+  return { keys: [cellKey], objectIds: primaryObjectId ? [primaryObjectId] : [] };
+}
+
+function seatEditZoneOptionsHtml() {
+  return ['<option value="">Choose a zone</option>'].concat(
+    [...(state.zones || [])].sort((a,b) => String(a.name || '').localeCompare(String(b.name || '')))
+      .map(zone => `<option value="${escapeHtml(zone.id)}">${escapeHtml(zone.name || 'Unnamed zone')}</option>`)
+  ).join('');
+}
+
 function openSeatEditModal(cellKey, options = {}) {
   if (eyeModeBlocksSeatEditing() || eyeModeBlocksRoomEditing()) return blockEyeModeAction(eyeModeBlocksSeatEditing() ? 'seat' : 'room');
   const cell = state.cells[cellKey];
-  if (!cell) return false;
+  if (!cell || cell.type !== 'seat') return false;
+  const batch = seatEditBatchContext(cellKey, options);
   uiState.activeSeatEditCellKey = cellKey;
   uiState.activeSeatEditFreeformObjectId = options.freeformObjectId || null;
+  uiState.activeSeatEditBatchCellKeys = batch.keys;
+  uiState.activeSeatEditBatchFreeformObjectIds = batch.objectIds;
   const freeformObj = activeSeatEditFreeformObject();
   if (freeformObj) mirrorFreeformSeatToGrid(freeformObj, { clearStudentDuplicates: false, preserveObjectLock: true });
-  const seatLocked = freeformObj ? Boolean(freeformObj.locked) : Boolean(cell.manual);
+  const targets = activeSeatEditTargets();
+  const batchMode = targets.length > 1;
+  const lockedCount = targets.filter(item => item.locked).length;
+  const editableCount = targets.length - lockedCount;
+  const seatLocked = targets.length > 0 && lockedCount === targets.length;
   const student = getStudent(cell.assignedStudentId);
   const anchors = (cell.anchorGroupIds || []).map(getGroup).filter(Boolean);
-  el('seatEditTitle').textContent = `Edit Cell ${cell.row},${cell.col}`;
-  el('seatEditSummary').textContent = `Current: ${objectLabel(cell.type)}${student ? ` · ${studentDisplay(student)}` : ''}${anchors.length ? ` · Reserved for ${anchors.map(b => b.name).join(', ')}` : ''}${seatLocked ? ' · Locked (read-only until unlocked)' : ' · Unlocked'}`;
+  const zones = (cell.zoneIds || []).map(zoneById).filter(Boolean);
+  el('seatEditTitle').textContent = batchMode ? `Edit ${targets.length} Selected Seats` : `Edit Cell ${cell.row},${cell.col}`;
+  el('seatEditSummary').textContent = batchMode
+    ? `${targets.length} selected seats · ${editableCount} editable${lockedCount ? ` · ${lockedCount} locked and skipped by batch changes` : ''}`
+    : `Current: ${objectLabel(cell.type)}${student ? ` · ${studentDisplay(student)}` : ''}${anchors.length ? ` · Reserved for ${anchors.map(b => b.name).join(', ')}` : ''}${zones.length ? ` · Zones: ${zones.map(zone => zone.name).join(', ')}` : ''}${seatLocked ? ' · Locked (read-only until unlocked)' : ' · Unlocked'}`;
+  const batchNotice = el('seatEditBatchNotice');
+  if (batchNotice) {
+    batchNotice.hidden = !batchMode;
+    batchNotice.textContent = batchMode
+      ? `Group and zone changes apply to all ${editableCount} unlocked selected seats. Student assignment and cell type remain individual-seat actions.${lockedCount ? ` ${lockedCount} locked seat${lockedCount === 1 ? ' is' : 's are'} left unchanged.` : ''}`
+      : '';
+  }
   const studentOptions = ['<option value="">No student selected</option>'].concat(
     [...state.students].sort((a,b) => studentDisplay(a).localeCompare(studentDisplay(b))).map(s => `<option value="${escapeHtml(s.id)}" ${String(s.id) === String(cell.assignedStudentId) ? 'selected' : ''}>${escapeHtml(studentDisplay(s))} - ${escapeHtml(studentMetaText(s))}</option>`)
   ).join('');
@@ -18668,23 +18737,27 @@ function openSeatEditModal(cellKey, options = {}) {
     [...state.groups].sort((a,b) => a.name.localeCompare(b.name)).map(b => `<option value="${escapeHtml(b.id)}">${escapeHtml(b.name)} - ${escapeHtml(typeLabel(b.type))}</option>`)
   ).join('');
   el('seatEditGroupSelect').innerHTML = groupOptions;
+  el('seatEditZoneSelect').innerHTML = seatEditZoneOptionsHtml();
   el('seatEditTypeSelect').innerHTML = cellTypeOptionsHtml(cell.type);
   el('seatEditLockBtn').textContent = seatLocked ? 'Unlock Seat' : 'Lock Seat';
-  el('seatEditLockBtn').disabled = cell.type !== 'seat' || (!cell.assignedStudentId && !freeformObj);
+  el('seatEditLockBtn').disabled = batchMode || cell.type !== 'seat' || (!cell.assignedStudentId && !freeformObj);
   setSeatEditLockedControls(seatLocked);
-  if (freeformObj) {
+  if (freeformObj && !batchMode) {
     el('seatEditTitle').textContent = `Edit Freeform Seat${cell.row && cell.col ? ` · Grid ${cell.row},${cell.col}` : ''}`;
-    el('seatEditSummary').textContent += freeformObj.locked ? ' · Freeform locked: unlock before changing assignment, groups, or type' : ' · Freeform unlocked';
+    el('seatEditSummary').textContent += freeformObj.locked ? ' · Freeform locked: unlock before changing assignment, groups, zones, or type' : ' · Freeform unlocked';
   }
   el('seatEditModal').classList.add('show');
-  requestAnimationFrame(() => (seatLocked ? el('seatEditLockBtn') : el('seatEditStudentSelect'))?.focus());
+  requestAnimationFrame(() => (batchMode ? el('seatEditGroupSelect') : (seatLocked ? el('seatEditLockBtn') : el('seatEditStudentSelect')))?.focus());
   return true;
 }
 
 function closeSeatEditModal() {
   el('seatEditModal').classList.remove('show');
+  el('seatEditModal')?.querySelector('.seat-edit-modal')?.classList.remove('batch-edit');
   uiState.activeSeatEditCellKey = null;
   uiState.activeSeatEditFreeformObjectId = null;
+  uiState.activeSeatEditBatchCellKeys = [];
+  uiState.activeSeatEditBatchFreeformObjectIds = [];
 }
 
 function refreshSeatEditModal() {
@@ -20831,54 +20904,6 @@ function renderCsvPreview() {
 }
 
 
-function cellFeatureDistance(cell, types) {
-  const targets = Object.values(state.cells).filter(candidate => types.includes(candidate.type));
-  if (!targets.length || !cell) return 0;
-  return Math.min(...targets.map(target => distance(cell, target)));
-}
-
-
-
-function appendAdvancedRuleFindings(findings, seatsByStudent) {
-  findings.push(...duplicateStudentFindings());
-  (state.zones || []).forEach(zone => {
-    (zone.studentIds || []).map(getStudent).filter(Boolean).forEach(student => {
-      const seat = seatsByStudent.get(student.id);
-      if (seat && !(seat.zoneIds || []).includes(zone.id)) {
-        findings.push({ severity:'warn', message:`${studentDisplay(student)} is assigned to preferred zone ${zone.name}, but is seated at Seat ${seat.row},${seat.col} outside that zone.` });
-      }
-    });
-  });
-  state.groups.forEach(group => {
-    const members = (group.studentIds || []).map(getStudent).filter(Boolean);
-    const priority = Number(group.priority || 1);
-    members.forEach(student => {
-      const seat = seatsByStudent.get(student.id);
-      if (!seat) return;
-      const loc = `Seat ${seat.row},${seat.col}`;
-      if (group.type === 'front' && seat.row > Math.ceil(state.rows / 2)) findings.push({ severity:'warn', message:`${group.name}: ${studentDisplay(student)} is in ${loc}, but this priority ${priority} rule prefers the front half of the room.` });
-      if (group.type === 'back' && seat.row <= Math.floor(state.rows / 2)) findings.push({ severity:'warn', message:`${group.name}: ${studentDisplay(student)} is in ${loc}, but this priority ${priority} rule prefers the back half of the room.` });
-      if (group.type === 'nearBoard' && cellFeatureDistance(seat, ['board','projector']) > 3) findings.push({ severity:'warn', message:`${group.name}: ${studentDisplay(student)} is in ${loc}, more than 3 grid steps from the board/projector area.` });
-      if (group.type === 'nearTeacher' && cellFeatureDistance(seat, ['teacher']) > 3) findings.push({ severity:'warn', message:`${group.name}: ${studentDisplay(student)} is in ${loc}, more than 3 grid steps from the teacher desk.` });
-      if (group.type === 'awayDoor' && cellFeatureDistance(seat, ['door']) <= 2) findings.push({ severity:'warn', message:`${group.name}: ${studentDisplay(student)} is in ${loc}, close to a door even though this rule says away from door.` });
-      if (group.type === 'awayWindow' && cellFeatureDistance(seat, ['window']) <= 2) findings.push({ severity:'warn', message:`${group.name}: ${studentDisplay(student)} is in ${loc}, close to a window even though this rule says away from window.` });
-      if ((group.type === 'zone' || group.zoneId) && group.zoneId && !(seat.zoneIds || []).includes(group.zoneId)) {
-        const zone = zoneById(group.zoneId);
-        findings.push({ severity:'warn', message:`${group.name}: ${studentDisplay(student)} is in ${loc}, outside preferred zone ${zone ? zone.name : group.zoneId}.` });
-      }
-    });
-    if (group.type === 'spread') {
-      const placed = members.map(student => ({ student, seat: seatsByStudent.get(student.id) })).filter(item => item.seat);
-      for (let i = 0; i < placed.length; i++) {
-        for (let j = i + 1; j < placed.length; j++) {
-          const d = distance(placed[i].seat, placed[j].seat);
-          if (d <= 2) findings.push({ severity:'warn', message:`${group.name}: ${studentDisplay(placed[i].student)} and ${studentDisplay(placed[j].student)} are only ${d} grid step(s) apart, but this rule asks to spread members apart.` });
-        }
-      }
-    }
-  });
-}
-
 const PRINT_PAPER_SPECS = Object.freeze({
   letter: Object.freeze([612, 792]),
   legal: Object.freeze([612, 1008]),
@@ -21778,6 +21803,8 @@ function resetInMemoryAppToFactory() {
   uiState.selectionAnchorKey = null;
   uiState.activeSeatEditCellKey = null;
   uiState.activeSeatEditFreeformObjectId = null;
+  uiState.activeSeatEditBatchCellKeys = [];
+  uiState.activeSeatEditBatchFreeformObjectIds = [];
   uiState.designMode = false;
   uiState.designCellSize = 28;
   uiState.mobileActivePanel = 'layout';
@@ -22484,6 +22511,7 @@ function wireEvents() {
     if (event.key === 'Escape') closeSettingsAccessModal();
   });
   el('visibilityModeBtn').addEventListener('click', requestEnterVisibilityMode);
+  el('presentationExitBtn')?.addEventListener('click', openVisibilityExitModal);
   el('pageLockBtn').addEventListener('click', startPageLockFlow);
   el('pageUnlockBtn').addEventListener('click', attemptPageUnlock);
   el('pageLockUnlockInput').addEventListener('keydown', event => {
@@ -22918,6 +22946,7 @@ function wireEvents() {
   });
   el('seatEditAssignStudentBtn').addEventListener('click', () => {
     if (eyeModeBlocksSeatEditing()) return blockEyeModeAction('seat');
+    if (activeSeatEditIsBatch()) { setLiveStatusMessage('Student assignment is an individual-seat action. Open one seat without a multi-selection.'); return; }
     if (activeSeatEditLocked()) return blockLockedSeatEditAction();
     const cellKey = uiState.activeSeatEditCellKey;
     const studentId = el('seatEditStudentSelect').value;
@@ -22930,6 +22959,7 @@ function wireEvents() {
   });
   el('seatEditClearStudentBtn').addEventListener('click', () => {
     if (eyeModeBlocksSeatEditing()) return blockEyeModeAction('seat');
+    if (activeSeatEditIsBatch()) { setLiveStatusMessage('Clearing a student is an individual-seat action. Open one seat without a multi-selection.'); return; }
     if (activeSeatEditLocked()) return blockLockedSeatEditAction();
     const cell = state.cells[uiState.activeSeatEditCellKey];
     if (cell) {
@@ -22959,33 +22989,65 @@ function wireEvents() {
   el('seatEditAddGroupBtn').addEventListener('click', () => {
     if (eyeModeBlocksGroupEditing() || eyeModeBlocksSeatEditing()) return blockEyeModeAction('group');
     if (activeSeatEditLocked()) return blockLockedSeatEditAction();
-    const key = uiState.activeSeatEditCellKey;
     const groupId = el('seatEditGroupSelect').value;
-    if (!key || !groupId) return;
-    const cell = state.cells[key];
-    if (cell && cell.type !== 'seat') applyCellTypeWithoutRender(key, 'seat');
-    addGroupAnchorWithoutRender(groupId, key);
-    mirrorLinkedFreeformSeatsFromGrid(key);
+    const targets = editableSeatEditTargets();
+    if (!groupId || !targets.length) return;
+    targets.forEach(({ key }) => {
+      addGroupAnchorWithoutRender(groupId, key);
+      mirrorLinkedFreeformSeatsFromGrid(key);
+    });
     renderAll();
+    setLiveStatusMessage(targets.length > 1 ? `Reserved ${targets.length} selected seats for that group.` : 'Seat group reservation updated.');
     refreshSeatEditModal();
   });
   el('seatEditClearGroupsBtn').addEventListener('click', () => {
     if (eyeModeBlocksGroupEditing() || eyeModeBlocksSeatEditing()) return blockEyeModeAction('group');
     if (activeSeatEditLocked()) return blockLockedSeatEditAction();
-    const key = uiState.activeSeatEditCellKey;
-    const cell = state.cells[key];
-    if (!cell) return;
-    [...(cell.anchorGroupIds || [])].forEach(groupId => {
-      const group = getGroup(groupId);
-      if (group) group.anchorSeats = (group.anchorSeats || []).filter(seatKey => seatKey !== key);
+    const targets = editableSeatEditTargets();
+    if (!targets.length) return;
+    targets.forEach(({ key, cell }) => {
+      [...(cell.anchorGroupIds || [])].forEach(groupId => {
+        const group = getGroup(groupId);
+        if (group) group.anchorSeats = (group.anchorSeats || []).filter(seatKey => seatKey !== key);
+      });
+      cell.anchorGroupIds = [];
+      mirrorLinkedFreeformSeatsFromGrid(key);
     });
-    cell.anchorGroupIds = [];
-    mirrorLinkedFreeformSeatsFromGrid(key);
     renderAll();
+    setLiveStatusMessage(targets.length > 1 ? `Cleared group reservations from ${targets.length} selected seats.` : 'Seat group reservations cleared.');
+    refreshSeatEditModal();
+  });
+  el('seatEditAddZoneBtn').addEventListener('click', () => {
+    if (eyeModeBlocksGroupEditing() || eyeModeBlocksSeatEditing()) return blockEyeModeAction('group');
+    if (activeSeatEditLocked()) return blockLockedSeatEditAction();
+    const zoneId = el('seatEditZoneSelect').value;
+    const zone = zoneById(zoneId);
+    const targets = editableSeatEditTargets();
+    if (!zone || !targets.length) return;
+    targets.forEach(({ key, cell }) => {
+      cell.zoneIds = [...new Set([...(cell.zoneIds || []).map(String), String(zone.id)])];
+      mirrorLinkedFreeformSeatsFromGrid(key);
+    });
+    renderAll();
+    setLiveStatusMessage(`Assigned ${zone.name} to ${targets.length} seat${targets.length === 1 ? '' : 's'}.`);
+    refreshSeatEditModal();
+  });
+  el('seatEditClearZonesBtn').addEventListener('click', () => {
+    if (eyeModeBlocksGroupEditing() || eyeModeBlocksSeatEditing()) return blockEyeModeAction('group');
+    if (activeSeatEditLocked()) return blockLockedSeatEditAction();
+    const targets = editableSeatEditTargets();
+    if (!targets.length) return;
+    targets.forEach(({ key, cell }) => {
+      cell.zoneIds = [];
+      mirrorLinkedFreeformSeatsFromGrid(key);
+    });
+    renderAll();
+    setLiveStatusMessage(`Cleared zone assignments from ${targets.length} seat${targets.length === 1 ? '' : 's'}.`);
     refreshSeatEditModal();
   });
   el('seatEditApplyTypeBtn').addEventListener('click', () => {
     if (eyeModeBlocksRoomEditing()) return blockEyeModeAction('room');
+    if (activeSeatEditIsBatch()) { setLiveStatusMessage('Cell type is an individual-seat action in this editor. Use the Room Design selection tools for batch type changes.'); return; }
     if (activeSeatEditLocked()) return blockLockedSeatEditAction();
     const key = uiState.activeSeatEditCellKey;
     const nextType = el('seatEditTypeSelect').value;
@@ -25263,6 +25325,7 @@ const ModernizationSuite = (() => {
         return targets.length ? Math.min(...targets.map(target => pointDistance(center, target.center, referenceScale))) : 999;
       };
       const frontSide = freeformRoomFrontSide();
+      const accessibleZoneIds = new Set((state.zones || []).filter(zone => /\b(ada|access|accessible|mobility)\b/i.test(String(zone.name || ''))).map(zone => String(zone.id)));
       const width = Math.max(1, Number(canvas.width) || 2800);
       const height = Math.max(1, Number(canvas.height) || 1800);
       return seatObjects.map((obj, index) => {
@@ -25292,20 +25355,21 @@ const ModernizationSuite = (() => {
           manual: Boolean(obj.manual || obj.locked),
           edge: sideRatio <= .12 || sideRatio >= .88 || frontRatio <= .12 || frontRatio >= .88 || walkwayDistance <= 1.5,
           teacherDistance: distanceToType(center, 'teacher'),
-          boardDistance: distanceToType(center, 'board'),
+          boardDistance: Math.min(distanceToType(center, 'board'), distanceToType(center, 'projector')),
           doorDistance: distanceToType(center, 'door'),
           windowDistance: distanceToType(center, 'window'),
-          nearAda: distanceToType(center, 'ada') <= 1.5,
+          nearAda: distanceToType(center, 'ada') <= 1.5 || (obj.zoneIds || []).some(id => accessibleZoneIds.has(String(id))),
           freeform: true
         };
       });
     }
 
     const teacherCells = Object.values(state.cells || {}).filter(cell => cell.type === 'teacher');
-    const boardCells = Object.values(state.cells || {}).filter(cell => cell.type === 'board');
+    const boardCells = Object.values(state.cells || {}).filter(cell => ['board','projector'].includes(cell.type));
     const doorCells = Object.values(state.cells || {}).filter(cell => cell.type === 'door');
     const windowCells = Object.values(state.cells || {}).filter(cell => cell.type === 'window');
     const adaCells = Object.values(state.cells || {}).filter(cell => cell.type === 'ada');
+    const accessibleZoneIds = new Set((state.zones || []).filter(zone => /\b(ada|access|accessible|mobility)\b/i.test(String(zone.name || ''))).map(zone => String(zone.id)));
     return Object.entries(state.cells || {}).filter(([,cell]) => cell.type === 'seat').map(([key, cell]) => ({
       key,
       label: `Seat ${cell.row},${cell.col}`,
@@ -25326,7 +25390,7 @@ const ModernizationSuite = (() => {
       boardDistance: boardCells.length ? Math.min(...boardCells.map(target => distance(cell, target))) : 999,
       doorDistance: doorCells.length ? Math.min(...doorCells.map(target => distance(cell, target))) : 999,
       windowDistance: windowCells.length ? Math.min(...windowCells.map(target => distance(cell, target))) : 999,
-      nearAda: adaCells.length ? Math.min(...adaCells.map(target => distance(cell, target))) <= 1.5 : false,
+      nearAda: (adaCells.length ? Math.min(...adaCells.map(target => distance(cell, target))) <= 1.5 : false) || (cell.zoneIds || []).some(id => accessibleZoneIds.has(String(id))),
       freeform: false
     }));
   }
@@ -25362,6 +25426,8 @@ const ModernizationSuite = (() => {
               if(r.awayDoor&&seat.doorDistance<3)penalty+=(3-seat.doorDistance)*180;
               if(r.awayWindow&&seat.windowDistance<3)penalty+=(3-seat.windowDistance)*150;
               const zones=new Set((seat.zoneIds||[]).map(String));
+              const memberGroupIds=new Set((memberships.get(String(student.id))||[]).map(group=>String(group.id)));
+              if((seat.anchorGroupIds||[]).length&&!(seat.anchorGroupIds||[]).some(id=>memberGroupIds.has(String(id))))penalty+=9000;
               if((r.preferredZoneIds||[]).length&&!(r.preferredZoneIds||[]).some(id=>zones.has(String(id))))penalty+=220;
               if((r.excludedZoneIds||[]).some(id=>zones.has(String(id))))penalty+=6500;
               for(const otherId of r.minDistanceStudentIds||[]){const other=seatByKey.get(String(assigned.get(String(otherId))||''));if(other){const d=dist(seat,other);if(d<3)penalty+=(3-d)*1800;}}
@@ -25376,7 +25442,7 @@ const ModernizationSuite = (() => {
                 if(group.type==='nearBoard')penalty+=Math.min(20,seat.boardDistance)*priority*18;
                 if(group.type==='awayDoor'&&seat.doorDistance<3)penalty+=(3-seat.doorDistance)*priority*70;
                 if(group.type==='awayWindow'&&seat.windowDistance<3)penalty+=(3-seat.windowDistance)*priority*60;
-                if(group.type==='zone'&&group.zoneId&&!zones.has(String(group.zoneId)))penalty+=priority*80;
+                if(group.zoneId&&!zones.has(String(group.zoneId)))penalty+=priority*120;
                 if((group.anchorSeats||[]).length&&!(group.anchorSeats||[]).map(String).includes(String(seat.key)))penalty+=priority*90;
                 if((seat.anchorGroupIds||[]).length&&!(seat.anchorGroupIds||[]).map(String).includes(String(group.id)))penalty+=priority*130;
               }
@@ -25727,7 +25793,7 @@ const ModernizationSuite = (() => {
       stopSeatingWorker();
     };
     worker.postMessage({ runId, payload: {
-      students: deepClone(seatingStudents()),
+      students: deepClone(studentsWithEffectiveRuleRequirements()),
       groups: deepClone(state.groups),
       seats,
       rows: state.rows,
@@ -30100,7 +30166,8 @@ const ClassSetupWorkspaceV54 = (() => {
     { id: 'students', label: 'Students', short: 'Students', description: 'Add, edit, search, archive, and manage the roster.' },
     { id: 'rules', label: 'Groups & Rules', short: 'Groups & Rules', description: 'Create together, apart, location, and support rules.' },
     { id: 'requirements', label: 'Student Needs', short: 'Student Needs', description: 'Review student-specific seating requirements.' },
-    { id: 'zones', label: 'Zones', short: 'Zones', description: 'Name room areas now and assign seats during Room Design.' },
+    { id: 'zones', label: 'Zones', short: 'Zones', description: 'Name room areas and connect students or groups to them.' },
+    { id: 'manager', label: 'Groups & Zones Manager', short: 'Manager', description: 'Manage memberships and zone links with drag and drop.' },
     { id: 'review', label: 'Review Setup', short: 'Review', description: 'Check setup quality before designing the room.' }
   ];
   const RULE_TYPE_HELP = {
@@ -30228,7 +30295,7 @@ const ClassSetupWorkspaceV54 = (() => {
   }
 
   function requirementCount(student) {
-    const r = normalizeStudent(student || {}).requirements || {};
+    const r = effectiveStudentRequirements(student || {});
     return [
       r.front && r.front !== 'none', r.side && r.side !== 'none', r.nearTeacher, r.aisle,
       r.ada, r.awayDoor, r.awayWindow,
@@ -30326,7 +30393,7 @@ const ClassSetupWorkspaceV54 = (() => {
               <div id="classSetupStudentsMain" class="class-setup-students-main"></div>
             </section>
             <section id="classSetupRulesPanel" class="class-setup-section-panel" data-class-setup-panel="rules">
-              <div class="class-setup-section-heading"><div><span class="class-setup-eyebrow">Shared seating logic</span><h3>Groups &amp; Seating Rules</h3><p>Choose students, describe what should happen, and set how strongly the generator should try to honor the rule.</p></div><button id="classSetupManageRulesBtn" class="secondary no-print" type="button">Open drag-and-drop manager</button></div>
+              <div class="class-setup-section-heading"><div><span class="class-setup-eyebrow">Shared seating logic</span><h3>Groups &amp; Seating Rules</h3><p>Choose students, describe what should happen, and set how strongly the generator should try to honor the rule.</p></div><button id="classSetupManageRulesBtn" class="secondary no-print" type="button">Open Groups &amp; Zones Manager</button></div>
               <div id="classSetupRulesMain" class="class-setup-rules-main"></div>
             </section>
             <section id="classSetupRequirementsPanel" class="class-setup-section-panel" data-class-setup-panel="requirements">
@@ -30335,8 +30402,16 @@ const ClassSetupWorkspaceV54 = (() => {
               <div id="classSetupRequirementsList" class="class-setup-requirements-list"></div>
             </section>
             <section id="classSetupZonesPanel" class="class-setup-section-panel" data-class-setup-panel="zones">
-              <div class="class-setup-section-heading"><div><span class="class-setup-eyebrow">Named room areas</span><h3>Zones</h3><p>Name useful areas now. During Room Design, select visible seats and assign them to these zones.</p></div></div>
+              <div class="class-setup-section-heading"><div><span class="class-setup-eyebrow">Named room areas</span><h3>Zones</h3><p>Name useful areas now. Assign seats from their settings popup or with the Room Design selection tools.</p></div></div>
               <div id="classSetupZonesMain" class="class-setup-zones-main"></div>
+            </section>
+            <section id="classSetupManagerPanel" class="class-setup-section-panel" data-class-setup-panel="manager">
+              <div class="class-setup-section-heading"><div><span class="class-setup-eyebrow">Visual membership editor</span><h3>Groups &amp; Zones Manager</h3><p>Use drag and drop to organize students into groups, connect groups and students to zones, and review memberships in one workspace.</p></div></div>
+              <div class="workflow-card class-setup-manager-card">
+                <strong>Open the visual manager</strong>
+                <span>The manager uses the same saved groups and zones shown in the rest of Class Setup. Changes appear everywhere immediately.</span>
+                <button id="classSetupOpenManagerBtn" type="button">Open Groups &amp; Zones Manager</button>
+              </div>
             </section>
             <section id="classSetupReviewPanel" class="class-setup-section-panel" data-class-setup-panel="review">
               <div class="class-setup-section-heading"><div><span class="class-setup-eyebrow">Setup review</span><h3>Ready for Room Design?</h3><p>Check the roster and rules before building the room. Optional items remain optional and do not block the workflow.</p></div></div>
@@ -30602,6 +30677,7 @@ const ClassSetupWorkspaceV54 = (() => {
     }
     if (section === 'rules') decorateRuleSections();
     if (section === 'requirements') renderRequirements();
+    if (section === 'manager') node('classSetupOpenManagerBtn')?.focus({ preventScroll: true });
     if (section === 'review') renderReview();
     updateSummary();
     if (!options.silent) {
@@ -30631,7 +30707,7 @@ const ClassSetupWorkspaceV54 = (() => {
     list.innerHTML = students.map(student => {
       const count = requirementCount(student);
       const notes = noteCount(student);
-      const r = normalizeStudent(student).requirements || {};
+      const r = effectiveStudentRequirements(student);
       const labels = [
             r.front && r.front !== 'none' ? `Front: ${r.front}` : '', r.side && r.side !== 'none' ? `Side: ${r.side}` : '',
             r.nearTeacher ? 'Near teacher' : '', r.aisle ? 'Aisle' : '', r.ada ? 'ADA/access' : '',
@@ -30662,7 +30738,7 @@ const ClassSetupWorkspaceV54 = (() => {
     rows.push(data.missingNames.length ? reviewRow('warn', 'Students are missing names', `${data.missingNames.length} roster record${data.missingNames.length === 1 ? '' : 's'} need a visible name.`, 'students', 'Review students') : reviewRow('good', 'Student names look complete', 'Every roster record has a visible name.'));
     rows.push(data.duplicateNameCount ? reviewRow('warn', 'Possible duplicate names', `${data.duplicateNameCount} records share a first-and-last-name combination. Verify IDs before importing updates.`, 'students', 'Check roster') : reviewRow('good', 'No obvious duplicate names', 'No repeated first-and-last-name combinations were found.'));
     rows.push(data.emptyRules.length ? reviewRow('warn', 'Some rules have no students', `${data.emptyRules.length} rule${data.emptyRules.length === 1 ? '' : 's'} will not affect generation until students are selected.`, 'rules', 'Review rules') : reviewRow('good', 'Groups and rules are usable', data.groups.length ? `${data.groups.length} configured rule${data.groups.length === 1 ? '' : 's'} have students.` : 'No shared rules are configured, which is perfectly valid.'));
-    rows.push(reviewRow('neutral', 'Zone seats are assigned during Room Design', data.zones.length ? `${data.zones.length} named zone${data.zones.length === 1 ? '' : 's'} exist. Assign visible seats to them after the room is built.` : 'Zones are optional. Create them now or after the room is built.', 'zones', 'Review zones'));
+    rows.push(reviewRow('neutral', 'Zone seats are assigned from seat settings or Room Design', data.zones.length ? `${data.zones.length} named zone${data.zones.length === 1 ? '' : 's'} exist. Assign visible seats from the seat settings popup or Room Design after the room is built.` : 'Zones are optional. Create them now or after the room is built.', 'zones', 'Review zones'));
     list.innerHTML = rows.join('');
     node('classSetupReviewContinueBtn').disabled = !data.students.length;
   }
@@ -30677,13 +30753,14 @@ const ClassSetupWorkspaceV54 = (() => {
       overview: `${data.completion}% ready`, students: `${data.students.length} student${data.students.length === 1 ? '' : 's'}`,
       import: 'CSV and roster updates', rules: `${data.groups.length} rule${data.groups.length === 1 ? '' : 's'}`,
       requirements: `${data.studentsWithRequirements} configured`, zones: `${data.zones.length} zone${data.zones.length === 1 ? '' : 's'}`,
+      manager: `${data.groups.length} groups · ${data.zones.length} zones`,
       review: data.ready ? 'Ready to review' : 'Roster required'
     };
     Object.entries(navMeta).forEach(([key, value]) => { const target = node(`classSetupNavMeta-${key}`); if (target) target.textContent = value; });
     const states = {
       overview: data.completion >= 100 ? '✓' : '', students: data.students.length ? '✓' : '', import: '',
       rules: data.emptyRules.length ? '!' : (data.groups.length ? '✓' : ''), requirements: data.studentsWithRequirements ? '✓' : '',
-      zones: data.zones.length ? '✓' : '', review: data.ready ? '→' : '!'
+      zones: data.zones.length ? '✓' : '', manager: (data.groups.length || data.zones.length) ? '→' : '', review: data.ready ? '→' : '!'
     };
     Object.entries(states).forEach(([key, value]) => { const target = node(`classSetupNavState-${key}`); if (target) target.textContent = value; });
     updateRuleMemberTools();
@@ -30756,6 +30833,7 @@ const ClassSetupWorkspaceV54 = (() => {
     [node('classSetupContinueRoomBtn'), node('classSetupTopContinueBtn'), node('classSetupReviewContinueBtn')].forEach(button => button?.addEventListener('click', () => ProductExperience?.setWorkflow?.('room')));
     node('classSetupClassToolsBtn')?.addEventListener('click', () => node('classToolsBtn')?.click());
     node('classSetupManageRulesBtn')?.addEventListener('click', () => node('openGroupManagerBtn')?.click());
+    node('classSetupOpenManagerBtn')?.addEventListener('click', () => node('openGroupManagerBtn')?.click());
     node('classSetupRequirementsStudentsBtn')?.addEventListener('click', () => setSection('students'));
     node('classSetupReviewStudentsBtn')?.addEventListener('click', () => setSection('students'));
     node('classSetupReviewRulesBtn')?.addEventListener('click', () => setSection('rules'));
@@ -30777,7 +30855,7 @@ const ClassSetupWorkspaceV54 = (() => {
     if (!Array.isArray(HELP_GUIDE_SECTIONS) || HELP_GUIDE_SECTIONS.some(section => section.id === 'class-setup-workspace')) return;
     HELP_GUIDE_SECTIONS.splice(1, 0, {
       id: 'class-setup-workspace', category: 'Class Setup', title: 'Class Setup Workspace and Subsections',
-      keywords: 'class setup overview import roster students groups rules requirements zones review center workspace navigation',
+      keywords: 'class setup overview import roster students groups rules requirements zones drag drop manager review center workspace navigation',
       intro: 'Class Setup uses the center workspace for real editing. The left rail provides progress and navigation instead of squeezing forms into a narrow sidebar.',
       items: [
         { title: 'Overview', text: 'Shows readiness, class counts, and recommended next steps.' },
@@ -30785,7 +30863,8 @@ const ClassSetupWorkspaceV54 = (() => {
         { title: 'Students', text: 'Adds, edits, searches, archives, and manages roster records after an import or for manual entry. Student placement is handled later in Seat Students, where the chart is visible.' },
         { title: 'Groups & Rules', text: 'Creates together, apart, location, support, and reserved-seat rules. Use the member search and selection tools to choose students.' },
         { title: 'Student Needs', text: 'Reviews individual needs such as front, aisle, access, zone, and distance preferences.' },
-        { title: 'Zones', text: 'Creates named room areas. Assign visible seats to zones during Room Design.' },
+        { title: 'Zones', text: 'Creates named room areas and connects students or groups to those areas. Seat membership is assigned from the seat settings or Room Design selection tools.' },
+        { title: 'Groups & Zones Manager', text: 'Opens the visual drag-and-drop manager for student memberships, groups, rules, and zone links.' },
         { title: 'Review Setup', text: 'Checks roster completeness, possible duplicates, empty rules, and readiness before Room Design.' }
       ],
       tips: ['Use stable student IDs when available so roster reconciliation preserves notes and requirements.', 'Rules and zones are optional. Add only those that serve a real classroom need.'],
@@ -32102,7 +32181,7 @@ const WorkflowRecoveryV62 = (() => {
 
   function analyzeRuleConflicts() {
     const findings = [];
-    const students = seatingStudents();
+    const students = studentsWithEffectiveRuleRequirements();
     const seats = ModernizationSuite.buildGeneratorSeats();
     const seatByKey = new Map(seats.map(seat => [String(seat.key), seat]));
     const studentById = new Map(students.map(student => [String(student.id), student]));
@@ -32207,13 +32286,16 @@ const WorkflowRecoveryV62 = (() => {
     });
 
     const roomChecks = [
-      ['nearTeacher', 'teacherDistance', 'teacher desk', 'near-teacher'],
-      ['awayDoor', 'doorDistance', 'door', 'away-door'],
-      ['awayWindow', 'windowDistance', 'window', 'away-window']
+      ['nearTeacher', 'nearTeacher', 'teacherDistance', 'teacher desk'],
+      ['nearBoard', '', 'boardDistance', 'board or projector'],
+      ['awayDoor', 'awayDoor', 'doorDistance', 'door'],
+      ['awayWindow', 'awayWindow', 'windowDistance', 'window']
     ];
-    roomChecks.forEach(([requirement, distanceField, objectName]) => {
-      if (!students.some(student => student.requirements?.[requirement])) return;
-      if (!seats.some(seat => Number(seat[distanceField]) < 999)) addConflict(findings, 'warning', `No ${objectName} object exists for an active requirement`, `At least one student uses a requirement based on the ${objectName}, but the room has no matching object. The generator cannot measure that preference meaningfully.`, `Add a ${objectName} room object or remove the related requirement.`, 'room');
+    roomChecks.forEach(([groupType, requirement, distanceField, objectName]) => {
+      const studentNeedActive = requirement && students.some(student => student.requirements?.[requirement]);
+      const groupRuleActive = (state.groups || []).some(group => group.type === groupType && (group.studentIds || []).length);
+      if (!studentNeedActive && !groupRuleActive) return;
+      if (!seats.some(seat => Number(seat[distanceField]) < 999)) addConflict(findings, 'warning', `No ${objectName} object exists for an active rule`, `At least one student or group uses a rule based on the ${objectName}, but the room has no matching object. The generator cannot measure that preference meaningfully.`, `Add a ${objectName} room object or remove the related rule.`, 'room');
     });
 
     const rank = { error: 0, warning: 1, info: 2 };
