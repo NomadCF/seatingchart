@@ -5,7 +5,7 @@
   <meta name="license" content="MIT License" />
   <meta name="spdx-license-identifier" content="MIT" />
   <meta name="copyright" content="Copyright (c) 2026 Chris L. Franklin" />
-  <meta name="app-version" content="6.5.5" />
+  <meta name="app-version" content="6.5.6" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com https://www.paypalobjects.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://www.googleapis.com https://classroom.googleapis.com https://accounts.google.com https://www.paypal.com https://www.paypalobjects.com https://www.google-analytics.com https://*.google-analytics.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://www.paypal.com; img-src 'self' data: blob: https://www.paypalobjects.com https://www.google-analytics.com; font-src 'self' data:; worker-src 'self' blob:; manifest-src 'self'; media-src 'none'; object-src 'none'; base-uri 'none'; form-action 'self' https://www.paypal.com" />
   <meta name="application-name" content="Classroom Seating Planner" />
@@ -4441,6 +4441,95 @@ body.visibility-mode #layoutToolsPanel{display:none
   body.visibility-mode .seat-display-controls{width:100%;flex-basis:100%
   }.seat-display-control{grid-template-columns:58px minmax(78px, 1fr) 42px
   }
+}#mobilePanelNav[hidden],
+#mobilePanelNav button[hidden]{display:none
+}@media (max-width: 900px){body.product-v4{--mobile-panel-switcher-height:50px
+  }body.product-v4 #mobilePanelNav{display:none
+  }body.product-v4.mobile-panel-switcher-active #mobilePanelNav{position:fixed;left:7px;right:7px;bottom:calc(var(--v4-workflow-nav-height) + env(safe-area-inset-bottom, 0px) + 6px);z-index:9001;display:grid;grid-template-columns:repeat(2, minmax(0, 1fr));gap:6px;height:var(--mobile-panel-switcher-height);padding:5px;border:1px solid var(--border);border-radius:13px;background:rgba(255, 255, 255, .97);box-shadow:0 -6px 22px rgba(15, 23, 42, .15);backdrop-filter:blur(10px)
+  }body.product-v4.mobile-panel-switcher-active #mobilePanelNav button{min-width:0;min-height:40px;padding:5px 8px;line-height:1.05;white-space:normal
+  }body.product-v4.workspace-v41.mobile-panel-switcher-active .app,
+  body.product-v4.workspace-v41.mobile-panel-switcher-active.left-collapsed .app,
+  body.product-v4.workspace-v41.mobile-panel-switcher-active.right-collapsed .app,
+  body.product-v4.workspace-v41.mobile-panel-switcher-active.left-collapsed.right-collapsed .app{height:calc(100dvh - var(--v4-topbar-height) - var(--v41-shell-height) - var(--v4-workflow-nav-height) - var(--mobile-panel-switcher-height) - 8px - env(safe-area-inset-bottom, 0px));max-height:calc(100dvh - var(--v4-topbar-height) - var(--v41-shell-height) - var(--v4-workflow-nav-height) - var(--mobile-panel-switcher-height) - 8px - env(safe-area-inset-bottom, 0px))
+  }body.product-v4[data-workflow="seating"] main.app > .left-panel,
+  body.product-v4[data-workflow="seating"] main.app > .center-panel,
+  body.product-v4[data-workflow="seating"] main.app > .right-panel,
+  body.product-v4[data-workflow="review"] main.app > .left-panel,
+  body.product-v4[data-workflow="review"] main.app > .center-panel,
+  body.product-v4[data-workflow="review"] main.app > .right-panel{display:none
+  }body.product-v4[data-workflow="seating"].mobile-view-layout main.app > .center-panel,
+  body.product-v4[data-workflow="seating"].mobile-view-people main.app > .left-panel,
+  body.product-v4[data-workflow="review"].mobile-view-layout main.app > .center-panel,
+  body.product-v4[data-workflow="review"].mobile-view-status main.app > .right-panel{position:relative;inset:auto;display:flex;width:100%;height:100%;min-width:0;min-height:0
+  }body.product-v4[data-workflow="setup"] main.app,
+  body.product-v4.workspace-v41[data-workflow="setup"] main.app,
+  body.product-v4.workspace-v41.product-v42[data-workflow="setup"] main.app{grid-template-columns:minmax(0, 1fr)
+  }body.product-v4[data-workflow="setup"] main.app > .left-panel{display:none
+  }body.product-v4[data-workflow="setup"] main.app > .class-setup-workspace{position:relative;inset:auto;display:flex;width:100%;height:100%;min-width:0;min-height:0
+  }body.product-v4 .class-manager select,
+  body.product-v4.workspace-v41 .class-manager select,
+  #toggleLayoutToolsBtn,
+  body.product-v4.workspace-v41 .v41-section-toggle,
+  #v41PrivacyChecklistToggle,
+  .password-reveal-btn,
+  .seat-why-btn,
+  .v44-text-button{min-height:36px
+  }body.product-v4.workspace-v41 .v41-section-toggle,
+  #v41PrivacyChecklistToggle{width:36px;min-width:36px;height:36px
+  }.password-reveal-btn,
+  .seat-why-btn{min-width:44px
+  }body:not(.design-mode){--cell-width:120px;--cell-height:124px
+  }.cell-actions{gap:4px
+  }.cell-actions button{min-width:0;min-height:28px;padding:4px 3px;font-size:9.5px
+  }.class-setup-header,
+  .class-setup-section-heading{min-width:0
+  }.class-setup-title-block,
+  .class-setup-section-heading > div:first-child{width:100%;min-width:0
+  }
+}@media (max-width: 560px){body.product-v4.workspace-v41 .v4-workflow-step .v4-step-copy strong[data-mobile-label]{font-size:0;line-height:1;white-space:nowrap
+  }body.product-v4.workspace-v41 .v4-workflow-step .v4-step-copy strong[data-mobile-label]::after{content:attr(data-mobile-label);font-size:10px;line-height:1.05
+  }.class-setup-header{gap:9px;padding:10px
+  }.class-setup-title-block h2{font-size:20px;overflow-wrap:normal;word-break:normal
+  }.class-setup-title-block p{font-size:11px
+  }.class-setup-header-actions{width:100%
+  }.class-setup-top-nav{padding-inline:7px;scroll-snap-type:x proximity
+  }.class-setup-top-nav button{scroll-snap-align:start
+  }.class-setup-content{padding:7px
+  }.class-setup-section-heading{padding:10px
+  }
+}@media (max-width: 900px){body.product-v4.workspace-v41.product-v42 .class-manager select{height:36px;min-height:36px
+  }#toggleLayoutToolsBtn{width:36px;min-width:36px
+  }.cell-actions button,
+  .seat-why-btn{min-height:32px
+  }
+}@media (max-width: 900px){#welcomeSecurityModal .password-reveal-btn{bottom:0;height:36px;min-height:36px
+  }.global-search-modal .v4-command-search{grid-template-columns:minmax(0, 1fr)
+  }
+}.cell-actions button[data-clear-anchor-seat]{padding-right:1px;padding-left:1px;font-size:8.8px;letter-spacing:-.02em
+}body.product-v4.product-v43:not([data-theme="default"]) .v4-brand strong,
+body.product-v4.product-v43:not([data-theme="default"]) .panel-header h2,
+body.product-v4.product-v43:not([data-theme="default"]) .panel-header h3,
+body.product-v4.product-v43:not([data-theme="default"]) .section h3,
+body.product-v4.product-v43:not([data-theme="default"]) .section h4,
+body.product-v4.product-v43:not([data-theme="default"]) .cell.seat .seat-person,
+body.product-v4.product-v43:not([data-theme="default"]) .freeform-object-title{color:var(--v4-ink)
+}body.product-v4.product-v43:not([data-theme="default"]) label,
+body.product-v4.product-v43:not([data-theme="default"]) .seat-display-control label,
+body.product-v4.product-v43:not([data-theme="default"]) .v4-quick-dock .save-inline-status{color:var(--v4-muted)
+}body.product-v4.product-v43:not([data-theme="default"]) .class-manager,
+body.product-v4.product-v43:not([data-theme="default"]) .class-manager select,
+body.product-v4.product-v43:not([data-theme="default"]) .v4-command-button,
+body.product-v4.product-v43:not([data-theme="default"]) .v4-quick-dock .save-inline-status,
+body.product-v4.product-v43:not([data-theme="default"]).mobile-panel-switcher-active #mobilePanelNav{color:var(--v4-ink);background:var(--v4-surface);border-color:var(--v4-border-strong)
+}body.product-v4.product-v43[data-theme="windowsXp"] .v4-workflow-step.active,
+body.product-v4.product-v43[data-theme="windowsXp"] .v4-workflow-step[aria-current="step"],
+body.product-v4.product-v43[data-theme="windows11"] .v4-workflow-step.active,
+body.product-v4.product-v43[data-theme="windows11"] .v4-workflow-step[aria-current="step"],
+body.product-v4.product-v43[data-theme="macos"] .v4-workflow-step.active,
+body.product-v4.product-v43[data-theme="macos"] .v4-workflow-step[aria-current="step"]{color:var(--v4-primary-hover)
+}body.product-v4.product-v43[data-theme="aurora"] .seat-empty{color:#c7d8eb
+}body.product-v4.product-v43[data-theme="prismatic"] .v4-brand strong,
+body.product-v4.product-v43[data-theme="windowsXp"] .v4-brand strong{color:#fff
 }body.visibility-mode.vis-hide-wizard #guidedLearningBtn,
 body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
 }
@@ -6267,7 +6356,7 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
 const APP_CONFIG = Object.freeze({
   name: 'Classroom Seating Planner',
   shortName: 'Seating Planner',
-  version: '6.5.5',
+  version: '6.5.6',
   copyrightHolder: 'Chris L. Franklin',
   copyrightYear: '2026',
   releaseDate: '2026-07-15',
@@ -6540,10 +6629,23 @@ const PROJECT_FEATURES = [
 
 const RELEASE_HISTORY = [
   {
+    version: '6.5.6',
+    date: 'July 15, 2026',
+    title: 'Complete responsive UI and mobile audit',
+    current: true,
+    changes: [
+      'Repaired mobile workflow panel routing so Seat Students can switch between the room and roster, Review can switch between the room and Chart Review, and single-panel workflows no longer show a misleading selector.',
+      'Collapsed Class Setup to a true full-width mobile workspace and added compact workflow labels, fitted controls, readable seat actions, and reliable narrow-screen search and password controls.',
+      'Aligned the mobile breakpoint across JavaScript and CSS, preserved two-axis Grid and Freeform reachability, and retained explicit Pan mode for protected Room Design and Presentation navigation.',
+      'Corrected late theme overrides that reduced contrast in dark themes, then browser-tested all themes, documented dialogs, settings pages, Help topics, workflows, and target viewports.',
+      'Added a permanent UI layout contract to the release gate so mobile routing, accessible workflow names, Presentation lockout, and desktop cleanup cannot regress silently.'
+    ]
+  },
+  {
     version: '6.5.5',
     date: 'July 15, 2026',
     title: 'Mobile room controls and full-viewport panning',
-    current: true,
+    current: false,
     changes: [
       'Reflowed Seat zoom and Text size into fitted mobile rows so labels, sliders, and percentages remain readable on narrow screens.',
       'Changed the mobile room viewport to a start-aligned two-axis scrolling surface so oversized Grid and Freeform rooms no longer extend into unreachable centered space.',
@@ -8129,24 +8231,47 @@ const designCellWidth = () => clampNumber(uiState.designCellSize || 28, 20, 72);
 const designCellHeight = () => Math.max(26, Math.round(designCellWidth() * 1.32));
 
 
-function setMobilePanel(panelName = 'layout') {
-  const validPanels = new Set(['layout', 'people', 'status']);
-  const panel = validPanels.has(panelName) ? panelName : 'layout';
+function mobilePanelsForWorkflow(workflow = document.body.dataset.workflow || 'setup') {
+  if (uiState.visibilityMode) return ['layout'];
+  if (workflow === 'seating') return ['layout', 'people'];
+  if (workflow === 'review') return ['layout', 'status'];
+  return [];
+}
+
+function syncMobilePanelNavigation(preferredPanel = uiState.mobileActivePanel || 'layout') {
+  const mobile = isMobileViewport();
+  const allowedPanels = mobile ? mobilePanelsForWorkflow() : [];
+  const panel = allowedPanels.includes(preferredPanel) ? preferredPanel : (allowedPanels[0] || 'layout');
+  const switcherVisible = mobile && allowedPanels.length > 1;
   uiState.mobileActivePanel = panel;
-  document.body.classList.toggle('mobile-view-layout', panel === 'layout');
-  document.body.classList.toggle('mobile-view-people', panel === 'people');
-  document.body.classList.toggle('mobile-view-status', panel === 'status');
+  document.body.classList.toggle('mobile-view-layout', mobile && panel === 'layout');
+  document.body.classList.toggle('mobile-view-people', mobile && panel === 'people');
+  document.body.classList.toggle('mobile-view-status', mobile && panel === 'status');
+  document.body.classList.toggle('mobile-panel-switcher-active', switcherVisible);
+  const nav = el('mobilePanelNav');
+  if (nav) nav.hidden = !switcherVisible;
   document.querySelectorAll('[data-mobile-panel]').forEach(button => {
-    const active = button.dataset.mobilePanel === panel;
+    const available = allowedPanels.includes(button.dataset.mobilePanel);
+    const active = available && button.dataset.mobilePanel === panel;
+    button.hidden = !available;
     button.classList.toggle('active', active);
     button.setAttribute('aria-pressed', active ? 'true' : 'false');
+    button.tabIndex = available ? 0 : -1;
   });
+  return panel;
+}
+
+function setMobilePanel(panelName = 'layout') {
+  const validPanels = new Set(['layout', 'people', 'status']);
+  const requestedPanel = validPanels.has(panelName) ? panelName : 'layout';
+  const panel = syncMobilePanelNavigation(requestedPanel);
   if (typeof updateMobileCarryUi === 'function') updateMobileCarryUi();
   syncMobileRoomPanUi();
+  return panel;
 }
 
 function isMobileViewport() {
-  return window.matchMedia && window.matchMedia('(max-width: 980px)').matches;
+  return window.matchMedia && window.matchMedia('(max-width: 900px)').matches;
 }
 
 function refreshLayoutToolsToggle() {
@@ -8336,7 +8461,7 @@ function keepMobileWorkspaceUsable() {
       applyMobileFirstLoadCollapseDefaults();
     }
   } else {
-    document.body.classList.remove('mobile-view-layout', 'mobile-view-people', 'mobile-view-status');
+    syncMobilePanelNavigation('layout');
     setMobileRoomPanActive(false);
   }
   syncMobileRoomPanUi();
@@ -14775,6 +14900,7 @@ function applyVisibilityClasses() {
     button.textContent = uiState.visibilityMode ? '🙈' : '👁';
     button.title = uiState.visibilityMode ? 'Exit Presentation Mode. PIN/password or encryption key required.' : 'Enter the protected read-only Presentation Mode.';
   }
+  syncMobilePanelNavigation(uiState.visibilityMode ? 'layout' : uiState.mobileActivePanel);
 }
 
 function blockEyeModeAction(kind, message = '') {
@@ -26321,9 +26447,10 @@ const ProductExperience = (() => {
     nav.id = 'v4WorkflowNav';
     nav.setAttribute('aria-label', 'Planning workflow');
     Object.entries(WORKFLOWS).forEach(([key, item]) => {
-      const button = createElement('button', 'v4-workflow-step', `${svg(key === 'seating' ? 'seating' : key)}<span class="v4-step-number">${item.number}</span><span class="v4-step-copy"><strong>${item.label}</strong><small>${workflowStepHint(key)}</small></span><span class="v4-step-state" aria-hidden="true"></span>`);
+      const button = createElement('button', 'v4-workflow-step', `${svg(key === 'seating' ? 'seating' : key)}<span class="v4-step-number">${item.number}</span><span class="v4-step-copy"><strong data-mobile-label="${item.short}">${item.label}</strong><small>${workflowStepHint(key)}</small></span><span class="v4-step-state" aria-hidden="true"></span>`);
       button.type = 'button';
       button.dataset.workflow = key;
+      button.setAttribute('aria-label', `Step ${item.number}: ${item.label}`);
       button.setAttribute('aria-pressed', 'false');
       nav.appendChild(button);
     });
@@ -26578,6 +26705,8 @@ const ProductExperience = (() => {
     activeWorkflow = key;
     document.body.dataset.workflow = key;
     safeStorageSet('sessionStorage', 'seatingPlannerWorkflow', key)
+    if (isMobileViewport()) setMobilePanel('layout');
+    else syncMobilePanelNavigation('layout');
     document.querySelectorAll('.v4-workflow-step[data-workflow]').forEach(button => {
       const active = button.dataset.workflow === key;
       button.classList.toggle('active', active);
