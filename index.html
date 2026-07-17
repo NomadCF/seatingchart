@@ -5,7 +5,7 @@
   <meta name="license" content="MIT License" />
   <meta name="spdx-license-identifier" content="MIT" />
   <meta name="copyright" content="Copyright (c) 2026 Chris L. Franklin" />
-  <meta name="app-version" content="6.6.0" />
+  <meta name="app-version" content="6.6.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com https://www.paypalobjects.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://www.googleapis.com https://classroom.googleapis.com https://accounts.google.com https://www.paypal.com https://www.paypalobjects.com https://www.google-analytics.com https://*.google-analytics.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://www.paypal.com; img-src 'self' data: blob: https://www.paypalobjects.com https://www.google-analytics.com; font-src 'self' data:; worker-src 'self' blob:; manifest-src 'self'; media-src 'none'; object-src 'none'; base-uri 'none'; form-action 'self' https://www.paypal.com" />
   <meta name="application-name" content="Classroom Seating Planner" />
@@ -2670,6 +2670,19 @@ body[data-theme="linux"] .class-setup-review-row{background:var(--panel-bg, #0f1
 }.google-hub-context-link{margin-top:8px;white-space:normal
 }@media (max-width: 560px){.google-hub-status-grid,
   .google-hub-action-grid{grid-template-columns:1fr
+  }
+}@media (min-width: 981px) and (max-width: 1600px){body.freeform-layout-mode #layoutToolsPanel .toolbar-body{flex-wrap:wrap;overflow:visible
+  }body.freeform-layout-mode .freeform-tools{flex:1 1 100%;width:100%
+  }body.freeform-layout-mode .freeform-primary-bar,
+  body.freeform-layout-mode .freeform-command-group,
+  body.freeform-layout-mode .freeform-canvas-group{flex-wrap:wrap
+  }body.freeform-layout-mode .freeform-canvas-chrome{flex:1 1 360px;min-width:0;max-width:100%
+  }body.freeform-layout-mode .freeform-advanced-tools{margin-left:0
+  }body.freeform-layout-mode .freeform-advanced-panel{grid-template-columns:1fr;width:min(720px, calc(100vw - 32px))
+  }body.freeform-layout-mode .freeform-canvas-settings,
+  body.freeform-layout-mode .freeform-object-inspector{grid-column:auto
+  }
+}@media (min-width: 981px) and (max-width: 1320px){body.freeform-layout-mode .freeform-advanced-panel{position:fixed;top:calc(var(--v4-topbar-height, 48px) + var(--v41-shell-height, 86px) + 12px);right:16px;left:16px;width:auto;max-height:calc(100vh - var(--v4-topbar-height, 48px) - var(--v41-shell-height, 86px) - 28px)
   }
 }.guided-learning-overlay{position:fixed;inset:0;z-index:var(--auxiliary-stack-z, 69990);display:block;pointer-events:none
 }.guided-learning-overlay[aria-hidden="true"]{display:none
@@ -6718,7 +6731,7 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
 const APP_CONFIG = Object.freeze({
   name: 'Classroom Seating Planner',
   shortName: 'Seating Planner',
-  version: '6.6.0',
+  version: '6.6.1',
   copyrightHolder: 'Chris L. Franklin',
   copyrightYear: '2026',
   releaseDate: '2026-07-16',
@@ -6995,10 +7008,24 @@ const PROJECT_FEATURES = [
 
 const RELEASE_HISTORY = [
   {
+    version: '6.6.1',
+    date: 'July 16, 2026',
+    title: 'Single-file audit, rendering efficiency, and delegated manager interactions',
+    current: true,
+    changes: [
+      'Reduced broad and targeted rendering to one active-class snapshot instead of two while preserving the same post-render saved state.',
+      'Made the Groups & Zones Manager render only while open and replaced per-card drag listeners with one guarded delegated handler set.',
+      'Reused one assignment snapshot and one baseline rule evaluation during live seat guidance, with guaranteed restoration after each simulated placement.',
+      'Indexed zone usage once per manager render instead of repeatedly scanning every room cell and group for each zone.',
+      'Consolidated repeated CSV rejection mapping, print configuration rows, Freeform geometry restoration, security-wizard scrolling, and onboarding error handling.',
+      'Preserved the single portable HTML product, schema 13, schema-12 compatibility, encryption envelope 3, storage keys, integrations, and recovery workflows.'
+    ]
+  },
+  {
     version: '6.6.0',
     date: 'July 16, 2026',
     title: 'Live seat guidance, planning intelligence, portable data tools, and modular source',
-    current: true,
+    current: false,
     changes: [
       'Added live Grid and Freeform seat-validity previews, valid-seat highlighting, best-seat placement, plain-language conflict explanations, and intentional rule overrides.',
       'Added seating-history and fairness analysis, scheduled plans, visual plan comparison, bulk student requirement presets, duplicate-roster suggestions, and advanced student filters.',
@@ -11388,12 +11415,16 @@ function updateFreeformPointerDrag(event) {
   ModernizationSuite?.updateFreeformMinimap?.();
 }
 
-function restoreFreeformDragOriginals(drag) {
-  if (!drag) return;
-  drag.originals.forEach((value, objectId) => {
+function restoreFreeformGeometryEntries(entries) {
+  entries?.forEach((value, objectId) => {
     const item = (state.freeformLayout?.objects || []).find(candidate => candidate.id === objectId);
     if (item) Object.assign(item, value);
   });
+}
+
+function restoreFreeformDragOriginals(drag) {
+  if (!drag) return;
+  restoreFreeformGeometryEntries(drag.originals);
   uiState.undoStack.length = Math.min(uiState.undoStack.length, Number(drag.undoStackLengthBefore) || 0);
   if (Array.isArray(uiState.undoHistoryLabels)) uiState.undoHistoryLabels.length = Math.min(uiState.undoHistoryLabels.length, Number(drag.undoHistoryLengthBefore) || 0);
   updateUndoRedoButtons();
@@ -11416,10 +11447,7 @@ function finishFreeformPointerDrag() {
   }
   if (drag) {
     if (drag.dropInvalid) {
-      drag.lastDropValid.forEach((value, objectId) => {
-        const item = (state.freeformLayout?.objects || []).find(candidate => candidate.id === objectId);
-        if (item) Object.assign(item, value);
-      });
+      restoreFreeformGeometryEntries(drag.lastDropValid);
       setLiveStatusMessage('Seats may pass through one another, but this drop would leave an overlap. The selection returned to its last valid position. Enable “Allow seats to remain overlapping” to keep stacked seats.');
     } else if (!drag.resize) {
       drag.ids.forEach(objectId => {
@@ -13435,11 +13463,43 @@ function installZoneListEventDelegation(list) {
   });
 }
 
+function buildZoneUsageIndex(zones = state.zones || []) {
+  const zoneIds = new Set(zones.map(zone => String(zone.id)));
+  const cellCounts = new Map([...zoneIds].map(zoneId => [zoneId, 0]));
+  Object.values(state.cells || {}).forEach(cell => {
+    (cell.zoneIds || []).forEach(zoneId => {
+      const id = String(zoneId);
+      if (cellCounts.has(id)) cellCounts.set(id, cellCounts.get(id) + 1);
+    });
+  });
+
+  const explicitZonesByGroup = new Map();
+  zones.forEach(zone => {
+    (zone.groupIds || []).forEach(groupId => {
+      const id = String(groupId);
+      if (!explicitZonesByGroup.has(id)) explicitZonesByGroup.set(id, []);
+      explicitZonesByGroup.get(id).push(String(zone.id));
+    });
+  });
+
+  const groupsByZone = new Map([...zoneIds].map(zoneId => [zoneId, []]));
+  (state.groups || []).forEach(group => {
+    const attachedZoneIds = new Set(explicitZonesByGroup.get(String(group.id)) || []);
+    if (group.zoneId) attachedZoneIds.add(String(group.zoneId));
+    attachedZoneIds.forEach(zoneId => {
+      if (groupsByZone.has(zoneId)) groupsByZone.get(zoneId).push(group);
+    });
+  });
+
+  return { cellCounts, groupsByZone };
+}
+
 function renderZones() {
   const zoneCount = el('zoneCount');
   const zoneSubCount = el('zoneSubCount');
   const list = el('zoneList');
   const zones = Array.isArray(state.zones) ? state.zones : [];
+  const zoneUsage = buildZoneUsageIndex(zones);
   if (zoneCount) zoneCount.textContent = zones.length;
   if (zoneSubCount) zoneSubCount.textContent = zones.length;
   if (!list) return;
@@ -13451,9 +13511,10 @@ function renderZones() {
   }
   const fragment = document.createDocumentFragment();
   zones.forEach(zone => {
-    const cellCount = Object.values(state.cells).filter(cell => (cell.zoneIds || []).includes(zone.id)).length;
+    const zoneId = String(zone.id);
+    const cellCount = zoneUsage.cellCounts.get(zoneId) || 0;
     const students = (zone.studentIds || []).map(getStudent).filter(Boolean).sort((a,b) => studentDisplay(a).localeCompare(studentDisplay(b)));
-    const groups = state.groups.filter(group => String(group.zoneId || '') === String(zone.id) || (zone.groupIds || []).map(String).includes(String(group.id)));
+    const groups = zoneUsage.groupsByZone.get(zoneId) || [];
     const card = document.createElement('div');
     card.className = 'zone-list-card';
     card.draggable = true;
@@ -13621,6 +13682,82 @@ function groupManagerDropDestinationAt(clientX, clientY, payload = uiState.group
   return null;
 }
 
+function groupManagerDragNode(target, payload) {
+  if (!target || !payload) return null;
+  if (payload.type === 'groupMember') return target.closest?.('.group-manager-member[data-student-id][data-source-group-id]') || null;
+  if (payload.type === 'student') return target.closest?.('.group-manager-student[data-student-id]') || null;
+  if (payload.type === 'group') return target.closest?.('.group-manager-group[data-group-id]') || null;
+  if (payload.type === 'zone') return target.closest?.('.group-manager-zone[data-zone-id]') || null;
+  return null;
+}
+
+function installGroupManagerDragDelegation() {
+  const modal = el('groupManagerModal');
+  if (!modal || modal.dataset.dragEventsInstalled === 'true') return;
+  modal.dataset.dragEventsInstalled = 'true';
+
+  const dropTarget = target => target?.closest?.('#groupManagerRemoveZone, .group-manager-group[data-group-id], .group-manager-zone[data-zone-id]') || null;
+  const clearDropTarget = target => target?.classList?.remove('drop-target');
+
+  modal.addEventListener('dragstart', event => {
+    if (eyeModeBlocksGroupEditing()) {
+      event.preventDefault();
+      blockEyeModeAction('group');
+      return;
+    }
+    const payload = groupManagerPayloadFromTarget(event.target);
+    if (!payload) return;
+    const node = groupManagerDragNode(event.target, payload);
+    node?.classList.add('dragging');
+    writeManagerDragData(event, payload);
+  });
+
+  modal.addEventListener('dragend', event => {
+    event.target.closest?.('.group-manager-student, .group-manager-member, .group-manager-group, .group-manager-zone')?.classList.remove('dragging');
+    modal.querySelectorAll('.drop-target').forEach(clearDropTarget);
+  });
+
+  modal.addEventListener('dragover', event => {
+    const target = dropTarget(event.target);
+    if (!target) return;
+    event.preventDefault();
+    if (eyeModeBlocksGroupEditing()) return blockEyeModeAction('group');
+    target.classList.add('drop-target');
+    if (event.dataTransfer) event.dataTransfer.dropEffect = target.id === 'groupManagerRemoveZone' ? 'move' : 'copy';
+  });
+
+  modal.addEventListener('dragleave', event => {
+    const target = dropTarget(event.target);
+    if (!target) return;
+    const related = event.relatedTarget;
+    if (related && target.contains(related)) return;
+    clearDropTarget(target);
+  });
+
+  modal.addEventListener('drop', event => {
+    const target = dropTarget(event.target);
+    if (!target) return;
+    event.preventDefault();
+    event.stopPropagation();
+    clearDropTarget(target);
+    if (eyeModeBlocksGroupEditing()) return blockEyeModeAction('group');
+    const data = readDragData(event);
+    if (!data) return;
+
+    if (target.id === 'groupManagerRemoveZone') {
+      if (data.type === 'groupMember' && data.sourceGroupId && data.id) removeStudentFromGroup(data.sourceGroupId, data.id);
+      return;
+    }
+    if (target.matches('.group-manager-group[data-group-id]')) {
+      if (data.type === 'student' || data.type === 'groupMember') addStudentToGroup(target.dataset.groupId, data.id, true);
+      if (data.type === 'zone') attachGroupToZone(target.dataset.groupId, data.id, true);
+      return;
+    }
+    if (data.type === 'student' || data.type === 'groupMember') addStudentToZone(target.dataset.zoneId, data.id, true);
+    if (data.type === 'group') attachGroupToZone(data.id, target.dataset.zoneId, true);
+  });
+}
+
 function installGroupManagerPointerDragSupport() {
   const modal = el('groupManagerModal');
   if (!modal || modal.dataset.pointerDragInstalled === 'true') return;
@@ -13723,6 +13860,7 @@ function renderGroupManager() {
   if (groupCount) groupCount.textContent = state.groups.length;
   if (zoneCount) zoneCount.textContent = (state.zones || []).length;
   const assignedSeats = assignedSeatsByStudent();
+  const zoneUsage = buildZoneUsageIndex(state.zones || []);
 
   studentList.innerHTML = '';
   if (!state.students.length) {
@@ -13748,12 +13886,6 @@ function renderGroupManager() {
               </div>
               <div class="student-meta">${escapeHtml(studentMetaText(student))}${assigned ? ` · Seat ${assigned.row},${assigned.col}` : ''}</div>
             `;
-        card.addEventListener('dragstart', event => {
-          if (event.target !== card && event.target.closest('button')) return event.preventDefault();
-          card.classList.add('dragging');
-          writeManagerDragData(event, { type: 'student', id: student.id });
-        });
-        card.addEventListener('dragend', () => card.classList.remove('dragging'));
         studentList.appendChild(card);
       });
   }
@@ -13791,30 +13923,6 @@ function renderGroupManager() {
               </div>
               <div class="group-manager-members">${membersHtml}</div>
             `;
-        card.addEventListener('dragstart', event => {
-          if (event.target !== card) return;
-          card.classList.add('dragging');
-          writeManagerDragData(event, { type: 'group', id: group.id });
-        });
-        card.addEventListener('dragend', () => card.classList.remove('dragging'));
-        card.addEventListener('dragover', event => {
-          event.preventDefault();
-          card.classList.add('drop-target');
-          if (event.dataTransfer) event.dataTransfer.dropEffect = 'copy';
-        });
-        card.addEventListener('dragleave', event => {
-          const related = event.relatedTarget;
-          if (related && card.contains(related)) return;
-          card.classList.remove('drop-target');
-        });
-        card.addEventListener('drop', event => {
-          event.preventDefault();
-          event.stopPropagation();
-          card.classList.remove('drop-target');
-          const data = readDragData(event);
-          if (data && (data.type === 'student' || data.type === 'groupMember')) addStudentToGroup(group.id, data.id, true);
-          if (data && data.type === 'zone') attachGroupToZone(group.id, data.id, true);
-        });
         groupList.appendChild(card);
       });
   }
@@ -13826,9 +13934,10 @@ function renderGroupManager() {
       zoneList.innerHTML = '<div class="group-manager-empty">No zones yet. Select cells in Room Layout, then save a zone from the Zones tab.</div>';
     } else {
       zones.forEach(zone => {
+        const zoneId = String(zone.id);
         const students = (zone.studentIds || []).map(getStudent).filter(Boolean).sort((a,b) => studentDisplay(a).localeCompare(studentDisplay(b)));
-        const groups = state.groups.filter(group => String(group.zoneId || '') === String(zone.id) || (zone.groupIds || []).map(String).includes(String(group.id))).sort((a,b) => a.name.localeCompare(b.name));
-        const cellCount = Object.values(state.cells).filter(cell => (cell.zoneIds || []).includes(zone.id)).length;
+        const groups = [...(zoneUsage.groupsByZone.get(zoneId) || [])].sort((a,b) => a.name.localeCompare(b.name));
+        const cellCount = zoneUsage.cellCounts.get(zoneId) || 0;
         const card = document.createElement('div');
         card.className = 'group-manager-zone';
         card.draggable = true;
@@ -13854,48 +13963,11 @@ function renderGroupManager() {
               <strong class="muted" style="margin-top:7px;display:block;">Attached groups</strong>
               <div class="group-manager-zone-groups">${groupsHtml}</div>
             `;
-        card.addEventListener('dragstart', event => {
-          if (event.target !== card) return;
-          card.classList.add('dragging');
-          writeManagerDragData(event, { type: 'zone', id: zone.id });
-        });
-        card.addEventListener('dragend', () => card.classList.remove('dragging'));
-        card.addEventListener('dragover', event => {
-          event.preventDefault();
-          card.classList.add('drop-target');
-          if (event.dataTransfer) event.dataTransfer.dropEffect = 'copy';
-        });
-        card.addEventListener('dragleave', event => {
-          const related = event.relatedTarget;
-          if (related && card.contains(related)) return;
-          card.classList.remove('drop-target');
-        });
-        card.addEventListener('drop', event => {
-          event.preventDefault();
-          event.stopPropagation();
-          card.classList.remove('drop-target');
-          const data = readDragData(event);
-          if (!data) return;
-          if (data.type === 'student' || data.type === 'groupMember') addStudentToZone(zone.id, data.id, true);
-          if (data.type === 'group') attachGroupToZone(data.id, zone.id, true);
-        });
         zoneList.appendChild(card);
       });
     }
   }
 
-  groupList.querySelectorAll('.group-manager-member[data-student-id]').forEach(member => {
-    member.addEventListener('dragstart', event => {
-      event.stopPropagation();
-      member.classList.add('dragging');
-      writeManagerDragData(event, {
-        type: 'groupMember',
-        id: member.dataset.studentId,
-        sourceGroupId: member.dataset.sourceGroupId
-      });
-    });
-    member.addEventListener('dragend', () => member.classList.remove('dragging'));
-  });
   updateGroupManagerCarryUi();
 }
 
@@ -14817,7 +14889,6 @@ function renderAll() {
   const freeformRenderSnapshot = state.layoutMode === 'freeform' ? captureFreeformObjectStateSnapshot() : null;
   cleanupInvalidAssignmentsAndAnchors();
   if (freeformRenderSnapshot) restoreFreeformObjectStateSnapshot(freeformRenderSnapshot, { includeAssignments: true });
-  persistActiveClass();
   const rowsInput = el('rowsInput');
   const colsInput = el('colsInput');
   if (!uiState.gridResizeModeActive && document.activeElement !== rowsInput) rowsInput.value = state.rows;
@@ -14829,7 +14900,7 @@ function renderAll() {
   renderStudents();
   renderGroups();
   renderZones();
-  renderGroupManager();
+  if (el('groupManagerModal')?.classList.contains('show')) renderGroupManager();
   setSideTab(uiState.activeSideTab);
   renderCustomObjectMenus();
   renderCustomObjectManager();
@@ -14855,10 +14926,9 @@ function renderTargeted(targets = ['all'], options = {}) {
   const requested = new Set(Array.isArray(targets) ? targets : [targets]);
   if (requested.has('all')) { renderAll(); return; }
   cleanupInvalidAssignmentsAndAnchors();
-  persistActiveClass();
   if (requested.has('class-manager')) renderClassManager();
   if (requested.has('roster')) { renderGroupMemberPicker(); renderStudents(); refreshAddStudentCollapse(); }
-  if (requested.has('rules')) { renderGroups(); renderZones(); renderGroupManager(); renderZoneControls(); }
+  if (requested.has('rules')) { renderGroups(); renderZones(); if (el('groupManagerModal')?.classList.contains('show')) renderGroupManager(); renderZoneControls(); }
   if (requested.has('room')) { syncFreeformControlsFromState(); renderCustomObjectMenus(); renderCustomObjectManager(); applyDesignModeUi(); renderGrid(); updateCellSelectionVisuals(); }
   if (requested.has('status')) renderStatus();
   if (requested.has('settings')) { updatePageSettingsForm(); applyVisibilityClasses(); }
@@ -15154,6 +15224,7 @@ function openGroupManagerModal() {
   renderGroupManager();
   const modal = el('groupManagerModal');
   if (modal) modal.classList.add('show');
+  ModernizationSuite?.enhanceRenderedWorkspace?.();
 }
 
 function closeGroupManagerModal() {
@@ -16860,7 +16931,6 @@ function applySelectedRestoreChanges(draft, source) {
     applyPageSettings(uiState.pageSettings, { skipRender: true, applyLoadDefaults: true });
   }
   sanitizeActiveStateReferences();
-  persistActiveClass();
   renderAll();
 }
 
@@ -20945,6 +21015,11 @@ function renderPrintNotesSection(categories, items) {
       }).join('')}</ul></section>`;
 }
 
+function renderPrintConfigRows(rowItems, emptyText) {
+  if (!rowItems.length) return `<div class="print-config-detail-empty">${escapeHtml(emptyText)}</div>`;
+  return rowItems.map(([label, value]) => `<span class="print-config-label">${escapeHtml(label)}</span><span class="print-config-value">${escapeHtml(value)}</span>`).join('');
+}
+
 function renderPrintGroupConfigSection() {
   const options = currentPrintOptions();
   const config = options.groupConfig || defaultPrintOptions().groupConfig;
@@ -20965,9 +21040,7 @@ function renderPrintGroupConfigSection() {
     if (config.members) rowItems.push(['Members', joinedList(members)]);
     if (config.reservedSeats) rowItems.push(['Reserved', joinedList(anchors, 'None')]);
     if (config.color) rowItems.push(['Color', safeColor(group.color, '#2f6fed')]);
-    const rows = rowItems.length
-      ? rowItems.map(([label, value]) => `<span class="print-config-label">${escapeHtml(label)}</span><span class="print-config-value">${escapeHtml(value)}</span>`).join('')
-      : '<div class="print-config-detail-empty">No group detail fields selected.</div>';
+    const rows = renderPrintConfigRows(rowItems, 'No group detail fields selected.');
     const swatch = config.color ? `<span class="print-config-swatch" style="background:${escapeHtml(safeColor(group.color, '#2f6fed'))}"></span>` : '';
     return `<li class="print-config-card"><div class="print-config-head"><div class="print-config-title">${escapeHtml(group.name || 'Group')}</div>${swatch}</div><div class="print-config-grid">${rows}</div></li>`;
   }).join('');
@@ -21002,9 +21075,7 @@ function renderPrintZoneConfigSection() {
     if (config.students) rowItems.push(['Students', joinedList(linkedStudentNames)]);
     if (config.groups) rowItems.push(['Groups', joinedList(groupNames)]);
     if (config.seats) rowItems.push(['Seats', joinedList(seats, 'No seats assigned')]);
-    const rows = rowItems.length
-      ? rowItems.map(([label, value]) => `<span class="print-config-label">${escapeHtml(label)}</span><span class="print-config-value">${escapeHtml(value)}</span>`).join('')
-      : '<div class="print-config-detail-empty">No zone detail fields selected.</div>';
+    const rows = renderPrintConfigRows(rowItems, 'No zone detail fields selected.');
     const swatch = config.color ? `<span class="print-config-swatch" style="background:${escapeHtml(safeColor(zone.color, '#8b5cf6'))}"></span>` : '';
     return `<li class="print-config-card"><div class="print-config-head"><div class="print-config-title">${escapeHtml(zone.name || 'Zone')}</div>${swatch}</div><div class="print-config-grid">${rows}</div></li>`;
   }).join('');
@@ -21061,6 +21132,13 @@ function saveChartDetailsFromSettings() {
   persistActiveClass();
   renderGrid();
   setLiveStatusMessage('Seating chart details saved.');
+}
+
+function csvRejectedRowSource(headers, row) {
+  return Object.fromEntries((headers || []).slice(0, 40).map((header, column) => [
+    String(header || `Column ${column + 1}`).slice(0, 80),
+    String(row?.[column] || '').slice(0, 500)
+  ]));
 }
 
 function parseCsvMatrix(text) {
@@ -22933,50 +23011,7 @@ function wireEvents() {
     clearGroupManagerCarry();
   });
   installGroupManagerPointerDragSupport();
-  el('groupManagerGroupList').addEventListener('dragover', event => {
-    const groupCard = event.target.closest('.group-manager-group[data-group-id]');
-    if (!groupCard) return;
-    event.preventDefault();
-    groupCard.classList.add('drop-target');
-    if (event.dataTransfer) event.dataTransfer.dropEffect = 'copy';
-  });
-  el('groupManagerGroupList').addEventListener('dragleave', event => {
-    const groupCard = event.target.closest('.group-manager-group[data-group-id]');
-    if (!groupCard) return;
-    const related = event.relatedTarget;
-    if (related && groupCard.contains(related)) return;
-    groupCard.classList.remove('drop-target');
-  });
-  el('groupManagerGroupList').addEventListener('drop', event => {
-    const groupCard = event.target.closest('.group-manager-group[data-group-id]');
-    if (!groupCard) return;
-    event.preventDefault();
-    event.stopPropagation();
-    groupCard.classList.remove('drop-target');
-    const data = readDragData(event);
-    if (data && (data.type === 'student' || data.type === 'groupMember')) {
-      addStudentToGroup(groupCard.dataset.groupId, data.id, true);
-    }
-  });
-
-  el('groupManagerRemoveZone').addEventListener('dragover', event => {
-    event.preventDefault();
-    el('groupManagerRemoveZone').classList.add('drop-target');
-    if (event.dataTransfer) event.dataTransfer.dropEffect = 'move';
-  });
-  el('groupManagerRemoveZone').addEventListener('dragleave', event => {
-    const related = event.relatedTarget;
-    if (related && el('groupManagerRemoveZone').contains(related)) return;
-    el('groupManagerRemoveZone').classList.remove('drop-target');
-  });
-  el('groupManagerRemoveZone').addEventListener('drop', event => {
-    event.preventDefault();
-    el('groupManagerRemoveZone').classList.remove('drop-target');
-    const data = readDragData(event);
-    if (data && data.type === 'groupMember' && data.sourceGroupId && data.id) {
-      removeStudentFromGroup(data.sourceGroupId, data.id);
-    }
-  });
+  installGroupManagerDragDelegation();
   el('closeSettingsBtn').addEventListener('click', closeSettingsModal);
   el('settingsModal').addEventListener('click', event => {
     if (event.target.id === 'settingsModal') closeSettingsModal();
@@ -23118,33 +23153,6 @@ function wireEvents() {
     if (removeZoneStudentBtn) { removeStudentFromZone(removeZoneStudentBtn.dataset.removeZoneStudent, removeZoneStudentBtn.dataset.removeStudentId, true); return; }
     const detachZoneGroupBtn = event.target.closest('[data-detach-zone-group]');
     if (detachZoneGroupBtn) { detachGroupFromZone(detachZoneGroupBtn.dataset.detachGroupId, detachZoneGroupBtn.dataset.detachZoneGroup, true); return; }
-  });
-  el('groupManagerZoneList')?.addEventListener('dragover', event => {
-    const zoneCard = event.target.closest('.group-manager-zone[data-zone-id]');
-    if (!zoneCard) return;
-    if (eyeModeBlocksGroupEditing()) { event.preventDefault(); return blockEyeModeAction('group'); }
-    event.preventDefault();
-    zoneCard.classList.add('drop-target');
-    if (event.dataTransfer) event.dataTransfer.dropEffect = 'copy';
-  });
-  el('groupManagerZoneList')?.addEventListener('dragleave', event => {
-    const zoneCard = event.target.closest('.group-manager-zone[data-zone-id]');
-    if (!zoneCard) return;
-    const related = event.relatedTarget;
-    if (related && zoneCard.contains(related)) return;
-    zoneCard.classList.remove('drop-target');
-  });
-  el('groupManagerZoneList')?.addEventListener('drop', event => {
-    const zoneCard = event.target.closest('.group-manager-zone[data-zone-id]');
-    if (!zoneCard) return;
-    event.preventDefault();
-    event.stopPropagation();
-    if (eyeModeBlocksGroupEditing()) return blockEyeModeAction('group');
-    zoneCard.classList.remove('drop-target');
-    const data = readDragData(event);
-    if (!data) return;
-    if (data.type === 'student' || data.type === 'groupMember') addStudentToZone(zoneCard.dataset.zoneId, data.id, true);
-    if (data.type === 'group') attachGroupToZone(data.id, zoneCard.dataset.zoneId, true);
   });
   el('saveChartDetailsBtn')?.addEventListener('click', saveChartDetailsFromSettings);
   el('clearLocalDataBtn')?.addEventListener('click', clearAllLocalData);
@@ -24213,7 +24221,7 @@ const WorkflowExpansion = (() => {
       draft.rows.forEach((row, index) => {
         const values = mappedCsvValues(row);
         if (!(values.firstName || values.lastName || values.id)) {
-          const source = Object.fromEntries(draft.headers.slice(0, 40).map((header, column) => [String(header || `Column ${column + 1}`).slice(0, 80), String(row[column] || '').slice(0, 500)]));
+          const source = csvRejectedRowSource(draft.headers, row);
           rejectedRows.push({ rowNumber: index + 2, reason: 'No mapped first name, last name, or student ID.', ...source });
           return;
         }
@@ -24318,6 +24326,16 @@ const WorkflowExpansion = (() => {
   async function completeWelcomeSecuritySetup() { await completeWelcomeSecuritySetupCore(); }
 
 
+  function scrollSecurityWizardRow(row) {
+    window.setTimeout(() => {
+      try {
+        row.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
+      } catch {
+        row.scrollIntoView(false);
+      }
+    }, 80);
+  }
+
   function installWorkflowEvents() {
     if (document.body.dataset.workflowExpansionV2 === 'true') return;
     document.body.dataset.workflowExpansionV2 = 'true';
@@ -24371,24 +24389,13 @@ const WorkflowExpansion = (() => {
       const shouldOpen = !row.open;
       row.parentElement?.querySelectorAll('details.security-wizard-check[open]').forEach(other => { if (other !== row) other.open = false; });
       row.open = shouldOpen;
-      if (row.open) {
-        window.setTimeout(() => {
-          try { row.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' }); }
-          catch (err) { row.scrollIntoView(false); }
-        }, 80);
-      }
+      if (row.open) scrollSecurityWizardRow(row);
     });
     document.addEventListener('toggle', event => {
       const row = event.target;
       if (!(row instanceof HTMLDetailsElement) || !row.matches('#securityWizardSteps details.security-wizard-check') || !row.open) return;
       row.parentElement?.querySelectorAll('details.security-wizard-check[open]').forEach(other => { if (other !== row) other.open = false; });
-      window.setTimeout(() => {
-        try {
-          row.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
-        } catch (err) {
-          row.scrollIntoView(false);
-        }
-      }, 80);
+      scrollSecurityWizardRow(row);
     }, true);
     window.addEventListener('blur', () => { if (pageSettings().noteRevealHideOnBlur) hideRevealedSensitiveNotes('Revealed private/substitute notes hidden because the window lost focus.'); });
     document.addEventListener('visibilitychange', () => { if (document.hidden && pageSettings().noteRevealHideOnBlur) hideRevealedSensitiveNotes('Revealed private/substitute notes hidden because the tab became inactive.'); });
@@ -26315,7 +26322,7 @@ const ModernizationSuite = (() => {
       if (!row.some(cell => String(cell || '').trim())) return;
       const values = { firstName:value(row,'firstName'), lastName:value(row,'lastName'), nickName:value(row,'nickName'), grade:value(row,'grade'), id:value(row,'id') };
       if (!(values.firstName || values.lastName || values.id)) {
-        const source = Object.fromEntries(headers.slice(0, 40).map((header, column) => [String(header || `Column ${column + 1}`).slice(0, 80), String(row[column] || '').slice(0, 500)]));
+        const source = csvRejectedRowSource(headers, row);
         rejectedRows.push({ rowNumber: rowIndex + 2, reason: 'No recognized name or student ID.', ...source });
         return;
       }
@@ -26412,7 +26419,7 @@ const ModernizationSuite = (() => {
       reconcileDraft.missing.forEach(item => cleanupStudentReferences(item.id));
       state.students = state.students.filter(item => !missingIds.has(String(item.id)));
     }
-    cleanupInvalidAssignmentsAndAnchors(); persistActiveClass(); renderAll(); el('rosterReconcileModal')?.classList.remove('show'); setLiveStatusMessage(`Roster reconciled: ${reconcileDraft.matched.length} matched, ${reconcileDraft.added.length} new, ${el('reconcileArchiveMissing')?.checked ? reconcileDraft.missing.length : 0} archived.`); reconcileDraft = null;
+    cleanupInvalidAssignmentsAndAnchors(); renderAll(); el('rosterReconcileModal')?.classList.remove('show'); setLiveStatusMessage(`Roster reconciled: ${reconcileDraft.matched.length} matched, ${reconcileDraft.added.length} new, ${el('reconcileArchiveMissing')?.checked ? reconcileDraft.missing.length : 0} archived.`); reconcileDraft = null;
   }
 
   const SHARE_PRESETS = Object.freeze([
@@ -28725,6 +28732,13 @@ const UserWorkflowV44 = (() => {
           </div>`;
   }
 
+  function queueOnboardingSecuritySave(task) {
+    uiState.onboardingSecuritySavePromise = Promise.resolve().then(task).catch(error => {
+      onboardingStatus(error?.message || 'The Settings access choice could not be saved.', 'bad');
+      return false;
+    });
+  }
+
   function upgradeGettingStartedModal() {
     const modal = el('gettingStartedModal');
     if (!modal) return;
@@ -28764,17 +28778,11 @@ const UserWorkflowV44 = (() => {
         }
         return saveOnboardingSecurityChoice();
       };
-      uiState.onboardingSecuritySavePromise = saveTask().catch(error => {
-        onboardingStatus(error?.message || 'The Settings access choice could not be saved.', 'bad');
-        return false;
-      });
+      queueOnboardingSecuritySave(saveTask);
     });
     el('v44SettingsAccessMethod')?.addEventListener('change', () => {
       syncOnboardingProtectionVisibility();
-      uiState.onboardingSecuritySavePromise = saveOnboardingSecurityChoice().catch(error => {
-        onboardingStatus(error?.message || 'The Settings access choice could not be saved.', 'bad');
-        return false;
-      });
+      queueOnboardingSecuritySave(saveOnboardingSecurityChoice);
     });
     syncOnboardingControls();
   }
@@ -30152,7 +30160,6 @@ const ClassroomWorkflowV53 = (() => {
     if (today.active) today.absentStudentIds.forEach(clearAssignmentsForStudent);
     if (!today.active && wasActive && today.masterAssignments) restoreAssignments(today.masterAssignments);
     state.todaySession = today;
-    persistActiveClass();
     renderAll();
     renderTodayModal();
     scheduleLinkedAutoSave('today-mode');
@@ -30171,7 +30178,6 @@ const ClassroomWorkflowV53 = (() => {
     today.guestStudentIds = Array.from(new Set(today.guestStudentIds));
     state.todaySession = today;
     if (el('todayGuestNameInput')) el('todayGuestNameInput').value = '';
-    persistActiveClass();
     renderAll();
     renderTodayModal();
   }
@@ -30184,7 +30190,6 @@ const ClassroomWorkflowV53 = (() => {
     state.groups.forEach(group => group.studentIds = (group.studentIds || []).filter(value => String(value) !== String(id)));
     state.zones.forEach(zone => zone.studentIds = (zone.studentIds || []).filter(value => String(value) !== String(id)));
     state.todaySession = today;
-    persistActiveClass();
     renderAll();
     renderTodayModal();
   }
@@ -30206,7 +30211,6 @@ const ClassroomWorkflowV53 = (() => {
       state.groups.forEach(group => group.studentIds = (group.studentIds || []).filter(id => !guestIds.has(String(id))));
       state.zones.forEach(zone => zone.studentIds = (zone.studentIds || []).filter(id => !guestIds.has(String(id))));
       state.todaySession = normalizeTodaySession({ active:false, date:new Date().toISOString().slice(0,10) });
-      persistActiveClass();
       renderAll();
       renderTodayModal();
       setLiveStatusMessage('Today mode ended and the master seating chart was restored.');
@@ -31820,7 +31824,7 @@ const DistrictIntegrationsV57 = (() => {
   function buildRosterDraft(records,source){const existingById=new Map(state.students.map(student=>[String(student.id),student]));const existingByName=new Map(state.students.map(student=>[studentMatchKey(student),student]));const matched=[],added=[],duplicates=[],seen=new Set();records.forEach(incoming=>{const key=incoming.id&&existingById.has(String(incoming.id))?`id:${incoming.id}`:`name:${studentMatchKey(incoming)}`;if(seen.has(key)){duplicates.push(incoming);return;}seen.add(key);const existing=existingById.get(String(incoming.id))||existingByName.get(studentMatchKey(incoming));if(existing)matched.push({existing,incoming,changed:['firstName','lastName','nickName','grade'].some(field=>String(existing[field]||'')!==String(incoming[field]||''))});else added.push(incoming);});const matchedIds=new Set(matched.map(item=>String(item.existing.id)));const missing=state.students.filter(student=>!matchedIds.has(String(student.id)));return{source,matched,added,missing,duplicates};}
   function openRosterDraft(records,source){rosterDraft=buildRosterDraft(records,source);injectCloudModals();renderRosterDraft();node('districtRosterModal')?.classList.add('show');}
   function renderRosterDraft(){if(!rosterDraft)return;const cards=[['Matched',rosterDraft.matched.length],['New',rosterDraft.added.length],['Missing',rosterDraft.missing.length],['Duplicates',rosterDraft.duplicates.length]];if(node('districtRosterSummary'))node('districtRosterSummary').innerHTML=cards.map(([label,count])=>`<div class="workflow-card"><strong>${count}</strong><span>${escapeHtml(label)}</span></div>`).join('');const rows=[...rosterDraft.matched.map(item=>['Matched',studentDisplay(item.existing),studentDisplay(item.incoming)]),...rosterDraft.added.map(item=>['New','',studentDisplay(item)]),...rosterDraft.missing.map(item=>['Missing',studentDisplay(item),'']),...rosterDraft.duplicates.map(item=>['Duplicate','',studentDisplay(item)])].slice(0,250);if(node('districtRosterPreview'))node('districtRosterPreview').innerHTML=`<table><thead><tr><th>Status</th><th>Current</th><th>${escapeHtml(rosterDraft.source)}</th></tr></thead><tbody>${rows.map(row=>`<tr><td>${escapeHtml(row[0])}</td><td>${escapeHtml(row[1])}</td><td>${escapeHtml(row[2])}</td></tr>`).join('')}</tbody></table>`;}
-  function applyRosterDraft(){if(!rosterDraft)return;pushUndoSnapshot('district roster reconciliation');const update=node('districtRosterUpdateMatched')?.checked,add=node('districtRosterAddNew')?.checked,archive=node('districtRosterArchiveMissing')?.checked,preserve=node('districtRosterPreserveDetails')?.checked;if(update)rosterDraft.matched.forEach(({existing,incoming})=>{const kept=preserve?{notesPrivate:existing.notesPrivate,notesSubstitute:existing.notesSubstitute,notesPublic:existing.notesPublic,noteCategories:existing.noteCategories,requirements:existing.requirements}:{};Object.assign(existing,incoming,kept,{id:existing.id});});if(add)state.students.push(...rosterDraft.added.map(normalizeStudent));if(archive){state.rosterArchive=state.rosterArchive||[];const ids=new Set(rosterDraft.missing.map(item=>String(item.id)));state.rosterArchive.push(...state.students.filter(item=>ids.has(String(item.id))).map(normalizeStudent));state.students=state.students.filter(item=>!ids.has(String(item.id)));}persistActiveClass();renderTargeted(['class-manager','roster','rules','room','status'],{reason:'district-roster'});node('districtRosterModal')?.classList.remove('show');setLiveStatusMessage(`${rosterDraft.source} roster reconciliation applied.`);rosterDraft=null;}
+  function applyRosterDraft(){if(!rosterDraft)return;pushUndoSnapshot('district roster reconciliation');const update=node('districtRosterUpdateMatched')?.checked,add=node('districtRosterAddNew')?.checked,archive=node('districtRosterArchiveMissing')?.checked,preserve=node('districtRosterPreserveDetails')?.checked;if(update)rosterDraft.matched.forEach(({existing,incoming})=>{const kept=preserve?{notesPrivate:existing.notesPrivate,notesSubstitute:existing.notesSubstitute,notesPublic:existing.notesPublic,noteCategories:existing.noteCategories,requirements:existing.requirements}:{};Object.assign(existing,incoming,kept,{id:existing.id});});if(add)state.students.push(...rosterDraft.added.map(normalizeStudent));if(archive){state.rosterArchive=state.rosterArchive||[];const ids=new Set(rosterDraft.missing.map(item=>String(item.id)));state.rosterArchive.push(...state.students.filter(item=>ids.has(String(item.id))).map(normalizeStudent));state.students=state.students.filter(item=>!ids.has(String(item.id)));}renderTargeted(['class-manager','roster','rules','room','status'],{reason:'district-roster'});node('districtRosterModal')?.classList.remove('show');setLiveStatusMessage(`${rosterDraft.source} roster reconciliation applied.`);rosterDraft=null;}
 
   function parseSisCsvText(text) {
     assertImportTextWithinLimits(text, 'SIS CSV', IMPORT_LIMITS.csvBytes);
@@ -31848,7 +31852,7 @@ const DistrictIntegrationsV57 = (() => {
         id: value(row, 'id')
       };
       if (!(values.firstName || values.lastName || values.id)) {
-        const source = Object.fromEntries(headers.slice(0, 40).map((header, column) => [String(header || `Column ${column + 1}`).slice(0, 80), String(row[column] || '').slice(0, 500)]));
+        const source = csvRejectedRowSource(headers, row);
         rejectedRows.push({ rowNumber: rowIndex + 2, reason: 'No recognized name or student ID.', ...source });
         return;
       }
@@ -33094,7 +33098,6 @@ const WorkflowRecoveryV62 = (() => {
       state.classes[index] = merged;
       state.activeClassId = merged.id;
       applyClassToState(merged.id);
-      persistActiveClass();
       renderAll();
       closeClassMerge();
       setLiveStatusMessage(`Merged selected categories from ${sourceRecord.name} into ${target.name}. A restore point was ${snapshotCreated ? 'created' : 'not requested'}.`);
@@ -34526,7 +34529,7 @@ window.SeatGuidanceV66 = (() => {
     return findings.filter(item => (item.studentIds || []).some(id => ids.has(String(id))));
   }
 
-  function classifySeat(studentId, target) {
+  function classifySeat(studentId, target, context = {}) {
     const student = getStudent(studentId);
     if (!student || !target) return null;
     const locked = Boolean(target.locked || target.manual) && String(target.assignedStudentId || '') !== String(studentId);
@@ -34539,14 +34542,19 @@ window.SeatGuidanceV66 = (() => {
         target
       };
     }
-    const snapshot = snapshotAssignments();
+    const snapshot = context.snapshot || snapshotAssignments();
+    const baselineFindings = context.baselineFindings || evaluateCurrentRuleViolations({ includeUnseated: false });
     const affected = affectedStudentIds(studentId, target);
-    const before = findingsForStudents(evaluateCurrentRuleViolations({ includeUnseated: false }), affected);
-    if (state.layoutMode === 'freeform') applyFreeformStudentAssignmentDirect(student, target);
-    else applyMoveOrSwap(studentId, String(target.key), true);
-    const after = findingsForStudents(evaluateCurrentRuleViolations({ includeUnseated: false }), affected);
-    restoreAssignments(snapshot);
-    const introduced = newRuleFindings(before, after);
+    const before = findingsForStudents(baselineFindings, affected);
+    let after;
+    try {
+      if (state.layoutMode === 'freeform') applyFreeformStudentAssignmentDirect(student, target);
+      else applyMoveOrSwap(studentId, String(target.key), true);
+      after = findingsForStudents(evaluateCurrentRuleViolations({ includeUnseated: false }), affected);
+    } finally {
+      restoreAssignments(snapshot);
+    }
+    const introduced = newRuleFindings(before, after || []);
     const bad = introduced.filter(item => item.severity === 'bad');
     const warnings = introduced.filter(item => item.severity !== 'bad');
     const occupiedPenalty = target.assignedStudentId && String(target.assignedStudentId) !== String(studentId) ? 3 : 0;
@@ -34569,7 +34577,12 @@ window.SeatGuidanceV66 = (() => {
   }
 
   function calculate(studentId) {
-    return candidateTargets().map(target => classifySeat(studentId, target)).filter(Boolean).sort((a, b) => a.score - b.score || a.key.localeCompare(b.key));
+    const targets = candidateTargets();
+    const context = {
+      snapshot: snapshotAssignments(),
+      baselineFindings: evaluateCurrentRuleViolations({ includeUnseated: false })
+    };
+    return targets.map(target => classifySeat(studentId, target, context)).filter(Boolean).sort((a, b) => a.score - b.score || a.key.localeCompare(b.key));
   }
 
   function statusText(result) {
