@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="330" viewBox="0 0 1400 330" role="img" aria-labelledby="title desc">
+  <title id="title">Classroom Seating Planner five-stage workflow</title>
+  <desc id="desc">Five connected stages: Class Setup, Room Design, Seat Students, Review, and Save and Share.</desc>
+  <rect width="1400" height="330" rx="28" fill="#f8fafc"/>
+  <text x="70" y="62" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#1d4ed8">ONE GUIDED WORKFLOW</text>
+  <text x="70" y="98" font-family="Arial, sans-serif" font-size="30" font-weight="800" fill="#0f172a">From roster to a chart you can actually use</text>
+  <line x1="190" y1="184" x2="1210" y2="184" stroke="#cbd5e1" stroke-width="8" stroke-linecap="round"/>
+  <g font-family="Arial, sans-serif" text-anchor="middle">
+    <g transform="translate(190 184)"><circle r="46" fill="#2563eb"/><text y="8" font-size="24" font-weight="800" fill="#fff">1</text><text y="82" font-size="18" font-weight="800" fill="#0f172a">Class Setup</text><text y="108" font-size="13" fill="#64748b">Roster, groups &amp; rules</text></g>
+    <g transform="translate(445 184)"><circle r="46" fill="#0f766e"/><text y="8" font-size="24" font-weight="800" fill="#fff">2</text><text y="82" font-size="18" font-weight="800" fill="#0f172a">Room Design</text><text y="108" font-size="13" fill="#64748b">Grid or Freeform</text></g>
+    <g transform="translate(700 184)"><circle r="46" fill="#7c3aed"/><text y="8" font-size="24" font-weight="800" fill="#fff">3</text><text y="82" font-size="18" font-weight="800" fill="#0f172a">Seat Students</text><text y="108" font-size="13" fill="#64748b">Manual or generated</text></g>
+    <g transform="translate(955 184)"><circle r="46" fill="#b45309"/><text y="8" font-size="24" font-weight="800" fill="#fff">4</text><text y="82" font-size="18" font-weight="800" fill="#0f172a">Review</text><text y="108" font-size="13" fill="#64748b">Conflicts, access &amp; fairness</text></g>
+    <g transform="translate(1210 184)"><circle r="46" fill="#334155"/><text y="8" font-size="24" font-weight="800" fill="#fff">5</text><text y="82" font-size="18" font-weight="800" fill="#0f172a">Save &amp; Share</text><text y="108" font-size="13" fill="#64748b">Print, export &amp; encrypt</text></g>
+  </g>
+</svg>
