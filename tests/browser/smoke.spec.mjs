@@ -42,3 +42,15 @@ test('core controls remain addressable for keyboard and automation', async ({ pa
   }
   await expect(page.locator('[aria-live]').first()).toHaveCount(1);
 });
+
+
+test('Classroom Intelligence is available through Advanced tools', async ({ page }) => {
+  await page.goto('/index.html', { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('#openPlanningToolsBtn')).toHaveCount(1);
+  await page.locator('#openPlanningToolsBtn').click();
+  await expect(page.locator('[data-intelligence-tab]')).toHaveCount(1);
+  await page.locator('[data-intelligence-tab]').click();
+  await expect(page.getByText('Plan for what you are doing today')).toBeVisible();
+  await expect(page.locator('[data-intelligence-scenario]')).toHaveCount(6);
+  await expect(page.locator('#previewIntelligenceRepairBtn')).toBeVisible();
+});

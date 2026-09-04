@@ -3,12 +3,12 @@
 const APP_CONFIG = Object.freeze({
   name: 'Classroom Seating Planner',
   shortName: 'Seating Planner',
-  version: '6.7.0',
+  version: '6.8.0',
   copyrightHolder: 'Chris L. Franklin',
   copyrightYear: '2026',
   releaseDate: '2026-09-04',
   releaseDateDisplay: 'September 4, 2026',
-  buildDate: '2026-09-04T14:19:58Z',
+  buildDate: '2026-09-04T17:30:00Z',
   commit: 'local',
   environment: 'production',
   dataSchemaVersion: 13,
@@ -256,6 +256,7 @@ const APP_LICENSE = {
 };
 
 const PROJECT_FEATURES = [
+  { title: 'Classroom Intelligence', text: 'Choose a planning objective, inspect plan health and concrete blockers, preview the smallest useful seating repair before applying it, and favor fairness or stability without hiding the underlying teacher-defined rules.' },
   { title: 'Live seat guidance', text: 'Preview valid, caution, conflicting, and locked seats while selecting or dragging a student, explain each result in plain language, and place the student in the best currently available seat.' },
   { title: 'Conflict resolution and intentional overrides', text: 'Move to a suggested seat, compare alternatives, keep an intentional exception, and retain the override for Review rather than silently discarding the teacher’s decision.' },
   { title: 'Planning history and fairness', text: 'Compare named plans, review repeated neighbors and location patterns, schedule plans by weekday or date, and use bulk requirement presets without assigning behavioral scores to students.' },
@@ -283,7 +284,7 @@ const RELEASE_HISTORY = [
     version: '6.7.0',
     date: 'September 4, 2026',
     title: 'Production hardening, public contracts, and collaboration history',
-    current: true,
+    current: false,
     changes: [
       'Added deterministic source splitting and single-file rebuild validation, browser regression CI, release packaging, and public save/encryption JSON Schemas without changing data schema 13 or encryption envelope 3.',
       'Added repository-level MIT licensing, security, privacy, and data-handling documentation plus deployment guidance for Google OAuth and hosted releases.',

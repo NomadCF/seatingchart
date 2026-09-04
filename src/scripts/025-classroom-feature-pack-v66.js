@@ -6,7 +6,8 @@ window.ClassroomFeaturePackV66 = (() => {
     window.PlanningToolsV66,
     window.ExportSupportV66,
     window.DrivePollingV66,
-    window.LocalizationShortcutsV66
+    window.LocalizationShortcutsV66,
+    window.ClassroomIntelligenceV68
   ].filter(Boolean);
 
   function install() {
@@ -17,7 +18,7 @@ window.ClassroomFeaturePackV66 = (() => {
 
   function afterReady() {
     modules().forEach(module => module.afterReady?.());
-    document.body.dataset.featurePack = '6.6';
+    document.body.dataset.featurePack = '6.8';
   }
 
   return Object.freeze({ install, afterReady });

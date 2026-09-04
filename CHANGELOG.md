@@ -1,5 +1,17 @@
 # Changelog
 
+## 6.8.0 — 2026-09-04
+
+### Classroom Intelligence
+
+- Added six plain-English planning objectives: Balanced Classroom, Minimal Movement, Fair Rotation, Accessibility First, Quiet Testing, and Collaborative Lesson.
+- Added plan-health summaries covering required conflicts, preference warnings, active unseated students, and seat capacity.
+- Added smallest-change repair previews that reuse the existing seat-validity engine, show every proposed student move, and require explicit teacher approval before applying.
+- Added concrete impossible-plan explanations for capacity shortages, repeated required conflicts, and students with no usable seat under the current explicit rules.
+- Added fairness-aware repair scoring for Fair Rotation while keeping the teacher-defined rules and needs visible and authoritative.
+- Kept V6.8 local-first and deterministic: no external AI service, hidden student scoring, or automatic rule rewriting was introduced.
+- Updated the PWA cache generation and release validation to V6.8.0.
+
 ## 6.7.0 — 2026-09-04
 
 ### Engineering and release

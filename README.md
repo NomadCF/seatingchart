@@ -11,6 +11,9 @@ Hosted application: https://nomadcf.github.io/seatingchart/
 ## Main features
 
 - **Five-stage guided workflow** — Class Setup, Room Design, Seat Students, Review, and Save & Share.
+- **Classroom Intelligence planning objectives** — choose Balanced Classroom, Minimal Movement, Fair Rotation, Accessibility First, Quiet Testing, or Collaborative Lesson without changing the underlying explicit teacher rules.
+- **Plan health and impossible-plan explanations** — distinguishes required conflicts, preference warnings, capacity shortages, unseated active students, and students with no currently usable seat.
+- **Smallest-change smart repair** — previews a better arrangement using existing seat-validity logic, lists every proposed move, and applies only after teacher approval with normal undo/autosave protection.
 - **Multiple class and roster management** — classes, student records, archived rosters, class copies, term rollovers, and class-record comparisons or merges.
 - **CSV, Google Classroom, and roster reconciliation** — CSV import plus optional read-only Google Classroom roster retrieval and reconciliation before changes are applied.
 - **Duplicate-detection assistance** — flags duplicate and near-matching roster records for review rather than silently merging them.
@@ -52,7 +55,7 @@ Hosted application: https://nomadcf.github.io/seatingchart/
 - **Portable and hosted deployment options** — runs as a self-contained HTML application or as a hosted/installable Progressive Web App with offline support and deployment verification.
 - **Privacy-focused local operation** — keeps classroom information in the browser unless the user deliberately saves, exports, prints, shares, or connects an approved external service.
 
-## V6.7 engineering and release model
+## V6.8 engineering and release model
 
 The distributed portable application remains one self-contained HTML file, but development now uses the committed `src/` tree as the maintainable source of truth. The HTML shell lives in `src/index.template.html`, the application stylesheet in `src/styles/`, and the main runtime is split into 27 ordered JavaScript modules in `src/scripts/`.
 
