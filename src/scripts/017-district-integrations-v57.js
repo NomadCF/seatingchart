@@ -516,22 +516,37 @@ const DistrictIntegrationsV57 = (() => {
         if (token) params.set('pageToken', token);
         const response = await classroomFetch(`https://classroom.googleapis.com/v1/courses/${encodeURIComponent(courseId)}/students?${params}`);
         const data = await response.json();
-        records.push(...(data.students || []).map(item => normalizeStudent({
-          id: item.userId || item.profile?.id || undefined,
+        records.push(...(data.students || []).map(item => ({
+          externalId: item.userId || item.profile?.id || '',
           firstName: item.profile?.name?.givenName || '',
           lastName: item.profile?.name?.familyName || '',
           nickName: item.profile?.name?.fullName && !item.profile?.name?.familyName ? item.profile.name.fullName : '',
           grade: '',
+          email: item.profile?.emailAddress || '',
           sourceSystem: 'google-classroom',
           sourceCourseId: courseId,
-          sourceUserId: item.userId || item.profile?.id || ''
+          sourceUserId: item.userId || item.profile?.id || '',
+          sourceIdentifiers: { externalId: item.userId || item.profile?.id || '', email: item.profile?.emailAddress || '' }
         })));
         if (records.length > IMPORT_LIMITS.maxStudentsPerClass) throw new Error(`Google Classroom returned more than ${IMPORT_LIMITS.maxStudentsPerClass.toLocaleString()} students.`);
         completedPages += 1;
         token = nextBoundedPageToken(seenPageTokens, data.nextPageToken, completedPages, 'Google Classroom roster');
       } while (token);
-      openRosterDraft(records, 'Google Classroom');
-      updateClassroomStatus(`Loaded ${records.length} students for reconciliation.`);
+      let sourceGroups = [];
+      let groupNotice = '';
+      if (window.InteroperabilityV69?.loadGoogleClassroomGroups) {
+        try {
+          sourceGroups = await window.InteroperabilityV69.loadGoogleClassroomGroups(courseId, classroomFetch);
+        } catch (groupError) {
+          groupNotice = ` Student groups could not be loaded: ${groupError.message}`;
+        }
+      }
+      if (window.InteroperabilityV69?.reviewRecords) {
+        window.InteroperabilityV69.reviewRecords(records, { sourceSystem: 'google-classroom', label: 'Google Classroom', sourceCourseId: courseId, groups: sourceGroups });
+      } else {
+        openRosterDraft(records.map(normalizeStudent), 'Google Classroom');
+      }
+      updateClassroomStatus(`Loaded ${records.length} students and ${sourceGroups.length} Classroom group${sourceGroups.length === 1 ? '' : 's'} for reconciliation.${groupNotice}`);
     } catch (err) {
       updateClassroomStatus(`Classroom roster load failed: ${err.message}`);
       WorkflowRecoveryV62.reportFailure({

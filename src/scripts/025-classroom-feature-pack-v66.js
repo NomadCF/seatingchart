@@ -8,7 +8,9 @@ window.ClassroomFeaturePackV66 = (() => {
     window.DrivePollingV66,
     window.LocalizationShortcutsV66,
     window.ClassroomIntelligenceV68,
-    window.GroupedSeatingVisualsV681
+    window.GroupedSeatingVisualsV681,
+    window.PhysicalTablePodsV682,
+    window.InteroperabilityV69
   ].filter(Boolean);
 
   function install() {
@@ -19,7 +21,7 @@ window.ClassroomFeaturePackV66 = (() => {
 
   function afterReady() {
     modules().forEach(module => module.afterReady?.());
-    document.body.dataset.featurePack = '6.8.1';
+    document.body.dataset.featurePack = '6.9.0';
   }
 
   return Object.freeze({ install, afterReady });

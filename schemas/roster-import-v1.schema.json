@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nomadcf.github.io/seatingchart/schemas/roster-import-v1.schema.json",
+  "title": "Classroom Seating Planner roster import package v1",
+  "description": "Public interchange contract used by the V6.9 roster interoperability adapter. This package contains normalized roster records and optional source groups. It is an import interchange format, not a planner save file.",
+  "type": "object",
+  "required": ["format", "adapterVersion", "exportedAt", "source", "records", "groups"],
+  "properties": {
+    "format": { "const": "classroom-seating-planner-roster-import-v1" },
+    "adapterVersion": { "const": 1 },
+    "exportedAt": { "type": "string", "minLength": 1 },
+    "source": {
+      "type": "object",
+      "required": ["system", "label", "courseId"],
+      "properties": {
+        "system": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "label": { "type": "string", "maxLength": 120 },
+        "courseId": { "type": "string", "maxLength": 160 }
+      },
+      "additionalProperties": true
+    },
+    "records": {
+      "type": "array",
+      "maxItems": 10000,
+      "items": { "$ref": "#/$defs/record" }
+    },
+    "groups": {
+      "type": "array",
+      "maxItems": 500,
+      "items": { "$ref": "#/$defs/group" }
+    }
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "record": {
+      "type": "object",
+      "required": ["adapterVersion", "sourceSystem", "sourceLabel", "sourceCourseId", "sourceUserId", "externalId", "firstName", "lastName", "nickName", "grade", "email", "sourceIdentifiers", "sourceGroups"],
+      "properties": {
+        "adapterVersion": { "const": 1 },
+        "sourceSystem": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "sourceLabel": { "type": "string", "maxLength": 120 },
+        "sourceCourseId": { "type": "string", "maxLength": 160 },
+        "sourceUserId": { "type": "string", "maxLength": 160 },
+        "externalId": { "type": "string", "maxLength": 240 },
+        "firstName": { "type": "string", "maxLength": 120 },
+        "lastName": { "type": "string", "maxLength": 120 },
+        "nickName": { "type": "string", "maxLength": 120 },
+        "grade": { "type": "string", "maxLength": 80 },
+        "email": { "type": "string", "maxLength": 320 },
+        "sourceIdentifiers": {
+          "type": "object",
+          "additionalProperties": { "type": "string", "maxLength": 240 }
+        },
+        "sourceGroups": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/group" }
+        }
+      },
+      "anyOf": [
+        { "properties": { "externalId": { "minLength": 1 } } },
+        { "properties": { "email": { "minLength": 1 } } },
+        { "properties": { "firstName": { "minLength": 1 } } },
+        { "properties": { "lastName": { "minLength": 1 } } }
+      ],
+      "additionalProperties": true
+    },
+    "group": {
+      "type": "object",
+      "required": ["adapterVersion", "sourceSystem", "sourceCourseId", "externalId", "title", "memberExternalIds"],
+      "properties": {
+        "adapterVersion": { "const": 1 },
+        "sourceSystem": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "sourceCourseId": { "type": "string", "maxLength": 160 },
+        "externalId": { "type": "string", "minLength": 1, "maxLength": 240 },
+        "title": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "memberExternalIds": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1, "maxLength": 240 },
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}

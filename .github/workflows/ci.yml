@@ -23,7 +23,7 @@ jobs:
         run: npm test
       - name: Validate JSON schemas
         run: |
-          node -e "for (const f of ['schemas/planner-v13.schema.json','schemas/envelope-v3.schema.json']) JSON.parse(require('fs').readFileSync(f,'utf8')); console.log('Schemas parse cleanly.')"
+          node -e "for (const f of ['schemas/planner-v13.schema.json','schemas/envelope-v3.schema.json','schemas/roster-import-v1.schema.json']) JSON.parse(require('fs').readFileSync(f,'utf8')); console.log('Schemas parse cleanly.')"
       - name: Check service worker syntax
         run: node --check service-worker.js
       - name: Install Chromium

@@ -11,7 +11,8 @@ for (const file of [
   'src/index.template.html',
   'src/manifest.json',
   'manifest.webmanifest',
-  'service-worker.js'
+  'service-worker.js',
+  'schemas/roster-import-v1.schema.json'
 ]) {
   if (!fs.existsSync(path.join(root, file))) throw new Error(`Missing required source/release asset: ${file}`);
 }
@@ -37,7 +38,7 @@ const built = normalize(fs.readFileSync(path.join(root, 'dist', 'Classroom-Seati
 
 const required = [
   ['doctype', /^\s*<!doctype html>/i.test(built)],
-  ['V6.8.2 app version metadata', /name=["']app-version["']\s+content=["']6\.8\.2["']/i.test(built)],
+  ['V6.9.0 app version metadata', /name=["']app-version["']\s+content=["']6\.9\.0["']/i.test(built)],
   ['manifest link', /rel=["']manifest["']/i.test(built)],
   ['service worker registration', /serviceWorker\.register\(/.test(built)],
   ['analytics consent default remains granted', /analytics_storage\s*:\s*['"]granted['"]/.test(built)],
@@ -51,6 +52,11 @@ const required = [
   ['V6.8.1 grouped pod renderer present', /v681-pod-halo/.test(built)],
   ['V6.8.1 print-safe grouped seating styles present', /@media print[\s\S]*v681-pod-halo/.test(built)],
   ['V6.8.2 physical table renderer present', /PhysicalTablePodsV682/.test(built)],
+  ['V6.9 interoperability engine present', /InteroperabilityV69/.test(built)],
+  ['V6.9 OneRoster adapter present', /parseOneRosterPackage/.test(built)],
+  ['V6.9 Microsoft Education adapter present', /parseMicrosoftPackage/.test(built)],
+  ['V6.9 Classroom group sync present', /loadGoogleClassroomGroups/.test(built)],
+  ['V6.9 public roster package present', /classroom-seating-planner-roster-import-v1/.test(built)],
   ['V6.8.2 chair cues present', /v682-chair-cue/.test(built)],
   ['V6.8.2 print-safe physical furniture present', /@media print[\s\S]*v682-chair-cue/.test(built)]
 ];
