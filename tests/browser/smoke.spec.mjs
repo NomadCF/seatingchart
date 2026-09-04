@@ -17,10 +17,14 @@ async function completeFreshSecuritySetupIfNeeded(page) {
 }
 
 async function closeAutomaticGettingStartedIfNeeded(page) {
-  const modal = page.locator('#gettingStartedModal.show');
-  if (await modal.count() === 0) return;
+  const modal = page.locator('#gettingStartedModal');
+  try {
+    await expect(modal).toHaveClass(/\bshow\b/, { timeout: 4000 });
+  } catch (_) {
+    return;
+  }
   await page.locator('#gettingStartedCloseBtn').click();
-  await expect(page.locator('#gettingStartedModal')).not.toHaveClass(/\bshow\b/, { timeout: 10000 });
+  await expect(modal).not.toHaveClass(/\bshow\b/, { timeout: 10000 });
 }
 
 test('application boots without uncaught runtime errors', async ({ page }) => {
