@@ -18,7 +18,7 @@ let scriptIndex = 0;
 html = html.replace(/<style([^>]*)>([\s\S]*?)<\/style>/gi, (_m, attrs, body) => {
   styleIndex += 1;
   const name = `style-${String(styleIndex).padStart(3, '0')}.css`;
-  fs.writeFileSync(path.join(stylesDir, name), body.replace(/^\n|\n$/g, ''), 'utf8');
+  fs.writeFileSync(path.join(stylesDir, name), body, 'utf8');
   return `<style${attrs}>/* @source:${name} */</style>`;
 });
 
@@ -26,7 +26,7 @@ html = html.replace(/<script([^>]*)>([\s\S]*?)<\/script>/gi, (m, attrs, body) =>
   if (/\bsrc\s*=/.test(attrs)) return m;
   scriptIndex += 1;
   const name = `script-${String(scriptIndex).padStart(3, '0')}.js`;
-  fs.writeFileSync(path.join(scriptsDir, name), body.replace(/^\n|\n$/g, ''), 'utf8');
+  fs.writeFileSync(path.join(scriptsDir, name), body, 'utf8');
   return `<script${attrs}>/* @source:${name} */</script>`;
 });
 
