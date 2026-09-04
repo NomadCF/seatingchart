@@ -3,7 +3,7 @@
 const APP_CONFIG = Object.freeze({
   name: 'Classroom Seating Planner',
   shortName: 'Seating Planner',
-  version: '6.8.0',
+  version: '6.8.1',
   copyrightHolder: 'Chris L. Franklin',
   copyrightYear: '2026',
   releaseDate: '2026-09-04',
@@ -256,6 +256,7 @@ const APP_LICENSE = {
 };
 
 const PROJECT_FEATURES = [
+  { title: 'Grouped seating visual language', text: 'Freeform tables, pods, seats, presentation views, printed charts, copied chart images, and plan comparisons share a clearer grouped-seating treatment with subtle pod boundaries, deliberate open-seat states, compact status cues, and zoom-aware readability.' },
   { title: 'Classroom Intelligence', text: 'Choose a planning objective, inspect plan health and concrete blockers, preview the smallest useful seating repair before applying it, and favor fairness or stability without hiding the underlying teacher-defined rules.' },
   { title: 'Live seat guidance', text: 'Preview valid, caution, conflicting, and locked seats while selecting or dragging a student, explain each result in plain language, and place the student in the best currently available seat.' },
   { title: 'Conflict resolution and intentional overrides', text: 'Move to a suggested seat, compare alternatives, keep an intentional exception, and retain the override for Review rather than silently discarding the teacher’s decision.' },

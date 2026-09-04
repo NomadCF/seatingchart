@@ -37,7 +37,7 @@ const built = normalize(fs.readFileSync(path.join(root, 'dist', 'Classroom-Seati
 
 const required = [
   ['doctype', /^\s*<!doctype html>/i.test(built)],
-  ['V6.8 app version metadata', /name=["']app-version["']\s+content=["']6\.8\.0["']/i.test(built)],
+  ['V6.8.1 app version metadata', /name=["']app-version["']\s+content=["']6\.8\.1["']/i.test(built)],
   ['manifest link', /rel=["']manifest["']/i.test(built)],
   ['service worker registration', /serviceWorker\.register\(/.test(built)],
   ['analytics consent default remains granted', /analytics_storage\s*:\s*['"]granted['"]/.test(built)],
@@ -46,7 +46,10 @@ const required = [
   ['collaboration presence retained', /presence, changeLedger/.test(built)],
   ['collaboration activity UI present', /driveCollaborationLedger/.test(built)],
   ['V6.8 Classroom Intelligence module present', /ClassroomIntelligenceV68/.test(built)],
-  ['V6.8 smallest-change repair UI present', /previewIntelligenceRepairBtn/.test(built)]
+  ['V6.8 smallest-change repair UI present', /previewIntelligenceRepairBtn/.test(built)],
+  ['V6.8.1 grouped seating visual system present', /GroupedSeatingVisualsV681/.test(built)],
+  ['V6.8.1 grouped pod renderer present', /v681-pod-halo/.test(built)],
+  ['V6.8.1 print-safe grouped seating styles present', /@media print[\s\S]*v681-pod-halo/.test(built)]
 ];
 
 for (const [name, ok] of required) {

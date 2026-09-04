@@ -80,3 +80,72 @@ test('Classroom Intelligence is available through Advanced tools', async ({ page
   await expect(page.locator('[data-intelligence-scenario]')).toHaveCount(6);
   await expect(page.locator('#previewIntelligenceRepairBtn')).toBeVisible();
 });
+
+
+test('V6.8.1 grouped Freeform seating remains coherent across states and zoom', async ({ page }) => {
+  await page.goto('/index.html', { waitUntil: 'domcontentloaded' });
+  await completeFreshSecuritySetupIfNeeded(page);
+  await closeAutomaticGettingStartedIfNeeded(page);
+  await page.evaluate(() => {
+    state.layoutMode = 'freeform';
+    state.students = [
+      { id: 'v681-a', firstName: 'Avery', lastName: 'Stone', archived: false },
+      { id: 'v681-b', firstName: 'Morgan', lastName: 'Reed', archived: false }
+    ];
+    state.groups = [];
+    state.zones = [];
+    state.todaySession = { ...(state.todaySession || {}), active: true, absentStudentIds: ['v681-b'] };
+    state.freeformLayout = {
+      canvas: { width: 1000, height: 700, zoom: 1, frontSide: 'top', snap: true },
+      nextZ: 10,
+      groups: [{ id: 'pod-a', name: 'Blue Pod', color: '#6f8f82', locked: false }],
+      roomHistory: [],
+      objects: [
+        { id: 'table-a', type: 'table', label: 'Table A', x: 320, y: 260, width: 250, height: 145, rotation: 0, zIndex: 1, groupId: 'pod-a', locked: false },
+        { id: 'seat-a', type: 'seat', label: 'A1', x: 330, y: 135, width: 176, height: 112, rotation: 0, zIndex: 2, groupId: 'pod-a', assignedStudentId: 'v681-a', locked: true, manual: false, anchorGroupIds: [], zoneIds: [] },
+        { id: 'seat-b', type: 'seat', label: 'A2', x: 540, y: 275, width: 176, height: 112, rotation: 90, zIndex: 3, groupId: 'pod-a', assignedStudentId: 'v681-b', locked: false, manual: false, anchorGroupIds: [], zoneIds: [] },
+        { id: 'seat-c', type: 'seat', label: 'A3', x: 330, y: 430, width: 176, height: 112, rotation: 0, zIndex: 4, groupId: 'pod-a', assignedStudentId: null, locked: false, manual: false, anchorGroupIds: [], zoneIds: [] }
+      ]
+    };
+    renderFreeformLayout();
+  });
+  await expect(page.locator('#seatGrid')).toHaveAttribute('data-v681-grouped-visuals', '6.8.1');
+  await expect(page.locator('.v681-pod-halo')).toHaveCount(1);
+  await expect(page.locator('.v681-pod-label')).toHaveText('Blue Pod');
+  await expect(page.locator('.freeform-object.table.v681-table-surface')).toHaveCount(1);
+  await expect(page.locator('.freeform-object.seat.v681-seat-tile')).toHaveCount(3);
+  await expect(page.locator('.freeform-object[data-object-id="seat-a"]')).toHaveAttribute('data-v681-status-kind', 'locked');
+  await expect(page.locator('.freeform-object[data-object-id="seat-b"]')).toHaveAttribute('data-v681-status-kind', 'absent');
+  await expect(page.locator('.freeform-object[data-object-id="seat-c"]')).toHaveAttribute('data-v681-status-kind', 'open');
+
+  const baseFont = await page.locator('.freeform-object[data-object-id="seat-a"] .freeform-object-title').evaluate(node => parseFloat(getComputedStyle(node).fontSize));
+  await page.evaluate(() => document.body.style.setProperty('--seat-text-scale', '1.45'));
+  const largerFont = await page.locator('.freeform-object[data-object-id="seat-a"] .freeform-object-title').evaluate(node => parseFloat(getComputedStyle(node).fontSize));
+  expect(largerFont).toBeGreaterThan(baseFont);
+
+  await page.evaluate(() => { state.freeformLayout.canvas.zoom = 0.55; renderFreeformLayout(); });
+  await expect(page.locator('#seatGrid')).toHaveAttribute('data-v681-zoom-band', 'low');
+  await expect(page.locator('.freeform-object[data-object-id="seat-a"] .freeform-object-meta')).toHaveCSS('display', 'none');
+
+  await page.evaluate(() => document.body.classList.add('visibility-mode'));
+  await expect(page.locator('.freeform-object[data-object-id="seat-a"] .freeform-object-meta')).toHaveCSS('display', 'none');
+  await expect(page.locator('.v681-pod-halo')).toBeVisible();
+
+  await page.emulateMedia({ media: 'print' });
+  await expect(page.locator('.v681-pod-halo')).toHaveCSS('border-top-style', 'solid');
+  await expect(page.locator('.freeform-object[data-object-id="seat-c"]')).toHaveCSS('border-top-style', 'dashed');
+  await page.emulateMedia({ media: 'screen' });
+
+  await page.evaluate(() => { state.freeformLayout.canvas.zoom = 1.7; renderFreeformLayout(); });
+  await expect(page.locator('#seatGrid')).toHaveAttribute('data-v681-zoom-band', 'high');
+
+  const exportResult = await page.evaluate(() => {
+    const canvas = window.GroupedSeatingVisualsV681.chartCanvas();
+    const preview = window.GroupedSeatingVisualsV681.planPreviewMarkup({ name: 'Preview', layoutMode: 'freeform', freeformLayout: state.freeformLayout }, [], 'Plan A');
+    return { width: canvas.width, height: canvas.height, hasPod: preview.includes('v681-mini-pod'), hasTable: preview.includes('v681-mini-object table') };
+  });
+  expect(exportResult.width).toBeGreaterThan(0);
+  expect(exportResult.height).toBeGreaterThan(0);
+  expect(exportResult.hasPod).toBeTruthy();
+  expect(exportResult.hasTable).toBeTruthy();
+});

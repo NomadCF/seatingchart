@@ -1,5 +1,18 @@
 # Changelog
 
+## 6.8.1 — 2026-09-04
+
+### Grouped seating visual refinement
+
+- Refined Freeform tables and pods so grouped seating reads as a coherent classroom unit rather than unrelated rectangles.
+- Added subtle pod boundaries and labels using existing Freeform group geometry and group colors, with nearby ungrouped seats visually associated to tables without modifying saved seating data.
+- Refined occupied, open, locked, selected, valid, caution, conflict, and temporary-absence seat states while keeping the student name visually dominant.
+- Added cleaner Presentation/Eye-mode treatment that removes secondary seat detail while retaining table and pod context.
+- Preserved grouped seating in print with grayscale-safe boundaries and deliberate open-seat styling.
+- Updated Copy chart as image to render tables, pod boundaries, seats, labels, rotations, open seats, locks, and rule-state cues from the same Freeform geometry.
+- Updated Freeform plan-comparison previews to preserve table/pod relationships and changed-seat highlighting.
+- Added zoom-aware detail reduction and seat-text-scale compatibility without altering drag/drop, swapping, movement, rotation, locking, rule evaluation, undo/redo, or the saved data schema.
+
 ## 6.8.0 — 2026-09-04
 
 ### Classroom Intelligence

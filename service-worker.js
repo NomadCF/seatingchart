@@ -1,5 +1,5 @@
 /* Classroom Seating Planner hosted PWA service worker. */
-const CACHE_VERSION = 'classroom-seating-planner-v6.8.0-pwa1';
+const CACHE_VERSION = 'classroom-seating-planner-v6.8.1-pwa1';
 const CORE_CACHE = `${CACHE_VERSION}-core`;
 const CORE_ASSETS = [
   './',
