@@ -1,5 +1,16 @@
 ## 6.8.2 - 2026-09-04
 
+## 6.9.0 - 2026-09-04
+
+### Roster interoperability
+- Added one normalized roster reconciliation workflow for CSV/SIS, OneRoster 1.2 CSV, Microsoft Education/SDS CSV, and Google Classroom.
+- Stable source IDs match first, unique email second, while name-only and ambiguous matches require explicit teacher review.
+- Roster refreshes preserve planner-owned notes, requirements, assignments, locks, groups, and other teacher data. Students missing from the same source roster are preserved unless archive is explicitly selected.
+- Added reusable CSV column mappings and compact per-class import history.
+- Added Google Classroom student-group sync as inert source/reference groups; promotion into seating-affecting planner groups is explicit and off by default.
+- Added public normalized interchange schema at schemas/roster-import-v1.schema.json.
+- Data schema remains 13 and encryption envelope remains 3.
+
 ### Physical table and pod seating
 - Refines Freeform table groups so the tabletop is the primary physical object and student seats read as attached positions rather than unrelated floating cards.
 - Adds non-interactive chair cues derived from existing seat/table geometry and rotation without changing the saved seating model.

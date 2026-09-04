@@ -3,7 +3,7 @@
 const APP_CONFIG = Object.freeze({
   name: 'Classroom Seating Planner',
   shortName: 'Seating Planner',
-  version: '6.8.2',
+  version: '6.9.0',
   copyrightHolder: 'Chris L. Franklin',
   copyrightYear: '2026',
   releaseDate: '2026-09-04',
@@ -5862,7 +5862,10 @@ function normalizeGroupRecord(b, index = 0) {
     color: safeColor(b?.color, defaultGroupColor(index)),
     studentIds: Array.isArray(b?.studentIds) ? Array.from(new Set(b.studentIds.map(String))) : [],
     anchorSeats: Array.isArray(b?.anchorSeats) ? Array.from(new Set(b.anchorSeats.map(String))) : [],
-    zoneId: b?.zoneId ? String(b.zoneId) : ''
+    zoneId: b?.zoneId ? String(b.zoneId) : '',
+    sourceSystem: String(b?.sourceSystem || '').slice(0, 80),
+    sourceCourseId: String(b?.sourceCourseId || '').slice(0, 160),
+    sourceGroupId: String(b?.sourceGroupId || '').slice(0, 240)
   };
 }
 
@@ -6052,6 +6055,8 @@ function createClassRecord(name = 'Class 1') {
     todaySession: normalizeTodaySession(null),
     seatingPlans: [],
     importProfiles: [],
+    rosterSourceGroups: [],
+    rosterImportHistory: [],
     requirementPresets: [],
     ruleOverrides: [],
     createdAt: new Date().toISOString(),
@@ -6080,6 +6085,30 @@ function normalizeClassRecord(record, index = 0) {
     todaySession: normalizeTodaySession(cls.todaySession),
     seatingPlans: Array.isArray(cls.seatingPlans) ? cls.seatingPlans.map(normalizeSeatingPlan) : [],
     importProfiles: Array.isArray(cls.importProfiles) ? cls.importProfiles.map(normalizeImportProfile) : [],
+    rosterSourceGroups: Array.isArray(cls.rosterSourceGroups) ? cls.rosterSourceGroups.slice(0, 500).map(item => ({
+      id: String(item?.id || uid('source-group')).slice(0, 240),
+      sourceSystem: String(item?.sourceSystem || '').slice(0, 80),
+      sourceCourseId: String(item?.sourceCourseId || '').slice(0, 160),
+      externalId: String(item?.externalId || '').slice(0, 240),
+      title: String(item?.title || 'Imported group').trim().slice(0, 120),
+      studentIds: Array.from(new Set((Array.isArray(item?.studentIds) ? item.studentIds : []).map(String))),
+      syncedAt: String(item?.syncedAt || '')
+    })) : [],
+    rosterImportHistory: Array.isArray(cls.rosterImportHistory) ? cls.rosterImportHistory.slice(0, 30).map(item => ({
+      id: String(item?.id || uid('roster-import')).slice(0, 240),
+      importedAt: String(item?.importedAt || ''),
+      sourceSystem: String(item?.sourceSystem || '').slice(0, 80),
+      sourceLabel: String(item?.sourceLabel || '').slice(0, 120),
+      sourceCourseId: String(item?.sourceCourseId || '').slice(0, 160),
+      added: Math.max(0, Number(item?.added) || 0),
+      updated: Math.max(0, Number(item?.updated) || 0),
+      unchanged: Math.max(0, Number(item?.unchanged) || 0),
+      reviewSkipped: Math.max(0, Number(item?.reviewSkipped) || 0),
+      duplicates: Math.max(0, Number(item?.duplicates) || 0),
+      archived: Math.max(0, Number(item?.archived) || 0),
+      groupsSynced: Math.max(0, Number(item?.groupsSynced) || 0),
+      groupsPromoted: Math.max(0, Number(item?.groupsPromoted) || 0)
+    })) : [],
     requirementPresets: Array.isArray(cls.requirementPresets) ? cls.requirementPresets.map(normalizeRequirementPreset) : [],
     ruleOverrides: Array.isArray(cls.ruleOverrides) ? cls.ruleOverrides.map(normalizeRuleOverride).filter(item => item.id) : [],
     guidedPractice: Boolean(cls.guidedPractice),

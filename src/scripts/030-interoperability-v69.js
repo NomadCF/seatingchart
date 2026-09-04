@@ -21,7 +21,7 @@ window.InteroperabilityV69 = (() => {
     ? escapeHtml(String(value ?? ''))
     : String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
   const nowIso = () => new Date().toISOString();
-  const activeState = () => window.state || null;
+  const activeState = () => { try { return typeof state !== 'undefined' ? state : (window.state || null); } catch (_) { return window.state || null; } };
 
   function stableSourceSystem(value, fallback = 'csv') {
     const normalized = lower(value).replace(/[^a-z0-9._-]+/g, '-').replace(/^-+|-+$/g, '');
