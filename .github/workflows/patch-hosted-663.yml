@@ -20,7 +20,7 @@ jobs:
           fetch-depth: 0
 
       - name: Patch index.html
-        run: python3 tools/patch-hosted-663.py
+        run: python3 tools/run-patch-hosted-663.py
 
       - name: Validate required hosted markers
         run: |
