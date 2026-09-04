@@ -31,8 +31,8 @@ test('V6.9 roster interoperability is reachable and normalizes matching safely',
   await expect(page.locator('#openInteroperabilityV69MenuBtn')).toBeVisible();
   await page.locator('#openInteroperabilityV69MenuBtn').click();
   await expect(page.locator('#interopV69Modal')).toHaveClass(/\bshow\b/);
-  await expect(page.getByText('OneRoster 1.2 CSV')).toBeVisible();
-  await expect(page.getByText('Microsoft Education')).toBeVisible();
+  await expect(page.getByText('OneRoster 1.2 CSV', { exact: true })).toBeVisible();
+  await expect(page.getByText('Microsoft Education', { exact: true })).toBeVisible();
 
   const result = await page.evaluate(() => {
     state.students = [
