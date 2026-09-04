@@ -6,13 +6,17 @@
   <meta name="license" content="MIT License" />
   <meta name="spdx-license-identifier" content="MIT" />
   <meta name="copyright" content="Copyright (c) 2026 Chris L. Franklin" />
-  <meta name="app-version" content="6.6.2" />
+  <meta name="app-version" content="6.6.3" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com https://www.paypalobjects.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://www.googleapis.com https://classroom.googleapis.com https://accounts.google.com https://www.paypal.com https://www.paypalobjects.com https://www.google-analytics.com https://*.google-analytics.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://www.paypal.com; img-src 'self' data: blob: https://www.paypalobjects.com https://www.google-analytics.com; font-src 'self' data:; worker-src 'self' blob:; manifest-src 'self'; media-src 'none'; object-src 'none'; base-uri 'none'; form-action 'self' https://www.paypal.com" />
   <meta name="application-name" content="Classroom Seating Planner" />
   <meta name="theme-color" content="#1e3a8a" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" href="./app-icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="./app-icon-192.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
   
-  <meta name="build-date" content="2026-09-04T12:39:00Z" />
+  <meta name="build-date" content="2026-09-04T13:23:57Z" />
   <title>Classroom Seating Planner</title>
   <style>@layer app-base, app-priority;@layer app-base{:root{--bg:#f6f7fb;--panel-2:#f0f3f8;--text:#172033;--muted:#607089;--border:#d8deea;--accent:#2f6fed;--accent-dark:#1e55bd;--seat:#e8f0ff;--seat-border:#9db7ef;--teacher:#fff3d6;--table:#e8f7ec;--door:#fce8ee;--empty:#fbfcff;--shadow:0 12px 30px rgba(29, 39, 61, 0.08);--radius:14px;font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif
 }*{box-sizing:border-box
@@ -6720,12 +6724,12 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
 const APP_CONFIG = Object.freeze({
   name: 'Classroom Seating Planner',
   shortName: 'Seating Planner',
-  version: '6.6.2',
+  version: '6.6.3',
   copyrightHolder: 'Chris L. Franklin',
   copyrightYear: '2026',
   releaseDate: '2026-09-04',
   releaseDateDisplay: 'September 4, 2026',
-  buildDate: '2026-09-04T12:39:00Z',
+  buildDate: '2026-09-04T13:23:57Z',
   commit: 'local',
   environment: 'production',
   dataSchemaVersion: 13,
@@ -6735,7 +6739,7 @@ const APP_CONFIG = Object.freeze({
   googleDriveFolderName: 'Classroom Seating Planner Saves',
   googleDriveAppProperty: 'classroom-seating-planner',
   googlePickerApiKey: "",
-  googlePickerAppId: "",
+  googlePickerAppId: '288395515246',
   supportUrl: '',
   repositoryUrl: ''
 });
@@ -6997,10 +7001,23 @@ const PROJECT_FEATURES = [
 
 const RELEASE_HISTORY = [
   {
+    version: '6.6.3',
+    date: 'September 4, 2026',
+    title: 'Hosted PWA completion and Drive Picker deployment readiness',
+    current: true,
+    changes: [
+      'Completed the hosted PWA package with a web app manifest, service worker, install icons, offline application-shell caching, and update-aware service-worker registration.',
+      'Changed deployment diagnostics to report real service-worker registration and page-control state instead of treating browser support alone as a successful PWA deployment.',
+      'Configured the Google Picker App ID from the existing Google Cloud project number and added precise diagnostics for the remaining browser API key requirement.',
+      'Improved Google Picker unavailable messaging so shared-Drive access problems identify the missing deployment credential instead of silently falling back.',
+      'Kept Google Analytics enabled by default while preserving the existing user opt-out control.'
+    ]
+  },
+  {
     version: '6.6.2',
     date: 'September 4, 2026',
     title: 'Full code review, workflow repairs, and dead-style cleanup',
-    current: true,
+    current: false,
     changes: [
       'Fixed bulk requirement editing so preferred and excluded zone selections use a shared in-scope helper instead of throwing a ReferenceError.',
       'Repaired guided Google Drive access, startup error logging, and the Ctrl+Alt+S Save Now shortcut so each path targets the active production module or save workflow.',
@@ -17289,10 +17306,19 @@ function googleDriveConfigured() {
   return !!googleDriveConfig().clientId;
 }
 
-function googlePickerConfigured() {
+function googlePickerConfigurationStatus() {
   const cfg = googleDriveConfig();
   const hostedOrigin = location.protocol === 'https:' || (location.protocol === 'http:' && ['localhost','127.0.0.1'].includes(location.hostname));
-  return !!(hostedOrigin && cfg.clientId && cfg.pickerApiKey && cfg.pickerAppId);
+  const missing = [];
+  if (!hostedOrigin) missing.push('HTTPS hosted origin');
+  if (!cfg.clientId) missing.push('OAuth client ID');
+  if (!cfg.pickerApiKey) missing.push('Browser API key');
+  if (!cfg.pickerAppId) missing.push('Cloud project number');
+  return { ready: missing.length === 0, missing, hostedOrigin };
+}
+
+function googlePickerConfigured() {
+  return googlePickerConfigurationStatus().ready;
 }
 
 function googleDriveStorageConnected() {
@@ -26590,6 +26616,18 @@ The schema-compatible payload parsed successfully${encrypted ? ' and decrypted w
   async function renderDeploymentDiagnostics() {
     const diagnostics = await BrowserDataStore.diagnostics();
     const secure = window.isSecureContext; const protocol=location.protocol; const embedded=appIsEmbeddedFrame(); const linked=linkedSaveApiSupported(); const driveConfigured=googleDriveConfigured();
+    const pickerStatus = googlePickerConfigurationStatus();
+    const pwaStatus = window.__plannerPwaStatus || {};
+    const pwaSupported = 'serviceWorker' in navigator;
+    const pwaValue = !pwaSupported
+      ? 'Unsupported by this browser'
+      : protocol !== 'https:'
+        ? 'Requires HTTPS hosted package'
+        : pwaStatus.error
+          ? `Registration failed: ${pwaStatus.error}`
+          : pwaStatus.registered
+            ? (pwaStatus.controlling ? 'Registered, offline cache ready, and controlling this page' : 'Registered; control activates after navigation/reload')
+            : 'Registration pending';
     const rows=[
       ['Page origin',`${protocol}//${location.host||'(local file)'}`,protocol==='https:'||protocol==='file:'?'good':'warn'],
       ['Secure context',secure?'Available':'Unavailable',secure?'good':'bad'],
@@ -26598,8 +26636,9 @@ The schema-compatible payload parsed successfully${encrypted ? ' and decrypted w
       ['Persistent storage',diagnostics.persisted===true?'Granted':diagnostics.persisted===false?'Not granted':'Unsupported',diagnostics.persisted===true?'good':'warn'],
       ['Linked file API',linked?'Supported':'Unavailable in this browser/origin',linked?'good':'warn'],
       ['Google Drive OAuth',driveConfigured?(secure&&!embedded?'Configured and origin may authorize':'Configured, but current environment may block OAuth'):'Client ID not configured',driveConfigured&&secure&&!embedded?'good':'warn'],
+      ['Google Drive Picker',pickerStatus.ready?'Configured for shared-file selection':`Missing ${pickerStatus.missing.join(', ')}`,pickerStatus.ready?'good':'warn'],
       ['Embedded frame',embedded?'Yes; file pickers/OAuth may be restricted':'No','good'],
-      ['PWA/service worker',('serviceWorker' in navigator)&&protocol==='https:'?'Supported':'Requires HTTPS hosted package',('serviceWorker' in navigator)&&protocol==='https:'?'good':'warn'],
+      ['PWA/service worker',pwaValue,pwaStatus.registered&&pwaStatus.controlling?'good':'warn'],
       ['Data schema',String(DATA_SCHEMA_VERSION),'good'],['Encryption envelope',String(ENCRYPTION_ENVELOPE_VERSION),'good']
     ];
     if (el('deploymentDiagnosticsGrid')) el('deploymentDiagnosticsGrid').innerHTML = rows.map(([name,value,status])=>`<div class="workflow-card"><div class="diagnostic-row"><strong>${escapeHtml(name)}</strong><span class="diagnostic-status ${status}">${escapeHtml(value)}</span></div></div>`).join('');
@@ -31500,7 +31539,8 @@ const DistrictIntegrationsV57 = (() => {
   async function openGooglePicker(options = {}) {
     const cfg = googleDriveConfig();
     if (!googlePickerConfigured()) {
-      if (!options.silent) setLiveStatusMessage('Google Picker is not enabled for this deployment. Use the planner Drive save list instead.');
+      const pickerStatus = googlePickerConfigurationStatus();
+      if (!options.silent) setLiveStatusMessage(`Google Picker is not ready for this deployment. Missing: ${pickerStatus.missing.join(', ')}. Use the planner Drive save list until deployment configuration is complete.`);
       return false;
     }
     try {
@@ -34362,11 +34402,28 @@ const SharedDriveCollaborationV64 = (() => {
 })();
 
 async function registerHostedServiceWorker() {
-  if (!('serviceWorker' in navigator)) return false;
-  if (!/^https?:$/.test(location.protocol) || location.hostname === 'example.test') return false;
+  const status = window.__plannerPwaStatus = {
+    supported: 'serviceWorker' in navigator,
+    eligibleOrigin: /^https?:$/.test(location.protocol) && location.hostname !== 'example.test',
+    registered: false,
+    controlling: Boolean(navigator.serviceWorker?.controller),
+    error: ''
+  };
+  const announceStatus = () => window.dispatchEvent(new CustomEvent('planner-pwa-status-changed', { detail: { ...status } }));
+  if (!status.supported || !status.eligibleOrigin) {
+    announceStatus();
+    return false;
+  }
   try {
     const registration = await navigator.serviceWorker.register('./service-worker.js', { scope: './', updateViaCache: 'none' });
     window.__plannerServiceWorkerRegistration = registration;
+    status.registered = true;
+    status.controlling = Boolean(navigator.serviceWorker.controller);
+    announceStatus();
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      status.controlling = Boolean(navigator.serviceWorker.controller);
+      announceStatus();
+    });
     const announceWaitingUpdate = () => {
       if (registration.waiting && navigator.serviceWorker.controller) {
         window.dispatchEvent(new CustomEvent('planner-update-available', { detail: { registration } }));
@@ -34382,6 +34439,8 @@ async function registerHostedServiceWorker() {
     });
     return true;
   } catch (error) {
+    status.error = String(error?.message || error || 'Unknown service-worker registration error');
+    announceStatus();
     recordStorageFailure('service-worker-register', 'service-worker.js', error);
     return false;
   }
