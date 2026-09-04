@@ -1,0 +1,15 @@
+{
+  "name": "classroom-seating-planner",
+  "version": "6.7.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "split": "node tools/split-monolith.mjs",
+    "build": "node tools/build-single-file.mjs",
+    "check": "node tools/validate-release.mjs",
+    "test": "npm run check"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
