@@ -153,3 +153,29 @@ test('V6.8.1 grouped Freeform seating remains coherent across states and zoom', 
   expect(exportResult.hasPod).toBeTruthy();
   expect(exportResult.hasTable).toBeTruthy();
 });
+
+
+test('V6.8.2 physical table pods keep furniture and seats interactive', async ({ page }) => {
+  await page.goto('/index.html', { waitUntil: 'domcontentloaded' });
+  await completeFreshSecuritySetupIfNeeded(page);
+  await closeAutomaticGettingStartedIfNeeded(page);
+  await page.evaluate(() => {
+    state.layoutMode = 'freeform';
+    state.freeformLayout = { canvas:{ width:900, height:650, zoom:1 }, groups:[{ id:'pod-a', name:'Table A', color:'#7aa68f' }], objects:[
+      { id:'table-a', type:'table', x:300, y:220, width:240, height:150, rotation:0, groupId:'pod-a', label:'Table A' },
+      { id:'seat-a', type:'seat', x:325, y:155, width:88, height:58, rotation:0, groupId:'pod-a', assignedStudentId:null },
+      { id:'seat-b', type:'seat', x:430, y:155, width:88, height:58, rotation:0, groupId:'pod-a', assignedStudentId:null },
+      { id:'seat-c', type:'seat', x:325, y:380, width:88, height:58, rotation:0, groupId:'pod-a', assignedStudentId:null },
+      { id:'seat-d', type:'seat', x:430, y:380, width:88, height:58, rotation:0, groupId:'pod-a', assignedStudentId:null }
+    ]};
+    renderAll();
+  });
+  await expect(page.locator('#seatGrid')).toHaveAttribute('data-v682-physical-tables', '6.8.2');
+  await expect(page.locator('.freeform-object.table.v682-physical-table')).toHaveCount(1);
+  await expect(page.locator('.freeform-object.seat.v682-physical-seat')).toHaveCount(4);
+  await expect(page.locator('.v682-chair-cue')).toHaveCount(4);
+  await expect(page.locator('.v682-chair-cue').first()).toHaveCSS('pointer-events', 'none');
+  await expect(page.locator('.v681-pod-halo.v682-table-association')).toHaveCSS('border-top-color', 'rgba(0, 0, 0, 0)');
+  await page.emulateMedia({ media:'print' });
+  await expect(page.locator('.v682-chair-cue').first()).toHaveCSS('opacity', '1');
+});

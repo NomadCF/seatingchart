@@ -1,3 +1,13 @@
+## 6.8.2 - 2026-09-04
+
+### Physical table and pod seating
+- Refines Freeform table groups so the tabletop is the primary physical object and student seats read as attached positions rather than unrelated floating cards.
+- Adds non-interactive chair cues derived from existing seat/table geometry and rotation without changing the saved seating model.
+- Keeps the clean V6.8.1 student-card language for occupied, Open, locked, selected, valid, caution, conflict, and absence states.
+- Rectangular and round tables receive distinct physical furniture treatment; logical groups without tables retain the softer grouped boundary.
+- Presentation mode, print, mobile, zoom, and seat text scaling preserve the same table/seat relationships.
+- Chair cues never intercept pointer input, preserving drag/drop, swapping, selection, table movement, rotation, locking, rules, undo/redo, and valid-seat previews.
+
 # Changelog
 
 ## 6.8.1 — 2026-09-04
