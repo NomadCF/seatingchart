@@ -1,0 +1,33 @@
+name: Split V6.7 application source modules
+
+on:
+  push:
+    branches: [feat/v6.7-production-hardening]
+    paths:
+      - .github/workflows/semantic-source-split.yml
+
+permissions:
+  contents: write
+
+jobs:
+  split:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/v6.7-production-hardening
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Split application script at guarded top-level module boundaries
+        run: node tools/split-main-script.mjs
+      - name: Verify rebuilt single-file application
+        run: node tools/validate-release.mjs
+      - name: Commit semantic source modules
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add src/
+          git commit -m "Split V6.7 application into stable source modules"
+          git push origin HEAD:feat/v6.7-production-hardening
