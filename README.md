@@ -3,13 +3,13 @@
 
 # Classroom Seating Planner
 
-**Build better seating charts around the students, rules, and room you actually have.**
+**Build better seating charts around the students, rules, room, and lesson you actually have.**
 
-A free, open-source, privacy-conscious seating planner for educators. Design the room, add student needs and seating rules, build or generate plans, review conflicts, and share only what each audience should see.
+A free, open-source, privacy-conscious seating planner for educators. Design the room, add student needs and seating rules, choose a classroom objective, build or generate plans, review conflicts, and share only what each audience should see.
 
 [**Launch the hosted app**](https://nomadcf.github.io/seatingchart/) · [Privacy](PRIVACY.md) · [Security](SECURITY.md) · [Data handling](DATA-HANDLING.md) · [Changelog](CHANGELOG.md)
 
-![Version](https://img.shields.io/badge/version-6.7.0-2563eb?style=flat-square)
+![Version](https://img.shields.io/badge/version-6.8.0-2563eb?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-0f766e?style=flat-square)
 ![PWA](https://img.shields.io/badge/PWA-installable-7c3aed?style=flat-square)
 ![Local-first](https://img.shields.io/badge/data-local--first-0f766e?style=flat-square)
@@ -24,15 +24,15 @@ A classroom rarely fits into a perfect grid, and students rarely come with no co
 
 Classroom Seating Planner is built for the messy version of the problem: students who need the front, students who should be separated, groups that should stay together or spread out, accessible seating, room zones, fixed objects, temporary absences, substitute-friendly charts, and plans that should not repeat the same placements forever.
 
-The app combines **room design**, **student rules**, **manual placement**, **automatic plan generation**, **conflict review**, **history and fairness analysis**, and **privacy-controlled sharing** in one workflow.
+The app combines **room design**, **student rules**, **manual placement**, **automatic plan generation**, **Classroom Intelligence**, **conflict review**, **history and fairness analysis**, and **privacy-controlled sharing** in one workflow.
 
 ### What makes it different
 
 | Design the real room | Seat with intent | Share with control |
 | --- | --- | --- |
 | Grid or Freeform layouts | Together, avoid, spread, anchor, front/back, zone, accessibility, and distance rules | Teacher, substitute, student-facing, support-team, anonymous, and room-only views |
-| Tables, doors, walls, boards, projectors, walkways, ADA spaces, custom objects, and more | Manual placement plus automatic plan generation | Select exactly which names, fields, groups, zones, and note categories are included |
-| Rotate, resize, align, group, lock, layer, and audit objects | Live valid-seat guidance, preflight checks, rule review, and conflict-resolution tools | Encrypted saves, local backups, Google Drive storage, printable output, CSV, image, PDF/SVG-oriented export paths |
+| Tables, doors, walls, boards, projectors, walkways, ADA spaces, custom objects, and more | Manual placement, automatic plan generation, and scenario-based Classroom Intelligence | Select exactly which names, fields, groups, zones, and note categories are included |
+| Rotate, resize, align, group, lock, layer, and audit objects | Live valid-seat guidance, plan-health checks, smallest-change repair previews, and conflict-resolution tools | Encrypted saves, local backups, Google Drive storage, printable output, CSV, image, PDF/SVG-oriented export paths |
 
 ---
 
@@ -60,7 +60,7 @@ Core local use does not require a subscription or a continuously running applica
 
 1. **Class Setup** - Create classes, import or enter students, organize groups, add notes, and define seating requirements.
 2. **Room Design** - Build a Standard Grid or detailed Freeform representation of the classroom.
-3. **Seat Students** - Place students manually, ask the planner to generate candidates, inspect valid seats, and resolve conflicts.
+3. **Seat Students** - Place students manually, ask the planner to generate candidates, inspect valid seats, use Classroom Intelligence, and resolve conflicts.
 4. **Review** - Check unassigned students, rule violations, accessibility, group outcomes, layout problems, history, and fairness.
 5. **Save & Share** - Save securely, create backups, print audience-specific charts, export data, or create purpose-limited read-only packages.
 
@@ -86,6 +86,21 @@ Define requirements such as:
 
 The planner can surface valid seats for an individual student, generate multiple seating candidates, explain why plans differ, and identify requirements that make a plan impossible or problematic.
 
+### Classroom Intelligence without a black box
+
+V6.8 adds a planning layer that works with the explicit rules teachers already configured instead of silently inventing new ones.
+
+Choose the objective that matches the lesson:
+
+- **Balanced Classroom** - balance requirements, preferences, stability, and rotation
+- **Minimal Movement** - repair problems while moving as few students as possible
+- **Fair Rotation** - favor fresh placements for students who have repeatedly occupied the same locations
+- **Accessibility First** - prioritize required student needs before softer preferences
+- **Quiet Testing** - emphasize separation, stability, and the smallest safe repair
+- **Collaborative Lesson** - favor configured together/group relationships while preserving required constraints
+
+Classroom Intelligence shows a plan-health summary, calls out concrete capacity or rule blockers, and can preview the smallest useful repair. The preview lists exactly which students would move and where they would move before anything is applied. Teachers remain in control, normal undo/autosave protections still apply, and the engine does not use an external AI service, hidden behavioral scores, or automatic rule rewriting.
+
 ### Room design beyond rows and columns
 
 Use **Standard Grid** for fast traditional charts or **Freeform** for rooms that contain pods, irregular tables, furniture, walking paths, teaching stations, ADA spaces, and other real-world geometry.
@@ -101,6 +116,7 @@ Freeform tools include object movement, resize, clockwise/counter-clockwise rota
 - Track seating history and repeated placements
 - Review movement and fairness over time
 - Use Today Mode for absences, temporary guests, and short-term classroom changes
+- Use Classroom Intelligence to recheck or repair a changed day while preserving as much of the existing chart as practical
 
 ---
 
@@ -118,6 +134,7 @@ Classroom Seating Planner is designed so classroom information can remain local 
 | **Printing** | Choose the fields, groups, zones, and note categories appropriate for the audience |
 | **Support** | Sanitized diagnostic bundles are designed to omit student records, notes, passwords, encryption keys, OAuth tokens, and raw planner payloads |
 | **Presentation** | Eye/Presentation Mode provides a view-focused workspace that reduces accidental editing or exposure of workflow controls |
+| **Classroom Intelligence** | Runs locally against teacher-defined rules; proposed repairs are shown before application and do not require an external AI service |
 
 Read the public [Privacy](PRIVACY.md), [Security](SECURITY.md), and [Data Handling](DATA-HANDLING.md) documents before using the application with sensitive classroom information.
 
@@ -147,6 +164,10 @@ Read the public [Privacy](PRIVACY.md), [Security](SECURITY.md), and [Data Handli
 - Live seat-validity guidance and valid-seat discovery
 - Automatic multi-candidate seating-plan generation
 - Explainable candidate differences and requirement outcomes
+- Six Classroom Intelligence planning objectives for balanced, stable, rotational, accessibility-first, testing, and collaborative use
+- Plan-health summaries for required conflicts, preference warnings, active unseated students, and seat capacity
+- Concrete impossible-plan explanations for shortages, blocking rules, and students with no currently usable seat
+- Smallest-change repair previews that show exact student moves before teacher approval
 - Conflict-resolution actions and preflight conflict inspection
 - Named and scheduled seating plans
 - Seating history, movement, and fairness analysis
@@ -228,7 +249,7 @@ The portable deliverable remains a single self-contained HTML application, but t
 
 - HTML shell: `src/index.template.html`
 - Styles: `src/styles/`
-- Ordered JavaScript modules: `src/scripts/`
+- Ordered JavaScript modules: `src/scripts/` (28 modules in V6.8)
 - Built portable file: `dist/Classroom-Seating-Planner.html`
 - Deployed hosted entry point: `index.html`
 

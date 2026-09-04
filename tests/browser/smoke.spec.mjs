@@ -6,6 +6,27 @@ async function collectPageErrors(page) {
   return errors;
 }
 
+async function completeFreshSecuritySetupIfNeeded(page) {
+  const modal = page.locator('#welcomeSecurityModal.show');
+  if (await modal.count() === 0) return;
+  const passphrase = 'browser regression secure classroom passphrase 2026';
+  await page.locator('#welcomeEncryptionKeyInput').fill(passphrase);
+  await page.locator('#welcomeEncryptionKeyConfirmInput').fill(passphrase);
+  await page.locator('#welcomeSecurityStartBtn').click();
+  await expect(page.locator('#welcomeSecurityModal')).not.toHaveClass(/\bshow\b/, { timeout: 15000 });
+}
+
+async function closeAutomaticGettingStartedIfNeeded(page) {
+  const modal = page.locator('#gettingStartedModal');
+  try {
+    await expect(modal).toHaveClass(/\bshow\b/, { timeout: 4000 });
+  } catch (_) {
+    return;
+  }
+  await page.locator('#gettingStartedCloseBtn').click();
+  await expect(modal).not.toHaveClass(/\bshow\b/, { timeout: 10000 });
+}
+
 test('application boots without uncaught runtime errors', async ({ page }) => {
   const errors = await collectPageErrors(page);
   const response = await page.goto('/index.html', { waitUntil: 'domcontentloaded' });
@@ -41,4 +62,21 @@ test('core controls remain addressable for keyboard and automation', async ({ pa
     await expect(page.locator(selector), selector).toHaveCount(1);
   }
   await expect(page.locator('[aria-live]').first()).toHaveCount(1);
+});
+
+test('Classroom Intelligence is available through Advanced tools', async ({ page }) => {
+  await page.goto('/index.html', { waitUntil: 'domcontentloaded' });
+  await completeFreshSecuritySetupIfNeeded(page);
+  await closeAutomaticGettingStartedIfNeeded(page);
+  await expect(page.locator('#v4MoreMenuBtn')).toBeVisible();
+  await page.locator('#v4MoreMenuBtn').click();
+  await expect(page.locator('#openPlanningToolsBtn')).toBeVisible();
+  await page.locator('#openPlanningToolsBtn').click();
+  await expect(page.locator('#planningToolsModal')).toHaveClass(/\bshow\b/);
+  const intelligenceTab = page.locator('[data-intelligence-tab]');
+  await expect(intelligenceTab).toBeVisible();
+  await intelligenceTab.click();
+  await expect(page.getByText('Plan for what you are doing today')).toBeVisible();
+  await expect(page.locator('[data-intelligence-scenario]')).toHaveCount(6);
+  await expect(page.locator('#previewIntelligenceRepairBtn')).toBeVisible();
 });

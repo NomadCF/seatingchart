@@ -37,14 +37,16 @@ const built = normalize(fs.readFileSync(path.join(root, 'dist', 'Classroom-Seati
 
 const required = [
   ['doctype', /^\s*<!doctype html>/i.test(built)],
-  ['V6.7 app version metadata', /name=["']app-version["']\s+content=["']6\.7\.0["']/i.test(built)],
+  ['V6.8 app version metadata', /name=["']app-version["']\s+content=["']6\.8\.0["']/i.test(built)],
   ['manifest link', /rel=["']manifest["']/i.test(built)],
   ['service worker registration', /serviceWorker\.register\(/.test(built)],
   ['analytics consent default remains granted', /analytics_storage\s*:\s*['"]granted['"]/.test(built)],
   ['Google Drive OAuth client configured', /googleDriveClientId\s*:\s*['"][^'"]+['"]/.test(built)],
   ['Google Picker project number configured', /googlePickerAppId\s*:\s*['"][^'"]+['"]/.test(built)],
   ['collaboration presence retained', /presence, changeLedger/.test(built)],
-  ['collaboration activity UI present', /driveCollaborationLedger/.test(built)]
+  ['collaboration activity UI present', /driveCollaborationLedger/.test(built)],
+  ['V6.8 Classroom Intelligence module present', /ClassroomIntelligenceV68/.test(built)],
+  ['V6.8 smallest-change repair UI present', /previewIntelligenceRepairBtn/.test(built)]
 ];
 
 for (const [name, ok] of required) {

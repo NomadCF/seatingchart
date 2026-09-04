@@ -67,8 +67,8 @@ window.ClassroomIntelligenceV68 = (() => {
   const warningFindings = findings => safeArray(findings).filter(item => item?.severity !== 'bad');
 
   function activeStudents() {
-    const absent = new Set(safeArray(state?.todaySession?.absentStudentIds).map(String));
-    return safeArray(state?.students).filter(student => !absent.has(String(student.id)));
+    if (typeof seatingStudents === 'function') return safeArray(seatingStudents());
+    return safeArray(state?.students).filter(student => !student?.archived);
   }
 
   function assignmentMap() {
