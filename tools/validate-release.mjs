@@ -21,9 +21,15 @@ for (let i = 1; i <= Number(manifest.styleFiles || 0); i += 1) {
   const file = `src/styles/style-${String(i).padStart(3, '0')}.css`;
   if (!fs.existsSync(path.join(root, file))) throw new Error(`Missing modular style source: ${file}`);
 }
-for (let i = 1; i <= Number(manifest.scriptFiles || 0); i += 1) {
-  const file = `src/scripts/script-${String(i).padStart(3, '0')}.js`;
-  if (!fs.existsSync(path.join(root, file))) throw new Error(`Missing modular script source: ${file}`);
+
+const scriptFiles = Array.isArray(manifest.scriptFiles)
+  ? manifest.scriptFiles
+  : Array.from({ length: Number(manifest.scriptFiles || 0) }, (_, index) => `script-${String(index + 1).padStart(3, '0')}.js`);
+if (!scriptFiles.length) throw new Error('No modular JavaScript source files are declared.');
+for (const file of scriptFiles) {
+  const fullPath = path.join(root, 'src', 'scripts', file);
+  if (!fs.existsSync(fullPath)) throw new Error(`Missing modular script source: src/scripts/${file}`);
+  execFileSync(process.execPath, ['--check', fullPath], { cwd: root, stdio: 'inherit' });
 }
 
 execFileSync(process.execPath, ['tools/build-single-file.mjs'], { cwd: root, stdio: 'inherit' });
@@ -51,4 +57,4 @@ if (deployed !== built) {
   throw new Error(`Committed modular source does not rebuild index.html: index=${a} built=${b}`);
 }
 
-console.log('Release validation passed. Committed modular source rebuilds index.html exactly after newline normalization.');
+console.log(`Release validation passed. ${scriptFiles.length} JavaScript source module(s) rebuild index.html exactly after newline normalization.`);
