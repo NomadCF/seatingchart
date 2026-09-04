@@ -1,0 +1,39 @@
+name: Patch hosted 6.6.3 feature branch
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/patch-feature-663.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch-feature-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out hosted fix branch
+        uses: actions/checkout@v4
+        with:
+          ref: fix/hosted-pwa-drive-picker
+          fetch-depth: 0
+
+      - name: Patch index.html
+        run: python3 tools/patch-hosted-663.py
+
+      - name: Validate required hosted markers
+        run: |
+          grep -q 'app-version" content="6.6.3"' index.html
+          grep -q 'rel="manifest" href="./manifest.webmanifest"' index.html
+          grep -q "googlePickerAppId: '288395515246'" index.html
+          grep -q "analytics_storage: 'granted'" index.html
+
+      - name: Commit patched hosted app
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Complete hosted PWA and Picker readiness [hosted-663-patched]"
+          git push origin HEAD:fix/hosted-pwa-drive-picker
