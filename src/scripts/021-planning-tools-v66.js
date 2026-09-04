@@ -731,13 +731,33 @@ window.PlanningToolsV66 = (() => {
       button = document.createElement('button');
       button.id = 'openPlanningToolsBtn';
       button.type = 'button';
-      button.className = 'secondary';
-      button.textContent = 'Advanced tools';
-      button.title = 'Open live seat guidance, fairness analysis, schedules, bulk needs, template libraries, and roster-quality tools.';
-      const moreMenu = el('v4MoreMenu');
-      if (moreMenu) moreMenu.appendChild(button);
-      else document.querySelector('.center-panel > .panel-header .button-row')?.appendChild(button);
     }
+    button.className = 'secondary';
+    button.title = 'Open live seat guidance, Classroom Intelligence, fairness analysis, schedules, bulk needs, template libraries, and roster-quality tools.';
+
+    const moreMenu = el('v4MoreMenu');
+    if (moreMenu?.classList.contains('ui51-action-menu')) {
+      let group = el('planningToolsMenuGroup');
+      if (!group) {
+        group = document.createElement('section');
+        group.id = 'planningToolsMenuGroup';
+        group.className = 'ui51-menu-group';
+        group.innerHTML = '<div class="ui51-menu-group-heading"><strong>Planning</strong><span>Seat guidance, Classroom Intelligence, fairness, schedules, and bulk planning.</span></div><div class="ui51-menu-list"></div>';
+        const applicationGroup = moreMenu.querySelector('.ui51-menu-group:last-of-type');
+        if (applicationGroup) moreMenu.insertBefore(group, applicationGroup);
+        else moreMenu.appendChild(group);
+      }
+      button.className = 'secondary ui51-menu-item';
+      button.setAttribute('role', 'menuitem');
+      button.setAttribute('aria-label', 'Advanced planning tools');
+      button.innerHTML = '<span class="ui51-menu-item-icon" aria-hidden="true">&#9881;</span><span class="ui51-menu-item-copy"><strong>Advanced planning tools</strong><small>Classroom Intelligence, live seat guidance, fairness, schedules, bulk needs, and templates.</small></span><span class="ui51-menu-item-arrow" aria-hidden="true">&#8250;</span>';
+      group.querySelector('.ui51-menu-list')?.appendChild(button);
+      return;
+    }
+
+    button.textContent = 'Advanced tools';
+    if (moreMenu) moreMenu.appendChild(button);
+    else document.querySelector('.center-panel > .panel-header .button-row')?.appendChild(button);
   }
 
   function install() {

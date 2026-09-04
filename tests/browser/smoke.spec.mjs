@@ -16,6 +16,13 @@ async function completeFreshSecuritySetupIfNeeded(page) {
   await expect(page.locator('#welcomeSecurityModal')).not.toHaveClass(/\bshow\b/, { timeout: 15000 });
 }
 
+async function closeAutomaticGettingStartedIfNeeded(page) {
+  const modal = page.locator('#gettingStartedModal.show');
+  if (await modal.count() === 0) return;
+  await page.locator('#gettingStartedCloseBtn').click();
+  await expect(page.locator('#gettingStartedModal')).not.toHaveClass(/\bshow\b/, { timeout: 10000 });
+}
+
 test('application boots without uncaught runtime errors', async ({ page }) => {
   const errors = await collectPageErrors(page);
   const response = await page.goto('/index.html', { waitUntil: 'domcontentloaded' });
@@ -56,6 +63,7 @@ test('core controls remain addressable for keyboard and automation', async ({ pa
 test('Classroom Intelligence is available through Advanced tools', async ({ page }) => {
   await page.goto('/index.html', { waitUntil: 'domcontentloaded' });
   await completeFreshSecuritySetupIfNeeded(page);
+  await closeAutomaticGettingStartedIfNeeded(page);
   await expect(page.locator('#v4MoreMenuBtn')).toBeVisible();
   await page.locator('#v4MoreMenuBtn').click();
   await expect(page.locator('#openPlanningToolsBtn')).toBeVisible();
