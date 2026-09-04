@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nomadcf.github.io/seatingchart/schemas/envelope-v3.schema.json",
+  "title": "Classroom Seating Planner encrypted envelope v3",
+  "description": "Public contract for classroom-seating-planner-encrypted-envelope-v6 files using encryption envelope 3.",
+  "type": "object",
+  "required": [
+    "format", "app", "version", "dataSchemaVersion", "minimumReaderSchemaVersion",
+    "encryptionEnvelopeVersion", "exportedAt", "encrypted", "exportScope", "payloadKind", "encryption"
+  ],
+  "properties": {
+    "format": { "const": "classroom-seating-planner-encrypted-envelope-v6" },
+    "app": { "const": "Classroom Seating Planner" },
+    "version": { "type": "string", "minLength": 1 },
+    "dataSchemaVersion": { "type": "integer", "const": 13 },
+    "minimumReaderSchemaVersion": { "type": "integer", "minimum": 1, "maximum": 13 },
+    "encryptionEnvelopeVersion": { "type": "integer", "const": 3 },
+    "exportedAt": { "type": "string", "minLength": 1 },
+    "encrypted": { "const": true },
+    "exportScope": { "type": "string", "minLength": 1 },
+    "payloadKind": { "type": "string", "minLength": 1 },
+    "license": { "type": "object", "additionalProperties": true },
+    "encryption": {
+      "type": "object",
+      "required": ["algorithm", "kdf", "iterations", "salt", "iv", "ciphertext"],
+      "properties": {
+        "algorithm": { "const": "AES-GCM" },
+        "kdf": { "const": "PBKDF2-SHA-256" },
+        "iterations": { "type": "integer", "minimum": 150000, "maximum": 2000000 },
+        "salt": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "iv": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "ciphertext": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": true
+}

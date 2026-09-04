@@ -1,0 +1,33 @@
+{
+  "styleFiles": 1,
+  "scriptFiles": [
+    "000-core.js",
+    "001-crc-table.js",
+    "002-workflow-expansion.js",
+    "003-browser-data-store.js",
+    "004-cross-tab-coordinator.js",
+    "005-dialog-manager.js",
+    "006-modernization-suite.js",
+    "007-product-experience.js",
+    "008-workspace-layout-v41.js",
+    "009-product-polish-v42.js",
+    "010-product-repair-v43.js",
+    "011-user-workflow-v44.js",
+    "012-startup-recovery-v45.js",
+    "013-production-readiness-v50.js",
+    "014-interface-system-v51.js",
+    "015-classroom-workflow-v53.js",
+    "016-class-setup-workspace-v54.js",
+    "017-district-integrations-v57.js",
+    "018-workflow-recovery-v62.js",
+    "019-shared-drive-collaboration-v64.js",
+    "020-seat-guidance-v66.js",
+    "021-planning-tools-v66.js",
+    "022-export-support-v66.js",
+    "023-drive-polling-v66.js",
+    "024-localization-shortcuts-v66.js",
+    "025-classroom-feature-pack-v66.js",
+    "026-guided-learning.js"
+  ],
+  "applicationBundle": "application"
+}

@@ -1,0 +1,1868 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="license" content="MIT License" />
+  <meta name="spdx-license-identifier" content="MIT" />
+  <meta name="copyright" content="Copyright (c) 2026 Chris L. Franklin" />
+  <meta name="app-version" content="6.7.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com https://www.paypalobjects.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://www.googleapis.com https://classroom.googleapis.com https://accounts.google.com https://www.paypal.com https://www.paypalobjects.com https://www.google-analytics.com https://*.google-analytics.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://www.paypal.com; img-src 'self' data: blob: https://www.paypalobjects.com https://www.google-analytics.com; font-src 'self' data:; worker-src 'self' blob:; manifest-src 'self'; media-src 'none'; object-src 'none'; base-uri 'none'; form-action 'self' https://www.paypal.com" />
+  <meta name="application-name" content="Classroom Seating Planner" />
+  <meta name="theme-color" content="#1e3a8a" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" href="./app-icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="./app-icon-192.png" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  
+  <meta name="build-date" content="2026-09-04T13:23:57Z" />
+  <title>Classroom Seating Planner</title>
+  <style>/* @source:style-001.css */</style>
+</head>
+<body class="left-collapsed">
+  <a class="skip-link" href="#mainWorkspace">Skip to planner workspace</a>
+  <header>
+    <div class="header-title">
+      <div class="header-title-line">
+        <h1>Classroom Seating Planner</h1>
+        <button id="inlineSaveStatus" class="save-inline-status" type="button" aria-live="polite" title="Open Save & Backup Options">Browser autosave</button>
+      </div>
+      <p>Create multiple classes, each with its own students, groups, room layout, seats, anchors, locks, placements, and best-effort generated seating chart.</p>
+    </div>
+    <div class="class-manager no-print" role="group" aria-label="Class manager">
+      <label for="classSelect">Class</label>
+      <select id="classSelect" title="Choose which class to work on. Each class has its own students, groups, layout, seats, locks, and placements."></select>
+      <button type="button" id="newClassBtn" class="secondary tiny" title="Create a new empty class with its own students, groups, grid, seats, and placements.">New</button>
+      <button type="button" id="renameClassBtn" class="secondary tiny" title="Rename the currently selected class.">Rename</button>
+      <button type="button" id="duplicateClassBtn" class="secondary tiny" title="Copy the current class, including students, groups, layout, anchors, locks, and placements.">Duplicate</button>
+      <button type="button" id="classToolsBtn" class="secondary tiny icon-button" aria-label="Class rollover and archive tools" title="Archive, restore, or roll over the current class.">⋯</button>
+      <button id="deleteClassBtn" class="danger tiny icon-button" type="button" aria-label="Delete class" title="Delete the current class. You must keep at least one class.">🗑</button>
+    </div>
+    <div class="header-settings-slot no-print">
+      <button type="button" id="visibilityModeBtn" class="secondary icon-button" aria-label="Toggle Presentation Mode" title="Show the finished seating chart in locked Review mode. Exiting requires the Presentation PIN, Lock PIN, or encryption key.">👁</button>
+      <button type="button" id="helpGuideBtn" class="secondary icon-button" aria-label="Open help guide" title="Open the searchable help guide for every major tool, setting, and workflow.">?</button>
+      <button id="snapshotQuickBtn" class="secondary icon-button" type="button" aria-label="Take full-app snapshot" title="Take a full-app snapshot and open the snapshot list">📸</button>
+      <button type="button" id="settingsBtn" class="secondary icon-button" aria-label="Open settings" title="Open settings for page defaults, Presentation Mode, security, About, sample data, and custom right-click room objects">⚙</button>
+      <button type="button" id="pageLockBtn" class="secondary icon-button" aria-label="Lock page" title="Lock the seating chart screen so changes cannot be made until the PIN/password is entered again">🔒</button>
+    </div>
+    <div class="header-toggle-slot no-print">
+      <button type="button" id="toggleHeaderBtn" class="secondary icon-button" aria-label="Collapse header" aria-expanded="true" title="Collapse or expand the title/header area while keeping the class selector available">▴</button>
+    </div>
+    <div class="header-actions no-print">
+      <button id="guidedLearningBtn" class="secondary" type="button" aria-label="Open guided learning" title="Open Quick Start and hands-on lessons for the planner's major tools.">Guided Help</button>
+      <button id="undoBtn" class="secondary icon-button" type="button" aria-label="Undo" title="Undo the last chart, roster, group, or layout change.">↶</button>
+      <button id="redoBtn" class="secondary icon-button" type="button" aria-label="Redo" title="Redo the last undone change.">↷</button>
+      <button id="saveLoadMenuBtn" class="secondary icon-button" type="button" aria-label="Save / Load" title="Open Save / Load menu">💾</button>
+      <input id="importJson" type="file" accept="application/json,.json" style="display:none" aria-label="Choose seating planner JSON file" />
+      <button id="printBtn" class="secondary icon-button" type="button" aria-label="Print" title="Open print options">🖨</button>
+    </div>
+  </header>
+
+  <div id="localSaveBanner" class="local-save-banner no-print" role="alert" aria-live="assertive" hidden>
+    <div class="local-save-banner-copy">
+      <strong>Save needs attention</strong>
+      <div id="localSaveBannerText" class="local-save-banner-text">The latest save could not be completed.</div>
+    </div>
+    <div class="local-save-banner-actions">
+      <button id="localSaveBannerInfoBtn" class="secondary tiny" type="button">Review save options</button>
+      <button id="localSaveBannerCloseBtn" class="ghost tiny icon-button" type="button" aria-label="Dismiss save warning" title="Dismiss this warning">×</button>
+    </div>
+  </div>
+
+  <div id="concurrentTabBanner" class="local-save-banner concurrent-tab-banner no-print" role="alert" aria-live="assertive" hidden>
+    <div class="local-save-banner-copy">
+      <strong>Another planner tab is active</strong>
+      <div id="concurrentTabBannerText" class="local-save-banner-text">Saving is paused here to prevent one tab from overwriting another.</div>
+    </div>
+    <div class="local-save-banner-actions">
+      <button id="concurrentTabReloadBtn" class="secondary tiny" type="button">Reload This Tab</button>
+      <button id="concurrentTabTakeOverBtn" class="danger tiny" type="button">Take Over Here</button>
+    </div>
+  </div>
+
+  <nav id="mobilePanelNav" class="mobile-panel-nav no-print" aria-label="Mobile workspace sections">
+    <button id="mobileLayoutBtn" class="active" type="button" data-mobile-panel="layout" aria-pressed="true"><span>Room</span><span>Layout</span></button>
+    <button id="mobilePeopleBtn" type="button" data-mobile-panel="people" aria-pressed="false"><span>Students</span><span>Groups &amp; Zones</span></button>
+    <button id="mobileStatusBtn" type="button" data-mobile-panel="status" aria-pressed="false"><span>Chart</span><span>Status</span></button>
+  </nav>
+
+  <div id="printPreviewBanner" class="print-preview-banner" role="status" aria-live="polite">
+    <strong>Print preview active</strong>
+    <span>Use your browser menu or keyboard shortcut to print. Press Ctrl+P on Windows/ChromeOS or Cmd+P on Mac, then close this preview when done.</span>
+    <button id="exitPrintPreviewBtn" class="secondary tiny" type="button">Exit Preview</button>
+  </div>
+
+  <button id="presentationExitBtn" class="presentation-exit-button no-print" type="button" aria-label="Exit Presentation Mode" title="Exit Presentation Mode and restore editing controls. A Presentation PIN, Lock PIN, or encryption key may be required.">
+    <span aria-hidden="true">×</span>
+    <span>Exit Presentation</span>
+  </button>
+
+
+  <div id="guidedLessonOverlay" class="guided-learning-overlay no-print" aria-live="polite" aria-hidden="true">
+    <div class="guided-learning-scrim"></div>
+    <div id="guidedLessonSpotlight" class="guided-learning-spotlight"></div>
+    <div id="guidedLessonPopover" class="guided-learning-popover" role="dialog" tabindex="-1" aria-modal="false" aria-labelledby="guidedLessonTitle">
+      <div class="guided-learning-kicker">
+        <span id="guidedLessonSection">Guided lesson</span>
+        <span id="guidedLessonProgress">1 / 1</span>
+      </div>
+      <h3 id="guidedLessonTitle">Guided lesson</h3>
+      <p id="guidedLessonBody">Follow the instructions to learn this workflow.</p>
+      <div id="guidedLessonTask" class="guided-learning-task">Review the highlighted area.</div>
+      <div id="guidedLessonStatus" class="guided-learning-status" role="status" aria-live="polite"></div>
+      <div id="guidedLessonContextActions" class="guided-learning-context-actions" hidden>
+        <button id="guidedLessonOpenContextBtn" type="button">Open it for me</button>
+        <button id="guidedLessonRetryContextBtn" class="secondary" type="button">Try again</button>
+      </div>
+      <div class="guided-learning-shortcuts" aria-label="Keyboard shortcuts">Enter, Space, or Right Arrow: next · Left Arrow: back · Escape: exit</div>
+      <div class="guided-learning-actions">
+        <div class="guided-learning-actions-left">
+          <button id="guidedLessonExitBtn" class="secondary" type="button">Exit</button>
+          <button id="guidedLessonHelpBtn" class="ghost" type="button">Lesson list</button>
+          <button id="guidedLessonSkipBtn" class="ghost" type="button">Skip step</button>
+        </div>
+        <div class="guided-learning-actions-right">
+          <button id="guidedLessonBackBtn" class="secondary" type="button">Back</button>
+          <button id="guidedLessonNextBtn" type="button">Next</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="helpGuideModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="helpGuideTitle">
+    <div class="modal help-guide-modal">
+      <div class="panel-header">
+        <div>
+          <span class="help-guide-eyebrow">Learn or look something up</span>
+          <h2 id="helpGuideTitle">Help &amp; Guided Learning</h2>
+        </div>
+        <button id="closeHelpGuideBtn" class="tiny secondary" type="button">Close</button>
+      </div>
+      <div class="modal-body help-guide-body">
+        <div class="help-guide-view-tabs" role="tablist" aria-label="Help views">
+          <button id="helpGuideLessonsTab" class="active" type="button" role="tab" aria-selected="true" aria-controls="helpGuideLessonsView" data-help-view="lessons">Guided lessons</button>
+          <button id="helpGuideReferenceTab" class="secondary" type="button" role="tab" aria-selected="false" aria-controls="helpGuideReferenceView" data-help-view="reference">Reference guide</button>
+          <button id="helpGuideProgressTab" class="secondary" type="button" role="tab" aria-selected="false" aria-controls="helpGuideProgressView" data-help-view="progress">My progress</button>
+        </div>
+
+        <section id="helpGuideLessonsView" class="help-guide-view active" role="tabpanel" aria-labelledby="helpGuideLessonsTab">
+          <div class="guided-learning-hero">
+            <div>
+              <span class="help-guide-eyebrow">Start here</span>
+              <h3>Learn only what you need</h3>
+              <p>Use the eight-step Quick Start for the whole workflow, or choose a focused lesson for Freeform, random seating, candidate generation, imports, snapshots, printing, and Google tools.</p>
+            </div>
+            <div class="guided-learning-hero-actions">
+              <button id="helpGuideQuickStartBtn" type="button">Start Quick Start</button>
+              <button id="helpGuideResumeLessonBtn" class="secondary" type="button" hidden>Resume lesson</button>
+            </div>
+          </div>
+          <div id="guidedLessonCatalog" class="guided-lesson-catalog" aria-live="polite"></div>
+        </section>
+
+        <section id="helpGuideReferenceView" class="help-guide-view" role="tabpanel" aria-labelledby="helpGuideReferenceTab" hidden>
+          <div class="help-guide-search-row">
+            <input id="helpGuideSearch" type="search" autocomplete="off" placeholder="Search students, Freeform, random seating, encryption, print, zones, recovery..." aria-label="Search help guide" />
+            <button id="clearHelpGuideSearchBtn" class="secondary" type="button">Clear</button>
+          </div>
+          <div class="help-guide-quick-actions">
+            <button id="helpGuideOpenSettingsBtn" class="secondary" type="button">Open Settings</button>
+            <button id="helpGuideOpenPrintBtn" class="secondary" type="button">Open Print Options</button>
+          </div>
+          <div class="hint">Search for a button name, setting, workflow, or problem. Reference topics explain features without changing classroom data.</div>
+          <div id="helpGuideSummary" class="muted">Loading help topics...</div>
+          <div class="help-guide-layout">
+            <nav id="helpGuideNav" class="help-guide-nav" aria-label="Help guide topics"></nav>
+            <div id="helpGuideContent" class="help-guide-content"></div>
+          </div>
+        </section>
+
+        <section id="helpGuideProgressView" class="help-guide-view" role="tabpanel" aria-labelledby="helpGuideProgressTab" hidden>
+          <div class="guided-progress-header">
+            <div><h3>Guided-learning progress</h3><p class="muted">Completed lessons stay checked on this browser. Exiting a lesson saves your place without changing normal planner workflows.</p></div>
+            <button id="resetGuidedLearningProgressBtn" class="ghost" type="button">Reset progress</button>
+          </div>
+          <div id="guidedLearningProgressList" class="guided-progress-list"></div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <div id="printOptionsModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="printOptionsTitle">
+    <div class="modal print-options-modal">
+      <div class="panel-header">
+        <h2 id="printOptionsTitle">Print Options</h2>
+        <button id="closePrintOptionsBtn" class="tiny secondary" type="button">Close</button>
+      </div>
+      <div class="modal-body print-options-body">
+        <section class="section print-options-section">
+          <h3>Print View</h3>
+          <div class="field">
+            <label for="printOptionMode">Print Type</label>
+            <select id="printOptionMode" class="print-mode" aria-label="Print type">
+              <option value="seen">Print as seen</option>
+              <option value="clean">Clean names only</option>
+              <option value="substitute">Substitute print</option>
+            </select>
+          </div>
+          <div class="hint">Clean names only removes classroom styling. Substitute print also uses the clean layout, then includes only the note categories selected below.</div>
+        </section>
+
+        <section class="section print-options-section">
+          <h3>Student Details to Print</h3>
+          <div class="print-options-grid" aria-label="Student detail print options">
+            <label id="printDetailFirstNameLabel" class="checkline"><input type="checkbox" data-print-detail="firstName" checked /> <span>First name</span></label>
+            <label class="checkline"><input type="checkbox" data-print-detail="lastName" checked /> <span>Last name</span></label>
+            <label class="checkline"><input type="checkbox" data-print-detail="nickName" /> <span>Nickname</span></label>
+            <label class="checkline"><input type="checkbox" data-print-detail="grade" /> <span>Grade</span></label>
+            <label class="checkline"><input type="checkbox" data-print-detail="id" /> <span>ID</span></label>
+          </div>
+          <div class="hint">Names print on seats. Grade and ID print as smaller detail lines under the name.</div>
+        </section>
+
+        <section class="section print-options-section">
+          <h3>Chart Details to Print</h3>
+          <div class="print-options-grid" aria-label="Chart detail print options">
+            <label class="checkline"><input type="checkbox" data-print-chart-detail="title" checked /> <span>Chart title</span></label>
+            <label class="checkline"><input type="checkbox" data-print-chart-detail="className" checked /> <span>Class name</span></label>
+            <label class="checkline"><input type="checkbox" data-print-chart-detail="date" checked /> <span>Date</span></label>
+            <label class="checkline"><input type="checkbox" data-print-chart-detail="period" checked /> <span>Period / section</span></label>
+            <label class="checkline"><input type="checkbox" data-print-chart-detail="room" checked /> <span>Room</span></label>
+            <label class="checkline"><input type="checkbox" data-print-chart-detail="teacher" checked /> <span>Teacher / owner</span></label>
+          </div>
+          <div class="hint">These fields come from Settings &gt; Seating Chart Details and print above the seating chart.</div>
+        </section>
+
+
+        <section class="section print-options-section">
+          <h3>Notes to Include</h3>
+          <div class="print-options-grid" aria-label="Student note print options">
+            <label class="checkline"><input type="checkbox" data-print-note-category="private" /> <span>Private notes</span></label>
+            <label id="printNoteSubstituteLabel" class="checkline"><input type="checkbox" data-print-note-category="substitute" /> <span>Substitute notes</span></label>
+            <label class="checkline"><input type="checkbox" data-print-note-category="public" /> <span>Public notes</span></label>
+          </div>
+          <div class="hint">Only selected note categories appear on the print page. Private notes stay off unless you explicitly include them here.</div>
+        </section>
+
+        <section class="section print-options-section">
+          <h3>Configuration Sections</h3>
+          <div class="print-options-grid" aria-label="Group and zone print section options">
+            <label id="printSectionGroupsLabel" class="checkline"><input type="checkbox" data-print-side-section="groups" /> <span>Group and rule configuration</span></label>
+            <label id="printSectionZonesLabel" class="checkline"><input type="checkbox" data-print-side-section="zones" /> <span>Zone configuration</span></label>
+          </div>
+          <div class="print-config-option-groups" aria-label="Group and zone detail options">
+            <div class="print-config-option-group">
+              <h4>Group and Rule Details</h4>
+              <div class="print-options-grid compact" aria-label="Group detail print options">
+                <label class="checkline"><input type="checkbox" data-print-group-detail="rule" checked /> <span>Rule type</span></label>
+                <label class="checkline"><input type="checkbox" data-print-group-detail="priority" checked /> <span>Priority</span></label>
+                <label class="checkline"><input type="checkbox" data-print-group-detail="zone" checked /> <span>Preferred zone</span></label>
+                <label class="checkline"><input type="checkbox" data-print-group-detail="members" checked /> <span>Members</span></label>
+                <label class="checkline"><input type="checkbox" data-print-group-detail="reservedSeats" checked /> <span>Reserved seats</span></label>
+                <label class="checkline"><input type="checkbox" data-print-group-detail="color" checked /> <span>Color</span></label>
+              </div>
+            </div>
+            <div class="print-config-option-group">
+              <h4>Zone Details</h4>
+              <div class="print-options-grid compact" aria-label="Zone detail print options">
+                <label class="checkline"><input type="checkbox" data-print-zone-detail="color" checked /> <span>Color</span></label>
+                <label class="checkline"><input type="checkbox" data-print-zone-detail="students" checked /> <span>Linked students</span></label>
+                <label class="checkline"><input type="checkbox" data-print-zone-detail="groups" checked /> <span>Linked groups</span></label>
+                <label class="checkline"><input type="checkbox" data-print-zone-detail="seats" checked /> <span>Assigned seats</span></label>
+              </div>
+            </div>
+          </div>
+          <div class="hint">Turn on the Group or Zone section, then choose exactly which details print. Names still print as the card headings so the section remains readable even when only a few details are selected.</div>
+        </section>
+
+        <section class="section print-options-section">
+          <h3>PDF and SVG Page Framing</h3>
+          <label class="checkline" for="printCropToContentToggle"><input id="printCropToContentToggle" type="checkbox" /> <span>Crop to occupied room content and fill the chart page</span></label>
+          <div class="hint">For PDF and SVG output, trims unused outer Grid cells or Freeform canvas space, then enlarges the remaining seats and room objects to use the printable page while keeping the complete room on one chart page. Notes, Groups, and Zones may still use supporting pages.</div>
+        </section>
+
+        <section class="section print-options-section">
+          <h3>Download Output Copies</h3>
+          <div class="hint">PDF and SVG are printable/shareable output copies. They are not editable save files and they do not replace your save file or backup.</div>
+          <div class="print-download-actions" style="margin-top:8px;">
+            <button id="printDownloadPdfBtn" class="secondary" type="button">Download PDF</button>
+            <button id="printDownloadSvgBtn" class="secondary" type="button">Download SVG</button>
+          </div>
+        </section>
+
+        <div class="confirm-actions print-options-actions">
+          <button id="cancelPrintOptionsBtn" class="secondary" type="button">Cancel</button>
+          <button id="openPrintPreviewBtn" type="button">Open Print Page</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main id="mainWorkspace" class="app" tabindex="-1">
+    <aside class="panel left-panel">
+      <div class="panel-header">
+        <div class="panel-header-title">
+          <button type="button" id="toggleLeftPanelBtn" class="tiny secondary icon-button no-print" aria-label="Expand Students, Groups & Zones panel" aria-expanded="false" title="Collapse or expand the Students, Groups & Zones panel">▸</button>
+          <h2>Students, Groups & Zones</h2>
+        </div>
+        <div class="button-row no-print panel-title-actions">
+          <button id="openGroupManagerBtn" class="tiny secondary" type="button" title="Open a larger drag-and-drop manager for student membership, groups and rules, and zones.">Manage</button>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="side-tabs no-print" role="tablist" aria-label="Students, groups, and zones">
+          <button id="studentsSideTabBtn" class="side-tab active" type="button" role="tab" aria-selected="true" aria-controls="studentsSideTabPanel" data-side-tab="students" title="Show student entry, import, and student list tools.">Students <span id="studentSubCount" class="pill">0</span></button>
+          <button id="groupsSideTabBtn" class="side-tab" type="button" role="tab" aria-selected="false" aria-controls="groupsSideTabPanel" data-side-tab="groups" title="Show group and seating-rule creation, membership, and existing-rule tools.">Groups &amp; Rules <span id="groupSubCount" class="pill">0</span></button>
+          <button id="zonesSideTabBtn" class="side-tab" type="button" role="tab" aria-selected="false" aria-controls="zonesSideTabPanel" data-side-tab="zones" title="Create, edit, delete, and apply seat zones.">Zones <span id="zoneSubCount" class="pill">0</span></button>
+        </div>
+        <div class="side-tab-panels">
+        <div id="studentsSideTabPanel" class="side-subsection side-tab-panel students-subsection active" role="tabpanel" aria-labelledby="studentsSideTabBtn" data-side-tab-panel="students">
+        <section class="section">
+          <h3>Add Student</h3>
+          <div class="row">
+            <div class="field">
+              <label for="firstName">First Name</label>
+              <input id="firstName" autocomplete="off" />
+            </div>
+            <div class="field">
+              <label for="lastName">Last Name</label>
+              <input id="lastName" autocomplete="off" />
+            </div>
+          </div>
+          <div class="row">
+            <div class="field">
+              <label for="nickName">Nickname</label>
+              <input id="nickName" autocomplete="off" />
+            </div>
+            <div class="field">
+              <label for="grade">Grade</label>
+              <input id="grade" autocomplete="off" />
+            </div>
+          </div>
+          <div class="row single-row-field">
+            <div class="field">
+              <label for="studentId">ID</label>
+              <input id="studentId" autocomplete="off" />
+            </div>
+          </div>
+          <div class="notes-control-card">
+            <div>
+              <strong>Student Notes</strong>
+              <div id="addStudentNotesSummary" class="notes-summary-text">No notes defined.</div>
+            </div>
+            <button id="openAddStudentNotesBtn" class="secondary" type="button" title="Open the notes editor to add Private, Substitute, or Public notes for this student." aria-label="Open notes" >📝 <span id="addStudentNotesCount" class="pill">0</span></button>
+          </div>
+          <div class="hidden-note-fields" hidden aria-hidden="true">
+            <textarea id="studentNotesPrivate" autocomplete="off" aria-label="Private student notes"></textarea>
+            <textarea id="studentNotesSubstitute" autocomplete="off" aria-label="Substitute student notes"></textarea>
+            <textarea id="studentNotesPublic" autocomplete="off" aria-label="Public student notes"></textarea>
+          </div>
+          <div class="button-row">
+            <button type="button" id="addStudentBtn">Add Student</button>
+            <button type="button" id="clearStudentsBtn" class="danger">Clear Students</button>
+          </div>
+        </section>
+
+        <section class="section csv-import-section">
+          <div class="section-header-row">
+            <h3>CSV Import</h3>
+            <button id="toggleCsvImportBtn" class="tiny secondary icon-button" type="button" aria-expanded="false" title="Expand or collapse CSV import tools.">▾</button>
+          </div>
+          <div id="csvImportBody" class="csv-import-body collapsed">
+            <div class="hint">Choose a CSV file, then map its columns to First Name, Last Name, Nickname, Grade, ID, and categorized notes before importing.</div>
+            <div class="field" style="margin-top:8px;">
+              <input id="csvFile" type="file" accept=".csv,text/csv" aria-label="Choose student CSV file" />
+              <div class="button-row" style="margin-top:7px;"><button id="reconcileRosterBtn" class="secondary" type="button">Reconcile Roster CSV</button><input id="reconcileRosterFile" type="file" accept=".csv,text/csv" hidden aria-label="Choose roster reconciliation CSV file" /></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <h3>Student List <span id="studentCount" class="pill">0</span></h3>
+          <div id="studentListContextHint" class="hint" style="margin-bottom:8px;">Use this list to manage roster records, notes, rules, and today's attendance. Seat placement happens in the <strong>Seat Students</strong> stage, where the chart is visible.</div>
+          <div id="studentList" class="list"></div>
+        </section>
+
+
+        </div>
+
+        <div id="groupsSideTabPanel" class="side-subsection side-tab-panel groups-subsection" role="tabpanel" aria-labelledby="groupsSideTabBtn" data-side-tab-panel="groups">
+        <section class="section">
+          <h3>Create Group or Seating Rule</h3>
+          <div class="field">
+            <label for="groupName">Name</label>
+            <input id="groupName" placeholder="Example: Front support or Reading partners" />
+          </div>
+          <div class="row">
+            <div class="field">
+              <label for="groupType">What should happen?</label>
+              <select id="groupType">
+                <option value="together">Seat Together / Nearby</option>
+                <option value="avoid">Avoid Seating Together</option>
+                <option value="special">Special / Anchored Seats</option>
+                <option value="front">Prefer Front</option>
+                <option value="back">Prefer Back</option>
+                <option value="nearBoard">Near Board</option>
+                <option value="nearTeacher">Near Teacher Desk</option>
+                <option value="awayDoor">Away From Door</option>
+                <option value="awayWindow">Away From Window</option>
+                <option value="spread">Spread Apart</option>
+                <option value="zone">Prefer Seat Zone</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="groupPriority">Importance</label>
+              <select id="groupPriority">
+                <option value="10">10 - Must Try</option>
+                <option value="8">8 - Very High</option>
+                <option value="6" selected>6 - Important</option>
+                <option value="4">4 - Preferred</option>
+                <option value="2">2 - Nice</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label for="groupZoneSelect">Preferred Room Zone</label>
+            <select id="groupZoneSelect"></select>
+          </div>
+          <div class="field">
+            <label for="groupColor">Label Color</label>
+            <input id="groupColor" type="color" value="#2f6fed" />
+          </div>
+          <div class="field">
+            <label>Students in this group or rule</label>
+            <div id="groupMemberPicker" class="group-members"></div>
+          </div>
+          <div class="button-row">
+            <button type="button" id="addGroupBtn">Create Rule</button>
+            <button type="button" id="cancelGroupEditBtn" class="secondary" hidden>Cancel Edit</button>
+            <button type="button" id="clearGroupsBtn" class="danger">Delete All Rules</button>
+          </div>
+        </section>
+
+        <section class="section">
+          <h3>Existing Groups &amp; Rules <span id="groupCount" class="pill">0</span></h3>
+          <div class="hint" style="margin-bottom:8px;">Create and manage memberships here. Seat anchors are assigned later in Room Design or Seat Students, when the chart is visible.</div>
+          <div id="groupList" class="list"></div>
+        </section>
+        </div>
+
+        <div id="zonesSideTabPanel" class="side-subsection side-tab-panel zones-subsection" role="tabpanel" aria-labelledby="zonesSideTabBtn" data-side-tab-panel="zones">
+          <section class="section">
+            <h3>Create / Apply Zone</h3>
+            <div class="hint" style="margin-bottom:8px;">Select seats in the Room Layout, then save them as a named zone. Zones can also be connected to students and groups in the manager.</div>
+            <div class="field">
+              <label for="zoneNameInput">Zone Name</label>
+              <input id="zoneNameInput" maxlength="32" placeholder="Example: Front Left" />
+            </div>
+            <div class="row">
+              <div class="field">
+                <label for="zoneColorInput">Zone Color</label>
+                <input id="zoneColorInput" type="color" value="#8b5cf6" />
+              </div>
+              <div class="field">
+                <label for="zoneSelect">Existing Zone</label>
+                <select id="zoneSelect"></select>
+              </div>
+            </div>
+            <div class="button-row">
+              <button id="saveZoneFromSelectionBtn" class="secondary" type="button">Save Selected as Zone</button>
+              <button id="applyZoneToSelectionBtn" class="secondary" type="button">Apply Zone</button>
+              <button id="clearZonesFromSelectionBtn" class="secondary" type="button">Clear Zones from Seats</button>
+            </div>
+          </section>
+          <section class="section">
+            <h3>Zone List <span id="zoneCount" class="pill">0</span></h3>
+            <div id="zoneList" class="list"></div>
+          </section>
+        </div>
+        </div>
+      </div>
+    </aside>
+
+    <section class="panel center-panel">
+      <div class="panel-header">
+        <h2>Room Layout</h2>
+        <div class="button-row no-print">
+          <div id="seatDisplayControls" class="seat-display-controls" aria-label="Room display controls">
+            <div class="seat-display-control">
+              <label for="seatViewZoomSlider">Seat zoom</label>
+              <input id="seatViewZoomSlider" type="range" min="35" max="175" step="5" value="100" title="Change seat and room-object size on screen without changing saved positions." />
+              <output id="seatViewZoomValue" class="pill" for="seatViewZoomSlider">100%</output>
+            </div>
+            <div class="seat-display-control">
+              <label for="seatTextSizeSlider">Text size</label>
+              <input id="seatTextSizeSlider" type="range" min="70" max="200" step="5" value="100" title="Change the size of student and object text inside seats." />
+              <output id="seatTextSizeValue" class="pill" for="seatTextSizeSlider">100%</output>
+            </div>
+            <button id="mobileRoomPanBtn" class="secondary mobile-room-pan-button" type="button" aria-pressed="false" title="On mobile, turn this on to drag the room viewport without moving seats or objects.">Pan room</button>
+          </div>
+          <button type="button" id="generateBtn">Generate Chart</button>
+          <button type="button" id="randomizeAllBtn" class="secondary">Randomize + Seat Everyone</button>
+          <button type="button" id="clearAssignmentsBtn" class="secondary">Clear Assignments</button>
+          <button type="button" id="clearAnchorsBtn" class="secondary">Clear Anchors</button>
+          <button id="todayModeBtn" class="secondary" type="button" aria-pressed="false">Today</button>
+          <button id="hideUnassignedTitlesBtn" class="secondary" type="button" aria-pressed="false" title="Hide the Drop student here and Unassigned titles on empty seats while keeping the seats usable.">Hide Empty Titles</button>
+          <button id="openSeatingPlansBtn" class="secondary" type="button">Plans</button>
+          <button id="globalSearchBtn" class="secondary icon-button" type="button" aria-label="Search planner" title="Search planner">⌕</button>
+          <button id="layoutNamesOnlyBtn" class="secondary" type="button" aria-pressed="false">Names Only</button>
+          <button id="openRoomTemplatesBtn" class="secondary icon-button" type="button" aria-label="Room templates" title="Open room templates to save or reuse room layouts">▦</button>
+          <button type="button" id="toggleLayoutToolsBtn" class="tiny secondary icon-button layout-tools-toggle" aria-label="Collapse layout tools" aria-expanded="true" title="Collapse or expand the Layout Tools area">▴</button>
+        </div>
+      </div>
+
+      <div id="layoutToolsPanel" class="toolbar no-print">
+        <div class="toolbar-header">
+          <div class="toolbar-title">
+            <strong>Layout Tools</strong>
+            <span class="toolbar-subtitle">Rows, columns, click tool, and room objects</span>
+          </div>
+          <div class="mobile-layout-tools-header-actions">
+            <span id="mobileLayoutToolsModeSummary">Grid options</span>
+            <button id="closeMobileLayoutToolsBtn" class="danger mobile-layout-tools-close" type="button" aria-label="Close layout options" title="Close layout options">×</button>
+          </div>
+        </div>
+        <div class="toolbar-body">
+          <div class="field grid-only-tool">
+            <label for="rowsInput">Rows</label>
+            <input id="rowsInput" type="number" min="1" max="30" value="5" />
+          </div>
+          <div class="field grid-only-tool">
+            <label for="colsInput">Columns</label>
+            <input id="colsInput" type="number" min="1" max="30" value="6" />
+          </div>
+          <div class="field layout-mode-field">
+            <label for="layoutModeSelect">Layout Mode</label>
+            <select id="layoutModeSelect" title="Switch between standard row/column grid layout and draggable freeform room layout.">
+              <option value="grid">Standard Grid</option>
+              <option value="freeform">Freeform Room</option>
+            </select>
+          </div>
+          <div class="field tool grid-only-tool">
+            <label for="layoutTool">Click Tool</label>
+            <select id="layoutTool">
+              <option value="seat">Seat</option>
+              <option value="empty">Empty</option>
+              <option value="blocked">Blocked</option>
+              <option value="teacher">Teacher Desk</option>
+              <option value="table">Table</option>
+              <option value="door">Door</option>
+              <option value="wall">Wall</option>
+              <option value="walkway">Walkway</option>
+              <option value="window">Window</option>
+              <option value="projector">Projector</option>
+              <option value="board">Board</option>
+              <option value="carpet">Carpet</option>
+              <option value="ada">ADA Space</option>
+            </select>
+          </div>
+          <div class="multi-select-controls grid-only-tool">
+            <button id="selectCellsBtn" class="secondary" type="button" aria-pressed="false">Select Cells</button>
+            <button id="clearCellSelectionBtn" class="secondary" type="button">Clear Selection</button>
+            <span id="selectedCellCount" class="pill selection-count">0 selected</span>
+            <button id="designModeBtn" class="secondary" type="button" aria-pressed="false">Design Mode</button>
+            <div id="designSizeControl" class="design-size-control" aria-label="Design mode seat size control">
+              <label for="designSizeSlider">Size</label>
+              <input id="designSizeSlider" type="range" min="20" max="72" step="2" value="28" />
+              <span id="designSizeValue" class="pill">28px</span>
+            </div>
+          </div>
+          <div class="grid-resize-actions grid-only-tool" role="group" aria-label="Grid build and resize controls">
+            <button type="button" id="buildGridBtn" class="secondary" aria-pressed="false" title="Enter grid resize mode, then apply the row and column values.">Build/Resize Grid</button>
+            <button type="button" id="cancelGridResizeBtn" class="ghost" hidden>Cancel</button>
+            <span id="gridResizeStatus" class="grid-resize-status" role="status" aria-live="polite">Current grid: 5 rows × 6 columns</span>
+          </div>
+          <button type="button" id="makeAllSeatsBtn" class="secondary grid-only-tool">All Seats</button>
+          <button type="button" id="emptyGridBtn" class="danger grid-only-tool">Empty Grid</button>
+          <div id="freeformTools" class="freeform-tools freeform-only-tool" aria-label="Freeform room layout tools">
+            <div class="freeform-primary-bar">
+              <div class="freeform-status-block" title="Current Freeform selection">
+                <strong>Freeform</strong>
+                <span id="freeformSelectionStatus" class="muted">No object selected</span>
+              </div>
+
+              <div class="freeform-command-group freeform-add-group" aria-label="Add an object">
+                <div class="field compact-field">
+                  <label for="freeformObjectTool">Add</label>
+                  <select id="freeformObjectTool">
+                    <option value="seat">Seat</option>
+                    <option value="teacher">Teacher Desk</option>
+                    <option value="table">Table</option>
+                    <option value="door">Door</option>
+                    <option value="wall">Wall</option>
+                    <option value="walkway">Walkway</option>
+                    <option value="window">Window</option>
+                    <option value="projector">Projector</option>
+                    <option value="board">Board</option>
+                    <option value="carpet">Carpet</option>
+                    <option value="ada">ADA Space</option>
+                    <option value="blocked">Blocked</option>
+                  </select>
+                </div>
+                <button id="addFreeformObjectBtn" class="secondary" type="button">Add</button>
+              </div>
+
+              <div class="freeform-command-group freeform-selection-group" aria-label="Selected object actions">
+                <span class="freeform-group-label">Selection</span>
+                <button id="duplicateFreeformObjectBtn" class="secondary" type="button">Duplicate</button>
+                <button id="lockFreeformObjectBtn" class="secondary" type="button" title="Lock or unlock the selected freeform objects" aria-label="Lock or unlock selected freeform objects">Lock</button>
+                <button id="groupFreeformSelectionBtn" class="secondary" type="button" disabled title="Group selected seats and room objects so they move together">Group</button>
+                <button id="ungroupFreeformSelectionInlineBtn" class="secondary" type="button" disabled title="Remove selected objects from their named group">Ungroup</button>
+                <button id="lockFreeformGroupBtn" class="secondary" type="button" disabled title="Lock or unlock every object in the selected group">Lock group</button>
+                <button id="rotateFreeformObjectBtn" class="secondary" type="button" title="Rotate the selected Freeform object 15 degrees clockwise">Rotate 15°</button>
+                <button id="deleteFreeformObjectBtn" class="danger" type="button">Delete</button>
+              </div>
+
+              <div id="freeformCanvasChrome" class="freeform-canvas-chrome" aria-label="Freeform canvas tools">
+                <div class="freeform-command-group freeform-canvas-group">
+                  <span class="freeform-group-label">Canvas</span>
+                  <button id="fitFreeformRoomInlineBtn" class="secondary" type="button">Fit room</button>
+                  <button id="fitFreeformSelectionInlineBtn" class="secondary" type="button">Fit selected</button>
+                  <button id="toggleFreeformMarqueeBtn" class="secondary" type="button" aria-pressed="false" title="Drag a box across multiple seats and room objects">Box select</button>
+                  <button id="toggleFreeformPanBtn" class="secondary" type="button" aria-pressed="false">Pan</button>
+                  <button id="openFreeformPresetsBtn" class="secondary" type="button">Presets</button>
+                  <button id="clearFreeformRoomBtn" class="danger" type="button" title="Remove every Freeform seat and room object while keeping the roster and Standard Grid layout.">Clear room</button>
+                </div>
+              </div>
+
+              <details id="freeformAdvancedTools" class="freeform-advanced-tools">
+                <summary aria-label="Expand more Freeform tools">More tools</summary>
+                <div class="freeform-advanced-panel">
+                  <section class="freeform-advanced-section freeform-canvas-settings" aria-label="Canvas settings">
+                    <strong>Canvas</strong>
+                    <div class="freeform-inline-group freeform-inline-group-fields">
+                      <div class="field small"><label for="freeformCanvasWidthInput">Width</label><input id="freeformCanvasWidthInput" type="number" min="400" max="12000" value="2800" /></div>
+                      <div class="field small"><label for="freeformCanvasHeightInput">Height</label><input id="freeformCanvasHeightInput" type="number" min="300" max="12000" value="1800" /></div>
+                      <div class="field small"><label for="freeformGridSizeInput">Grid</label><input id="freeformGridSizeInput" type="number" min="5" max="80" value="40" /></div>
+                      <div class="field small"><label for="freeformFrontSideSelect">Front</label><select id="freeformFrontSideSelect" title="Choose which side of the room is the front."><option value="top">Top</option><option value="right">Right</option><option value="bottom">Bottom</option><option value="left">Left</option></select></div>
+
+                    </div>
+                  </section>
+
+                  <section class="freeform-advanced-section" aria-label="Movement settings">
+                    <strong>Movement</strong>
+                    <div class="freeform-check-row">
+                      <label class="checkline" title="Snap dragged and resized objects to the canvas grid."><input id="freeformSnapToggle" type="checkbox" checked /> <span>Snap to grid</span></label>
+                      <label class="checkline" title="Allow seats to move through other seats while dragging."><input id="freeformSeatPassThroughToggle" type="checkbox" checked /> <span>Pass through</span></label>
+                      <label class="checkline" title="Allow seats to remain overlapping after release."><input id="freeformSeatOverlapToggle" type="checkbox" checked /> <span>Allow overlaps</span></label>
+                      <label class="checkline" title="Show edge and center alignment guides while moving objects."><input id="freeformMagneticGuidesToggle" type="checkbox" checked /> <span>Guides</span></label>
+                    </div>
+                  </section>
+
+                  <section class="freeform-advanced-section" aria-label="View and utility tools">
+                    <strong>View</strong>
+                    <div class="freeform-inline-group">
+                      <button id="toggleFreeformCleanViewBtn" class="secondary" type="button" aria-pressed="false" title="Hide editing chrome for a clean room preview.">Clean view</button>
+                      <button id="toggleFreeformMinimapInlineBtn" class="secondary" type="button" aria-pressed="true" title="Show or hide the minimap.">Minimap</button>
+                      <button id="openFreeformWorkspaceBtn" class="secondary" type="button">Room tools</button>
+                      <button id="openFreeformAuditBtn" class="secondary" type="button">Audit room</button>
+                    </div>
+                  </section>
+
+                  <section id="freeformMultiSelectionTools" class="freeform-advanced-section" aria-label="Align selected objects" hidden>
+                    <strong>Align</strong>
+                    <div class="freeform-inline-group">
+                      <button class="secondary icon-button" type="button" data-freeform-inline-arrange="left" aria-label="Align left" title="Align selected objects left">⇤</button>
+                      <button class="secondary icon-button" type="button" data-freeform-inline-arrange="center-x" aria-label="Align horizontal centers" title="Align horizontal centers">↔</button>
+                      <button class="secondary icon-button" type="button" data-freeform-inline-arrange="right" aria-label="Align right" title="Align selected objects right">⇥</button>
+                      <button class="secondary icon-button" type="button" data-freeform-inline-arrange="top" aria-label="Align top" title="Align selected objects to top">↥</button>
+                      <button class="secondary icon-button" type="button" data-freeform-inline-arrange="center-y" aria-label="Align vertical centers" title="Align vertical centers">↕</button>
+                      <button class="secondary icon-button" type="button" data-freeform-inline-arrange="bottom" aria-label="Align bottom" title="Align selected objects to bottom">↧</button>
+                      <button class="secondary" type="button" data-freeform-inline-arrange="distribute-h">Distribute H</button>
+                      <button class="secondary" type="button" data-freeform-inline-arrange="distribute-v">Distribute V</button>
+                    </div>
+                  </section>
+
+                  <section id="freeformObjectInspector" class="freeform-advanced-section freeform-object-inspector" aria-label="Selected object inspector" hidden>
+                    <strong id="freeformInspectorName" class="freeform-inspector-name">Selection</strong>
+                    <div class="freeform-inline-group freeform-inspector-fields">
+                      <label>X <input id="freeformInspectorX" type="number" step="1" /></label>
+                      <label>Y <input id="freeformInspectorY" type="number" step="1" /></label>
+                      <label>W <input id="freeformInspectorWidth" type="number" min="20" step="1" /></label>
+                      <label>H <input id="freeformInspectorHeight" type="number" min="20" step="1" /></label>
+                      <label>Rotate <input id="freeformInspectorRotation" type="number" step="15" /></label>
+                      <button id="applyFreeformInspectorBtn" class="secondary" type="button">Apply</button>
+                    </div>
+                  </section>
+
+                  <section class="freeform-advanced-section freeform-layout-conversion" aria-label="Layout conversion">
+                    <strong>Conversion</strong>
+                    <div class="freeform-inline-group">
+                      <button id="convertGridToFreeformBtn" class="secondary" type="button">Convert grid</button>
+                      <button id="mapFreeformToGridBtn" class="secondary" type="button">Map to grid</button>
+                    </div>
+                  </section>
+                </div>
+              </details>
+
+              <div id="freeformSnapTarget" class="freeform-snap-target" role="status" aria-live="polite">Snap: grid</div>
+            </div>
+          </div>
+          <div class="generation-controls" role="group" aria-label="Seating generator controls">
+            <div class="field"><label for="generatorSeedInput">Random Seed</label><input id="generatorSeedInput" maxlength="120" placeholder="Optional reproducible seed" /></div>
+            <div class="field small"><label for="generatorCandidateCount">Candidates</label><select id="generatorCandidateCount"><option value="1">1</option><option value="2">2</option><option value="3" selected>3</option><option value="4">4</option><option value="5">5</option></select></div>
+            <div class="field small"><label for="generatorAttemptsInput">Attempts</label><input id="generatorAttemptsInput" type="number" min="20" max="1200" step="20" value="180" title="More attempts can improve seating options but take longer." /></div>
+            <span class="muted">Generate and Randomize now compare seating options before changing the chart.</span>
+          </div>
+          <div class="hint" style="max-width:720px;">Use this stage to build the room: choose Grid or Freeform, add seats and room objects, then use Box Select, Group, Lock Group, alignment, and audit tools to organize the layout. Student placement happens in <strong>Seat Students</strong>, where the chart and unassigned roster are visible together. Generate and Randomize preserve locked placements and use the actual Freeform seat positions.</div>
+        </div>
+      </div>
+
+      <div class="grid-wrap">
+        <div class="print-only">
+          <h2>Seating Chart</h2>
+          <p id="printStats"></p>
+        </div>
+        <div id="seatGrid" class="seat-grid" role="group" aria-label="Seating grid"></div>
+        <aside id="printNotesPanel" class="print-notes-panel" aria-label="Printable student notes"></aside>
+      </div>
+    </section>
+
+    <aside class="panel right-panel">
+      <div class="panel-header">
+        <h2>Chart Status</h2>
+        <div class="button-row no-print panel-title-actions">
+          <button type="button" id="analyzeBtn" class="tiny ghost">Analyze</button>
+          <button type="button" id="toggleRightPanelBtn" class="tiny secondary icon-button" aria-label="Collapse Chart Status panel" aria-expanded="true" title="Collapse or expand the Chart Status panel">▸</button>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="stats">
+          <div class="stat"><div id="statStudents" class="num">0</div><div class="label">Students</div></div>
+          <div class="stat"><div id="statSeats" class="num">0</div><div class="label">Seats</div></div>
+          <div class="stat"><div id="statPlaced" class="num">0</div><div class="label">Placed</div></div>
+        </div>
+        <div id="liveUpdateNote" class="live-note">Live updates ready.</div>
+
+        <section class="section">
+          <h3>Rule Report</h3>
+          <div id="ruleReport" class="rule-summary"></div>
+        </section>
+
+        <section class="section">
+          <h3>Unassigned Students</h3>
+          <div id="unassignedList" class="list"></div>
+        </section>
+
+        <section class="section">
+          <h3>Assigned Students</h3>
+          <div id="assignedList" class="list"></div>
+        </section>
+      </div>
+    </aside>
+  </main>
+
+
+  <div id="cellContextMenu" class="context-menu no-print" role="menu" aria-label="Cell type menu">
+    <div class="context-menu-title" id="cellContextTitle">Cell</div>
+    <div id="cellContextSelectionNote" class="context-menu-empty-note" style="display:none;"></div>
+    <button type="button" data-menu-cell-type="seat">Seat</button>
+    <button type="button" data-menu-cell-type="blocked">Blocked Seat / No Assignment</button>
+    <button type="button" data-menu-cell-type="teacher">Teacher Desk</button>
+    <button type="button" data-menu-cell-type="table">Table</button>
+    <button type="button" data-menu-cell-type="door">Door</button>
+    <button type="button" data-menu-cell-type="wall">Wall</button>
+    <button type="button" data-menu-cell-type="walkway">Walkway</button>
+    <button type="button" data-menu-cell-type="window">Window</button>
+    <button type="button" data-menu-cell-type="projector">Projector</button>
+    <button type="button" data-menu-cell-type="board">Board</button>
+    <button type="button" data-menu-cell-type="carpet">Carpet</button>
+    <button type="button" data-menu-cell-type="ada">ADA Space</button>
+    <button type="button" data-add-custom-object-from-menu="true">Add Custom Object...</button>
+    <div id="customContextMenuItems"></div>
+    <button type="button" data-menu-cell-type="empty">Empty Space</button>
+    <div class="context-menu-separator"></div>
+    <button type="button" data-clear-cell-selection-from-menu="true">Clear Cell Selection</button>
+  </div>
+
+  <div id="studentGroupContextMenu" class="context-menu no-print" role="menu" aria-label="Student group menu">
+    <div class="context-menu-title" id="studentGroupContextTitle">Student</div>
+    <div id="studentGroupContextItems"></div>
+  </div>
+
+  <div id="groupManagerModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="groupManagerTitle">
+    <div class="modal group-manager-modal">
+      <div class="panel-header">
+        <h2 id="groupManagerTitle">Student / Group / Zone Manager</h2>
+        <button id="closeGroupManagerBtn" class="tiny secondary" type="button">Close</button>
+      </div>
+      <div class="modal-body">
+        <div class="hint" style="margin-bottom:10px;">Drag students into groups or zones. Drag groups onto zones, or zones onto groups, to attach that group to a preferred zone. Drag a group member to the remove area to take that student out of that group. On touch devices, use Pick Up and then tap a destination.</div>
+        <div id="groupManagerCarryBanner" class="group-manager-carry-banner" role="status" aria-live="polite" hidden>
+          <div><strong id="groupManagerCarryTitle">Ready to move</strong><span id="groupManagerCarryHint">Choose Pick Up on a student, group, zone, or group member.</span></div>
+          <button id="groupManagerCarryCancelBtn" class="tiny secondary" type="button">Cancel</button>
+        </div>
+        <div class="group-manager-grid three-column">
+          <section class="group-manager-column" aria-label="Students">
+            <div class="group-manager-column-header">
+              <h3>Students</h3>
+              <span id="groupManagerStudentCount" class="pill">0</span>
+            </div>
+            <div id="groupManagerRemoveZone" class="group-manager-drop-remove">Drop a group member here to remove that student from that group.</div>
+            <div id="groupManagerStudentList" class="list"></div>
+          </section>
+          <section class="group-manager-column" aria-label="Groups and rules">
+            <div class="group-manager-column-header">
+              <h3>Groups &amp; Rules</h3>
+              <span id="groupManagerGroupCount" class="pill">0</span>
+            </div>
+            <div id="groupManagerGroupList"></div>
+          </section>
+          <section class="group-manager-column" aria-label="Zones">
+            <div class="group-manager-column-header">
+              <h3>Zones</h3>
+              <span id="groupManagerZoneCount" class="pill">0</span>
+            </div>
+            <div id="groupManagerZoneList"></div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="saveLoadMenu" class="context-menu no-print" role="menu" aria-label="Save and load menu">
+    <div class="context-menu-title">Save File</div>
+    <div id="saveMenuStatus" class="save-menu-note">Choose a save file once, then use Save Now for daily work.</div>
+    <button type="button" class="primary-save-action" data-save-menu-action="save-primary">💾 Save Now</button>
+    <button type="button" data-save-menu-action="load-linked">📂 Load Save File</button>
+    <div class="context-menu-separator"></div>
+    <button type="button" data-save-menu-action="open-save-options">More Save Options...</button>
+    <button type="button" data-save-menu-action="safe-share">Safe Sharing Presets...</button>
+  </div>
+
+  <div id="todayModeModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="todayModeTitle">
+    <div class="modal modern-modal today-mode-modal">
+      <div class="panel-header"><h2 id="todayModeTitle">Today&apos;s Classroom</h2><button id="closeTodayModeBtn" class="tiny secondary" type="button">Close</button></div>
+      <div class="modal-body">
+        <div class="today-summary-row"><div><strong id="todayModeStatus">Today mode is off</strong><p class="muted">Temporary attendance, guests, seating, and notes stay separate from the master chart until you deliberately keep them.</p></div><label class="checkline"><input id="todayModeActiveToggle" type="checkbox" /> <span>Use Today mode</span></label></div>
+        <div class="settings-grid two-col today-grid">
+          <section class="workflow-card"><h3>Attendance</h3><div id="todayAttendanceList" class="today-attendance-list"></div></section>
+          <section class="workflow-card"><h3>Guests and temporary notes</h3><div class="row"><div class="field"><label for="todayGuestNameInput">Guest name</label><input id="todayGuestNameInput" maxlength="100" placeholder="Guest or visiting student" /></div><button id="addTodayGuestBtn" class="secondary" type="button">Add guest</button></div><div id="todayGuestList" class="list compact-list"></div><div class="field"><label for="todayNoteInput">Today-only note</label><textarea id="todayNoteInput" rows="5" maxlength="1000" placeholder="Substitute note, testing arrangement, temporary change..."></textarea></div></section>
+        </div>
+        <div class="button-row today-actions"><button id="saveTodayModeBtn" type="button">Save Today</button><button id="generateTodayBtn" class="secondary" type="button">Generate for present students</button><button id="printTodayBtn" class="secondary" type="button">Print today&apos;s chart</button><button id="restoreMasterFromTodayBtn" class="secondary" type="button">Restore master seating</button><button id="clearTodayModeBtn" class="danger" type="button">End Today mode</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="seatingPlansModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="seatingPlansTitle">
+    <div class="modal modern-modal seating-plans-modal">
+      <div class="panel-header"><h2 id="seatingPlansTitle">Named Seating Plans</h2><button id="closeSeatingPlansBtn" class="tiny secondary" type="button">Close</button></div>
+      <div class="modal-body">
+        <div class="settings-grid two-col">
+          <section class="workflow-card"><h3>Save current chart</h3><div class="field"><label for="seatingPlanNameInput">Plan name</label><input id="seatingPlanNameInput" maxlength="80" placeholder="Quarter 1, Testing arrangement..." /></div><div class="field"><label for="seatingPlanReasonInput">Reason</label><input id="seatingPlanReasonInput" maxlength="160" /></div><div class="field"><label for="seatingPlanNotesInput">Notes</label><textarea id="seatingPlanNotesInput" rows="4" maxlength="1200"></textarea></div><button id="saveSeatingPlanBtn" type="button">Save named plan</button></section>
+          <section class="workflow-card"><h3>Compare plans</h3><div class="field"><label for="comparePlanASelect">Plan A</label><select id="comparePlanASelect"></select></div><div class="field"><label for="comparePlanBSelect">Plan B</label><select id="comparePlanBSelect"></select></div><button id="compareSeatingPlansBtn" class="secondary" type="button">Compare</button><div id="seatingPlanComparison" class="plan-comparison muted">Choose two plans to compare assignments and room changes.</div></section>
+        </div>
+        <h3>Saved plans</h3><div id="seatingPlansList" class="settings-list seating-plans-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="freeformPresetsModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="freeformPresetsTitle">
+    <div class="modal modern-modal">
+      <div class="panel-header"><h2 id="freeformPresetsTitle">Freeform Object Presets</h2><button id="closeFreeformPresetsBtn" class="tiny secondary" type="button">Close</button></div>
+      <div class="modal-body"><div class="hint">Insert an editable group, then move, resize, ungroup, or relabel it like any other Freeform objects.</div><div id="freeformPresetGrid" class="preset-grid"></div></div>
+    </div>
+  </div>
+
+  <div id="globalSearchModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="globalSearchTitle">
+    <div class="modal modern-modal global-search-modal"><div class="panel-header"><h2 id="globalSearchTitle">Search Planner</h2><button id="closeGlobalSearchBtn" class="tiny secondary" type="button">Close</button></div><div class="modal-body"><div class="v4-command-search"><input id="globalSearchInput" type="search" autocomplete="off" placeholder="Search classes, students, rules, zones, templates, plans, and settings..." aria-label="Search planner data" /></div><div id="globalSearchResults" class="global-search-results"></div></div></div>
+  </div>
+
+  <div id="recoveryKitModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="recoveryKitTitle">
+    <div class="modal"><div class="panel-header"><h2 id="recoveryKitTitle">Offline Recovery Kit</h2><button id="closeRecoveryKitBtn" class="tiny secondary" type="button">Close</button></div><div class="modal-body"><div class="warningbox">The recovery kit creates a separately encrypted full backup and a one-time recovery key. Store the two downloads in different secure locations. Anyone with both can read the planner data.</div><div class="feature-card" style="margin-top:10px;"><strong>To restore later</strong><span>Choose <em>Restore / Upload Classes File</em>, select the recovery JSON file, and enter the separate recovery key when prompted.</span></div><div class="button-row" style="margin-top:10px;"><button id="createRecoveryKitBtn" type="button">Create recovery kit downloads</button></div><div id="recoveryKitStatus" class="muted" style="margin-top:10px;"></div></div></div>
+  </div>
+
+  <div id="aboutModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="aboutModalTitle">
+    <div class="modal">
+      <div class="panel-header">
+        <h2 id="aboutModalTitle">About Classroom Seating Planner</h2>
+        <button type="button" id="closeAboutBtn" class="tiny secondary">Close</button>
+      </div>
+      <div class="modal-body">
+        <p class="muted">A privacy-conscious classroom planning workspace for building rosters, designing rooms, generating seating plans, reviewing constraints, and creating purpose-specific print and sharing outputs.</p>
+        <div class="about-grid">
+          <strong>Written by</strong><span>Chris L. Franklin</span>
+          <strong>Optional support</strong>
+          <div class="about-donation">
+            <p class="about-donation-copy">Classroom Seating Planner is free to use. Donations are entirely optional, never expected, and do not unlock features. This button appears only in About.</p>
+            <div id="aboutDonateButton" class="paypal-donate-button" data-paypal-donate-target role="status" aria-live="polite"><span>PayPal donation button loads when this About section is opened.</span></div>
+          </div>
+          <strong>Version</strong><span id="aboutRevision">Loading...</span>
+          <strong>Release date</strong><span id="aboutUpdated">Loading...</span>
+          <strong>Build</strong><span id="aboutBuildInfo">Loading...</span>
+          <strong>Data format</strong><span id="aboutSchemaInfo">Loading...</span>
+          <strong>License</strong><span id="aboutLicenseSummary">Loading...</span>
+          <strong>Storage</strong><span>Runs locally in the browser. Use a linked save file or downloaded backup for durable storage.</span>
+        </div>
+        <div class="about-actions">
+          <button id="aboutGettingStartedBtn" class="secondary" type="button">Quick Start</button>
+          <button id="aboutHelpBtn" class="secondary" type="button">Open Help</button>
+          <button id="aboutChangeLogBtn" class="secondary" type="button">View Change Log</button>
+          <button id="aboutLicenseBtn" class="secondary" type="button">View License</button>
+        </div>
+        <h3>Project Features</h3>
+        <div id="aboutFeatureList" class="feature-list"></div>
+        <div class="hint">The portable release is self-contained and keeps student data in the browser unless the user explicitly saves or exports it. The hosted PWA uses same-origin assets for managed deployment and offline installation. Optional Google Drive support uses Google Identity Services and the Drive API; no third-party application runtime framework is bundled.</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="changeLogModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="changeLogModalTitle">
+    <div class="modal">
+      <div class="panel-header">
+        <h2 id="changeLogModalTitle">Release Notes &amp; Project History</h2>
+        <button id="closeChangeLogBtn" class="tiny secondary" type="button">Close</button>
+      </div>
+      <div class="modal-body">
+        <div class="hint">The current release is documented in detail. Earlier point releases are grouped into milestones so the app keeps a useful history without carrying a novel inside the JavaScript.</div>
+        <div id="changeLogList" class="change-log-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="licenseModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="licenseModalTitle">
+    <div class="modal">
+      <div class="panel-header">
+        <h2 id="licenseModalTitle">License</h2>
+        <button id="closeLicenseBtn" class="tiny secondary" type="button">Close</button>
+      </div>
+      <div class="modal-body">
+        <div class="about-grid">
+          <strong>License</strong><span id="licenseName">Loading...</span>
+          <strong>SPDX ID</strong><span id="licenseSpdx">Loading...</span>
+          <strong>Copyright holder</strong><span id="licenseHolder">Loading...</span>
+          <strong>Copyright year</strong><span id="licenseYear">Loading...</span>
+        </div>
+        <div id="licenseText" class="confirm-message"></div>
+        <div class="hint">This notice is embedded in the app file and included in complete save/export files as app metadata. It does not claim ownership over student or classroom data entered by users.</div>
+      </div>
+    </div>
+  </div>
+
+
+  <div id="classNameModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="classNameModalTitle">
+    <div class="modal" style="max-width: 520px;">
+      <div class="panel-header">
+        <h2 id="classNameModalTitle">Class Name</h2>
+        <button id="closeClassNameBtn" class="tiny secondary" type="button">Close</button>
+      </div>
+      <div class="modal-body">
+        <input id="classNameMode" type="hidden" />
+        <div class="field">
+          <label for="classNameInput">Class Name</label>
+          <input id="classNameInput" autocomplete="off" maxlength="80" />
+        </div>
+        <div class="button-row" style="margin-top:10px;">
+          <button id="saveClassNameBtn" type="button">Save Class</button>
+          <button id="cancelClassNameBtn" class="secondary" type="button">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="settingsModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="settingsModalTitle">
+    <div class="modal settings-modal">
+      <div class="panel-header">
+        <h2 id="settingsModalTitle">Settings</h2>
+        <button id="closeSettingsBtn" class="tiny secondary" type="button">Close</button>
+      </div>
+      <div class="modal-body settings-body">
+        <nav id="settingsPageNav" class="settings-page-nav" role="tablist" aria-label="Settings pages">
+          <button id="settingsPageChartBtn" class="settings-page-tab active" type="button" role="tab" aria-selected="true" aria-controls="settingsPageChart" data-settings-nav="chart"><span class="settings-page-title">Chart</span><span class="settings-page-desc">Title, date, room, and printable chart identity.</span></button>
+          <button id="settingsPageAppearanceBtn" class="settings-page-tab" type="button" role="tab" aria-selected="false" aria-controls="settingsPageAppearance" data-settings-nav="appearance"><span class="settings-page-title">Appearance</span><span class="settings-page-desc">Theme, default layout state, and hint behavior.</span></button>
+          <button id="settingsPageHelpBtn" class="settings-page-tab" type="button" role="tab" aria-selected="false" aria-controls="settingsPageHelp" data-settings-nav="help"><span class="settings-page-title">Help &amp; Guides</span><span class="settings-page-desc">Start focused lessons, resume practice, or search the reference guide.</span></button>
+          <button id="settingsPageEyeBtn" class="settings-page-tab" type="button" role="tab" aria-selected="false" aria-controls="settingsPageEye" data-settings-nav="eye"><span class="settings-page-title">Presentation Mode</span><span class="settings-page-desc">Locked review display, selected details, and hidden-data protection.</span></button>
+          <button id="settingsPageSavingBtn" class="settings-page-tab" type="button" role="tab" aria-selected="false" aria-controls="settingsPageSaving" data-settings-nav="saving"><span class="settings-page-title">Saving</span><span class="settings-page-desc">Linked save file, auto-save, backups, and save/download encryption.</span></button>
+          <button id="settingsPageSecurityBtn" class="settings-page-tab" type="button" role="tab" aria-selected="false" aria-controls="settingsPageSecurity" data-settings-nav="security"><span class="settings-page-title">Security &amp; Data</span><span class="settings-page-desc">Auto-lock, Settings access, PINs, local data cleanup, and full reset.</span></button>
+          <button id="settingsPageRoomBtn" class="settings-page-tab" type="button" role="tab" aria-selected="false" aria-controls="settingsPageRoom" data-settings-nav="room"><span class="settings-page-title">Room Objects</span><span class="settings-page-desc">Custom right-click room objects and sample classroom data.</span></button>
+          <button id="settingsPageAboutBtn" class="settings-page-tab" type="button" role="tab" aria-selected="false" aria-controls="settingsPageAbout" data-settings-nav="about"><span class="settings-page-title">About</span><span class="settings-page-desc">Revision, license, project features, and change history.</span></button>
+        </nav>
+        <div class="settings-page-content">
+          <div id="settingsPageChart" class="settings-page active" role="tabpanel" data-settings-panel="chart" aria-label="Chart settings">
+            <div class="settings-page-header">
+              <strong>Chart details</strong>
+              Title, date, room, and printable chart identity.
+            </div>
+            <section class="section settings-section">
+                      <h3>Seating Chart Details</h3>
+                      <div class="settings-grid two-col">
+                        <div class="field"><label for="chartTitleInput">Chart Title</label><input id="chartTitleInput" autocomplete="off" placeholder="Seating Chart" /></div>
+                        <div class="field"><label for="chartDateInput">Chart Date</label><input id="chartDateInput" type="date" /></div>
+                        <div class="field"><label for="chartPeriodInput">Period / Section</label><input id="chartPeriodInput" autocomplete="off" placeholder="Period 1" /></div>
+                        <div class="field"><label for="chartRoomInput">Room</label><input id="chartRoomInput" autocomplete="off" placeholder="Room 104" /></div>
+                        <div class="field"><label for="chartTeacherInput">Teacher / Owner</label><input id="chartTeacherInput" autocomplete="off" /></div>
+                      </div>
+                      <button id="saveChartDetailsBtn" class="secondary" type="button">Save Chart Details</button>
+                    </section>
+          </div>
+          <div id="settingsPageAppearance" class="settings-page" role="tabpanel" data-settings-panel="appearance" aria-label="Appearance settings">
+            <div class="settings-page-header">
+              <strong>Appearance and defaults</strong>
+              Theme, default layout state, hints, and visibility-mode display choices.
+            </div>
+            <section class="section settings-section">
+                      <h3>Visual Theme</h3>
+                      <div class="field">
+                        <label for="settingTheme">Theme</label>
+                        <select id="settingTheme">
+                          <option value="default">Default</option>
+                          <option value="gradient">Gradient Sky</option>
+                          <option value="shimmer">Shimmer</option>
+                          <option value="prismatic">Prismatic Flow</option>
+                          <option value="aurora">Aurora Focus</option>
+                          <option value="highContrast">High Contrast</option>
+                          <option value="windowsXp">Windows XP</option>
+                          <option value="windows11">Windows 11</option>
+                          <option value="macos">macOS Frosted</option>
+                          <option value="linux">Linux Terminal</option>
+                        </select>
+                      </div>
+                      <label class="checkline" for="settingHideObjectTypeLabels"><input id="settingHideObjectTypeLabels" type="checkbox" /> <span>Hide Seat and room-object type labels on the workspace</span></label>
+                      <div class="hint">Themes change the overall feel and colors without changing seating data. Prismatic Flow adds animated jewel-tone gradients and glass surfaces; reduced-motion settings automatically calm the animation. The object-label option hides the small Seat, Teacher Desk, Table, and custom-object type indicators without hiding student names or custom seat labels.</div>
+                    </section>
+            <section class="section settings-section">
+                      <h3>Page Load Defaults</h3>
+                      <div class="settings-grid two-col">
+                        <label class="checkline" for="settingDefaultNamesOnly"><input id="settingDefaultNamesOnly" type="checkbox" /> <span>Start/load in Names Only mode</span></label>
+                        <label class="checkline" for="settingHeaderCollapsed"><input id="settingHeaderCollapsed" type="checkbox" /> <span>Minimize workflow guidance on load/import</span></label>
+                        <label class="checkline" for="settingLeftCollapsed"><input id="settingLeftCollapsed" type="checkbox" /> <span>Collapse the student roster panel in Seating on load/import</span></label>
+                        <label class="checkline" for="settingRightCollapsed"><input id="settingRightCollapsed" type="checkbox" /> <span>Collapse Chart Status in Review on load/import</span></label>
+                        <label class="checkline" for="settingLayoutToolsCollapsed"><input id="settingLayoutToolsCollapsed" type="checkbox" /> <span>Collapse Layout Tools on load/import</span></label>
+                        <label class="checkline" for="settingCsvCollapsed"><input id="settingCsvCollapsed" type="checkbox" /> <span>Collapse CSV Import on load/import</span></label>
+                        <label class="checkline" for="settingAddStudentCollapsed"><input id="settingAddStudentCollapsed" type="checkbox" /> <span>Collapse Add Student when students exist</span></label>
+                        <label class="checkline" for="settingHideHints"><input id="settingHideHints" type="checkbox" /> <span>Hide all text hints</span></label>
+                      </div>
+                      <div class="button-row" style="margin-top:8px;">
+                        <button id="applyPageLoadDefaultsNowBtn" class="secondary tiny" type="button">Apply Defaults to Current View</button>
+                        <button id="resetDismissedHintsBtn" class="secondary tiny" type="button">Reset Closed Hints</button>
+                      </div>
+                      <div class="field" style="margin-top:10px; max-width:320px;">
+                        <label for="settingDesignCellSize">Default Design Mode cell size</label>
+                        <input id="settingDesignCellSize" type="number" min="20" max="72" step="1" />
+                      </div>
+                      <div class="hint">These defaults save with linked, downloaded, and uploaded class files. They apply when a save is loaded or when you select Apply Defaults to Current View, so changing a checkbox does not rearrange the open Settings window. If there are no students, Add Student opens automatically even when its default is collapsed.</div>
+                    </section>
+          </div>
+          <div id="settingsPageHelp" class="settings-page" role="tabpanel" data-settings-panel="help" aria-label="Help and guides">
+            <div class="settings-page-header">
+              <strong>Help and guides</strong>
+              Search the reference guide, start Quick Start, or open a focused hands-on lesson from one reliable place on desktop and mobile.
+            </div>
+            <section class="section settings-section">
+              <h3>Help Tools</h3>
+              <div class="hint">On smaller screens, use this page instead of hunting for a header icon. Every help route remains available here.</div>
+              <div class="button-row settings-help-actions">
+                <button id="settingsHelpGuideBtn" type="button">Open Help &amp; Lessons</button>
+                <button id="settingsQuickStartBtn" class="secondary" type="button">Start Quick Start</button>
+                <button id="settingsDriveSharingGuideBtn" class="secondary" type="button" data-guided-start="drive-collaboration" data-guided-mode="explain">Drive Sharing Guide</button>
+                <button id="settingsSecurityGuideBtn" class="secondary" type="button" data-guided-start="security-privacy" data-guided-mode="explain">Security Setup Guide</button>
+                <button id="settingsResumeLessonBtn" class="ghost" type="button">Resume lesson</button>
+              </div>
+            </section>
+            <section class="section settings-section">
+              <h3>What each tool does</h3>
+              <div class="feature-list">
+                <div class="feature-card"><strong>Quick Start</strong><span>An eight-step overview of creating a class, building the room, seating students, reviewing, saving, and sharing.</span></div>
+                <div class="feature-card"><strong>Hands-on lessons</strong><span>Practice Freeform tools, manual placement, random seating, candidate generation, groups, zones, snapshots, printing, imports, Google connections, security setup, and Drive collaboration.</span></div>
+                <div class="feature-card"><strong>Practice classes</strong><span>Lessons can create a clearly labeled temporary class so users can learn without modifying a real roster or room.</span></div>
+                <div class="feature-card"><strong>Reference guide</strong><span>Search explanations, examples, security guidance, sharing roles, password-protected read-only packages, printing help, and troubleshooting without starting a lesson.</span></div>
+                <div class="feature-card"><strong>Wizard and workflow index</strong><span>Lists every major guided flow, where it starts, what it changes, and which recovery or cancel path protects existing data.</span></div>
+              </div>
+            </section>
+          </div>
+          <div id="settingsPageEye" class="settings-page" role="tabpanel" data-settings-panel="eye" aria-label="Presentation Mode settings">
+            <div class="settings-page-header">
+              <strong>Presentation Mode visibility and protection</strong>
+              A locked Review view with encrypted hidden-detail protection and adjustable on-screen seat size.
+            </div>
+            <section class="section settings-section">
+                      <h3>Presentation Mode</h3>
+                      <div class="hint">Presentation Mode switches to Review, hides workflow guidance, rosters, chart-review details, undo/redo, Help, snapshots, and editing tools, and keeps only the room display plus its Zoom and Text sliders. The full original chart is encrypted into session storage, the visible in-memory chart is sanitized, and exiting restores the original with the Presentation PIN, Lock PIN, or current encryption key.</div>
+                      <div class="settings-grid two-col">
+                        <label class="checkline" for="visHidePrint"><input id="visHidePrint" type="checkbox" /> <span>Hide Print controls</span></label>
+                        <label class="checkline" for="visForceNamesOnly"><input id="visForceNamesOnly" type="checkbox" /> <span>Force Names Only while presentation mode is active</span></label>
+                        <label class="checkline" for="visHideGroupDetails"><input id="visHideGroupDetails" type="checkbox" /> <span>Hide group/zone details and markers</span></label>
+                        </div>
+                      <div id="visibilityCredentialNote" class="hint"></div>
+                    </section>
+          </div>
+          <div id="settingsPageSaving" class="settings-page" role="tabpanel" data-settings-panel="saving" aria-label="Saving settings">
+            <div class="settings-page-header">
+              <strong>Saving and backups</strong>
+              Linked save file, auto-save, backups, and save/download encryption.
+            </div>
+            <section class="section settings-section">
+                      <h3>Save / Download Encryption</h3>
+                      <label class="checkline" for="settingsEncryptionEnabled">
+                        <input id="settingsEncryptionEnabled" type="checkbox" />
+                        <span>Encrypt saved/downloaded classes files</span>
+                      </label>
+                      <div class="encryption-key-row" style="margin-top:8px;">
+                        <label for="settingsEncryptionKey">New / updated encryption password</label>
+                        <input id="settingsEncryptionKey" type="password" autocomplete="off" placeholder="Session key is hidden after entry" />
+                      </div>
+                      <div id="settingsPasswordStrength" class="password-strength-meter" aria-live="polite"></div>
+                      <div class="button-row" style="margin-top:8px;"><button id="settingsApplyEncryptionKeyBtn" class="secondary" type="button">Update Session Encryption Password</button></div>
+                      <div class="iteration-control-row">
+                        <div>
+                          <label for="settingPbkdf2Iterations">PBKDF2 iterations for future encryption</label>
+                          <div class="muted">Higher values slow password guessing but may make saves/loads slower on older devices. Existing saves/backups keep the iteration count they were created with.</div>
+                        </div>
+                        <input id="settingPbkdf2Iterations" type="number" min="150000" max="2000000" step="50000" value="310000" />
+                      </div>
+                      <div class="encryption-note">The Welcome screen requires an encryption password before first use. For security, the active session key is not prefilled here after entry. Updating the password changes future local saves, linked saves, backups, and new snapshots only. Older downloaded saves/backups/snapshots remain encrypted with the password used when they were created. The key is not written into exported save files; while Lock or Presentation Mode is active, it can be stored only as an encrypted wrapped key protected by the Lock or Presentation Mode PIN/password.</div>
+                    </section>
+            <section class="section settings-section">
+                      <h3>Saving</h3>
+                      <div class="hint">Browser local auto-save starts by default. Choose a real save file for safer long-term storage; use downloads for portable backups or selected-data transfers.</div>
+                      <div id="saveHealthPanel" class="save-health-grid compact" aria-live="polite">
+                        <div class="save-health-card"><strong>Save method</strong><span id="saveHealthMethod">Checking...</span></div>
+                        <div class="save-health-card"><strong>Save file</strong><span id="saveHealthFile">Browser local save active.</span></div>
+                        <div class="save-health-card"><strong>Last save</strong><span id="saveHealthLastLinked">Never</span></div>
+                        <div class="save-health-card"><strong>Backup</strong><span id="saveHealthLastBackup">Never</span></div>
+                        <div class="save-health-card"><strong>Security</strong><span id="saveHealthEncryption">Checking...</span></div>
+                        <div class="save-health-card"><strong>Google Drive</strong><span id="saveHealthGoogleDriveStatus">Not connected.</span></div>
+                        <div class="save-health-card"><strong>Status</strong><span id="saveHealthLinkedStatus">Ready</span></div>
+                      </div>
+                      <div class="autosave-setting-row">
+                        <div>
+                          <label for="settingAutoSaveMinutes">Auto-save interval</label>
+                          <div class="muted">Minutes between saves. If no save file is chosen, the app auto-saves to browser local storage and creates local full-app snapshots. Use 0 to turn auto-save off.</div>
+                        </div>
+                        <input id="settingAutoSaveMinutes" type="number" min="0" max="120" step="1" value="0" />
+                      </div>
+                      <div class="save-settings-actions">
+                        <button id="settingsOpenSaveSetupBtn" class="secondary" type="button">Open Save Options</button>
+                        <button id="settingsForgetLinkedFileBtn" class="ghost" type="button">Forget Save File</button>
+                      </div>
+                    </section>
+                    <section class="section settings-section">
+                      <h3>Google Drive Storage</h3>
+                      <div class="hint">Optional cloud storage for encrypted saves. This public build uses the app's built-in Google OAuth Client ID. The page still must be hosted from an authorized HTTPS origin for Google Drive sign-in to work.</div>
+                      <div class="field">
+                        <label for="settingPreferredStorage">Preferred Save Now location</label>
+                        <select id="settingPreferredStorage">
+                          <option value="browser">Browser local autosave / downloads</option>
+                          <option value="linked">Linked save file when available</option>
+                          <option value="googleDrive">Google Drive</option>
+                        </select>
+                      </div>
+                      <div class="field"><label for="settingGoogleDriveClientId">Google OAuth Client ID</label><input id="settingGoogleDriveClientId" autocomplete="off" placeholder="Optional deployment-specific OAuth client ID" /></div>
+                      <div class="field"><label for="settingGoogleDriveFolderName">Drive folder name</label><input id="settingGoogleDriveFolderName" maxlength="120" placeholder="Classroom Seating Planner Saves" /></div>
+                      <div id="googleDriveSettingsStatus" class="hint">Google Drive is not connected.</div>
+                      <div class="button-row">
+                        <button id="settingsGoogleDriveConnectBtn" class="secondary" type="button">Connect Google Drive</button>
+                        <button id="settingsGoogleDriveSaveBtn" class="secondary" type="button">Save Encrypted Copy</button>
+                        <button id="settingsGoogleDriveLoadBtn" class="secondary" type="button">Load from Drive</button>
+                        <button id="settingsGoogleDriveForgetBtn" class="secondary" type="button">Disconnect</button>
+                      </div>
+                    </section>
+          </div>
+          <div id="settingsPageSecurity" class="settings-page" role="tabpanel" data-settings-panel="security" aria-label="Security &amp; Data settings">
+            <div class="settings-page-header">
+              <strong>Security and local data</strong>
+              Auto-lock, Settings access, PINs, local data cleanup, and full reset.
+            </div>
+            <section class="section settings-section">
+                      <h3>Security Status</h3>
+                      <div id="securityStatusPanel" class="security-status-grid" aria-live="polite">
+                        <div class="security-status-card"><strong>Active key</strong><span id="securityStatusActiveKey" class="security-status-value warn">Checking...</span></div>
+                        <div class="security-status-card"><strong>Storage encrypted</strong><span id="securityStatusStorageEncrypted" class="security-status-value warn">Checking...</span></div>
+                        <div class="security-status-card"><strong>Settings protected</strong><span id="securityStatusSettingsProtected" class="security-status-value warn">Checking...</span></div>
+                        <div class="security-status-card"><strong>Lock PIN set</strong><span id="securityStatusLockPin" class="security-status-value warn">Checking...</span></div>
+                        <div class="security-status-card"><strong>Presentation PIN set</strong><span id="securityStatusEyePin" class="security-status-value warn">Checking...</span></div>
+                      </div>
+                    </section>
+            <section class="section settings-section">
+                      <h3>Lock Immediately After Inactivity</h3>
+                      <div class="field"><label for="settingAutoLockMinutes">Auto-lock after inactive minutes</label><input id="settingAutoLockMinutes" type="number" min="0" max="240" step="1" /></div>
+                      <div class="auto-lock-grid">
+                        <label class="checkline auto-lock-card" for="settingAutoLockOnBlur"><input id="settingAutoLockOnBlur" type="checkbox" /> <span>Lock immediately when this window loses focus</span></label>
+                        <label class="checkline auto-lock-card" for="settingAutoLockOnTabHidden"><input id="settingAutoLockOnTabHidden" type="checkbox" /> <span>Lock immediately when this tab becomes hidden/inactive</span></label>
+                        <div class="auto-lock-card">
+                          <label for="settingAutoLockOnReturnMinutes">Lock when tab returns after X inactive minutes</label>
+                          <input id="settingAutoLockOnReturnMinutes" type="number" min="0" max="240" step="1" />
+                          <div class="muted">Use 0 to disable return-lock. Example: set 10 so if the tab was hidden for 10+ minutes, it locks as soon as the user returns.</div>
+                        </div>
+                      </div>
+                      <div class="hint">Auto-lock encrypts the current chart state, scrubs visible fields, and requires a Lock PIN/password plus an active session encryption key workflow. Set a Lock PIN/password before relying on unattended auto-lock.</div>
+                      <div class="button-row" style="margin-top:8px;"><button id="clearLocalDataBtn" class="danger" type="button">Clear All Local Data</button><button id="deploymentDiagnosticsBtn" class="secondary" type="button">Deployment &amp; Storage Diagnostics</button>
+                <button id="factoryResetEverythingBtn" class="danger" type="button">Factory Reset Everything</button></div>
+                    </section>
+            <section class="section settings-section">
+                      <h3>Settings Access</h3>
+                      <div class="hint">Choose what credential is required before the Settings page opens. By default, the first-run encryption password protects Settings. You can disable the prompt, but doing so lets anyone with the unlocked page change security, visibility, save, and local-data settings. Auto uses Lock PIN first, then Presentation PIN, then the current session encryption key.</div>
+                      <div class="field" style="margin-top:8px;">
+                        <label for="settingSettingsAccessMethod">Require for Settings access</label>
+                        <select id="settingSettingsAccessMethod">
+                          <option value="auto">Auto: Lock PIN → Presentation PIN → Encryption key</option>
+                          <option value="lock">Lock/Unlock PIN only</option>
+                          <option value="eye">Presentation Mode PIN only</option>
+                          <option value="encryption">Encryption key only</option>
+                          <option value="none">No prompt / unlocked Settings</option>
+                        </select>
+                      </div>
+                      <div id="settingsAccessStatus" class="hint"></div>
+                    </section>
+            <section class="section settings-section">
+                      <h3>Lock / Presentation PINs</h3>
+                      <div class="hint">PINs are stored as salted PBKDF2-SHA-256 hashes, not plain text. Chart data encryption still uses the encryption key when set, otherwise the lock PIN/password is used as a fallback.</div>
+                      <div class="settings-grid two-col">
+                        <div class="security-card">
+                          <h4>Lock / Unlock PIN</h4>
+                          <div class="field"><label for="settingsLockPin">New lock PIN/password</label><input id="settingsLockPin" type="password" minlength="6" maxlength="256" autocomplete="new-password" /></div>
+                          <div class="field"><label for="settingsLockPinConfirm">Confirm lock PIN/password</label><input id="settingsLockPinConfirm" type="password" minlength="6" maxlength="256" autocomplete="new-password" /></div>
+                          <button id="settingsSaveLockPinBtn" class="secondary" type="button">Save Lock PIN</button>
+                        </div>
+                        <div class="security-card">
+                          <h4>Presentation Mode Exit PIN</h4>
+                          <div class="field"><label for="settingsVisibilityPin">New presentation mode PIN/password</label><input id="settingsVisibilityPin" type="password" minlength="6" maxlength="256" autocomplete="new-password" /></div>
+                          <div class="field"><label for="settingsVisibilityPinConfirm">Confirm Presentation Mode PIN/password</label><input id="settingsVisibilityPinConfirm" type="password" minlength="6" maxlength="256" autocomplete="new-password" /></div>
+                          <button id="settingsSaveVisibilityPinBtn" class="secondary" type="button">Save Presentation PIN</button>
+                        </div>
+                      </div>
+                      <div id="settingsPinStatus" class="hint"></div>
+                    </section>
+          </div>
+          <div id="settingsPageRoom" class="settings-page" role="tabpanel" data-settings-panel="room" aria-label="Room Objects settings">
+            <div class="settings-page-header">
+              <strong>Room tools</strong>
+              Custom right-click room objects and sample classroom data.
+            </div>
+            <section class="section settings-section">
+                      <h3>Right-Click Room Objects</h3>
+                      <div class="hint">Add, rename, or delete custom room objects used in the Click Tool and right-click cell menu. Built-in objects like Wall, Door, Board, Projector, Carpet, and ADA Space remain available.</div>
+                      <div class="inline-control settings-custom-add">
+                        <input id="settingsCustomObjectName" placeholder="Sink, counter, shelf..." maxlength="28" aria-label="Custom room object name" />
+                        <button id="settingsAddCustomObjectBtn" class="secondary" type="button">Add</button>
+                      </div>
+                      <div id="customObjectManagerList" class="settings-list"></div>
+                    </section>
+            <section class="section settings-section">
+                      <h3>Sample Data</h3>
+                      <div class="hint">Loads sample students, groups, anchors, and a starter room layout into the current class.</div>
+                      <button id="settingsSampleBtn" class="secondary" type="button">Load Sample Data</button>
+                    </section>
+          </div>
+          <div id="settingsPageAbout" class="settings-page" role="tabpanel" data-settings-panel="about" aria-label="About settings">
+            <div class="settings-page-header">
+              <strong>About this app</strong>
+              Revision, license, project features, and change history.
+            </div>
+            <section class="section settings-section settings-about-section">
+                      <h3>About</h3>
+                      <p class="muted">A privacy-conscious classroom planning workspace for building rosters, designing rooms, generating seating plans, reviewing constraints, and creating purpose-specific print and sharing outputs.</p>
+                      <div class="about-grid">
+                        <strong>Written by</strong><span>Chris L. Franklin</span>
+                        <strong>Optional support</strong>
+                        <div class="about-donation">
+                          <p class="about-donation-copy">Classroom Seating Planner is free to use. Donations are entirely optional, never expected, and do not unlock features. This button appears only in About.</p>
+                          <div id="settingsDonateButton" class="paypal-donate-button" data-paypal-donate-target role="status" aria-live="polite"><span>PayPal donation button loads when this About section is opened.</span></div>
+                        </div>
+                        <strong>Version</strong><span id="settingsRevision">Loading...</span>
+                        <strong>Release date</strong><span id="settingsUpdated">Loading...</span>
+                        <strong>Build</strong><span id="settingsBuildInfo">Loading...</span>
+                        <strong>Data format</strong><span id="settingsSchemaInfo">Loading...</span>
+                        <strong>License</strong><span id="settingsLicenseSummary">Loading...</span>
+                        <strong>Storage</strong><span>Runs locally in the browser. Use a linked save file or downloaded backup for durable storage.</span>
+                      </div>
+                      <div class="about-actions">
+                        <button id="settingsAboutGettingStartedBtn" class="secondary" type="button">Quick Start</button>
+                        <button id="settingsAboutHelpBtn" class="secondary" type="button">Open Help</button>
+                        <button id="settingsChangeLogBtn" class="secondary" type="button">View Change Log</button>
+                        <button id="settingsLicenseBtn" class="secondary" type="button">View License</button>
+                      </div>
+                      <h4>Project Features</h4>
+                      <div id="settingsFeatureList" class="feature-list"></div>
+                    </section>
+          </div>
+        </div>
+
+      </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div id="studentEditModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="studentEditTitle">
+    <div class="modal student-edit-modal">
+      <div class="panel-header">
+        <h2 id="studentEditTitle">Edit Student</h2>
+        <button id="closeStudentEditBtn" class="tiny secondary" type="button">Close</button>
+      </div>
+      <div class="modal-body">
+        <input id="editStudentOriginalId" type="hidden" />
+        <div class="row">
+          <div class="field"><label for="editFirstName">First Name</label><input id="editFirstName" autocomplete="off" /></div>
+          <div class="field"><label for="editLastName">Last Name</label><input id="editLastName" autocomplete="off" /></div>
+        </div>
+        <div class="row">
+          <div class="field"><label for="editNickName">Nickname</label><input id="editNickName" autocomplete="off" /></div>
+          <div class="field"><label for="editGrade">Grade</label><input id="editGrade" autocomplete="off" /></div>
+        </div>
+        <div class="field"><label for="editStudentId">ID</label><input id="editStudentId" autocomplete="off" /></div>
+        <div class="notes-control-card">
+          <div>
+            <strong>Student Notes</strong>
+            <div id="editStudentNotesSummary" class="notes-summary-text">No notes defined.</div>
+          </div>
+          <button id="openEditStudentNotesBtn" class="secondary" type="button" title="Open the notes editor to view, add, or remove Private, Substitute, and Public notes for this student." aria-label="Open notes" >📝 <span id="editStudentNotesCount" class="pill">0</span></button>
+        </div>
+        <div class="hidden-note-fields" hidden aria-hidden="true">
+          <textarea id="editStudentNotesPrivate" autocomplete="off" aria-label="Edit private student notes"></textarea>
+          <textarea id="editStudentNotesSubstitute" autocomplete="off" aria-label="Edit substitute student notes"></textarea>
+          <textarea id="editStudentNotesPublic" autocomplete="off" aria-label="Edit public student notes"></textarea>
+        </div>
+        <section class="section student-requirements-card">
+          <h3>Individual Seating Requirements</h3>
+          <div class="requirements-grid">
+            <div class="field"><label for="editRequirementFront">Front placement</label><select id="editRequirementFront"><option value="none">No preference</option><option value="prefer">Prefer front</option><option value="require">Require front area</option></select></div>
+            <div class="field"><label for="editRequirementSide">Room side</label><select id="editRequirementSide"><option value="none">No preference</option><option value="left">Prefer left</option><option value="right">Prefer right</option></select></div>
+            <label class="checkline"><input id="editRequirementNearTeacher" type="checkbox" /> Near teacher</label>
+            <label class="checkline"><input id="editRequirementAisle" type="checkbox" /> Prefer aisle / edge</label>
+            <label class="checkline"><input id="editRequirementAda" type="checkbox" /> Require ADA-marked seat</label>
+            <label class="checkline"><input id="editRequirementAwayDoor" type="checkbox" /> Away from door</label>
+            <label class="checkline"><input id="editRequirementAwayWindow" type="checkbox" /> Away from window</label>
+          </div>
+          <div class="row">
+            <div class="field"><label for="editRequirementPreferredZones">Preferred zones</label><select id="editRequirementPreferredZones" multiple size="4"></select></div>
+            <div class="field"><label for="editRequirementExcludedZones">Excluded zones</label><select id="editRequirementExcludedZones" multiple size="4"></select></div>
+          </div>
+          <div class="field"><label for="editRequirementDistanceStudents">Keep distance from students</label><select id="editRequirementDistanceStudents" multiple size="5"></select></div>
+          <div class="hint mini">Requirements are encrypted with the student record and evaluated by the seating generator. “Require” items are reported as hard conflicts when no valid seat is available.</div>
+        </section>
+        <div class="hint">If you change the ID, group/rule memberships and seat assignments are updated to the new ID. Categorized notes are included in encrypted saves/exports. Clean/student-facing print modes hide private and substitute notes.</div>
+        <div class="button-row" style="margin-top:10px;">
+          <button id="saveStudentEditBtn" type="button">Save Student</button>
+          <button id="cancelStudentEditBtn" class="secondary" type="button">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="studentNotesModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="studentNotesTitle">
+    <div class="modal student-notes-modal">
+      <div class="panel-header">
+        <h2 id="studentNotesTitle">Student Notes</h2>
+        <button id="closeStudentNotesBtn" class="tiny secondary" type="button">Close</button>
+      </div>
+      <div class="modal-body">
+        <div id="notesEditorContextHint" class="hint">Add notes and choose a visibility category.</div>
+        <div id="notesEditorList" class="note-editor-list"></div>
+        <div class="note-editor-add-card">
+          <div class="field">
+            <label for="noteEditorCategory">Category</label>
+            <select id="noteEditorCategory">
+              <option value="private">Private</option>
+              <option value="substitute">Substitute</option>
+              <option value="public">Public</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="noteEditorText">New Note</label>
+            <textarea id="noteEditorText" rows="4" autocomplete="off" placeholder="Type the note to add. Private notes are hidden from substitute and student-facing print views."></textarea>
+          </div>
+          <button id="addStudentNoteLineBtn" type="button" class="secondary">Add Note</button>
+        </div>
+        <div class="button-row" style="margin-top:10px;">
+          <button id="saveStudentNotesBtn" type="button">Save Notes</button>
+          <button id="cancelStudentNotesBtn" class="secondary" type="button">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="seatEditModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="seatEditTitle">
+    <div class="modal seat-edit-modal">
+      <div class="panel-header">
+        <h2 id="seatEditTitle">Edit Seat</h2>
+        <button id="closeSeatEditBtn" class="tiny secondary" type="button">Close</button>
+      </div>
+      <div class="modal-body">
+        <div id="seatEditSummary" class="successbox"></div>
+        <div id="seatEditBatchNotice" class="hint seat-edit-batch-notice" role="status" hidden></div>
+        <div id="seatEditLockNotice" class="warningbox seat-edit-lock-notice" role="status" hidden>
+          <strong>This seat is locked.</strong>
+          <span>Its current settings are shown read-only. Use Unlock Seat before changing the student, groups, zones, or cell type.</span>
+        </div>
+        <section id="seatEditStudentSection" class="section">
+          <h3>Assign User</h3>
+          <div class="field">
+            <label for="seatEditStudentSelect">Student</label>
+            <select id="seatEditStudentSelect"></select>
+          </div>
+          <div class="button-row">
+            <button id="seatEditAssignStudentBtn" type="button">Assign to Seat</button>
+            <button id="seatEditClearStudentBtn" class="secondary" type="button">Clear Student</button>
+            <button id="seatEditLockBtn" class="secondary" type="button">Lock / Unlock</button>
+          </div>
+        </section>
+        <section id="seatEditGroupSection" class="section">
+          <h3>Assign Group to Seat</h3>
+          <div class="field">
+            <label for="seatEditGroupSelect">Group</label>
+            <select id="seatEditGroupSelect"></select>
+          </div>
+          <div class="button-row">
+            <button id="seatEditAddGroupBtn" class="secondary" type="button">Reserve Seat for Group</button>
+            <button id="seatEditClearGroupsBtn" class="secondary" type="button">Clear Group Reservations</button>
+          </div>
+        </section>
+        <section id="seatEditZoneSection" class="section">
+          <h3>Assign Zone to Seat</h3>
+          <div class="field">
+            <label for="seatEditZoneSelect">Zone</label>
+            <select id="seatEditZoneSelect"></select>
+          </div>
+          <div class="button-row">
+            <button id="seatEditAddZoneBtn" class="secondary" type="button">Assign Zone</button>
+            <button id="seatEditClearZonesBtn" class="secondary" type="button">Clear Zone Assignments</button>
+          </div>
+        </section>
+        <section id="seatEditTypeSection" class="section">
+          <h3>Define Cell Type</h3>
+          <div class="field">
+            <label for="seatEditTypeSelect">Cell Type</label>
+            <select id="seatEditTypeSelect"></select>
+          </div>
+          <div class="button-row">
+            <button id="seatEditApplyTypeBtn" class="secondary" type="button">Apply Cell Type</button>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <div id="snapshotModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="snapshotModalTitle">
+    <div class="modal">
+      <div class="panel-header"><h2 id="snapshotModalTitle">Full App Snapshots</h2><button id="closeSnapshotModalBtn" class="tiny secondary" type="button">Close</button></div>
+      <div class="modal-body">
+        <div class="hint">Save named restore points for the entire data set: all classes, students, groups, zones, room templates, settings, and layouts. Restoring a snapshot first saves a return point of the current app state so you can roll forward again.</div>
+        <div class="inline-control" style="margin:10px 0;"><input id="snapshotNameInput" placeholder="Snapshot name" maxlength="60" aria-label="Snapshot name" /><button id="saveSnapshotBtn" type="button">Save Snapshot</button></div>
+        <div id="snapshotList" class="settings-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="roomTemplateModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="roomTemplateModalTitle">
+    <div class="modal">
+      <div class="panel-header"><h2 id="roomTemplateModalTitle">Room Templates</h2><button id="closeRoomTemplateModalBtn" class="tiny secondary" type="button">Close</button></div>
+      <div class="modal-body">
+        <div class="hint">Save the current room layout without student assignments, then reuse it in another class.</div>
+        <div class="inline-control" style="margin:10px 0;"><input id="roomTemplateNameInput" placeholder="Template name" maxlength="60" aria-label="Room template name" /><button id="saveRoomTemplateBtn" type="button">Save Room Template</button></div>
+        <div id="roomTemplateList" class="settings-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="csvMapModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="csvMapModalTitle">
+    <div class="modal">
+      <div class="panel-header"><h2 id="csvMapModalTitle">CSV Import Wizard</h2><button id="closeCsvMapModalBtn" class="tiny secondary" type="button">Close</button></div>
+      <div class="modal-body">
+        <div class="hint">Map CSV columns before importing. The preview shows the first few parsed rows. Save a mapping profile when your roster exports use the same headings each time.</div>
+        <div class="csv-profile-bar"><select id="csvImportProfileSelect" aria-label="Saved CSV import profile"><option value="">No saved profile</option></select><button id="applyCsvImportProfileBtn" class="secondary" type="button">Apply profile</button><button id="saveCsvImportProfileBtn" class="secondary" type="button">Save current mapping</button><button id="deleteCsvImportProfileBtn" class="danger" type="button">Delete profile</button></div>
+        <div id="csvMappingFields" class="settings-grid two-col"></div>
+        <div id="csvDuplicateWarning" class="warningbox" style="display:none;"></div>
+        <h3>Preview</h3>
+        <div id="csvPreviewTable" class="csv-preview-table"></div>
+        <div class="button-row" style="margin-top:10px;"><button id="importMappedCsvBtn" type="button">Import Mapped Students</button><button id="cancelCsvMapBtn" class="secondary" type="button">Cancel</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="mobileActionDrawer" class="mobile-action-drawer no-print" aria-live="polite">
+    <div class="mobile-action-title" id="mobileActionTitle">Selected item</div>
+    <div class="button-row">
+      <button id="mobileActionPlaceBtn" class="secondary" type="button">Seat Students</button>
+      <button id="mobileActionEditBtn" class="secondary" type="button">Edit</button>
+      <button id="mobileActionGroupBtn" class="secondary" type="button">Groups</button>
+      <button id="mobileActionCancelBtn" class="ghost" type="button">Cancel</button>
+    </div>
+  </div>
+
+
+  <div id="saveSetupModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="saveSetupTitle">
+    <div class="modal save-options-modal">
+      <div class="panel-header">
+        <h2 id="saveSetupTitle">Save &amp; Backup Options</h2>
+        <button id="closeSaveSetupBtn" class="tiny secondary" type="button">Close</button>
+      </div>
+      <div class="modal-body">
+        <div class="save-options-grid single">
+          <section class="save-options-card recommended">
+            <h3>Download or restore selected data</h3>
+            <p>Use these when you need a backup, need to move a piece of setup to another class, or need to restore part of a saved file without replacing everything.</p>
+            <div class="save-options-actions">
+              <button type="button" data-save-menu-action="choose-linked-file" class="secondary">Choose / Change Save File</button>
+              <button type="button" data-save-menu-action="export-all" class="secondary">Download All Classes</button>
+              <button type="button" data-save-menu-action="export-current" class="secondary">Download Current Class</button>
+              <button type="button" data-save-menu-action="download-students" class="secondary">Download Student Data</button>
+              <button id="openRecoveryKitBtn" type="button" class="secondary">Create Offline Recovery Kit</button>
+              <button type="button" data-save-menu-action="download-groups" class="secondary">Download Groups / Config</button>
+              <button type="button" data-save-menu-action="download-rooms" class="secondary">Download Rooms / Layouts</button>
+              <button type="button" data-save-menu-action="download-package" class="secondary">Download Complete Backup Package</button>
+              <button type="button" data-save-menu-action="import-json" class="secondary">Restore / Upload Classes File</button>
+            </div>
+          </section>
+          <section class="save-options-card">
+            <h3>Google Drive storage location</h3>
+            <p>Save and load the encrypted full-app save in the user's own Google Drive. This public build uses the app's built-in Google OAuth Client ID, and the encryption password still protects the data before upload.</p>
+            <div class="field"><label for="saveOptionGoogleDriveFolderName">Drive folder name</label><input id="saveOptionGoogleDriveFolderName" maxlength="120" placeholder="Classroom Seating Planner Saves" /></div>
+            <div id="googleDriveSaveOptionsStatus" class="hint">Google Drive is not connected.</div>
+            <div class="save-options-actions">
+              <button type="button" data-save-menu-action="google-drive-connect" class="secondary">Connect Google Drive</button>
+              <button type="button" data-save-menu-action="google-drive-save" class="secondary">Save Encrypted Copy to Drive</button>
+              <button type="button" data-save-menu-action="google-drive-load" class="secondary">Load from Google Drive</button>
+              <button type="button" data-save-menu-action="google-drive-disconnect" class="secondary">Disconnect / Forget Drive Link</button>
+            </div>
+          </section>
+        </div>
+        <div id="saveSetupStatus" class="hint save-setup-status">Tip: student data downloads are encrypted automatically when an encryption key is available.</div>
+        <div class="button-row" style="margin-top:12px; justify-content:flex-end;">
+          <button id="saveSetupDoneBtn" type="button">Done</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="selectiveRestoreModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="selectiveRestoreTitle">
+    <div class="modal selective-restore-modal">
+      <div class="panel-header">
+        <h2 id="selectiveRestoreTitle">Choose What to Restore</h2>
+        <button id="closeSelectiveRestoreBtn" class="tiny secondary" type="button">Close</button>
+      </div>
+      <div class="modal-body selective-restore-body">
+        <div id="restoreSourceSummary" class="hint">Review the file contents, then choose what should be restored.</div>
+        <label class="checkline restore-full-row" for="restoreAllClassesToggle">
+          <input id="restoreAllClassesToggle" type="checkbox" checked />
+          <span><strong>Restore entire file</strong> <span class="muted">Replace current app data with all classes, settings, templates, and snapshots from this file.</span></span>
+        </label>
+        <div id="restorePartialPanel" class="restore-partial-panel">
+          <div class="row">
+            <div class="field">
+              <label for="restoreSourceClassSelect">Source class / saved data</label>
+              <select id="restoreSourceClassSelect"></select>
+            </div>
+            <div class="field">
+              <label>Restore into</label>
+              <div class="hint mini">Partial restore applies to the currently open class. Matching IDs are updated; new items are added.</div>
+            </div>
+          </div>
+          <div id="restoreSections" class="restore-sections"></div>
+          <div class="restore-extra-options">
+            <label class="checkline"><input id="restoreRoomTemplatesToggle" type="checkbox" /> <span>Room templates from file</span></label>
+            <label class="checkline"><input id="restorePageSettingsToggle" type="checkbox" /> <span>Page/settings defaults from file</span></label>
+            <label class="checkline"><input id="restoreAppSnapshotsToggle" type="checkbox" /> <span>Full-app snapshots from file</span></label>
+            <label class="checkline"><input id="restoreChartDetailsToggle" type="checkbox" /> <span>Chart details from selected class</span></label>
+          </div>
+        </div>
+        <div class="warningbox" id="restoreWarningBox">Restoring changes current data. A snapshot/undo point is created first.</div>
+        <div class="button-row" style="margin-top:12px; justify-content:flex-end;">
+          <button id="cancelSelectiveRestoreBtn" class="secondary" type="button">Cancel</button>
+          <button id="applySelectiveRestoreBtn" type="button">Restore Selected</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div id="welcomeSecurityModal" class="modal-backdrop welcome-security-backdrop" role="dialog" aria-modal="true" aria-labelledby="welcomeSecurityTitle" aria-describedby="welcomeSecurityDescription">
+    <div class="modal welcome-security-modal">
+      <div class="panel-header welcome-security-header">
+        <div>
+          <span class="welcome-step-label">First-time setup</span>
+          <h2 id="welcomeSecurityTitle">Welcome to Classroom Seating Planner</h2>
+        </div>
+        <span class="welcome-time-badge">About 1 minute</span>
+      </div>
+      <div class="modal-body welcome-security-body">
+        <div class="welcome-intro">
+          <div class="welcome-intro-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+          </div>
+          <div>
+            <h3>Protect your seating charts</h3>
+            <p id="welcomeSecurityDescription">Create one password for encrypted browser autosaves, backups, and save files. The app keeps student data on this device unless you choose another save location.</p>
+          </div>
+        </div>
+
+        <div class="welcome-password-card">
+          <div class="welcome-card-heading">
+            <div><strong>Create your encryption password</strong><span>Use a memorable passphrase. The app cannot recover it unless you later create and separately store an optional recovery package.</span></div>
+            <span class="welcome-required-badge">Required</span>
+          </div>
+          <div class="settings-grid two-col welcome-password-grid">
+            <div class="field password-reveal-field"><label for="welcomeEncryptionKeyInput">Password</label><input id="welcomeEncryptionKeyInput" type="password" autocomplete="new-password" placeholder="Use 4+ words or 16+ characters" /><button id="welcomeTogglePasswordBtn" class="ghost tiny password-reveal-btn" type="button" aria-pressed="false" aria-label="Show encryption password" title="Show or hide this password">Show</button></div>
+            <div class="field password-reveal-field"><label for="welcomeEncryptionKeyConfirmInput">Confirm password</label><input id="welcomeEncryptionKeyConfirmInput" type="password" autocomplete="new-password" placeholder="Enter it again" /><button id="welcomeTogglePasswordConfirmBtn" class="ghost tiny password-reveal-btn" type="button" aria-pressed="false" aria-label="Show confirm password" title="Show or hide this password">Show</button></div>
+          </div>
+          <div id="welcomePasswordStrength" class="password-strength-meter welcome-password-strength" aria-live="polite"></div>
+          <div id="welcomeEncryptionError" class="warningbox" hidden></div>
+          <button id="welcomeSecurityStartBtn" class="welcome-primary-action" type="button">Create password and start</button>
+        </div>
+
+        <div class="welcome-existing-row">
+          <div><strong>Already have a seating chart?</strong><span>Open an existing encrypted save instead of creating a new workspace.</span></div>
+          <div class="button-row">
+            <button id="welcomeLoadExistingBtn" class="secondary" type="button">Open save or backup</button>
+            <button id="welcomeLoadGoogleDriveBtn" class="ghost" type="button">Open from Google Drive</button>
+            <button id="welcomeStartFreshBtn" class="danger" type="button" hidden>Erase local data and start fresh</button>
+          </div>
+          <input id="welcomeImportJson" type="file" accept="application/json,.json" style="display:none" aria-label="Choose existing encrypted seating planner save" />
+        </div>
+
+        <p class="welcome-footnote">Additional lock, privacy, and auto-lock options are available later under <strong>Settings → Security &amp; Data</strong>.</p>
+      </div>
+    </div>
+  </div>
+
+
+  <div id="googleDriveFileModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="googleDriveFileTitle" aria-describedby="googleDriveFileStatus">
+    <div class="modal google-drive-file-modal">
+      <div class="panel-header">
+        <h2 id="googleDriveFileTitle">Choose a Google Drive Save</h2>
+        <button id="closeGoogleDriveFileBtn" class="tiny secondary" type="button">Close</button>
+      </div>
+      <div class="modal-body">
+        <div id="googleDriveFileStatus" class="hint" aria-live="polite">Connect to Google Drive to list encrypted saves created by this app.</div>
+        <div class="google-drive-file-toolbar" style="margin-top:10px;">
+          <div class="field" style="margin:0;"><label for="googleDriveFileSearch">Search available saves</label><input id="googleDriveFileSearch" type="search" autocomplete="off" placeholder="Search by file name" /></div>
+          <button id="refreshGoogleDriveFilesBtn" class="secondary" type="button">Refresh List</button>
+        </div>
+        <div id="googleDriveFileList" class="google-drive-file-list" role="radiogroup" aria-label="Available Google Drive saves"></div>
+        <div class="button-row" style="margin-top:12px; justify-content:flex-end;">
+          <button id="cancelGoogleDriveFileBtn" class="secondary" type="button">Cancel</button>
+          <button id="openGoogleDriveFileBtn" type="button" disabled>Open Selected Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="confirmModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="confirmModalTitle">
+    <div class="modal" style="max-width: 560px;">
+      <div class="panel-header">
+        <h2 id="confirmModalTitle">Please Confirm</h2>
+        <button id="confirmCancelTopBtn" class="tiny secondary" type="button">Close</button>
+      </div>
+      <div class="modal-body">
+        <div id="confirmModalMessage" class="confirm-message"></div>
+        <div class="confirm-actions">
+          <button id="confirmCancelBtn" class="secondary" type="button">Cancel</button>
+          <button id="confirmContinueBtn" type="button">Continue</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div id="encryptionKeyModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="encryptionKeyModalTitle">
+    <div class="modal" style="max-width: 520px;">
+      <div class="panel-header">
+        <h2 id="encryptionKeyModalTitle">Encryption Key Required</h2>
+        <button id="encryptionKeyCancelTopBtn" class="tiny secondary" type="button">Close</button>
+      </div>
+      <div class="modal-body">
+        <div id="encryptionKeyModalMessage" class="hint" style="margin-bottom:10px;">This save/export is encrypted. Enter the encryption key to continue.</div>
+        <div class="field">
+          <label for="encryptionKeyPromptInput">Encryption key</label>
+          <input id="encryptionKeyPromptInput" type="password" autocomplete="off" />
+        </div>
+        <div id="encryptionKeyPromptError" class="warning" style="display:none; margin-top:8px;"></div>
+        <div class="button-row" style="margin-top:10px;">
+          <button id="encryptionKeyCancelBtn" class="secondary" type="button">Cancel</button>
+          <button id="encryptionKeyContinueBtn" type="button">Continue</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div id="settingsAccessModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="settingsAccessTitle">
+    <div class="modal" style="max-width: 520px;">
+      <div class="panel-header">
+        <h2 id="settingsAccessTitle">Settings Locked</h2>
+        <button id="settingsAccessCancelTopBtn" class="tiny secondary" type="button">Close</button>
+      </div>
+      <div class="modal-body">
+        <div id="settingsAccessMessage" class="hint" style="margin-bottom:10px;">Enter the required credential to open Settings.</div>
+        <div class="field">
+          <label id="settingsAccessInputLabel" for="settingsAccessInput">Presentation PIN/password or encryption key</label>
+          <input id="settingsAccessInput" type="password" autocomplete="current-password" />
+        </div>
+        <div id="settingsAccessError" class="warning" style="display:none; margin-top:8px;"></div>
+        <div class="button-row" style="margin-top:10px;">
+          <button id="settingsAccessCancelBtn" class="secondary" type="button">Cancel</button>
+          <button id="settingsAccessContinueBtn" type="button">Open Settings</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div id="pageLockOverlay" class="page-lock-overlay" aria-live="polite">
+    <div class="page-lock-card" role="dialog" aria-modal="true" aria-labelledby="pageLockTitle">
+      <div class="page-lock-icon">🔒</div>
+      <h2 id="pageLockTitle">Seating Chart Locked</h2>
+      <p>Editing is paused. Enter the PIN/password used to lock this page to continue.</p>
+      <div class="field">
+        <label for="pageLockUnlockInput">PIN/password</label>
+        <input id="pageLockUnlockInput" type="password" autocomplete="current-password" />
+      </div>
+      <div id="pageLockError" class="warning" style="display:none; margin-top:8px;"></div>
+      <div class="button-row" style="justify-content:center; margin-top:12px;">
+        <button id="pageUnlockBtn" type="button">Unlock</button>
+      </div>
+    </div>
+  </div>
+
+
+  <div id="pageLockNowModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="pageLockNowTitle">
+    <div class="modal" style="max-width: 540px;">
+      <div class="panel-header">
+        <h2 id="pageLockNowTitle">Lock and Encrypt Page</h2>
+        <button id="pageLockNowCancelTopBtn" class="tiny secondary" type="button">Close</button>
+      </div>
+      <div class="modal-body">
+        <div class="hint" style="margin-bottom:10px;">Enter the page lock PIN/password. The active chart data will be encrypted with this PIN/password while the page is locked.</div>
+        <div class="field">
+          <label for="pageLockNowInput">PIN/password</label>
+          <input id="pageLockNowInput" type="password" autocomplete="current-password" />
+        </div>
+        <div id="pageLockNowError" class="warning" style="display:none; margin-top:8px;"></div>
+        <div class="button-row" style="margin-top:10px;">
+          <button id="pageLockNowCancelBtn" class="secondary" type="button">Cancel</button>
+          <button id="pageLockNowContinueBtn" type="button">Lock Page</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="pageLockSetupModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="pageLockSetupTitle">
+    <div class="modal" style="max-width: 540px;">
+      <div class="panel-header">
+        <h2 id="pageLockSetupTitle">Set Lock PIN/Password</h2>
+        <button id="pageLockSetupCancelTopBtn" class="tiny secondary" type="button">Close</button>
+      </div>
+      <div class="modal-body">
+        <div class="hint" style="margin-bottom:10px;">Create the PIN/password that will be required to unlock this page. It will be stored only as a salted cryptographic hash, not as plain text.</div>
+        <div class="field">
+          <label for="pageLockSetupInput">PIN/password</label>
+          <input id="pageLockSetupInput" type="password" minlength="6" maxlength="256" autocomplete="new-password" />
+        </div>
+        <div class="field">
+          <label for="pageLockSetupConfirmInput">Confirm PIN/password</label>
+          <input id="pageLockSetupConfirmInput" type="password" minlength="6" maxlength="256" autocomplete="new-password" />
+        </div>
+        <div id="pageLockSetupError" class="warning" style="display:none; margin-top:8px;"></div>
+        <div class="button-row" style="margin-top:10px;">
+          <button id="pageLockSetupCancelBtn" class="secondary" type="button">Cancel</button>
+          <button id="pageLockSetupSaveBtn" type="button">Save and Lock</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div id="visibilityExitModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="visibilityExitTitle">
+    <div class="modal" style="max-width: 520px;">
+      <div class="panel-header">
+        <h2 id="visibilityExitTitle">Exit Presentation Mode</h2>
+        <button id="visibilityExitCancelTopBtn" class="tiny secondary" type="button">Close</button>
+      </div>
+      <div class="modal-body">
+        <div id="visibilityExitMessage" class="hint" style="margin-bottom:10px;">Enter the Presentation Mode PIN, Lock PIN, or current encryption key to restore the previous workflow and editing controls.</div>
+        <div class="field">
+          <label for="visibilityExitInput">Presentation PIN/password or encryption key</label>
+          <input id="visibilityExitInput" type="password" autocomplete="current-password" />
+        </div>
+        <div id="visibilityExitError" class="warning" style="display:none; margin-top:8px;"></div>
+        <div class="button-row" style="margin-top:10px;">
+          <button id="visibilityExitCancelBtn" class="secondary" type="button">Cancel</button>
+          <button id="visibilityExitContinueBtn" type="button">Exit Presentation Mode</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="visibilityProtectKeyModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="visibilityProtectKeyTitle">
+    <div class="modal" style="max-width: 540px;">
+      <div class="panel-header">
+        <h2 id="visibilityProtectKeyTitle">Enter Protected Presentation Mode</h2>
+        <button id="visibilityProtectKeyCancelTopBtn" class="tiny secondary" type="button">Close</button>
+      </div>
+      <div class="modal-body">
+        <div class="hint" style="margin-bottom:10px;">Enter the Presentation PIN or Lock PIN/password. Presentation Mode encrypts the full original chart state, opens a read-only Review workspace, shows only the configured basic information, and restores the original workflow when you exit.</div>
+        <div class="field"><label for="visibilityProtectKeyInput">Presentation PIN or Lock PIN/password</label><input id="visibilityProtectKeyInput" type="password" autocomplete="current-password" /></div>
+        <div id="visibilityProtectKeyError" class="warning" style="display:none; margin-top:8px;"></div>
+        <div class="button-row" style="margin-top:10px;">
+          <button id="visibilityProtectKeyCancelBtn" class="secondary" type="button">Cancel</button>
+          <button id="visibilityProtectKeyContinueBtn" type="button">Enter Presentation Mode</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="visibilitySetupModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="visibilitySetupTitle">
+    <div class="modal" style="max-width: 540px;">
+      <div class="panel-header">
+        <h2 id="visibilitySetupTitle">Set Presentation Mode PIN</h2>
+        <button id="visibilitySetupCancelTopBtn" class="tiny secondary" type="button">Close</button>
+      </div>
+      <div class="modal-body">
+        <div class="hint" style="margin-bottom:10px;">No Presentation Mode PIN, Lock PIN, or encryption key is currently available. Create a Presentation Mode PIN/password. It is stored only as a salted cryptographic hash.</div>
+        <div class="field"><label for="visibilitySetupInput">Presentation Mode PIN/password</label><input id="visibilitySetupInput" type="password" minlength="6" maxlength="256" autocomplete="new-password" /></div>
+        <div class="field"><label for="visibilitySetupConfirmInput">Confirm Presentation Mode PIN/password</label><input id="visibilitySetupConfirmInput" type="password" minlength="6" maxlength="256" autocomplete="new-password" /></div>
+        <div id="visibilitySetupError" class="warning" style="display:none; margin-top:8px;"></div>
+        <div class="button-row" style="margin-top:10px;">
+          <button id="visibilitySetupCancelBtn" class="secondary" type="button">Cancel</button>
+          <button id="visibilitySetupSaveBtn" type="button">Save and Enter Presentation Mode</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div id="freeformWorkspaceModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="freeformWorkspaceTitle">
+    <div class="modal freeform-workspace-modal"><div class="panel-header"><h2 id="freeformWorkspaceTitle">Freeform Room Tools</h2><button id="closeFreeformWorkspaceBtn" class="tiny secondary" type="button">Close</button></div>
+      <div class="modal-body freeform-workspace-body">
+        <div id="freeformSelectionSummary" class="hint">0 objects selected</div>
+        <div class="freeform-tool-grid">
+          <section class="workflow-card"><h3>Named Groups</h3><div class="inline-control"><input id="freeformGroupNameInput" maxlength="60" placeholder="Group name, such as Lab Station 1" aria-label="Freeform group name" /><button id="createFreeformGroupBtn" type="button" data-requires-freeform-selection>Create Group</button></div><div class="inline-control"><select id="freeformGroupSelect" aria-label="Named Freeform group"><option value="">Select named group…</option></select><button id="selectFreeformGroupBtn" class="secondary" type="button">Select</button></div><button id="ungroupFreeformBtn" class="secondary" type="button" data-requires-freeform-selection>Ungroup Selection</button><p class="muted">Clicking a grouped object selects the group. Alt-click selects only that object.</p></section>
+          <section class="workflow-card"><h3>Layer Order</h3><div class="button-row"><button class="secondary" type="button" data-freeform-layer="back" data-requires-freeform-selection>Send to Back</button><button class="secondary" type="button" data-freeform-layer="backward" data-requires-freeform-selection>Back One</button><button class="secondary" type="button" data-freeform-layer="forward" data-requires-freeform-selection>Forward One</button><button class="secondary" type="button" data-freeform-layer="front" data-requires-freeform-selection>Bring to Front</button></div></section>
+          <section class="workflow-card wide"><h3>Align, Distribute &amp; Match</h3><div class="button-row freeform-arrange-buttons"><button class="secondary" type="button" data-freeform-arrange="align-left">Left</button><button class="secondary" type="button" data-freeform-arrange="center-horizontal">Center X</button><button class="secondary" type="button" data-freeform-arrange="align-right">Right</button><button class="secondary" type="button" data-freeform-arrange="align-top">Top</button><button class="secondary" type="button" data-freeform-arrange="center-vertical">Center Y</button><button class="secondary" type="button" data-freeform-arrange="align-bottom">Bottom</button><button class="secondary" type="button" data-freeform-arrange="distribute-horizontal">Distribute X</button><button class="secondary" type="button" data-freeform-arrange="distribute-vertical">Distribute Y</button><button class="secondary" type="button" data-freeform-arrange="match-width">Match Width</button><button class="secondary" type="button" data-freeform-arrange="match-height">Match Height</button></div></section>
+          <section class="workflow-card"><h3>Viewport</h3><div class="button-row"><button id="fitFreeformRoomBtn" class="secondary" type="button">Fit Room</button><button id="fitFreeformSelectionBtn" class="secondary" type="button">Fit Selection</button><button id="resetFreeformViewBtn" class="secondary" type="button">Reset View</button><button id="toggleFreeformMinimapBtn" class="secondary" type="button">Toggle Minimap</button></div><div class="inline-control"><select id="freeformFindStudentSelect" aria-label="Find assigned student in Freeform room"><option value="">Find assigned student…</option></select><button id="findFreeformStudentBtn" class="secondary" type="button">Find</button></div></section>
+          <section class="workflow-card"><h3>Printable Pages</h3><div class="row"><div class="field"><label for="freeformPrintPageSize">Paper</label><select id="freeformPrintPageSize"><option value="letter">Letter</option><option value="legal">Legal</option><option value="a4">A4</option></select></div><div class="field"><label for="freeformPrintOrientation">Orientation</label><select id="freeformPrintOrientation"><option value="landscape">Landscape</option><option value="portrait">Portrait</option></select></div></div><div class="row"><div class="field"><label for="freeformPrintMargin">Margin (in)</label><input id="freeformPrintMargin" type="number" min="0" max="1.5" step="0.05" value="0.35" /></div><div class="field"><label for="freeformPrintScaleMode">Layout</label><select id="freeformPrintScaleMode"><option value="tile">Tile across pages</option><option value="fit">Fit to one page</option><option value="actual">Actual size</option></select></div></div><label class="checkline"><input id="freeformShowPrintBoundariesToggle" type="checkbox" /> Show page boundaries</label><label class="checkline"><input id="freeformCropMarksToggle" type="checkbox" /> Show crop marks on boundaries</label><label class="checkline"><input id="freeformShowMinimapToggle" type="checkbox" checked /> Show minimap</label><div id="freeformPrintRecommendation" class="hint mini">Landscape is recommended for this room shape.</div><button id="applyFreeformPrintSettingsBtn" class="secondary" type="button">Apply View &amp; Print Settings</button></section>
+          <section class="workflow-card wide"><h3>Room Layout History</h3><div class="inline-control"><input id="roomVersionNameInput" maxlength="80" placeholder="Version name, such as Testing Layout" aria-label="Room layout version name" /><button id="saveRoomVersionBtn" type="button">Save Room Version</button></div><div id="roomHistoryList" class="room-history-list"></div></section>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="freeformAuditModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="freeformAuditTitle">
+    <div class="modal modern-modal"><div class="panel-header"><h2 id="freeformAuditTitle">Freeform Integrity Audit</h2><button id="closeFreeformAuditBtn" class="tiny secondary" type="button">Close</button></div><div class="modal-body"><div class="hint">This audit never moves anything automatically. Select a finding to highlight its objects, or explicitly resolve overlapping seats.</div><div id="freeformAuditResults" style="margin-top:10px;"></div><div class="button-row" style="margin-top:12px;"><button id="refreshFreeformAuditBtn" class="secondary" type="button">Run Audit Again</button><button id="resolveFreeformOverlapsBtn" type="button">Resolve Seat Overlaps</button><button id="clearFreeformAuditHighlightsBtn" class="secondary" type="button">Clear Highlights</button></div></div></div>
+  </div>
+
+  <div id="keyboardCarryBanner" class="keyboard-carry-banner no-print" role="status" aria-live="polite"><span id="keyboardCarryText">Keyboard placement active.</span><button id="cancelKeyboardCarryBtn" class="tiny secondary" type="button">Cancel</button></div>
+
+  <div id="seatingCandidateModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="seatingCandidateTitle">
+    <div class="modal modern-modal"><div class="panel-header"><h2 id="seatingCandidateTitle">Compare Seating Options</h2><button id="closeSeatingCandidateBtn" class="tiny secondary" type="button">Close</button></div>
+      <div class="modal-body candidate-modal-body"><div id="seatingCandidateIntro" class="hint">Generating options without changing the current chart.</div><div id="seatingProgressWrap" style="margin:10px 0;"><div class="progress-track"><div id="seatingProgressFill" class="progress-fill"></div></div><div id="seatingProgressText" class="muted" style="margin-top:5px;">Preparing generator…</div></div><div id="seatingCandidateGrid" class="candidate-grid"></div><div id="seatingCandidateDetail" class="candidate-detail" aria-live="polite"></div><div class="button-row candidate-actions" style="margin-top:12px;"><button id="acceptSeatingCandidateBtn" type="button" disabled>Use This Seating Option</button><button id="generateMoreCandidatesBtn" class="secondary" type="button">Generate Different Options</button><button id="cancelSeatingWorkerBtn" class="secondary" type="button">Cancel Generation</button></div></div>
+    </div>
+  </div>
+
+  <div id="placementWhyModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="placementWhyTitle"><div class="modal"><div class="panel-header"><h2 id="placementWhyTitle">Why This Placement?</h2><button id="closePlacementWhyBtn" class="tiny secondary" type="button">Close</button></div><div class="modal-body"><div id="placementWhySummary" class="successbox"></div><ul id="placementWhyList" class="explanation-list" style="margin-top:10px;"></ul></div></div></div>
+
+  <div id="classToolsModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="classToolsTitle"><div class="modal modern-modal"><div class="panel-header"><h2 id="classToolsTitle">Class Rollover &amp; Archive</h2><button id="closeClassToolsBtn" class="tiny secondary" type="button">Close</button></div><div class="modal-body"><div id="classToolsSummary" class="hint"></div><div class="class-tools-grid" style="margin-top:10px;"><section class="workflow-card"><h3>Class Details</h3><div class="field"><label for="classAcademicYearInput">Academic year</label><input id="classAcademicYearInput" maxlength="20" placeholder="2026–2027" /></div><div class="field"><label for="classTermInput">Term</label><input id="classTermInput" maxlength="40" placeholder="Fall / Semester 1" /></div><button id="saveClassDetailsBtn" class="secondary" type="button">Save Details</button></section><section class="workflow-card"><h3>Archive</h3><p class="muted">Archived classes stay in the save but are hidden from the normal class list unless “Show archived” is enabled.</p><button id="toggleArchiveClassBtn" class="secondary" type="button">Archive Current Class</button><label class="checkline"><input id="showArchivedClassesToggle" type="checkbox" /> Show archived classes</label></section><section class="workflow-card"><h3>Rollover</h3><div class="field"><label for="rolloverClassNameInput">New class name</label><input id="rolloverClassNameInput" maxlength="80" /></div><label class="checkline"><input id="rolloverCopyRoster" type="checkbox" checked /> Copy roster</label><label class="checkline"><input id="rolloverCopyRules" type="checkbox" checked /> Copy groups and zones</label><label class="checkline"><input id="rolloverCopyLayout" type="checkbox" checked /> Copy room layout</label><label class="checkline"><input id="rolloverClearAssignments" type="checkbox" checked /> Clear student assignments</label><button id="createRolloverClassBtn" type="button">Create Rollover Class</button></section></div></div></div></div>
+
+  <div id="rosterReconcileModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="rosterReconcileTitle"><div class="modal modern-modal"><div class="panel-header"><h2 id="rosterReconcileTitle">Roster Reconciliation</h2><button id="closeRosterReconcileBtn" class="tiny secondary" type="button">Close</button></div><div class="modal-body"><div id="reconcileSummary" class="reconcile-summary-grid"></div><div id="reconcilePreview" class="csv-preview-table" style="margin-top:10px;"></div><section class="section" style="margin-top:10px;"><h3>Apply Changes</h3><label class="checkline"><input id="reconcileUpdateMatched" type="checkbox" checked /> Update names, grade, and nickname for matched students</label><label class="checkline"><input id="reconcileAddNew" type="checkbox" checked /> Add new students</label><label class="checkline"><input id="reconcileArchiveMissing" type="checkbox" /> Move students missing from the CSV into the class roster archive</label><label class="checkline"><input id="reconcilePreserveNotes" type="checkbox" checked /> Preserve existing notes and seating requirements</label></section><div class="button-row"><button id="applyRosterReconcileBtn" type="button">Apply Reconciliation</button><button id="cancelRosterReconcileBtn" class="secondary" type="button">Cancel</button></div></div></div></div>
+
+  <div id="safeShareModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="safeShareTitle"><div class="modal modern-modal"><div class="panel-header"><h2 id="safeShareTitle">Safe Sharing Presets</h2><button id="closeSafeShareBtn" class="tiny secondary" type="button">Close</button></div><div class="modal-body"><div class="hint">Choose a preset. The preview states exactly which student information will leave the app before a file is created.</div><div id="safeShareGrid" class="safe-share-grid" style="margin-top:10px;"></div><section class="section"><h3>Support-Team Custom Fields</h3><div class="requirements-grid"><label class="checkline"><input id="shareIncludeIds" type="checkbox" /> Student IDs</label><label class="checkline"><input id="shareIncludeGrades" type="checkbox" checked /> Grades</label><label class="checkline"><input id="shareIncludePublicNotes" type="checkbox" checked /> Public notes</label><label class="checkline"><input id="shareIncludeSubNotes" type="checkbox" /> Substitute notes</label><label class="checkline"><input id="shareIncludePrivateNotes" type="checkbox" /> Private notes</label><label class="checkline"><input id="shareIncludeRequirements" type="checkbox" /> Seating requirements</label></div></section><div id="safeSharePreview" class="confirm-message">Select a preset to review its contents.</div></div></div></div>
+
+  <div id="backupVerificationModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="backupVerificationTitle"><div class="modal"><div class="panel-header"><h2 id="backupVerificationTitle">Backup Verification</h2><button id="closeBackupVerificationBtn" class="tiny secondary" type="button">Close</button></div><div class="modal-body"><div id="backupVerificationBody" class="confirm-message"></div></div></div></div>
+
+  <div id="saveConflictModal" class="modal-backdrop" role="alertdialog" aria-modal="true" aria-labelledby="saveConflictTitle"><div class="modal"><div class="panel-header"><h2 id="saveConflictTitle">Save Conflict Detected</h2></div><div class="modal-body"><div id="saveConflictMessage" class="save-conflict-box"></div><div class="button-row" style="margin-top:12px;"><button id="saveConflictReviewBtn" class="secondary" type="button">Download Current Copy</button><button id="saveConflictOverwriteBtn" class="danger" type="button">Overwrite Newer File</button><button id="saveConflictCopyBtn" type="button">Save as New Copy</button><button id="saveConflictMergeBtn" class="secondary" type="button">Merge Changes</button><button id="saveConflictCancelBtn" class="secondary" type="button">Cancel</button></div></div></div></div>
+
+  <div id="deploymentDiagnosticsModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="deploymentDiagnosticsTitle"><div class="modal modern-modal"><div class="panel-header"><h2 id="deploymentDiagnosticsTitle">Deployment &amp; Storage Diagnostics</h2><button id="closeDeploymentDiagnosticsBtn" class="tiny secondary" type="button">Close</button></div><div class="modal-body"><div id="deploymentDiagnosticsGrid" class="deployment-grid"></div><div class="button-row" style="margin-top:12px;"><button id="requestPersistentStorageBtn" class="secondary" type="button">Request Persistent Browser Storage</button><button id="refreshDeploymentDiagnosticsBtn" class="secondary" type="button">Refresh</button></div></div></div></div>
+  <script>/* @bundle:application */</script>
+</body>
+</html>

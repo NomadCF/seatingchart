@@ -1,0 +1,46 @@
+name: Build and regression checks
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main, feat/v6.7-production-hardening]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install test dependencies
+        run: npm install --no-package-lock
+      - name: Validate deterministic single-file build
+        run: npm test
+      - name: Validate JSON schemas
+        run: |
+          node -e "for (const f of ['schemas/planner-v13.schema.json','schemas/envelope-v3.schema.json']) JSON.parse(require('fs').readFileSync(f,'utf8')); console.log('Schemas parse cleanly.')"
+      - name: Check service worker syntax
+        run: node --check service-worker.js
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Run desktop and mobile browser smoke tests
+        run: npm run test:browser
+      - name: Upload browser report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          if-no-files-found: ignore
+          retention-days: 7
+      - name: Upload portable build
+        uses: actions/upload-artifact@v4
+        with:
+          name: classroom-seating-planner-portable
+          path: dist/Classroom-Seating-Planner.html
+          retention-days: 7

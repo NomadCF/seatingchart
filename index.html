@@ -6,7 +6,7 @@
   <meta name="license" content="MIT License" />
   <meta name="spdx-license-identifier" content="MIT" />
   <meta name="copyright" content="Copyright (c) 2026 Chris L. Franklin" />
-  <meta name="app-version" content="6.6.3" />
+  <meta name="app-version" content="6.7.0" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com https://www.paypalobjects.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://www.googleapis.com https://classroom.googleapis.com https://accounts.google.com https://www.paypal.com https://www.paypalobjects.com https://www.google-analytics.com https://*.google-analytics.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://www.paypal.com; img-src 'self' data: blob: https://www.paypalobjects.com https://www.google-analytics.com; font-src 'self' data:; worker-src 'self' blob:; manifest-src 'self'; media-src 'none'; object-src 'none'; base-uri 'none'; form-action 'self' https://www.paypal.com" />
   <meta name="application-name" content="Classroom Seating Planner" />
@@ -6724,12 +6724,12 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
 const APP_CONFIG = Object.freeze({
   name: 'Classroom Seating Planner',
   shortName: 'Seating Planner',
-  version: '6.6.3',
+  version: '6.7.0',
   copyrightHolder: 'Chris L. Franklin',
   copyrightYear: '2026',
   releaseDate: '2026-09-04',
   releaseDateDisplay: 'September 4, 2026',
-  buildDate: '2026-09-04T13:23:57Z',
+  buildDate: '2026-09-04T14:19:58Z',
   commit: 'local',
   environment: 'production',
   dataSchemaVersion: 13,
@@ -7001,10 +7001,23 @@ const PROJECT_FEATURES = [
 
 const RELEASE_HISTORY = [
   {
+    version: '6.7.0',
+    date: 'September 4, 2026',
+    title: 'Production hardening, public contracts, and collaboration history',
+    current: true,
+    changes: [
+      'Added deterministic source splitting and single-file rebuild validation, browser regression CI, release packaging, and public save/encryption JSON Schemas without changing data schema 13 or encryption envelope 3.',
+      'Added repository-level MIT licensing, security, privacy, and data-handling documentation plus deployment guidance for Google OAuth and hosted releases.',
+      'Fixed collaboration editing notices so presence metadata survives normalization and is actually included in saved planner documents.',
+      'Added a bounded collaboration activity ledger showing editing notices, detected remote revisions, merge outcomes, and recent shared-file activity.',
+      'Preserved the existing live seat guidance, fairness/history tools, scheduled plans, visual comparison, CSV/image/support exports, comments, template libraries, mobile workflow, and Analytics default-on behavior.'
+    ]
+  },
+  {
     version: '6.6.3',
     date: 'September 4, 2026',
     title: 'Hosted PWA completion and Drive Picker deployment readiness',
-    current: true,
+    current: false,
     changes: [
       'Completed the hosted PWA package with a web app manifest, service worker, install icons, offline application-shell caching, and update-aware service-worker registration.',
       'Changed deployment diagnostics to report real service-worker registration and page-control state instead of treating browser support alone as a successful PWA deployment.',
@@ -7477,7 +7490,27 @@ function normalizeCollaborationAccess(value = null) {
     const normalized = normalizeCollaborationPolicy(policy, { permissionId });
     if (normalized.permissionId) policies[normalized.permissionId] = normalized;
   });
-  return { version: COLLABORATION_ACCESS_VERSION, updatedAt: String(source.updatedAt || ''), policies };
+  const rawPresence = source.presence && typeof source.presence === 'object' && !Array.isArray(source.presence) ? source.presence : {};
+  const presence = Object.keys(rawPresence).length ? {
+    deviceId: String(rawPresence.deviceId || '').slice(0, 160),
+    email: String(rawPresence.email || '').slice(0, 200),
+    displayName: String(rawPresence.displayName || '').slice(0, 120),
+    workflow: String(rawPresence.workflow || '').slice(0, 40),
+    activeClassId: String(rawPresence.activeClassId || '').slice(0, 160),
+    updatedAt: String(rawPresence.updatedAt || '').slice(0, 40)
+  } : null;
+  const changeLedger = (Array.isArray(source.changeLedger) ? source.changeLedger : []).slice(-80).map(entry => ({
+    id: String(entry?.id || uid('collab-log')).slice(0, 180),
+    type: String(entry?.type || 'activity').slice(0, 60),
+    summary: String(entry?.summary || '').slice(0, 500),
+    deviceId: String(entry?.deviceId || '').slice(0, 160),
+    email: String(entry?.email || '').slice(0, 200),
+    displayName: String(entry?.displayName || '').slice(0, 120),
+    workflow: String(entry?.workflow || '').slice(0, 40),
+    activeClassId: String(entry?.activeClassId || '').slice(0, 160),
+    createdAt: String(entry?.createdAt || '').slice(0, 40)
+  }));
+  return { version: COLLABORATION_ACCESS_VERSION, updatedAt: String(source.updatedAt || ''), policies, presence, changeLedger };
 }
 
 function collaborationAccessDocument() {
@@ -36011,6 +36044,8 @@ window.DrivePollingV66 = (() => {
       try {
         banner.hidden = true;
         await SharedDriveCollaborationV64.mergeRemoteDriveChanges({ reason: 'polling-merge' });
+        appendLedger('merge', 'Reviewed and merged remote Google Drive changes.');
+        scheduleLinkedAutoSave('collaboration-merge-ledger');
       } catch (error) {
         setLiveStatusMessage(`Remote changes could not be merged: ${error.message}`);
         SharedDriveCollaborationV64.openManager();
@@ -36020,10 +36055,28 @@ window.DrivePollingV66 = (() => {
     return banner;
   }
 
-  function updatePresence() {
-    state.collaborationAccess = state.collaborationAccess && typeof state.collaborationAccess === 'object'
-      ? state.collaborationAccess
-      : { version: COLLABORATION_ACCESS_VERSION, updatedAt: '', policies: {} };
+  function appendLedger(type, summary) {
+    state.collaborationAccess = normalizeCollaborationAccess(state.collaborationAccess);
+    const user = uiState.googleDriveCurrentUser || {};
+    const entry = {
+      id: uid('collab-log'),
+      type: String(type || 'activity').slice(0, 60),
+      summary: String(summary || '').slice(0, 500),
+      deviceId: appDeviceId(),
+      email: String(user.email || '').slice(0, 200),
+      displayName: String(user.name || user.displayName || '').slice(0, 120),
+      workflow: document.body.dataset.workflow || 'setup',
+      activeClassId: state.activeClassId,
+      createdAt: new Date().toISOString()
+    };
+    state.collaborationAccess.changeLedger = [...(state.collaborationAccess.changeLedger || []), entry].slice(-80);
+    state.collaborationAccess.updatedAt = entry.createdAt;
+    renderLedger();
+    return entry;
+  }
+
+  function updatePresence({ recordActivity = true } = {}) {
+    state.collaborationAccess = normalizeCollaborationAccess(state.collaborationAccess);
     const user = uiState.googleDriveCurrentUser || {};
     state.collaborationAccess.presence = {
       deviceId: appDeviceId(),
@@ -36034,6 +36087,23 @@ window.DrivePollingV66 = (() => {
       updatedAt: new Date().toISOString()
     };
     state.collaborationAccess.updatedAt = new Date().toISOString();
+    if (recordActivity) appendLedger('editing-notice', 'Recorded an editing notice for the shared planner.');
+  }
+
+  function renderLedger() {
+    const target = el('driveCollaborationLedger');
+    if (!target) return;
+    const access = normalizeCollaborationAccess(state.collaborationAccess);
+    const entries = [...(access.changeLedger || [])].slice(-20).reverse();
+    if (!entries.length) {
+      target.innerHTML = '<p class="muted">No collaboration activity has been recorded yet.</p>';
+      return;
+    }
+    target.innerHTML = entries.map(entry => {
+      const who = entry.displayName || entry.email || (entry.deviceId ? 'Another device' : 'This planner');
+      const when = entry.createdAt ? new Date(entry.createdAt).toLocaleString() : 'Unknown time';
+      return `<div class="planning-history-item"><strong>${escapeHtml(entry.summary || entry.type)}</strong><span>${escapeHtml(who)} · ${escapeHtml(when)}</span></div>`;
+    }).join('');
   }
 
   async function checkNow(options = {}) {
@@ -36054,6 +36124,7 @@ window.DrivePollingV66 = (() => {
         banner.hidden = false;
         el('remoteDriveChangeText').textContent = `A remote save differs from this tab. Review and merge before continuing to save.`;
         if (status) status.textContent = 'Remote changes found. Review and merge them before saving.';
+        appendLedger('remote-change', 'Detected a newer remote Google Drive revision.');
         setLiveStatusMessage('Remote Google Drive changes are available for review and merge.');
       } else {
         if (status) status.textContent = `No remote changes found at ${new Date().toLocaleTimeString()}.`;
@@ -36087,7 +36158,7 @@ window.DrivePollingV66 = (() => {
     modal.setAttribute('aria-modal', 'true');
     modal.setAttribute('aria-labelledby', 'drivePollingTitle');
     modal.innerHTML = `
-      <div class="modal drive-polling-modal"><div class="panel-header"><div><span class="v44-modal-eyebrow">Collaboration without a server</span><h2 id="drivePollingTitle">Near-live Google Drive checks</h2></div><button id="closeDrivePollingBtn" class="secondary mobile-compact-close" type="button" aria-label="Close">Close</button></div><div class="modal-body"><div class="warningbox">This periodically checks the shared Drive file while the planner is open. It provides remote-change notices and three-way merge, not live cursors or instant seat movement.</div><section class="section"><label class="checkline"><input id="drivePollingEnabled" type="checkbox"> Check for remote changes while this page is open</label><div class="field"><label for="drivePollingMinutes">Check interval</label><select id="drivePollingMinutes"><option value="2">Every 2 minutes</option><option value="5">Every 5 minutes</option><option value="10">Every 10 minutes</option><option value="15">Every 15 minutes</option><option value="30">Every 30 minutes</option></select></div><div class="button-row"><button id="saveDrivePollingBtn" type="button">Save collaboration checks</button><button id="checkDriveNowBtn" class="secondary" type="button">Check now</button><button id="openSharedDriveFromPollingBtn" class="secondary" type="button">Open sharing manager</button></div><p id="drivePollingStatus" class="hint">Checks are disabled.</p></section><section class="section"><h3>Shared-file editing notice</h3><p class="muted">The next save records this device’s current workflow and timestamp in the shared planner metadata. Other editors see the information after loading or checking the file.</p><button id="recordDrivePresenceBtn" class="secondary" type="button">Record my editing notice</button></section></div></div>`;
+      <div class="modal drive-polling-modal"><div class="panel-header"><div><span class="v44-modal-eyebrow">Collaboration without a server</span><h2 id="drivePollingTitle">Near-live Google Drive checks</h2></div><button id="closeDrivePollingBtn" class="secondary mobile-compact-close" type="button" aria-label="Close">Close</button></div><div class="modal-body"><div class="warningbox">This periodically checks the shared Drive file while the planner is open. It provides remote-change notices and three-way merge, not live cursors or instant seat movement.</div><section class="section"><label class="checkline"><input id="drivePollingEnabled" type="checkbox"> Check for remote changes while this page is open</label><div class="field"><label for="drivePollingMinutes">Check interval</label><select id="drivePollingMinutes"><option value="2">Every 2 minutes</option><option value="5">Every 5 minutes</option><option value="10">Every 10 minutes</option><option value="15">Every 15 minutes</option><option value="30">Every 30 minutes</option></select></div><div class="button-row"><button id="saveDrivePollingBtn" type="button">Save collaboration checks</button><button id="checkDriveNowBtn" class="secondary" type="button">Check now</button><button id="openSharedDriveFromPollingBtn" class="secondary" type="button">Open sharing manager</button></div><p id="drivePollingStatus" class="hint">Checks are disabled.</p></section><section class="section"><h3>Shared-file editing notice</h3><p class="muted">The next save records this device’s current workflow and timestamp in the shared planner metadata. Other editors see the information after loading or checking the file.</p><button id="recordDrivePresenceBtn" class="secondary" type="button">Record my editing notice</button></section><section class="section"><h3>Recent collaboration activity</h3><div id="driveCollaborationLedger" class="planning-history-list" aria-live="polite"><p class="muted">No collaboration activity has been recorded yet.</p></div></section></div></div>`;
     document.body.appendChild(modal);
     el('closeDrivePollingBtn')?.addEventListener('click', close);
     el('saveDrivePollingBtn')?.addEventListener('click', () => {
@@ -36121,6 +36192,7 @@ window.DrivePollingV66 = (() => {
     if (el('drivePollingStatus')) el('drivePollingStatus').textContent = settings.enabled
       ? `Checks run every ${settings.minutes} minutes.${last ? ` Last checked ${new Date(last).toLocaleString()}.` : ''}`
       : 'Checks are disabled.';
+    renderLedger();
     DialogManager.synchronize();
   }
 
@@ -36170,7 +36242,7 @@ window.DrivePollingV66 = (() => {
     if (settings.enabled) setTimeout(() => void checkNow({ announce: false }), 3000);
   }
 
-  return Object.freeze({ install, afterReady, open, checkNow, updatePresence });
+  return Object.freeze({ install, afterReady, open, checkNow, updatePresence, appendLedger });
 })();
 
 'use strict';
