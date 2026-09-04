@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nomadcf.github.io/seatingchart/schemas/envelope-v3.schema.json",
+  "title": "Classroom Seating Planner encrypted envelope v3",
+  "description": "Forward-compatible envelope contract for encrypted planner files. Cipher/KDF implementation details are carried as metadata and additional fields are permitted for migration compatibility.",
+  "type": "object",
+  "properties": {
+    "envelopeVersion": { "type": "integer", "const": 3 },
+    "schemaVersion": { "type": "integer", "minimum": 1 },
+    "ciphertext": { "type": "string", "minLength": 1 },
+    "iv": { "type": "string", "minLength": 1 },
+    "salt": { "type": "string", "minLength": 1 },
+    "kdf": { "type": ["string", "object"] },
+    "cipher": { "type": ["string", "object"] },
+    "createdAt": { "type": "string" },
+    "updatedAt": { "type": "string" },
+    "metadata": { "type": "object", "additionalProperties": true }
+  },
+  "required": ["envelopeVersion"],
+  "additionalProperties": true
+}
