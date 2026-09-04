@@ -11,12 +11,12 @@ let html = fs.readFileSync(templatePath, 'utf8');
 
 html = html.replace(/<style([^>]*)>\/\* @source:(style-\d{3}\.css) \*\/<\/style>/g, (_m, attrs, file) => {
   const body = fs.readFileSync(path.join(srcDir, 'styles', file), 'utf8');
-  return `<style${attrs}>\n${body}\n</style>`;
+  return `<style${attrs}>${body}</style>`;
 });
 
 html = html.replace(/<script([^>]*)>\/\* @source:(script-\d{3}\.js) \*\/<\/script>/g, (_m, attrs, file) => {
   const body = fs.readFileSync(path.join(srcDir, 'scripts', file), 'utf8');
-  return `<script${attrs}>\n${body}\n</script>`;
+  return `<script${attrs}>${body}</script>`;
 });
 
 fs.mkdirSync(path.dirname(outPath), { recursive: true });
