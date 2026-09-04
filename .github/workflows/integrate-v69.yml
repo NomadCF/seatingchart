@@ -1,0 +1,30 @@
+name: Integrate V6.9
+on:
+  push:
+    branches: [feat/v6.9-interoperability]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  integrate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/v6.9-interoperability
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: node tools/integrate-v69.mjs
+      - run: npm install --no-package-lock
+      - run: npm run build
+      - run: cp dist/Classroom-Seating-Planner.html index.html
+      - run: npm test
+      - name: Commit integrated source and deterministic output
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package.json src/manifest.json src/index.template.html src/scripts/000-core.js src/scripts/017-district-integrations-v57.js src/scripts/025-classroom-feature-pack-v66.js src/scripts/030-interoperability-v69.js service-worker.js tools/validate-release.mjs CHANGELOG.md index.html
+          git commit -m "Integrate V6.9 interoperability release source" || exit 0
+          git push origin HEAD:feat/v6.9-interoperability
