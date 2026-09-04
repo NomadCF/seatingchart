@@ -5,6 +5,8 @@ on:
     branches: [feat/v6.7-production-hardening]
     paths:
       - .github/workflows/semantic-source-split.yml
+      - tools/build-single-file.mjs
+      - tools/split-main-script.mjs
 
 permissions:
   contents: write
@@ -19,7 +21,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
       - name: Split application script at guarded top-level module boundaries
         run: node tools/split-main-script.mjs
       - name: Verify rebuilt single-file application
