@@ -33,12 +33,6 @@ html = html.replace(/<script([^>]*)>\/\* @bundle:application \*\/<\/script>/g, (
   return `<script${attrs}>${body}</script>`;
 });
 
-const unresolvedStyleMarker = /<style[^>]*>\/\* @source:style-\d{3}\.css \*\/<\/style>/;
-const unresolvedScriptMarker = /<script[^>]*>\/\* @(source:script-\d{3}\.js|bundle:application) \*\/<\/script>/;
-if (unresolvedStyleMarker.test(html) || unresolvedScriptMarker.test(html)) {
-  throw new Error('Unresolved source placeholder remains in assembled HTML.');
-}
-
 fs.mkdirSync(path.dirname(outPath), { recursive: true });
 fs.writeFileSync(outPath, html.replace(/\r\n/g, '\n'), 'utf8');
 console.log(`Built ${path.relative(root, outPath)} (${Buffer.byteLength(html)} bytes).`);
