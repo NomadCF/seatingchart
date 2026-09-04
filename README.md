@@ -54,21 +54,20 @@ Hosted application: https://nomadcf.github.io/seatingchart/
 
 ## V6.7 engineering and release model
 
-The distributed portable application remains one self-contained HTML file. Development tooling can split the monolith into generated CSS/JavaScript source modules and rebuild it deterministically. CI verifies that this split/rebuild round trip does not alter the application after line-ending normalization.
+The distributed portable application remains one self-contained HTML file, but development now uses the committed `src/` tree as the maintainable source of truth. The HTML shell lives in `src/index.template.html`, the application stylesheet in `src/styles/`, and the main runtime is split into 27 ordered JavaScript modules in `src/scripts/`.
 
 Useful commands:
 
 ```text
 npm install
-npm run split
 npm run build
 npm test
 npm run test:browser
 ```
 
-`npm run split` generates a temporary `src/` development view of the inline styles and scripts. `npm run build` assembles `dist/Classroom-Seating-Planner.html`. Generated `src/` and `dist/` output are build artifacts rather than a second hand-maintained source of truth.
+`npm run build` assembles `dist/Classroom-Seating-Planner.html` from the committed modular source. CI verifies that the result matches the deployed `index.html` exactly after line-ending normalization, then runs schema, service-worker, and desktop/mobile browser regression checks. The legacy `npm run migrate:monolith-to-src` command exists only for one-way migration or recovery from a monolithic source snapshot and is not part of the normal development workflow.
 
-Pull requests run deterministic build validation, JSON-schema parsing, service-worker syntax validation, and desktop/mobile Chromium smoke tests. Tagged releases package the portable HTML, hosted PWA bundle, source archive, and SHA-256 checksums.
+Tagged releases package the portable HTML, hosted PWA bundle, complete modular source archive, and SHA-256 checksums.
 
 ## Public data contracts
 
