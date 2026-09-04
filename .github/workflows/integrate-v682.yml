@@ -17,6 +17,7 @@ jobs:
         with:
           node-version: 24
       - run: node tools/integrate-v682.mjs
+      - run: npm install --package-lock-only --ignore-scripts
       - run: npm ci
       - run: npm run build
       - run: cp dist/Classroom-Seating-Planner.html index.html
