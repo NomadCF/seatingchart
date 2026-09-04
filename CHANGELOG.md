@@ -9,6 +9,7 @@
 - Added smallest-change repair previews that reuse the existing seat-validity engine, show every proposed student move, and require explicit teacher approval before applying.
 - Added concrete impossible-plan explanations for capacity shortages, repeated required conflicts, and students with no usable seat under the current explicit rules.
 - Added fairness-aware repair scoring for Fair Rotation while keeping the teacher-defined rules and needs visible and authoritative.
+- Grouped Advanced planning tools into the modern More Actions menu so Classroom Intelligence and the existing planning suite follow the same visible desktop/mobile navigation model.
 - Kept V6.8 local-first and deterministic: no external AI service, hidden student scoring, or automatic rule rewriting was introduced.
 - Updated the PWA cache generation and release validation to V6.8.0.
 
@@ -33,26 +34,10 @@
 ### Existing classroom capabilities retained
 
 - Live seat guidance and valid-seat review.
-- Conflict-resolution planning tools.
-- Seating history and fairness analysis.
-- Scheduled/named plans and visual plan comparison.
-- Bulk requirements.
-- Duplicate roster suggestions and advanced filters.
-- Assignment/violation CSV exports.
-- Sanitized support bundles.
-- Copy chart as image and blank-room printing.
-- Seat/zone/plan comments.
-- Template libraries and import/export workflows.
-- Desktop/mobile/PWA workflows.
-- Google Drive save/load behavior.
-- Analytics enabled by default with the existing opt-out.
-
-### External configuration still optional
-
-- Native Google Picker still requires a real restricted browser API key. Ordinary Google Drive save/load does not depend on Picker and remains available without it.
-
-## 6.6.3 — 2026-09-04
-
-- Completed hosted PWA manifest, service worker, icons, and update-aware deployment diagnostics.
-- Added Google Picker project-number configuration and accurate missing-key diagnostics.
-- Preserved default-on analytics behavior.
+- Fairness and seating history analysis.
+- Scheduled plans and visual plan comparison.
+- Bulk requirements and advanced roster filters.
+- Duplicate roster suggestions.
+- Seat, zone, and plan comments.
+- Room/planning template libraries.
+- Assignment/violation CSV exports, sanitized support bundles, chart-image copying, and blank-room printing.
