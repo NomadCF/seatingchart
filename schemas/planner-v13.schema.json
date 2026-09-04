@@ -1,37 +1,106 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://nomadcf.github.io/seatingchart/schemas/planner-v13.schema.json",
-  "title": "Classroom Seating Planner v13 payload",
-  "description": "Forward-compatible public contract for decrypted Classroom Seating Planner schema-version 13 data. Unknown fields are permitted so additive releases remain readable.",
+  "title": "Classroom Seating Planner save document v13",
+  "description": "Public contract for decrypted classroom-seating-planner-save-v6 documents using data schema 13. Unknown additive fields are permitted for forward-compatible tooling.",
   "type": "object",
+  "required": [
+    "format",
+    "app",
+    "version",
+    "dataSchemaVersion",
+    "minimumReaderSchemaVersion",
+    "encryptionEnvelopeVersion",
+    "exportedAt",
+    "exportScope",
+    "saveIdentity",
+    "activeClassId",
+    "classes",
+    "roomTemplates",
+    "appSnapshots",
+    "pageSettings",
+    "preferences"
+  ],
   "properties": {
-    "schemaVersion": { "type": "integer", "const": 13 },
-    "version": { "type": ["string", "number"] },
-    "activeClassId": { "type": ["string", "null"] },
+    "format": { "const": "classroom-seating-planner-save-v6" },
+    "app": { "const": "Classroom Seating Planner" },
+    "version": { "type": "string", "minLength": 1 },
+    "dataSchemaVersion": { "type": "integer", "const": 13 },
+    "minimumReaderSchemaVersion": { "type": "integer", "minimum": 1, "maximum": 13 },
+    "encryptionEnvelopeVersion": { "type": "integer", "const": 3 },
+    "exportedAt": { "type": "string", "minLength": 1 },
+    "exportScope": { "enum": ["all-classes", "current-class"] },
+    "activeClassId": { "type": "string", "minLength": 1 },
+    "saveIdentity": { "$ref": "#/$defs/saveIdentity" },
     "classes": {
-      "type": ["array", "object"],
-      "description": "Class records. Historical planner builds may serialize keyed records or arrays.",
-      "items": { "$ref": "#/$defs/classRecord" },
-      "additionalProperties": { "$ref": "#/$defs/classRecord" }
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/classRecord" }
     },
-    "settings": { "type": "object", "additionalProperties": true },
-    "metadata": { "type": "object", "additionalProperties": true }
+    "roomTemplates": { "type": "array", "items": { "type": "object", "additionalProperties": true } },
+    "collaborationAccess": { "type": "object", "additionalProperties": true },
+    "appSnapshots": { "type": "array", "items": { "type": "object", "additionalProperties": true } },
+    "pageSettings": { "type": "object", "additionalProperties": true },
+    "preferences": { "type": "object", "additionalProperties": true }
   },
-  "required": ["schemaVersion"],
   "additionalProperties": true,
   "$defs": {
+    "saveIdentity": {
+      "type": "object",
+      "required": ["saveId", "revisionNumber", "parentRevision", "deviceId", "createdAt", "modifiedAt", "contentHash"],
+      "properties": {
+        "saveId": { "type": "string", "minLength": 1 },
+        "revisionNumber": { "type": "integer", "minimum": 0 },
+        "parentRevision": { "type": ["integer", "null"] },
+        "deviceId": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "modifiedAt": { "type": "string" },
+        "contentHash": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
     "classRecord": {
       "type": "object",
+      "required": [
+        "id", "name", "students", "groups", "rows", "cols", "cells", "layoutMode", "freeformLayout",
+        "customObjects", "zones", "snapshots", "chartMeta", "rosterArchive", "todaySession", "seatingPlans",
+        "importProfiles", "archived", "academicYear", "term", "createdAt", "updatedAt"
+      ],
       "properties": {
-        "id": { "type": ["string", "number"] },
-        "name": { "type": "string" },
-        "students": { "type": ["array", "object"] },
-        "groups": { "type": ["array", "object"] },
-        "zones": { "type": ["array", "object"] },
-        "seats": { "type": ["array", "object"] },
-        "room": { "type": "object" },
-        "plans": { "type": ["array", "object"] },
-        "notes": { "type": ["array", "object"] }
+        "id": { "type": "string", "minLength": 1 },
+        "name": { "type": "string", "minLength": 1 },
+        "students": { "type": "array", "items": { "$ref": "#/$defs/student" } },
+        "groups": { "type": "array", "items": { "type": "object", "additionalProperties": true } },
+        "rows": { "type": "integer" },
+        "cols": { "type": "integer" },
+        "cells": { "type": "object", "additionalProperties": true },
+        "layoutMode": { "enum": ["grid", "freeform"] },
+        "freeformLayout": { "type": "object", "additionalProperties": true },
+        "customObjects": { "type": "array", "items": { "type": "object", "additionalProperties": true } },
+        "zones": { "type": "array", "items": { "type": "object", "additionalProperties": true } },
+        "snapshots": { "type": "array", "items": { "type": "object", "additionalProperties": true } },
+        "chartMeta": { "type": "object", "additionalProperties": true },
+        "rosterArchive": { "type": "array", "items": { "type": "object", "additionalProperties": true } },
+        "todaySession": { "type": "object", "additionalProperties": true },
+        "seatingPlans": { "type": "array", "items": { "type": "object", "additionalProperties": true } },
+        "importProfiles": { "type": "array", "items": { "type": "object", "additionalProperties": true } },
+        "archived": { "type": "boolean" },
+        "academicYear": { "type": ["string", "number", "null"] },
+        "term": { "type": ["string", "number", "null"] },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "student": {
+      "type": "object",
+      "required": ["id"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "firstName": { "type": "string" },
+        "lastName": { "type": "string" },
+        "nickname": { "type": "string" },
+        "grade": { "type": ["string", "number"] }
       },
       "additionalProperties": true
     }
