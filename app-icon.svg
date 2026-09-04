@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Classroom Seating Planner">
+  <rect width="512" height="512" rx="112" fill="#1e3a8a"/>
+  <rect x="92" y="84" width="328" height="76" rx="26" fill="#ffffff"/>
+  <rect x="116" y="108" width="280" height="28" rx="14" fill="#bfdbfe"/>
+  <g fill="#dbeafe">
+    <rect x="92" y="202" width="88" height="88" rx="22"/>
+    <rect x="212" y="202" width="88" height="88" rx="22"/>
+    <rect x="332" y="202" width="88" height="88" rx="22"/>
+    <rect x="92" y="322" width="88" height="88" rx="22"/>
+    <rect x="212" y="322" width="88" height="88" rx="22"/>
+    <rect x="332" y="322" width="88" height="88" rx="22"/>
+  </g>
+  <g fill="#ffffff">
+    <circle cx="136" cy="246" r="15"/>
+    <circle cx="256" cy="246" r="15"/>
+    <circle cx="376" cy="246" r="15"/>
+    <circle cx="136" cy="366" r="15"/>
+    <circle cx="256" cy="366" r="15"/>
+    <circle cx="376" cy="366" r="15"/>
+  </g>
+</svg>
