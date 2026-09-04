@@ -1,0 +1,45 @@
+name: Package release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Validate and build portable HTML
+        run: npm test
+      - name: Assemble release directory
+        run: |
+          mkdir -p release/hosted-pwa release/source
+          cp dist/Classroom-Seating-Planner.html release/Classroom-Seating-Planner.html
+          cp index.html manifest.webmanifest service-worker.js app-icon.svg app-icon-192.png app-icon-512.png release/hosted-pwa/
+          cp -R README.md LICENSE SECURITY.md PRIVACY.md DATA-HANDLING.md package.json tools schemas release/source/
+          (cd release && zip -r Classroom-Seating-Planner-Hosted-PWA.zip hosted-pwa >/dev/null)
+          (cd release && zip -r Classroom-Seating-Planner-Source.zip source >/dev/null)
+          (cd release && sha256sum Classroom-Seating-Planner.html Classroom-Seating-Planner-Hosted-PWA.zip Classroom-Seating-Planner-Source.zip > SHA256SUMS.txt)
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-package
+          path: release/
+          retention-days: 30
+      - name: Publish GitHub release for tag
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: |
+            release/Classroom-Seating-Planner.html
+            release/Classroom-Seating-Planner-Hosted-PWA.zip
+            release/Classroom-Seating-Planner-Source.zip
+            release/SHA256SUMS.txt
