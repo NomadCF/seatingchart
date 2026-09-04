@@ -1,10 +1,13 @@
 name: Integrate V6.8.2
 on:
+  push:
+    branches: [feat/v6.8.2-physical-table-pods]
   workflow_dispatch:
 permissions:
   contents: write
 jobs:
   integrate:
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
