@@ -10,6 +10,7 @@
 - Added concrete impossible-plan explanations for capacity shortages, repeated required conflicts, and students with no usable seat under the current explicit rules.
 - Added fairness-aware repair scoring for Fair Rotation while keeping the teacher-defined rules and needs visible and authoritative.
 - Grouped Advanced planning tools into the modern More Actions menu so Classroom Intelligence and the existing planning suite follow the same visible desktop/mobile navigation model.
+- Fixed the Advanced Planning entry point so it opens reliably from the propagation-isolated More Actions menu on both desktop and mobile.
 - Kept V6.8 local-first and deterministic: no external AI service, hidden student scoring, or automatic rule rewriting was introduced.
 - Updated the PWA cache generation and release validation to V6.8.0.
 
