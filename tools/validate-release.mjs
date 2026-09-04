@@ -12,7 +12,7 @@ execFileSync(process.execPath, ['tools/build-single-file.mjs'], { cwd: root, std
 const built = normalize(fs.readFileSync(path.join(root, 'dist', 'Classroom-Seating-Planner.html'), 'utf8'));
 
 const required = [
-  ['doctype', /^<!doctype html>/i.test(built)],
+  ['doctype', /^\s*<!doctype html>/i.test(built)],
   ['manifest link', /rel=["']manifest["']/i.test(built)],
   ['service worker registration', /serviceWorker\.register\(/.test(built)],
   ['app version metadata', /name=["']app-version["']/i.test(built)],
