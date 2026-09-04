@@ -1,0 +1,98 @@
+name: Repair V6.8 planning entry point
+
+on:
+  push:
+    branches:
+      - feat/v6.8-classroom-intelligence
+    paths:
+      - .github/workflows/rebuild-v68-entrypoint.yml
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/v6.8-classroom-intelligence
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Patch planning entry point and regression test
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          planning = Path('src/scripts/021-planning-tools-v66.js')
+          text = planning.read_text()
+          old = """    button.className = 'secondary';
+              button.title = 'Open live seat guidance, Classroom Intelligence, fairness analysis, schedules, bulk needs, template libraries, and roster-quality tools.';
+
+              const moreMenu = el('v4MoreMenu');
+          """
+          new = """    button.className = 'secondary';
+              button.title = 'Open live seat guidance, Classroom Intelligence, fairness analysis, schedules, bulk needs, template libraries, and roster-quality tools.';
+              if (button.dataset.planningToolsEntryBound !== 'true') {
+                button.dataset.planningToolsEntryBound = 'true';
+                button.addEventListener('click', () => open());
+              }
+
+              const moreMenu = el('v4MoreMenu');
+          """
+          if old not in text:
+              raise SystemExit('Planning entry-point insertion anchor not found')
+          text = text.replace(old, new, 1)
+
+          old_listener = """    document.addEventListener('click', event => {
+                if (event.target.closest('#openPlanningToolsBtn')) open();
+              });
+          """
+          if old_listener not in text:
+              raise SystemExit('Delegated planning entry-point listener not found')
+          text = text.replace(old_listener, '', 1)
+          planning.write_text(text)
+
+          test = Path('tests/browser/smoke.spec.mjs')
+          text = test.read_text()
+          old = """  await page.locator('#openPlanningToolsBtn').click();
+            await expect(page.locator('[data-intelligence-tab]')).toHaveCount(1);
+            await page.locator('[data-intelligence-tab]').click();
+          """
+          new = """  await page.locator('#openPlanningToolsBtn').click();
+            await expect(page.locator('#planningToolsModal')).toHaveClass(/\\bshow\\b/);
+            const intelligenceTab = page.locator('[data-intelligence-tab]');
+            await expect(intelligenceTab).toBeVisible();
+            await intelligenceTab.click();
+          """
+          if old not in text:
+              raise SystemExit('Intelligence regression-test anchor not found')
+          test.write_text(text.replace(old, new, 1))
+          PY
+
+      - name: Install dependencies
+        run: npm install --no-package-lock
+
+      - name: Validate patched module
+        run: node --check src/scripts/021-planning-tools-v66.js
+
+      - name: Rebuild committed single-file application
+        run: |
+          npm run build
+          cp dist/Classroom-Seating-Planner.html index.html
+          npm test
+
+      - name: Commit repaired source and generated application
+        shell: bash
+        run: |
+          git config user.name "NomadCF"
+          git config user.email "NomadCF@users.noreply.github.com"
+          git rm .github/workflows/rebuild-v68-entrypoint.yml
+          git add src/scripts/021-planning-tools-v66.js tests/browser/smoke.spec.mjs index.html
+          git commit -m "Fix V6.8 Advanced Planning entry point"
+          git push origin HEAD:feat/v6.8-classroom-intelligence
