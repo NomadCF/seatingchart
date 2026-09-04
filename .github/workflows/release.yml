@@ -16,7 +16,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
+      - name: Install build dependencies
+        run: npm install --no-package-lock
       - name: Validate and build portable HTML
         run: npm test
       - name: Assemble release directory
@@ -24,7 +26,7 @@ jobs:
           mkdir -p release/hosted-pwa release/source
           cp dist/Classroom-Seating-Planner.html release/Classroom-Seating-Planner.html
           cp index.html manifest.webmanifest service-worker.js app-icon.svg app-icon-192.png app-icon-512.png release/hosted-pwa/
-          cp -R README.md LICENSE SECURITY.md PRIVACY.md DATA-HANDLING.md package.json tools schemas release/source/
+          cp -R README.md CHANGELOG.md LICENSE SECURITY.md PRIVACY.md DATA-HANDLING.md package.json playwright.config.mjs tools schemas src docs tests .github release/source/
           (cd release && zip -r Classroom-Seating-Planner-Hosted-PWA.zip hosted-pwa >/dev/null)
           (cd release && zip -r Classroom-Seating-Planner-Source.zip source >/dev/null)
           (cd release && sha256sum Classroom-Seating-Planner.html Classroom-Seating-Planner-Hosted-PWA.zip Classroom-Seating-Planner-Source.zip > SHA256SUMS.txt)
