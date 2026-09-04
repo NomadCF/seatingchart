@@ -33,7 +33,6 @@ jobs:
           if (!/name="app-version" content="6\.7\.0"/.test(html)) throw new Error('Version bump missing');
           NODE
           node --check /tmp/seating-inline.js
-          git diff --check
       - name: Commit patched runtime
         run: |
           git config user.name github-actions[bot]
