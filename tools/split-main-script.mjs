@@ -11,7 +11,33 @@ const manifestPath = path.join(srcDir, 'manifest.json');
 
 if (!fs.existsSync(originalPath)) throw new Error('Expected bootstrap source src/scripts/script-001.js.');
 
-const source = fs.readFileSync(originalPath, 'utf8');
+let source = fs.readFileSync(originalPath, 'utf8');
+let template = fs.readFileSync(templatePath, 'utf8');
+const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+
+// The bootstrap splitter historically treated <style> tags inside JavaScript template
+// strings as top-level application styles. Restore those nested fragments before
+// performing the semantic JavaScript split, and keep only style modules referenced
+// by the actual HTML shell.
+const nestedStyleMarker = /<style>\/\* @source:(style-\d{3}\.css) \*\/<\/style>/g;
+const nestedStyleFiles = [...source.matchAll(nestedStyleMarker)].map(match => match[1]);
+for (const file of nestedStyleFiles) {
+  const stylePath = path.join(srcDir, 'styles', file);
+  if (!fs.existsSync(stylePath)) throw new Error(`Missing nested style source ${file}.`);
+  const body = fs.readFileSync(stylePath, 'utf8');
+  const marker = `<style>/* @source:${file} */</style>`;
+  source = source.split(marker).join(`<style>${body}</style>`);
+}
+
+const referencedTopLevelStyles = new Set(
+  [...template.matchAll(/\/\* @source:(style-\d{3}\.css) \*\//g)].map(match => match[1])
+);
+for (const file of fs.readdirSync(path.join(srcDir, 'styles'))) {
+  if (/^style-\d{3}\.css$/.test(file) && !referencedTopLevelStyles.has(file)) {
+    fs.rmSync(path.join(srcDir, 'styles', file), { force: true });
+  }
+}
+manifest.styleFiles = referencedTopLevelStyles.size;
 const expectedModules = [
   'CRC_TABLE',
   'WorkflowExpansion',
@@ -80,14 +106,12 @@ const filenames = parts.map((part, index) => {
   return filename;
 });
 
-let template = fs.readFileSync(templatePath, 'utf8');
 const marker = '<script>/* @source:script-001.js */</script>';
 const markerCount = template.split(marker).length - 1;
 if (markerCount !== 1) throw new Error(`Expected one application script source marker; found ${markerCount}.`);
 template = template.replace(marker, '<script>/* @bundle:application */</script>');
 fs.writeFileSync(templatePath, template, 'utf8');
 
-const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
 manifest.scriptFiles = filenames;
 manifest.applicationBundle = 'application';
 fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2) + '\n', 'utf8');
