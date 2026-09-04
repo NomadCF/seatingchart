@@ -1,97 +1,284 @@
+<div align="center">
+  <img src="app-icon.svg" alt="Classroom Seating Planner icon" width="96" height="96">
+
 # Classroom Seating Planner
 
-Classroom Seating Planner is a privacy-conscious classroom management and seating-design application that helps educators build class rosters, create accurate classroom layouts, assign students manually or automatically, evaluate seating requirements, and produce audience-appropriate print and sharing materials.
+**Build better seating charts around the students, rules, and room you actually have.**
 
-The application guides users through five primary stages: Class Setup, Room Design, Seat Students, Review, and Save & Share. It supports both traditional grid-based seating charts and detailed Freeform classroom layouts, while incorporating student needs, accessibility considerations, group relationships, seating restrictions, zones, room objects, and teacher-defined rules.
+A free, open-source, privacy-conscious seating planner for educators. Design the room, add student needs and seating rules, build or generate plans, review conflicts, and share only what each audience should see.
 
-Classroom Seating Planner is designed to run locally as a self-contained application, with encrypted browser saving, backups, snapshots, recovery tools, and optional Google Drive and Google Classroom integration. It emphasizes student-data privacy by allowing teachers to control which names, details, and note categories appear in printed charts or read-only sharing packages.
+[**Launch the hosted app**](https://nomadcf.github.io/seatingchart/) · [Privacy](PRIVACY.md) · [Security](SECURITY.md) · [Data handling](DATA-HANDLING.md) · [Changelog](CHANGELOG.md)
 
-Hosted application: https://nomadcf.github.io/seatingchart/
+![Version](https://img.shields.io/badge/version-6.7.0-2563eb?style=flat-square)
+![License](https://img.shields.io/badge/license-MIT-0f766e?style=flat-square)
+![PWA](https://img.shields.io/badge/PWA-installable-7c3aed?style=flat-square)
+![Local-first](https://img.shields.io/badge/data-local--first-0f766e?style=flat-square)
 
-## Main features
+</div>
 
-- **Five-stage guided workflow** — Class Setup, Room Design, Seat Students, Review, and Save & Share.
-- **Multiple class and roster management** — classes, student records, archived rosters, class copies, term rollovers, and class-record comparisons or merges.
-- **CSV, Google Classroom, and roster reconciliation** — CSV import plus optional read-only Google Classroom roster retrieval and reconciliation before changes are applied.
-- **Duplicate-detection assistance** — flags duplicate and near-matching roster records for review rather than silently merging them.
-- **Student information and categorized notes** — names, IDs, grades, nicknames, requirements, attendance information, and public, substitute, or private notes.
-- **Student groups and classroom zones** — instructional groups, behavior groupings, reserved locations, classroom zones, and relationships between students, groups, seats, and room areas.
-- **Detailed seating rules and requirements** — together, avoid, spread, anchor, front/back placement, accessibility, zone, room-object distance, and individual requirements.
-- **Bulk requirements tools** — apply, inspect, and manage requirements across multiple students without editing each record independently.
-- **Standard Grid room design** — row-and-column charts with seats, teacher areas, tables, doors, walls, windows, boards, projectors, walkways, carpets, ADA spaces, and custom objects.
-- **Advanced Freeform room design** — move, resize, rotate, align, group, layer, lock, and arrange classroom objects on a physical-room canvas.
-- **Freeform layout assistance** — collision handling, magnetic alignment guides, minimap navigation, object history, layout presets, print boundaries, overlap detection, and room-integrity audits.
-- **Manual student placement** — drag, swap, move, clear, lock, or keyboard-place students while preserving intentional assignments and reserved seats.
-- **Live seat guidance** — evaluates candidate placements and helps surface valid or problematic seats for the selected student.
-- **Automatic seating-plan generation** — produces multiple candidates based on rules, student needs, room geometry, existing placements, and teacher priorities.
-- **Explainable seating recommendations** — shows why generated plans differ by identifying rule matches, unmet requirements, conflicts, movement, and other factors.
-- **Conflict-resolution planning tools** — identifies blocking requirements and supports actionable review rather than presenting only a score.
-- **Preflight conflict inspection** — detects insufficient seats, inaccessible required seating, contradictory rules, invalid locked assignments, duplicate students, and unavailable zones.
-- **Seating review and analysis** — finds unassigned students, rule violations, group outcomes, inaccessible placements, overlapping objects, hidden items, and inconsistent data.
-- **Advanced roster/search filters** — quickly narrows students by seating and planning state, including unresolved or unseated cases.
-- **Today Mode and temporary classroom changes** — attendance, absent students, temporary guests, daily notes, and seating only students currently present.
-- **Named and scheduled seating plans** — saves, activates, compares, restores, schedules, and manages room arrangements or student-assignment versions.
-- **Seating history and fairness analysis** — tracks seating patterns and movement so teachers can evaluate repeated placement outcomes and rotation fairness.
-- **Visual plan comparison** — compares saved plans and highlights meaningful assignment/layout differences.
-- **Seat, zone, and plan comments** — stores planning context alongside the relevant classroom element rather than forcing every note into a student record.
-- **Undo, redo, snapshots, and selective restore** — editing history, automatic/manual snapshots, restore points, and restoration of selected classes or data sections.
-- **Encrypted saving and recovery** — encrypted browser autosave, downloaded backups, linked working files, password rotation, startup recovery, and optional recovery packages.
-- **Save-health and conflict protection** — storage monitoring, backup records, interrupted-write protection, multi-tab detection, and conflict-resolution options.
-- **Optional Google Drive storage** — saves and loads encrypted planner files through Drive with file management, revisions, reconnect status, duplicate handling, and revision-aware conflict detection.
-- **Drive collaboration checks** — optional polling, remote-change detection, three-way merge support, editing notices, and a bounded collaboration activity ledger while the app is open. This is not represented as realtime Google-Docs-style collaboration.
-- **Privacy-controlled printing** — print-as-seen, names-only, substitute, detailed, and blank-room outputs with selectable fields, notes, groups, zones, paper sizes, scaling, tiling, and crop marks.
-- **CSV export center** — exports current assignments and rule/violation information for downstream review or reporting.
-- **Image and vector output** — copy chart as image plus PDF/SVG-oriented output paths for documents and presentations.
-- **Sanitized support bundles** — diagnostic exports designed to omit student records, notes, passwords, encryption keys, OAuth tokens, and raw planner payloads.
-- **Purpose-limited read-only sharing packages** — teacher, substitute, student-facing, support-team, anonymous, or room-only HTML packages containing only selected information.
-- **Room and planning template libraries** — reusable layout/planning templates with import/export workflows for sharing without requiring a server-hosted template database.
-- **Workspace security controls** — encrypted data, Settings protection, page locking, automatic locking, Eye/Presentation Mode, deliberate sensitive-note revealing, and secure reset workflows.
-- **Responsive and accessible interface** — desktop, tablet, mobile, touch placement, keyboard navigation, focus-managed dialogs, screen-reader announcements, reduced motion, collapsible panels, and focus mode.
-- **Integrated guidance and documentation** — Quick Start, searchable reference help, guided lessons, practice classes, contextual Guide Me tools, learning progress, diagnostics, and troubleshooting.
-- **Customizable appearance and language support** — accessible themes, display preferences, collapsible workspaces, configurable defaults, privacy views, presentation modes, shortcuts, and localization infrastructure.
-- **Portable and hosted deployment options** — runs as a self-contained HTML application or as a hosted/installable Progressive Web App with offline support and deployment verification.
-- **Privacy-focused local operation** — keeps classroom information in the browser unless the user deliberately saves, exports, prints, shares, or connects an approved external service.
+---
 
-## V6.7 engineering and release model
+## Seating charts are easy until students have actual needs
 
-The distributed portable application remains one self-contained HTML file, but development now uses the committed `src/` tree as the maintainable source of truth. The HTML shell lives in `src/index.template.html`, the application stylesheet in `src/styles/`, and the main runtime is split into 27 ordered JavaScript modules in `src/scripts/`.
+A classroom rarely fits into a perfect grid, and students rarely come with no constraints.
 
-Useful commands:
+Classroom Seating Planner is built for the messy version of the problem: students who need the front, students who should be separated, groups that should stay together or spread out, accessible seating, room zones, fixed objects, temporary absences, substitute-friendly charts, and plans that should not repeat the same placements forever.
 
-```text
+The app combines **room design**, **student rules**, **manual placement**, **automatic plan generation**, **conflict review**, **history and fairness analysis**, and **privacy-controlled sharing** in one workflow.
+
+### What makes it different
+
+| Design the real room | Seat with intent | Share with control |
+| --- | --- | --- |
+| Grid or Freeform layouts | Together, avoid, spread, anchor, front/back, zone, accessibility, and distance rules | Teacher, substitute, student-facing, support-team, anonymous, and room-only views |
+| Tables, doors, walls, boards, projectors, walkways, ADA spaces, custom objects, and more | Manual placement plus automatic plan generation | Select exactly which names, fields, groups, zones, and note categories are included |
+| Rotate, resize, align, group, lock, layer, and audit objects | Live valid-seat guidance, preflight checks, rule review, and conflict-resolution tools | Encrypted saves, local backups, Google Drive storage, printable output, CSV, image, PDF/SVG-oriented export paths |
+
+---
+
+## Try it
+
+### Hosted / installable PWA
+
+**[Open Classroom Seating Planner](https://nomadcf.github.io/seatingchart/)**
+
+The hosted version can be used in the browser and supports installable PWA/offline behavior.
+
+### Portable single-file version
+
+The distributed application is also available as a self-contained HTML file. The deployed [`index.html`](index.html) can be saved and opened locally in a modern browser for a portable, server-free workflow.
+
+Core local use does not require a subscription or a continuously running application server.
+
+---
+
+## A five-stage classroom workflow
+
+1. **Class Setup** - Create classes, import or enter students, organize groups, add notes, and define seating requirements.
+2. **Room Design** - Build a Standard Grid or detailed Freeform representation of the classroom.
+3. **Seat Students** - Place students manually, ask the planner to generate candidates, inspect valid seats, and resolve conflicts.
+4. **Review** - Check unassigned students, rule violations, accessibility, group outcomes, layout problems, history, and fairness.
+5. **Save & Share** - Save securely, create backups, print audience-specific charts, export data, or create purpose-limited read-only packages.
+
+The workflow is intentionally guided, but teachers can still move between stages as the classroom changes.
+
+---
+
+## Built for real classroom constraints
+
+### Intelligent seating rules
+
+Define requirements such as:
+
+- keep two students together or apart
+- spread members of a group across the room
+- anchor a student to a specific seat or area
+- prefer the front or back of the classroom
+- require an accessible seat or route
+- require or avoid a classroom zone
+- keep a student near or away from a room object
+- preserve intentional locked placements
+- apply requirements to multiple students in bulk
+
+The planner can surface valid seats for an individual student, generate multiple seating candidates, explain why plans differ, and identify requirements that make a plan impossible or problematic.
+
+### Room design beyond rows and columns
+
+Use **Standard Grid** for fast traditional charts or **Freeform** for rooms that contain pods, irregular tables, furniture, walking paths, teaching stations, ADA spaces, and other real-world geometry.
+
+Freeform tools include object movement, resize, clockwise/counter-clockwise rotation, alignment, grouping, layering, locking, magnetic guides, minimap navigation, layout presets, collision/overlap checks, print boundaries, history, and room-integrity audits.
+
+### Plans that can change without losing the past
+
+- Save and name multiple seating plans
+- Schedule plans for future use
+- Compare two plans visually
+- Restore earlier plans or snapshots
+- Track seating history and repeated placements
+- Review movement and fairness over time
+- Use Today Mode for absences, temporary guests, and short-term classroom changes
+
+---
+
+## Privacy is part of the product, not an afterthought
+
+Classroom Seating Planner is designed so classroom information can remain local unless the user deliberately saves, exports, prints, shares, or connects an external service.
+
+| Area | Approach |
+| --- | --- |
+| **Local storage** | Browser saving, autosave, snapshots, backups, restore points, and recovery tools |
+| **Encryption** | Encrypted planner saving, password rotation, recovery workflows, and secure reset tools |
+| **Google Drive** | Optional encrypted file storage with revision/change checks and conflict handling |
+| **Google Classroom** | Optional read-only roster retrieval and reconciliation before applying changes |
+| **Sharing** | Purpose-limited read-only HTML packages containing only selected information |
+| **Printing** | Choose the fields, groups, zones, and note categories appropriate for the audience |
+| **Support** | Sanitized diagnostic bundles are designed to omit student records, notes, passwords, encryption keys, OAuth tokens, and raw planner payloads |
+| **Presentation** | Eye/Presentation Mode provides a view-focused workspace that reduces accidental editing or exposure of workflow controls |
+
+Read the public [Privacy](PRIVACY.md), [Security](SECURITY.md), and [Data Handling](DATA-HANDLING.md) documents before using the application with sensitive classroom information.
+
+> **Do not place classroom rosters, student notes, credentials, encryption keys, or raw planner data in public GitHub issues.** Use sanitized diagnostics whenever possible.
+
+---
+
+## Feature highlights
+
+<details>
+<summary><strong>Classes, students, groups, and rosters</strong></summary>
+
+- Multiple classes, archived rosters, class copies, term rollovers, comparison, and merge workflows
+- CSV import and export
+- Optional Google Classroom roster retrieval and reconciliation
+- Duplicate and near-match detection assistance
+- Names, IDs, grades, nicknames, attendance information, requirements, and categorized notes
+- Instructional/behavior groups, classroom zones, reserved locations, and related planning relationships
+- Bulk requirement management and advanced roster/search filters
+
+</details>
+
+<details>
+<summary><strong>Seating and planning</strong></summary>
+
+- Drag, swap, move, clear, lock, and keyboard placement
+- Live seat-validity guidance and valid-seat discovery
+- Automatic multi-candidate seating-plan generation
+- Explainable candidate differences and requirement outcomes
+- Conflict-resolution actions and preflight conflict inspection
+- Named and scheduled seating plans
+- Seating history, movement, and fairness analysis
+- Visual plan comparison
+- Seat, zone, and plan comments
+- Today Mode for attendance and temporary classroom changes
+
+</details>
+
+<details>
+<summary><strong>Room design</strong></summary>
+
+- Standard Grid and advanced Freeform modes
+- Seats, teacher areas, tables, doors, walls, windows, boards, projectors, walkways, carpets, ADA spaces, and custom objects
+- Move, resize, rotate, align, group, layer, lock, and arrange Freeform objects
+- Magnetic alignment guides, minimap, presets, object history, collision handling, overlap detection, print boundaries, and integrity audits
+- Printable blank room layouts
+
+</details>
+
+<details>
+<summary><strong>Save, recovery, export, and sharing</strong></summary>
+
+- Encrypted browser autosave and downloaded backups
+- Linked working files, password rotation, startup recovery, and recovery packages
+- Undo/redo, automatic/manual snapshots, selective restore, and restore points
+- Save-health monitoring, interrupted-write protection, multi-tab detection, and conflict options
+- Optional Google Drive file management, revisions, reconnect status, duplicate handling, and remote-change detection
+- Three-way merge support for Drive-based collaboration checks while the application is open
+- CSV export of assignments and rule/violation information
+- Copy chart as image plus PDF/SVG-oriented output paths
+- Print-as-seen, names-only, substitute, detailed, and blank-room outputs
+- Sanitized support bundles
+- Purpose-limited read-only encrypted sharing packages
+- Reusable room and planning template libraries
+
+</details>
+
+<details>
+<summary><strong>Accessibility and interface</strong></summary>
+
+- Desktop, tablet, mobile, and touch workflows
+- Keyboard navigation and alternatives to drag-only interactions
+- Focus-managed dialogs and screen-reader announcements
+- Reduced-motion support
+- Responsive/reflow-oriented layouts, collapsible panels, and focus mode
+- Adjustable display preferences, themes, seat text sizing, workspace zoom, shortcuts, and localization infrastructure
+- Quick Start, searchable reference help, guided lessons, practice classes, contextual Guide Me tools, diagnostics, and troubleshooting
+
+</details>
+
+---
+
+## Collaboration without pretending a shared file is Google Docs
+
+Classroom Seating Planner can use a shared Google Drive file for teacher-to-teacher workflows without requiring a continuously running collaboration server.
+
+While the app is open it can perform Drive change checks, detect remote revisions, surface editing/conflict notices, maintain a bounded collaboration activity ledger, and support three-way merge workflows.
+
+This is **not** represented as realtime Google-Docs-style collaboration. Immediate synchronized seat movement between users would require a continuously running coordination service, which this project deliberately does not require for its core deployment model.
+
+---
+
+## Google integration
+
+Google integration is optional.
+
+- **Google Drive:** save/load encrypted planner files, inspect revisions, reconnect, detect remote changes, and manage file conflicts.
+- **Google Classroom:** read roster information and reconcile it before applying roster changes.
+- **Google Picker:** optional native file-browser experience that additionally requires a restricted browser API key.
+
+See [`docs/OAUTH_DEPLOYMENT.md`](docs/OAUTH_DEPLOYMENT.md) for the deployment distinction and recommended restrictions.
+
+---
+
+## For developers and contributors
+
+The portable deliverable remains a single self-contained HTML application, but the maintainable source is modular.
+
+- HTML shell: `src/index.template.html`
+- Styles: `src/styles/`
+- Ordered JavaScript modules: `src/scripts/`
+- Built portable file: `dist/Classroom-Seating-Planner.html`
+- Deployed hosted entry point: `index.html`
+
+### Development
+
+```bash
 npm install
 npm run build
 npm test
 npm run test:browser
 ```
 
-`npm run build` assembles `dist/Classroom-Seating-Planner.html` from the committed modular source. CI verifies that the result matches the deployed `index.html` exactly after line-ending normalization, then runs schema, service-worker, and desktop/mobile browser regression checks. The legacy `npm run migrate:monolith-to-src` command exists only for one-way migration or recovery from a monolithic source snapshot and is not part of the normal development workflow.
+`npm run build` assembles the portable HTML from the committed modular source. CI validates release structure, schema/service-worker behavior, build parity, and desktop/mobile browser regression coverage.
 
-Tagged releases package the portable HTML, hosted PWA bundle, complete modular source archive, and SHA-256 checksums.
+The legacy `npm run migrate:monolith-to-src` command exists for one-way migration/recovery and is not part of normal development.
 
-## Public data contracts
+### Public data contracts
 
-The repository includes forward-compatible JSON Schema documents for the current formats:
+Forward-compatible JSON Schema documents are included for third-party validation and tooling:
 
-- `schemas/planner-v13.schema.json` — decrypted `classroom-seating-planner-save-v6` document using data schema 13.
-- `schemas/envelope-v3.schema.json` — encrypted `classroom-seating-planner-encrypted-envelope-v6` document using encryption envelope 3.
+- [`schemas/planner-v13.schema.json`](schemas/planner-v13.schema.json) - decrypted `classroom-seating-planner-save-v6`, data schema 13
+- [`schemas/envelope-v3.schema.json`](schemas/envelope-v3.schema.json) - encrypted `classroom-seating-planner-encrypted-envelope-v6`, envelope 3
 
-These schemas are intended for validation and third-party tooling. Additive fields remain allowed so minor releases can evolve without forcing every external reader to update immediately.
+Additive fields remain allowed so minor releases can evolve without forcing every external reader to update immediately.
 
-## Privacy and security
+---
 
-See `PRIVACY.md`, `SECURITY.md`, and `DATA-HANDLING.md` for the public data-handling and security model. Classroom data should never be placed in bug reports or diagnostics unless the user deliberately creates a data-bearing export for that purpose.
+## Documentation
 
-The hosted application currently preserves its existing analytics behavior: analytics storage is enabled by default with the existing in-app opt-out. Analytics events must not intentionally contain roster data, student notes, student identifiers, seating assignments, encryption material, OAuth tokens, or planner payloads.
+| Document | Purpose |
+| --- | --- |
+| [`PRIVACY.md`](PRIVACY.md) | Public privacy model |
+| [`SECURITY.md`](SECURITY.md) | Security expectations and reporting guidance |
+| [`DATA-HANDLING.md`](DATA-HANDLING.md) | How classroom and diagnostic data are handled |
+| [`CHANGELOG.md`](CHANGELOG.md) | Release history and notable changes |
+| [`docs/OAUTH_DEPLOYMENT.md`](docs/OAUTH_DEPLOYMENT.md) | Google OAuth / Picker deployment guidance |
+| [`docs/WCAG-2.2-AA-AUDIT.md`](docs/WCAG-2.2-AA-AUDIT.md) | WCAG 2.2 AA-oriented release audit checklist |
 
-## Google integration
+---
 
-Ordinary Google Drive save/load workflows use OAuth and do not require Google Picker. The optional native Google Picker file-browser interface additionally requires a restricted browser API key. See `docs/OAUTH_DEPLOYMENT.md` for the exact deployment distinction and recommended restrictions.
+## Feedback and contributions
 
-## Accessibility
+Bug reports, usability feedback, accessibility findings, documentation improvements, and pull requests are welcome.
 
-The app includes keyboard, touch, responsive, reduced-motion, screen-reader, and focus-management support. The V6.7 audit checklist in `docs/WCAG-2.2-AA-AUDIT.md` documents the release gate for WCAG 2.2 AA-oriented manual verification, including dragging alternatives, target size, reflow, focus, contrast, and Presentation Mode.
+- [Open an issue](https://github.com/NomadCF/seatingchart/issues)
+- [View the source](https://github.com/NomadCF/seatingchart)
+- [Launch the app](https://nomadcf.github.io/seatingchart/)
+
+Please describe problems using sample or sanitized data. Never post real student records or other sensitive classroom information to a public issue.
+
+---
 
 ## License
 
-MIT License. See `LICENSE`.
+Classroom Seating Planner is released under the [MIT License](LICENSE).
+
+Use it, study it, modify it, deploy it, and contribute improvements back if they are useful to others.
