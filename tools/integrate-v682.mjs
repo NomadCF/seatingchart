@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 
+// Release integration is intentionally deterministic so modular source remains authoritative.
 const replace = (file, from, to) => {
   let text = fs.readFileSync(file, 'utf8');
   if (!text.includes(from)) throw new Error(`${file}: expected text not found: ${from}`);
