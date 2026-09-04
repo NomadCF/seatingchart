@@ -16,6 +16,14 @@ A free, open-source, privacy-conscious seating planner for educators. Design the
 
 </div>
 
+<p align="center">
+  <img src="docs/media/product-tour.svg" alt="Illustrated Classroom Seating Planner product tour showing a roster, classroom seating layout, seating rules, conflict checks, and privacy-focused planning" width="100%">
+</p>
+
+<p align="center"><strong>Design the room. Add student needs. Build a workable plan. Share only what should be shared.</strong></p>
+
+> **Product tour note:** The visual above is an illustration of the workflow and capabilities, not a literal application screenshot. Real interface screenshots can be added here as the screenshot library is built.
+
 ---
 
 ## Seating charts are easy until students have actual needs
@@ -53,6 +61,10 @@ Core local use does not require a subscription or a continuously running applica
 ---
 
 ## A five-stage classroom workflow
+
+<p align="center">
+  <img src="docs/media/workflow.svg" alt="Five-stage Classroom Seating Planner workflow: Class Setup, Room Design, Seat Students, Review, and Save and Share" width="100%">
+</p>
 
 1. **Class Setup** - Create classes, import or enter students, organize groups, add notes, and define seating requirements.
 2. **Room Design** - Build a Standard Grid or detailed Freeform representation of the classroom.
