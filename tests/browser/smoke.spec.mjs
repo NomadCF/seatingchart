@@ -127,6 +127,9 @@ test('V6.8.1 grouped Freeform seating remains coherent across states and zoom', 
   await expect(page.locator('#seatGrid')).toHaveAttribute('data-v681-zoom-band', 'low');
   await expect(page.locator('.freeform-object[data-object-id="seat-a"] .freeform-object-meta')).toHaveCSS('display', 'none');
 
+  await expect(page.locator('#v4MoreMenuBtn')).toBeVisible();
+  await page.locator('#v4MoreMenuBtn').click();
+  await expect(page.locator('#visibilityModeBtn')).toBeVisible();
   await page.locator('#visibilityModeBtn').click();
   await expect(page.locator('body')).toHaveClass(/\bvisibility-mode\b/);
   await expect(page.locator('.freeform-object[data-object-id="seat-a"] .freeform-object-meta')).toHaveCSS('display', 'none');
