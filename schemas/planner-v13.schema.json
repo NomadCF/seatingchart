@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nomadcf.github.io/seatingchart/schemas/planner-v13.schema.json",
+  "title": "Classroom Seating Planner v13 payload",
+  "description": "Forward-compatible public contract for decrypted Classroom Seating Planner schema-version 13 data. Unknown fields are permitted so additive releases remain readable.",
+  "type": "object",
+  "properties": {
+    "schemaVersion": { "type": "integer", "const": 13 },
+    "version": { "type": ["string", "number"] },
+    "activeClassId": { "type": ["string", "null"] },
+    "classes": {
+      "type": ["array", "object"],
+      "description": "Class records. Historical planner builds may serialize keyed records or arrays.",
+      "items": { "$ref": "#/$defs/classRecord" },
+      "additionalProperties": { "$ref": "#/$defs/classRecord" }
+    },
+    "settings": { "type": "object", "additionalProperties": true },
+    "metadata": { "type": "object", "additionalProperties": true }
+  },
+  "required": ["schemaVersion"],
+  "additionalProperties": true,
+  "$defs": {
+    "classRecord": {
+      "type": "object",
+      "properties": {
+        "id": { "type": ["string", "number"] },
+        "name": { "type": "string" },
+        "students": { "type": ["array", "object"] },
+        "groups": { "type": ["array", "object"] },
+        "zones": { "type": ["array", "object"] },
+        "seats": { "type": ["array", "object"] },
+        "room": { "type": "object" },
+        "plans": { "type": ["array", "object"] },
+        "notes": { "type": ["array", "object"] }
+      },
+      "additionalProperties": true
+    }
+  }
+}
