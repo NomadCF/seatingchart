@@ -72,8 +72,10 @@ test('Classroom Intelligence is available through Advanced tools', async ({ page
   await page.locator('#v4MoreMenuBtn').click();
   await expect(page.locator('#openPlanningToolsBtn')).toBeVisible();
   await page.locator('#openPlanningToolsBtn').click();
-  await expect(page.locator('[data-intelligence-tab]')).toHaveCount(1);
-  await page.locator('[data-intelligence-tab]').click();
+  await expect(page.locator('#planningToolsModal')).toHaveClass(/\bshow\b/);
+  const intelligenceTab = page.locator('[data-intelligence-tab]');
+  await expect(intelligenceTab).toBeVisible();
+  await intelligenceTab.click();
   await expect(page.getByText('Plan for what you are doing today')).toBeVisible();
   await expect(page.locator('[data-intelligence-scenario]')).toHaveCount(6);
   await expect(page.locator('#previewIntelligenceRepairBtn')).toBeVisible();

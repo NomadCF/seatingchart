@@ -35621,6 +35621,10 @@ window.PlanningToolsV66 = (() => {
     }
     button.className = 'secondary';
     button.title = 'Open live seat guidance, Classroom Intelligence, fairness analysis, schedules, bulk needs, template libraries, and roster-quality tools.';
+    if (button.dataset.planningToolsEntryBound !== 'true') {
+      button.dataset.planningToolsEntryBound = 'true';
+      button.addEventListener('click', () => open());
+    }
 
     const moreMenu = el('v4MoreMenu');
     if (moreMenu?.classList.contains('ui51-action-menu')) {
@@ -35653,9 +35657,6 @@ window.PlanningToolsV66 = (() => {
     ensureModal();
     ensureScheduledBanner();
     installSeatCommentObserver();
-    document.addEventListener('click', event => {
-      if (event.target.closest('#openPlanningToolsBtn')) open();
-    });
     document.addEventListener('keydown', event => {
       if (event.key === 'Escape' && el('planningToolsModal')?.classList.contains('show')) close();
     });
