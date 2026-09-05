@@ -1,6 +1,6 @@
 {
   "name": "classroom-seating-planner",
-  "version": "7.2.1",
+  "version": "7.3.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -8,7 +8,8 @@
     "build": "node tools/build-single-file.mjs",
     "check": "node tools/validate-release.mjs",
     "test": "npm run check",
-    "test:browser": "playwright test"
+    "test:browser": "playwright test",
+    "test:assistant": "playwright test tests/browser/planner-assistant-v710.spec.mjs tests/browser/planner-assistant-v730.spec.mjs tests/browser/ui-audit-v721.spec.mjs tests/browser/ui-audit-v721-hotfix.spec.mjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.55.0"
