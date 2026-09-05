@@ -46159,6 +46159,2012 @@ window.initializeClassroomSeatingPlanner()
   .catch(error => {
     window.AppAudit?.recordError?.('startup', error);
     throw error;
-  });</script>
+  });window.PlannerAssistantConversationV722 = (() => {
+  'use strict';
+
+  const VERSION = '7.2.2-conversation-1';
+  const CONTEXT_PREFIX = 'classroom-seating-planner-assistant-context-v722:';
+  const MAX_TURNS = 8;
+  const base = window.PlannerAssistantV710;
+  if (!base) return Object.freeze({ version:VERSION, installed:false });
+
+  const text = value => String(value || '').trim().replace(/\s+/g, ' ');
+  const lower = value => text(value).toLowerCase();
+  const list = value => Array.isArray(value) ? value : [];
+  const clone = value => {
+    try { return JSON.parse(JSON.stringify(value)); }
+    catch (_) { return value; }
+  };
+
+  function classId() {
+    try {
+      const record = typeof activeClassRecord === 'function' ? activeClassRecord() : null;
+      if (record?.id) return String(record.id);
+    } catch (_) { /* fallback */ }
+    return String(state?.activeClassId || state?.classId || 'default');
+  }
+
+  function contextKey() { return `${CONTEXT_PREFIX}${classId()}`; }
+
+  function emptyContext() {
+    return { students:[], groupId:'', layoutId:'', lastIntent:'', lastCommand:'', turns:[] };
+  }
+
+  function loadContext() {
+    try {
+      const parsed = JSON.parse(localStorage.getItem(contextKey()) || '{}');
+      return {
+        students:list(parsed.students).map(String).slice(0, 6),
+        groupId:String(parsed.groupId || ''),
+        layoutId:String(parsed.layoutId || ''),
+        lastIntent:String(parsed.lastIntent || ''),
+        lastCommand:String(parsed.lastCommand || ''),
+        turns:list(parsed.turns).slice(0, MAX_TURNS)
+      };
+    } catch (_) { return emptyContext(); }
+  }
+
+  function saveContext(value) {
+    try { localStorage.setItem(contextKey(), JSON.stringify(value)); } catch (_) { /* optional */ }
+  }
+
+  function resetContext() {
+    try { localStorage.removeItem(contextKey()); } catch (_) { /* optional */ }
+  }
+
+  function students() {
+    return list(state?.students).filter(student => student && !student.archived);
+  }
+
+  function studentName(student) {
+    try { if (typeof studentDisplay === 'function') return text(studentDisplay(student)); } catch (_) { /* fallback */ }
+    return text([student?.nickName || student?.firstName, student?.lastName].filter(Boolean).join(' ')) || String(student?.id || 'Student');
+  }
+
+  function aliases(student) {
+    return [...new Set([
+      studentName(student),
+      [student?.firstName, student?.lastName].filter(Boolean).join(' '),
+      student?.nickName,
+      student?.firstName,
+      student?.lastName
+    ].map(text).filter(value => value.length >= 2).map(lower))].sort((a,b) => b.length - a.length);
+  }
+
+  function escapeRegex(value) { return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+
+  function explicitStudentMatches(command) {
+    const source = lower(command);
+    const found = [];
+    students().forEach(student => {
+      aliases(student).forEach(alias => {
+        const match = new RegExp(`(^|[^a-z0-9])(${escapeRegex(alias)})(?=$|[^a-z0-9])`, 'i').exec(source);
+        if (!match) return;
+        const start = match.index + match[1].length;
+        found.push({ student, alias, start, end:start + alias.length });
+      });
+    });
+    found.sort((a,b) => a.start - b.start || (b.end-b.start) - (a.end-a.start));
+    const selected = [];
+    found.forEach(candidate => {
+      if (selected.some(item => candidate.start < item.end && candidate.end > item.start)) return;
+      const same = found.filter(item => item.start === candidate.start && item.end === candidate.end && item.alias === candidate.alias);
+      selected.push({
+        start:candidate.start,
+        end:candidate.end,
+        students:[...new Map(same.map(item => [String(item.student.id), item.student])).values()]
+      });
+    });
+    return selected;
+  }
+
+  function studentById(id) { return students().find(student => String(student?.id) === String(id)); }
+
+  function contextStudentNames(ctx = loadContext()) {
+    return ctx.students.map(studentById).filter(Boolean).map(studentName);
+  }
+
+  function referencedPronoun(command) {
+    const value = lower(command);
+    return /\b(him|her|them|that student|this student|the student|same student)\b/.test(value) || /^(and|but|also|then)\b/.test(value);
+  }
+
+  function referencedPreviousPair(command) {
+    const value = lower(command);
+    return /\b(them|those two|the two|both students|same pair)\b/.test(value);
+  }
+
+  function mergeContextIntoCommand(command) {
+    const raw = text(command);
+    if (!raw) return raw;
+    const matches = explicitStudentMatches(raw);
+    if (matches.length) return raw;
+    const ctx = loadContext();
+    const names = contextStudentNames(ctx);
+    if (!names.length) return raw;
+    const value = lower(raw);
+
+    if (referencedPreviousPair(raw) && names.length >= 2) {
+      if (/\b(apart|separate|away|not together|not next to)\b/.test(value)) return `Keep ${names[0]} and ${names[1]} apart`;
+      if (/\b(together|next to|beside|near|close)\b/.test(value)) return `Seat ${names[0]} and ${names[1]} together`;
+    }
+
+    if (referencedPronoun(raw) || /^(front|back|aisle|teacher|door|window|accessible|why|where)\b/.test(value)) {
+      const name = names[0];
+      if (/\b(front|forward|closer to the front|near the front)\b/.test(value)) return `Keep ${name} near the front`;
+      if (/\b(teacher|closer to me|near me|by me)\b/.test(value)) return `Keep ${name} near the teacher`;
+      if (/\baisle\b/.test(value)) return `Keep ${name} near an aisle`;
+      if (/\b(accessib|wheelchair|mobility)\b/.test(value)) return `Keep ${name} accessible`;
+      if (/\b(away|far|not near)\b.*\bdoor\b/.test(value)) return `Keep ${name} away from the door`;
+      if (/\b(away|far|not near)\b.*\bwindow\b/.test(value)) return `Keep ${name} away from the window`;
+      if (/\bwhere\b.*\b(sit|seat|go|place)\b/.test(value)) return `Where can ${name} sit?`;
+      if (/\bwhy\b/.test(value)) return `Why is ${name} seated here?`;
+    }
+
+    const secondMatch = students().find(student => aliases(student).some(alias => new RegExp(`(^|[^a-z0-9])${escapeRegex(alias)}(?=$|[^a-z0-9])`, 'i').test(lower(raw))));
+    if (secondMatch && names[0] && String(secondMatch.id) !== String(ctx.students[0])) {
+      if (/\b(not next to|not beside|away from|apart|separate)\b/.test(value)) return `Keep ${names[0]} and ${studentName(secondMatch)} apart`;
+      if (/\b(next to|beside|with|together|near)\b/.test(value)) return `Seat ${names[0]} and ${studentName(secondMatch)} together`;
+    }
+
+    return raw;
+  }
+
+  function currentFindings() {
+    try { return typeof evaluateCurrentRuleViolations === 'function' ? list(evaluateCurrentRuleViolations({ includeUnseated:true })) : []; }
+    catch (_) { return []; }
+  }
+
+  function seatResults(studentId) {
+    try { return window.SeatGuidanceV66?.calculate?.(studentId) || []; }
+    catch (_) { return []; }
+  }
+
+  function unseatedStudents() {
+    const assigned = new Set();
+    if (state?.layoutMode === 'freeform') {
+      list(state?.freeformLayout?.objects).filter(object => object?.type === 'seat' && object.assignedStudentId).forEach(object => assigned.add(String(object.assignedStudentId)));
+    } else {
+      Object.values(state?.cells || {}).filter(cell => cell?.type === 'seat' && cell.assignedStudentId).forEach(cell => assigned.add(String(cell.assignedStudentId)));
+    }
+    return students().filter(student => !assigned.has(String(student.id)));
+  }
+
+  function analysisIntent(command) {
+    const value = lower(command);
+    if (/\b(who|which student|students?)\b.*\b(fewest|least|hardest|most difficult)\b.*\b(valid seats?|seat options?|places? to sit)\b/.test(value) || /\bwho is hardest to seat\b/.test(value)) return 'analysis_hardest_to_seat';
+    if (/\bwho\b.*\b(unseated|not seated|without a seat)\b|\bshow (me )?(the )?unseated\b/.test(value)) return 'analysis_unseated';
+    if (/\b(summary|summarize|overview|health check|check this chart|review this chart|how does this chart look|how good is this chart)\b/.test(value)) return 'analysis_chart_summary';
+    if (/\b(which|what)\b.*\b(rule|requirement|constraint)\b.*\b(most|biggest|hardest)\b.*\b(conflict|problem|issue|restrict)\b/.test(value)) return 'analysis_rule_pressure';
+    if (/\bwhat should i fix first\b|\bwhere should i start\b.*\b(conflict|problem|chart)\b|\btop priorit(?:y|ies)\b/.test(value)) return 'analysis_priorities';
+    return '';
+  }
+
+  function customInterpret(command) {
+    const intent = analysisIntent(command);
+    if (!intent) return null;
+    const result = {
+      schema:base.commandSchema || 'classroom-seating-planner-command-v1',
+      version:1,
+      command:text(command),
+      intent,
+      title:'Planner analysis',
+      summary:'Analyze the current classroom state without changing assignments or rules.',
+      mutates:false,
+      entities:{ students:[] },
+      parameters:{}, ambiguities:[], blockers:[], operations:['Analyze the current classroom state']
+    };
+    if (intent === 'analysis_hardest_to_seat') {
+      result.title = 'Find the students who are hardest to seat';
+      result.summary = 'Compare valid-seat counts across the active roster.';
+      result.operations = ['Run Seat Guidance for each active student', 'Rank students by fewest valid seats'];
+    } else if (intent === 'analysis_unseated') {
+      result.title = 'Show unseated students';
+      result.summary = 'List active students who do not currently have a seat.';
+      result.operations = ['Compare active roster with current assignments'];
+    } else if (intent === 'analysis_chart_summary') {
+      result.title = 'Review the current seating chart';
+      result.summary = 'Summarize assignments, unseated students, required conflicts, warnings, and seat flexibility.';
+      result.operations = ['Count assignments and unseated students', 'Evaluate current rule findings', 'Estimate seat flexibility'];
+    } else if (intent === 'analysis_rule_pressure') {
+      result.title = 'Find the rules creating the most pressure';
+      result.summary = 'Group current findings and identify repeated rule causes.';
+      result.operations = ['Group rule findings by cause', 'Rank the most repeated constraints'];
+    } else if (intent === 'analysis_priorities') {
+      result.title = 'Prioritize what to fix first';
+      result.summary = 'Identify required conflicts first, then warnings and students with very few alternatives.';
+      result.operations = ['Rank required conflicts', 'Check unseated students', 'Check students with few valid alternatives'];
+    }
+    return result;
+  }
+
+  function enhancedInterpret(commandInput) {
+    const original = text(commandInput);
+    const contextual = mergeContextIntoCommand(original);
+    const custom = customInterpret(contextual);
+    if (custom) {
+      custom.originalCommand = original;
+      if (contextual !== original) custom.contextualCommand = contextual;
+      return custom;
+    }
+    const result = clone(base.interpret(contextual));
+    if (!result) return result;
+    result.originalCommand = original;
+    if (contextual !== original) {
+      result.contextualCommand = contextual;
+      result.summary = `${result.summary} Context used from the previous Assistant request.`;
+    }
+    if (result.intent === 'unknown') {
+      const ctxNames = contextStudentNames();
+      result.title = 'I understood part of that, but I need one more detail';
+      result.summary = ctxNames.length
+        ? `The current Assistant context is ${ctxNames.join(' and ')}. Add the action you want, or name a different student, group, layout, testing setup, station rotation, or conflict.`
+        : 'Name the student, group, layout, testing setup, station rotation, seating action, or conflict you want the planner to work with.';
+      result.operations = ['Clarify the missing planner action instead of changing the classroom'];
+    }
+    return result;
+  }
+
+  function makeMetric(label, value, detail = '') { return { label:String(label), value:String(value), detail:String(detail || '') }; }
+
+  function customPreview(interpreted) {
+    const preview = {
+      ...clone(interpreted),
+      createdAt:new Date().toISOString(),
+      impact:{ metrics:[], notes:[] }, details:[], canApply:true, applyLabel:'Run analysis'
+    };
+    const findings = currentFindings();
+    if (interpreted.intent === 'analysis_hardest_to_seat') {
+      const rows = students().map(student => {
+        const results = seatResults(student.id);
+        return {
+          name:studentName(student),
+          valid:results.filter(item => item.status === 'valid').length,
+          caution:results.filter(item => item.status === 'caution').length,
+          invalid:results.filter(item => item.status === 'invalid' || item.status === 'blocked').length
+        };
+      }).sort((a,b) => a.valid - b.valid || b.invalid - a.invalid || a.name.localeCompare(b.name));
+      preview.impact.metrics.push(makeMetric('Students checked', rows.length), makeMetric('Fewest valid seats', rows[0]?.valid ?? 0));
+      preview.details = rows.slice(0, 8).map(row => `${row.name}: ${row.valid} valid, ${row.caution} caution, ${row.invalid} unavailable.`);
+    } else if (interpreted.intent === 'analysis_unseated') {
+      const missing = unseatedStudents();
+      preview.impact.metrics.push(makeMetric('Unseated', missing.length), makeMetric('Active students', students().length));
+      preview.details = missing.length ? missing.map(student => studentName(student)) : ['Every active student currently has a seat.'];
+    } else if (interpreted.intent === 'analysis_chart_summary') {
+      const missing = unseatedStudents();
+      const required = findings.filter(item => item?.severity === 'bad').length;
+      const warnings = findings.filter(item => item?.severity !== 'bad').length;
+      const flexible = students().map(student => seatResults(student.id).filter(item => item.status === 'valid').length);
+      const lowOptions = flexible.filter(count => count <= 2).length;
+      preview.impact.metrics.push(
+        makeMetric('Active students', students().length),
+        makeMetric('Unseated', missing.length),
+        makeMetric('Required conflicts', required),
+        makeMetric('Warnings', warnings),
+        makeMetric('Low-options students', lowOptions)
+      );
+      if (missing.length) preview.details.push(`${missing.length} active student${missing.length === 1 ? '' : 's'} still need a seat.`);
+      if (required) preview.details.push(`${required} required rule conflict${required === 1 ? '' : 's'} should be addressed first.`);
+      if (lowOptions) preview.details.push(`${lowOptions} student${lowOptions === 1 ? '' : 's'} currently have two or fewer valid seats.`);
+      if (!preview.details.length) preview.details.push('The chart has no required conflicts, no unseated active students, and no student with two or fewer valid seats.');
+    } else if (interpreted.intent === 'analysis_rule_pressure') {
+      const grouped = new Map();
+      findings.forEach(item => {
+        const key = String(item?.message || item?.category || 'Rule finding');
+        grouped.set(key, (grouped.get(key) || 0) + 1);
+      });
+      const ranked = [...grouped.entries()].sort((a,b) => b[1] - a[1]).slice(0, 10);
+      preview.impact.metrics.push(makeMetric('Rule findings', findings.length), makeMetric('Distinct causes', grouped.size));
+      preview.details = ranked.length ? ranked.map(([message,count]) => `${count}× ${message}`) : ['No current rule findings were detected.'];
+    } else if (interpreted.intent === 'analysis_priorities') {
+      const required = findings.filter(item => item?.severity === 'bad');
+      const missing = unseatedStudents();
+      const hard = students().map(student => ({ name:studentName(student), valid:seatResults(student.id).filter(item => item.status === 'valid').length })).sort((a,b) => a.valid - b.valid);
+      preview.impact.metrics.push(makeMetric('Required conflicts', required.length), makeMetric('Unseated', missing.length), makeMetric('Lowest seat options', hard[0]?.valid ?? 0));
+      if (required.length) preview.details.push(`1. Resolve required conflicts first. Example: ${required[0]?.message || 'Review required rule findings.'}`);
+      if (missing.length) preview.details.push(`2. Seat unseated active students: ${missing.slice(0, 5).map(studentName).join(', ')}${missing.length > 5 ? '…' : ''}`);
+      if (hard.length) preview.details.push(`3. Protect students with the fewest alternatives. ${hard.slice(0, 5).map(item => `${item.name} (${item.valid})`).join(', ')}.`);
+      if (!preview.details.length) preview.details.push('Nothing urgent was found. Review preference-level warnings next.');
+    }
+    return preview;
+  }
+
+  function enhancedPreview(commandInput) {
+    const interpreted = enhancedInterpret(commandInput);
+    if (String(interpreted?.intent || '').startsWith('analysis_')) {
+      const preview = customPreview(interpreted);
+      updateContext(commandInput, preview);
+      renderCustomPreview(preview);
+      return preview;
+    }
+    const contextual = interpreted?.contextualCommand || text(commandInput);
+    const preview = base.preview(contextual);
+    if (preview) {
+      preview.originalCommand = text(commandInput);
+      if (interpreted?.contextualCommand) preview.contextualCommand = interpreted.contextualCommand;
+      updateContext(commandInput, preview);
+    }
+    return preview;
+  }
+
+  function renderCustomPreview(preview) {
+    const node = document.getElementById('plannerAssistantV710Preview');
+    if (!node) return;
+    const metrics = list(preview.impact?.metrics);
+    node.innerHTML = `<article class="v710-preview-card"><header><div><strong>${escapeHtml(preview.title)}</strong><span>${escapeHtml(preview.summary)}</span></div><span class="v710-intent">${escapeHtml(preview.intent)}</span></header>${metrics.length ? `<div class="v710-metrics">${metrics.map(item => `<div><span>${escapeHtml(item.label)}</span><strong>${escapeHtml(item.value)}</strong>${item.detail ? `<small>${escapeHtml(item.detail)}</small>` : ''}</div>`).join('')}</div>` : ''}${preview.details.length ? `<div class="v710-block"><b>Findings</b><ol>${preview.details.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ol></div>` : ''}<footer><span>This analysis does not change the classroom.</span><button id="plannerAssistantV722DoneBtn" type="button">Done</button></footer></article>`;
+  }
+
+  function escapeHtml(value) {
+    try { if (typeof window.escapeHtml === 'function') return window.escapeHtml(String(value ?? '')); } catch (_) { /* fallback */ }
+    return String(value ?? '').replace(/[&<>"']/g, char => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[char]);
+  }
+
+  function updateContext(command, preview) {
+    const ctx = loadContext();
+    const explicit = explicitStudentMatches(command).flatMap(match => match.students.length === 1 ? [String(match.students[0].id)] : []);
+    const entityIds = list(preview?.entities?.students).map(item => String(item.id));
+    const ids = [...new Set([...explicit, ...entityIds])];
+    if (ids.length) ctx.students = ids.slice(0, 6);
+    if (preview?.parameters?.groupId) ctx.groupId = String(preview.parameters.groupId);
+    if (preview?.parameters?.layoutId) ctx.layoutId = String(preview.parameters.layoutId);
+    ctx.lastIntent = String(preview?.intent || '');
+    ctx.lastCommand = text(command);
+    ctx.turns.unshift({ at:new Date().toISOString(), command:text(command), intent:ctx.lastIntent, students:[...ctx.students] });
+    ctx.turns = ctx.turns.slice(0, MAX_TURNS);
+    saveContext(ctx);
+  }
+
+  function enhancedOpen(initialCommand = '') {
+    const command = text(initialCommand);
+    const contextual = command ? mergeContextIntoCommand(command) : '';
+    return base.open(contextual || command);
+  }
+
+  function enhancedApply() {
+    const result = base.apply();
+    try {
+      const preview = base.currentPreview?.();
+      if (preview) updateContext(preview.originalCommand || preview.command, preview);
+    } catch (_) { /* context is optional */ }
+    return result;
+  }
+
+  function suggestions(command = '') {
+    const ctx = loadContext();
+    const names = contextStudentNames(ctx);
+    const first = names[0] || studentName(students()[0] || {});
+    const second = names[1] || studentName(students()[1] || {});
+    return [
+      first ? `Where can ${first} sit?` : '',
+      first ? `Keep ${first} near the front` : '',
+      first && second ? `Seat ${first} and ${second} together` : '',
+      'Who is hardest to seat?',
+      'What should I fix first?',
+      'Review this seating chart',
+      'Explain the conflicts',
+      'Make the smallest changes needed to fix conflicts'
+    ].filter(Boolean);
+  }
+
+  function installModalEnhancements() {
+    const modal = document.getElementById('plannerAssistantV710Modal');
+    if (!modal || document.getElementById('plannerAssistantV722Context')) return;
+    const request = modal.querySelector('.v710-request');
+    if (!request) return;
+    const section = document.createElement('section');
+    section.id = 'plannerAssistantV722Context';
+    section.className = 'v722-context-strip';
+    const ctx = loadContext();
+    const names = contextStudentNames(ctx);
+    section.innerHTML = `<div><strong>Conversation context</strong><span id="plannerAssistantV722ContextText">${names.length ? `Following up on ${names.join(' and ')}${ctx.lastIntent ? ` · ${ctx.lastIntent.replaceAll('_',' ')}` : ''}` : 'No previous Assistant context for this class yet.'}</span></div><button id="plannerAssistantV722ClearContext" class="ghost tiny" type="button">Clear context</button>`;
+    request.insertAdjacentElement('beforebegin', section);
+  }
+
+  function refreshContextStrip() {
+    const node = document.getElementById('plannerAssistantV722ContextText');
+    if (!node) return;
+    const ctx = loadContext();
+    const names = contextStudentNames(ctx);
+    node.textContent = names.length ? `Following up on ${names.join(' and ')}${ctx.lastIntent ? ` · ${ctx.lastIntent.replaceAll('_',' ')}` : ''}` : 'No previous Assistant context for this class yet.';
+  }
+
+  function installGuideExpansion() {
+    const guide = document.getElementById('plannerAssistantV710Guide');
+    if (!guide || document.getElementById('plannerAssistantV722Guide')) return;
+    const extra = document.createElement('div');
+    extra.id = 'plannerAssistantV722Guide';
+    extra.className = 'v722-guide-extra';
+    extra.innerHTML = `<div class="v722-guide-grid"><article><strong>Ask follow-ups</strong><span>“Keep Maya near the front.”</span><span>Then: “But not next to Liam.”</span><span>The Assistant keeps short context for this class in this browser.</span></article><article><strong>Analyze the chart</strong><span>“Who is hardest to seat?”</span><span>“What should I fix first?”</span><span>“Review this seating chart.”</span></article><article><strong>Clarify instead of guessing</strong><span>If a name or action is ambiguous, the Assistant asks for the missing detail and leaves the classroom unchanged.</span></article><article><strong>One outcome at a time</strong><span>Requests can be conversational, but each preview remains an explicit planner action or analysis so undo, review, and safety stay predictable.</span></article></div>`;
+    guide.appendChild(extra);
+  }
+
+  function installStyles() {
+    if (document.getElementById('plannerAssistantV722Styles')) return;
+    const style = document.createElement('style');
+    style.id = 'plannerAssistantV722Styles';
+    style.textContent = `.v722-context-strip{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:8px 10px;border:1px solid var(--border,#d8deea);border-radius:10px;background:color-mix(in srgb,var(--panel,#fff) 96%,#eef6ff 4%)}.v722-context-strip>div{display:grid;gap:2px}.v722-context-strip span{font-size:10px;color:var(--muted,#64748b)}.v722-guide-extra{margin-top:8px}.v722-guide-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.v722-guide-grid article{display:grid;gap:4px;padding:10px;border:1px solid var(--border,#d8deea);border-radius:10px}.v722-guide-grid span{font-size:10px;color:var(--muted,#64748b)}@media(max-width:760px){.v722-context-strip{align-items:stretch;flex-direction:column}.v722-guide-grid{grid-template-columns:1fr}}`;
+    document.head.appendChild(style);
+  }
+
+  function installEvents() {
+    document.addEventListener('click', event => {
+      const target = event.target instanceof Element ? event.target : null;
+      if (!target) return;
+      if (target.closest('#plannerAssistantV722ClearContext')) {
+        resetContext();
+        refreshContextStrip();
+        try { if (typeof setLiveStatusMessage === 'function') setLiveStatusMessage('Planner Assistant conversation context cleared for this class.'); } catch (_) { /* optional */ }
+      }
+      if (target.closest('#plannerAssistantV722DoneBtn')) base.close?.();
+    }, true);
+    document.addEventListener('change', event => {
+      const target = event.target instanceof Element ? event.target : null;
+      if (target?.matches?.('#classSelect,[data-class-id]')) setTimeout(refreshContextStrip, 0);
+    }, true);
+  }
+
+  const enhanced = Object.freeze({
+    ...base,
+    version:VERSION,
+    interpret:enhancedInterpret,
+    preview:enhancedPreview,
+    open:enhancedOpen,
+    apply:enhancedApply,
+    conversationContext:loadContext,
+    clearConversationContext:resetContext,
+    contextualize:mergeContextIntoCommand,
+    suggestions
+  });
+  window.PlannerAssistantV710 = enhanced;
+
+  function install() {
+    installStyles();
+    installEvents();
+    const observer = new MutationObserver(() => {
+      installModalEnhancements();
+      installGuideExpansion();
+      refreshContextStrip();
+    });
+    if (document.body) observer.observe(document.body, { childList:true, subtree:true });
+    installModalEnhancements();
+    installGuideExpansion();
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install, { once:true });
+  else install();
+
+  return Object.freeze({ version:VERSION, installed:true, context:loadContext, clear:resetContext, contextualize:mergeContextIntoCommand, suggestions });
+})();
+window.PlannerAssistantFollowupFixV722 = (() => {
+  'use strict';
+
+  const VERSION = '7.2.2-followup-1';
+  const previous = window.PlannerAssistantV710;
+  const conversation = window.PlannerAssistantConversationV722;
+  if (!previous || !conversation?.installed) return Object.freeze({ version:VERSION, installed:false });
+
+  const normalize = value => String(value || '').trim().replace(/\s+/g, ' ');
+  const lower = value => normalize(value).toLowerCase();
+
+  function students() {
+    return Array.isArray(state?.students) ? state.students.filter(student => student && !student.archived) : [];
+  }
+
+  function studentName(student) {
+    try { if (typeof studentDisplay === 'function') return normalize(studentDisplay(student)); } catch (_) { /* fallback */ }
+    return normalize([student?.nickName || student?.firstName, student?.lastName].filter(Boolean).join(' ')) || String(student?.id || 'Student');
+  }
+
+  function aliases(student) {
+    return [...new Set([
+      studentName(student),
+      [student?.firstName, student?.lastName].filter(Boolean).join(' '),
+      student?.nickName,
+      student?.firstName,
+      student?.lastName
+    ].map(normalize).filter(value => value.length >= 2).map(lower))].sort((a,b) => b.length - a.length);
+  }
+
+  function escapeRegex(value) { return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+
+  function namedStudents(command) {
+    const source = lower(command);
+    const hits = [];
+    students().forEach(student => {
+      aliases(student).forEach(alias => {
+        const match = new RegExp(`(^|[^a-z0-9])(${escapeRegex(alias)})(?=$|[^a-z0-9])`, 'i').exec(source);
+        if (!match) return;
+        const start = match.index + match[1].length;
+        hits.push({ student, alias, start, end:start + alias.length });
+      });
+    });
+    hits.sort((a,b) => a.start - b.start || (b.end-b.start) - (a.end-a.start));
+    const selected = [];
+    hits.forEach(hit => {
+      if (selected.some(existing => hit.start < existing.end && hit.end > existing.start)) return;
+      selected.push(hit);
+    });
+    return selected.map(hit => hit.student);
+  }
+
+  function contextStudents() {
+    const ctx = typeof previous.conversationContext === 'function' ? previous.conversationContext() : conversation.context?.();
+    const ids = Array.isArray(ctx?.students) ? ctx.students : [];
+    return ids.map(id => students().find(student => String(student.id) === String(id))).filter(Boolean);
+  }
+
+  function rewriteFollowup(command) {
+    const raw = normalize(command);
+    if (!raw) return raw;
+    const value = lower(raw);
+    const explicit = namedStudents(raw);
+    const context = contextStudents();
+    const primary = context[0];
+
+    if (!primary) return raw;
+
+    if (explicit.length === 1 && String(explicit[0].id) !== String(primary.id)) {
+      const other = explicit[0];
+      if (/\b(not next to|not beside|not near|away from|apart|separate|keep .* away)\b/.test(value) || /^(but|and|also)\b.*\b(not|away|apart|separate)\b/.test(value)) {
+        return `Keep ${studentName(primary)} and ${studentName(other)} apart`;
+      }
+      if (/\b(next to|beside|near|with|together|close to)\b/.test(value) || /^(and|also|then)\b.*\b(next|beside|near|with|together)\b/.test(value)) {
+        return `Seat ${studentName(primary)} and ${studentName(other)} together`;
+      }
+    }
+
+    if (explicit.length === 0) {
+      const name = studentName(primary);
+      if (/^(but|and|also|then)\b/.test(value) || /\b(him|her|them|that student|this student|same student)\b/.test(value)) {
+        if (/\b(front|forward|closer to the front|near the front)\b/.test(value)) return `Keep ${name} near the front`;
+        if (/\b(teacher|closer to me|near me|by me)\b/.test(value)) return `Keep ${name} near the teacher`;
+        if (/\baisle\b/.test(value)) return `Keep ${name} near an aisle`;
+        if (/\b(accessib|wheelchair|mobility)\b/.test(value)) return `Keep ${name} accessible`;
+        if (/\b(away|far|not near)\b.*\bdoor\b/.test(value)) return `Keep ${name} away from the door`;
+        if (/\b(away|far|not near)\b.*\bwindow\b/.test(value)) return `Keep ${name} away from the window`;
+        if (/\bwhere\b.*\b(sit|seat|go|place)\b/.test(value)) return `Where can ${name} sit?`;
+        if (/\bwhy\b/.test(value)) return `Why is ${name} seated here?`;
+      }
+    }
+
+    return raw;
+  }
+
+  function interpret(command) {
+    const rewritten = rewriteFollowup(command);
+    const result = previous.interpret(rewritten);
+    if (result && rewritten !== normalize(command)) {
+      result.originalCommand = normalize(command);
+      result.contextualCommand = rewritten;
+      result.summary = `${String(result.summary || '').replace(/\s+$/, '')} Context used from the previous Assistant request.`;
+    }
+    return result;
+  }
+
+  function preview(command) {
+    const rewritten = rewriteFollowup(command);
+    const result = previous.preview(rewritten);
+    if (result && rewritten !== normalize(command)) {
+      result.originalCommand = normalize(command);
+      result.contextualCommand = rewritten;
+    }
+    return result;
+  }
+
+  function open(command = '') {
+    const rewritten = rewriteFollowup(command);
+    return previous.open(rewritten);
+  }
+
+  const enhanced = Object.freeze({
+    ...previous,
+    version:VERSION,
+    interpret,
+    preview,
+    open,
+    rewriteFollowup
+  });
+
+  window.PlannerAssistantV710 = enhanced;
+
+  return Object.freeze({ version:VERSION, installed:true, rewriteFollowup });
+})();
+window.InterfaceAssistantAuditV721 = (() => {
+  'use strict';
+
+  const VERSION = '7.2.1-ui-audit-1';
+  const PREF_KEY = 'classroom-seating-planner-assistant-display-v721';
+  const STYLE_ID = 'interfaceAssistantAuditV721Styles';
+  const DOCK_ID = 'plannerAssistantV721Dock';
+  const COMPACT_ID = 'plannerAssistantV721Compact';
+  const SETTINGS_ID = 'plannerAssistantV721Settings';
+  const HELP_ID = 'plannerAssistantV721HelpCard';
+  const MODES = new Set(['expanded', 'compact', 'hidden']);
+
+  let installed = false;
+  let bodyObserver = null;
+  let pendingRefresh = false;
+  let lastOriginalRequest = '';
+
+  const normalizeText = value => String(value || '').trim().replace(/\s+/g, ' ');
+  const lower = value => normalizeText(value).toLowerCase();
+  const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({
+    '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
+  })[char]);
+
+  function assistant() {
+    return window.PlannerAssistantV710 || null;
+  }
+
+  function isPresentationMode() {
+    return Boolean(document.body?.classList.contains('visibility-mode'));
+  }
+
+  function loadMode() {
+    try {
+      const parsed = JSON.parse(localStorage.getItem(PREF_KEY) || '{}');
+      return MODES.has(parsed.mode) ? parsed.mode : 'expanded';
+    } catch (_) {
+      return 'expanded';
+    }
+  }
+
+  let displayMode = loadMode();
+
+  function saveMode() {
+    try { localStorage.setItem(PREF_KEY, JSON.stringify({ mode:displayMode })); } catch (_) { /* preference is best effort */ }
+  }
+
+  function setMode(mode, options = {}) {
+    const next = MODES.has(mode) ? mode : 'expanded';
+    displayMode = next;
+    saveMode();
+    applyDisplayMode();
+    syncSettingsControls();
+    if (options.announce !== false) announce(
+      next === 'hidden' ? 'Planner Assistant hidden. You can turn it back on from Help & Guides in Settings.'
+        : next === 'compact' ? 'Planner Assistant minimized to a compact launcher.'
+        : 'Planner Assistant command bar shown.'
+    );
+    return displayMode;
+  }
+
+  function announce(message) {
+    try { if (typeof setLiveStatusMessage === 'function') setLiveStatusMessage(String(message || '')); } catch (_) { /* optional */ }
+  }
+
+  function activeStudents() {
+    return typeof state !== 'undefined' && Array.isArray(state?.students)
+      ? state.students.filter(student => student && !student.archived)
+      : [];
+  }
+
+  function studentName(student) {
+    try {
+      if (typeof studentDisplay === 'function') return normalizeText(studentDisplay(student));
+    } catch (_) { /* fallback */ }
+    return normalizeText([
+      student?.nickName || student?.firstName,
+      student?.lastName
+    ].filter(Boolean).join(' ')) || String(student?.id || 'Student');
+  }
+
+  function aliases(student) {
+    const names = [
+      studentName(student),
+      [student?.firstName, student?.lastName].filter(Boolean).join(' '),
+      student?.nickName,
+      student?.firstName,
+      student?.lastName
+    ].map(normalizeText).filter(value => value.length >= 2);
+    return [...new Set(names)].sort((a, b) => b.length - a.length);
+  }
+
+  function escapeRegex(value) {
+    return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  function mentionedStudents(command) {
+    const text = lower(command);
+    const hits = [];
+    activeStudents().forEach(student => {
+      aliases(student).forEach(alias => {
+        const regex = new RegExp(`(^|[^a-z0-9])(${escapeRegex(alias)})(?=$|[^a-z0-9])`, 'i');
+        const match = regex.exec(text);
+        if (!match) return;
+        const start = match.index + match[1].length;
+        hits.push({ student, alias:lower(alias), start, end:start + alias.length });
+      });
+    });
+    hits.sort((a, b) => a.start - b.start || (b.end - b.start) - (a.end - a.start));
+    const selected = [];
+    hits.forEach(hit => {
+      if (selected.some(existing => hit.start < existing.end && hit.end > existing.start)) return;
+      const same = hits.filter(item => item.start === hit.start && item.end === hit.end && item.alias === hit.alias);
+      const students = [...new Map(same.map(item => [String(item.student?.id || ''), item.student])).values()];
+      selected.push({ start:hit.start, end:hit.end, alias:hit.alias, students });
+    });
+    return selected;
+  }
+
+  function spacingPhrase(command) {
+    const match = lower(command).match(/(\d+(?:\.\d+)?)\s*(feet|foot|ft|meters|meter|metres|metre|m)\b/);
+    return match ? ` with at least ${match[1]} ${match[2]} between students` : '';
+  }
+
+  function legacyInterpret(command) {
+    try { return assistant()?.interpret?.(command) || null; }
+    catch (_) { return null; }
+  }
+
+  function recognized(command) {
+    const result = legacyInterpret(command);
+    return Boolean(result && !['unknown', 'ambiguous'].includes(result.intent));
+  }
+
+  function aliasIsUnique(alias, studentId) {
+    const key = lower(alias);
+    if (!key) return false;
+    const matches = activeStudents().filter(student => aliases(student).some(value => lower(value) === key));
+    return matches.length === 1 && String(matches[0]?.id || '') === String(studentId || '');
+  }
+
+  function safeStudentReference(student) {
+    const reserved = /\b(ada|front|aisle|left|right|teacher|door|window|accessible|accessibility)\b/i;
+    const display = studentName(student);
+    if (!reserved.test(display)) return display;
+    const candidates = [student?.lastName, student?.nickName, [student?.firstName, student?.lastName].filter(Boolean).join(' ')].map(normalizeText).filter(Boolean);
+    const safe = candidates.find(value => !reserved.test(value) && aliasIsUnique(value, student?.id));
+    return safe || display;
+  }
+
+  function canonicalNames(command) {
+    return mentionedStudents(command).filter(hit => hit.students.length === 1).map(hit => safeStudentReference(hit.students[0]));
+  }
+
+  function displayMentionNames(command) {
+    return mentionedStudents(command).filter(hit => hit.students.length === 1).map(hit => studentName(hit.students[0]));
+  }
+
+  function normalizeAssistantCommand(input) {
+    const raw = normalizeText(input);
+    if (!raw) return raw;
+
+    const text = lower(raw);
+    const names = canonicalNames(raw);
+    const first = names[0] || '';
+    const second = names[1] || '';
+
+    if (/^(help|commands|examples|what can you do|how does this work)\??$/.test(text) ||
+        /\b(help|show|tell|explain)\b.*\b(planner assistant|assistant)\b/.test(text)) {
+      return 'Help me use the Planner Assistant';
+    }
+
+    if (first && second) {
+      if (/\b(apart|separate|away from|not next to|not together|keep .* away)\b/.test(text) || /\b(?:do not|don't)\b.*\b(next to|beside|by|near|together)\b/.test(text)) {
+        return `Keep ${first} and ${second} apart`;
+      }
+      if (/\b(next to|beside|by|together|partner|partners|near|near each other|close to|close to each other)\b/.test(text)) {
+        return `Seat ${first} and ${second} together`;
+      }
+    }
+
+    if (first) {
+      if (/\b(where|which seat|find|show)\b.*\b(sit|seat|place|go)\b|\bseat options?\b|\bplaces? for\b/.test(text)) {
+        return `Where can ${first} sit?`;
+      }
+      if (/\bwhy\b.*\b(sit|seat|sitting|seated|placed|placement)\b/.test(text)) {
+        return `Why is ${first} seated here?`;
+      }
+      if (/\b(front|front row|closer to the front|near the front)\b/.test(text)) {
+        return `Keep ${first} near the front`;
+      }
+      if (/\b(near|close to)\b.*\bteacher\b/.test(text)) {
+        return `Keep ${first} near the teacher`;
+      }
+      if (/\baisle\b/.test(text)) return `Keep ${first} near an aisle`;
+      if (/\b(accessib(?:le|ility)?|wheelchair|mobility|ada\s+(?:seat|seating|access|requirement|accommodation))\b/.test(text)) {
+        return `Keep ${first} accessible`;
+      }
+      if (/\b(away|far)\b.*\bdoor\b/.test(text)) return `Keep ${first} away from the door`;
+      if (/\b(away|far)\b.*\bwindow\b/.test(text)) return `Keep ${first} away from the window`;
+    }
+
+    if (recognized(raw)) return raw;
+
+    if (/\b(direct instruction|rows?|lecture|front facing|front-facing)\b/.test(text) &&
+        /\b(make|create|build|arrange|layout|set up|setup|put)\b/.test(text)) {
+      return 'Create a Direct Instruction layout';
+    }
+    if (/\b(group work|groups?|pods?|collaborative|collaboration|team tables?)\b/.test(text) &&
+        /\b(make|create|build|arrange|layout|set up|setup|put|desks?)\b/.test(text)) {
+      return 'Create a Group Work layout';
+    }
+    if (/\b(discussion|circle|seminar|socratic)\b/.test(text) &&
+        /\b(make|create|build|arrange|layout|set up|setup)\b/.test(text)) {
+      return 'Create a Discussion Circle layout';
+    }
+    if (/\b(lab|centers?|station work)\b/.test(text) &&
+        /\b(make|create|build|arrange|layout|set up|setup)\b/.test(text)) {
+      return 'Create a Lab / Stations layout';
+    }
+    if (/\b(independent|individual|quiet work|spaced work)\b/.test(text) &&
+        /\b(make|create|build|arrange|layout|set up|setup)\b/.test(text)) {
+      return 'Create an Independent Work layout';
+    }
+
+    if (/\b(test|testing|exam|assessment)\b/.test(text) &&
+        /\b(make|create|build|arrange|layout|spread|space|set up|setup)\b/.test(text)) {
+      return `Create a testing layout${spacingPhrase(raw)}`;
+    }
+
+    if (/\b(station|stations|centers?)\b/.test(text) && /\b(rotat|rotation|rotate|rounds?)\b/.test(text)) {
+      const count = text.match(/\b(\d+)\s*(groups?|teams?)\b/)?.[1];
+      return count ? `Make a station rotation with ${count} groups` : 'Set up station rotations';
+    }
+
+    if (/\b(fix|repair|resolve|clean up|improve)\b/.test(text) && /\b(chart|plan|seating|conflict|problem|issue)\b/.test(text)) {
+      const limit = text.match(/\b(?:at most|no more than|max(?:imum)?(?: of)?|up to)\s*(\d+)\s*(?:student )?(?:moves?|students?)\b/)?.[1];
+      return limit ? `Fix this plan but move no more than ${limit} students` : 'Make the smallest changes needed to fix conflicts';
+    }
+
+    if (/\b(what is wrong|what's wrong|show problems?|show issues?|explain conflicts?|why are there conflicts?)\b/.test(text)) {
+      return 'Explain the conflicts';
+    }
+
+    if (/\b(randomize|randomise|shuffle|mix up)\b/.test(text)) return 'Randomize the seats';
+
+    if (/\b(generate|make|create|build)\b/.test(text) && /\b(seating chart|seating plan|best chart|best plan|best seating)\b/.test(text)) {
+      return 'Generate the best seating plan';
+    }
+
+    return raw;
+  }
+
+  function hideLegacyAssistantChrome() {
+    const legacyDock = document.getElementById('plannerAssistantV710Dock');
+    if (legacyDock) legacyDock.setAttribute('aria-hidden', 'true');
+    const legacyRestore = document.getElementById('plannerAssistantV710Restore');
+    if (legacyRestore) legacyRestore.setAttribute('aria-hidden', 'true');
+  }
+
+  function dockMarkup() {
+    return `<button id="plannerAssistantV721DockOpen" type="button" class="v721-dock-label" title="Open Planner Assistant (Ctrl+Alt+P)">Planner Assistant</button>
+      <input id="plannerAssistantV721DockInput" aria-label="Planner Assistant request" autocomplete="off" placeholder="Ask for a seating, rule, layout, testing, or repair action…" />
+      <button id="plannerAssistantV721DockPreview" type="button">Preview</button>
+      <button id="plannerAssistantV721DockGuide" class="secondary tiny" type="button" title="How to use Planner Assistant">?</button>
+      <button id="plannerAssistantV721DockCompact" class="ghost tiny" type="button" aria-label="Minimize Planner Assistant" title="Minimize Planner Assistant">−</button>
+      <button id="plannerAssistantV721DockHide" class="ghost tiny" type="button" aria-label="Hide Planner Assistant" title="Hide Planner Assistant">×</button>`;
+  }
+
+  function ensureLaunchers() {
+    let dock = document.getElementById(DOCK_ID);
+    if (!dock) {
+      dock = document.createElement('div');
+      dock.id = DOCK_ID;
+      dock.className = 'v721-assistant-dock no-print';
+      dock.innerHTML = dockMarkup();
+      document.body.appendChild(dock);
+    }
+
+    let compact = document.getElementById(COMPACT_ID);
+    if (!compact) {
+      compact = document.createElement('button');
+      compact.id = COMPACT_ID;
+      compact.type = 'button';
+      compact.className = 'v721-assistant-compact secondary tiny no-print';
+      compact.textContent = 'Planner Assistant';
+      compact.title = 'Open Planner Assistant';
+      document.body.appendChild(compact);
+    }
+    applyDisplayMode();
+    return { dock, compact };
+  }
+
+  function applyDisplayMode() {
+    hideLegacyAssistantChrome();
+    const dock = document.getElementById(DOCK_ID);
+    const compact = document.getElementById(COMPACT_ID);
+    const presentation = isPresentationMode();
+    if (dock) dock.hidden = presentation || displayMode !== 'expanded';
+    if (compact) compact.hidden = presentation || displayMode !== 'compact';
+  }
+
+  function openWithRequest(raw) {
+    if (isPresentationMode()) return null;
+    const source = normalizeText(raw);
+    const canonical = normalizeAssistantCommand(source);
+    lastOriginalRequest = source;
+    const api = assistant();
+    if (!api) {
+      announce('Planner Assistant is unavailable in this build.');
+      return null;
+    }
+    api.open?.(canonical);
+    const preview = api.preview?.(canonical);
+    setTimeout(() => enhancePreview(preview, source, canonical), 0);
+    return preview;
+  }
+
+  function showGuide() {
+    const api = assistant();
+    if (!api) return;
+    api.showGuide?.();
+    setTimeout(enhanceGuide, 0);
+  }
+
+  function enhanceGuide() {
+    const guide = document.getElementById('plannerAssistantV710Guide');
+    if (!guide || document.getElementById('plannerAssistantV721GuideNote')) return;
+    const note = document.createElement('div');
+    note.id = 'plannerAssistantV721GuideNote';
+    note.className = 'v721-guide-note';
+    note.innerHTML = '<strong>What this assistant is</strong><span>It is a local classroom command interpreter, not an open-ended chatbot. Ask for one clear planner outcome at a time. Student names, groups, layouts, testing, station rotations, rule conflicts, and repair requests work best.</span><strong>If a request is not recognized</strong><span>Nothing changes. Use one of the suggested examples, or rephrase the request with the student or planner action named explicitly.</span>';
+    guide.appendChild(note);
+  }
+
+  function suggestionsFor(raw) {
+    const names = displayMentionNames(raw);
+    const first = names[0] || activeStudents()[0] && studentName(activeStudents()[0]);
+    const second = names[1] || activeStudents()[1] && studentName(activeStudents()[1]);
+    const suggestions = [];
+    if (first) suggestions.push(`Where can ${first} sit?`, `Keep ${first} near the front`);
+    if (first && second) suggestions.push(`Seat ${first} and ${second} together`);
+    suggestions.push('Explain the conflicts', 'Make the smallest changes needed to fix conflicts', 'Generate the best seating plan');
+    return [...new Set(suggestions)].slice(0, 6);
+  }
+
+  function sanitizePreview(preview, original) {
+    if (!preview || preview.intent !== 'rule_changes') return preview;
+    const changes = preview.parameters?.requirementChanges;
+    if (!changes || changes.ada !== true) return preview;
+    const namedAda = mentionedStudents(original).some(hit => hit.students.length === 1 && aliases(hit.students[0]).some(alias => lower(alias) === 'ada'));
+    const explicitlyAccessibility = /\b(accessib(?:le|ility)?|wheelchair|mobility|ada\s+(?:seat|seating|access|requirement|accommodation))\b/i.test(String(original || ''));
+    if (!namedAda || explicitlyAccessibility) return preview;
+    delete changes.ada;
+    if (Array.isArray(preview.operations)) preview.operations = preview.operations.filter(item => !/: ada =/i.test(String(item)));
+    if (!Object.keys(changes).length) {
+      preview.parameters.requirementTargetIds = [];
+      if (!preview.parameters.relation) {
+        preview.intent = 'unknown';
+        preview.title = 'I need a little more detail';
+        preview.summary = 'I recognized the student name, but not a planner action. Try a seating, rule, layout, testing, station-rotation, explanation, or conflict-repair request.';
+        preview.canApply = false;
+        preview.mutates = false;
+        preview.operations = [];
+      }
+    }
+    return preview;
+  }
+
+  function enhancePreview(preview, original = lastOriginalRequest, canonical = '') {
+    preview = sanitizePreview(preview, original || canonical);
+    const node = document.getElementById('plannerAssistantV710Preview');
+    if (!node) return;
+    node.querySelector('#plannerAssistantV721RequestNote')?.remove();
+    node.querySelector('#plannerAssistantV721Suggestions')?.remove();
+
+    if (original && canonical && lower(original) !== lower(canonical)) {
+      const note = document.createElement('div');
+      note.id = 'plannerAssistantV721RequestNote';
+      note.className = 'hint v721-request-note';
+      note.textContent = `You asked: “${original}”  •  Interpreted as: “${canonical}”`;
+      node.prepend(note);
+    }
+
+    const current = preview || assistant()?.currentPreview?.();
+    if (!current || !['unknown', 'ambiguous'].includes(current.intent)) return;
+
+    const panel = document.createElement('div');
+    panel.id = 'plannerAssistantV721Suggestions';
+    panel.className = 'v721-assistant-suggestions';
+    const suggestions = suggestionsFor(original || current.command || '');
+    panel.innerHTML = `<div><strong>${current.intent === 'ambiguous' ? 'Choose a more specific student name' : 'Try one of these classroom requests'}</strong><span>The Assistant never guesses when it cannot safely map a request.</span></div>
+      <div class="v721-suggestion-row">${suggestions.map(value => `<button type="button" class="tiny secondary" data-v721-suggestion="${esc(value)}">${esc(value)}</button>`).join('')}</div>
+      <button id="plannerAssistantV721PreviewGuide" class="ghost tiny" type="button">Open the Planner Assistant guide</button>`;
+    node.appendChild(panel);
+  }
+
+  function removeRepeatedContextHelp() {
+    document.querySelectorAll('.guided-context-button').forEach(button => button.remove());
+    document.querySelectorAll('button').forEach(button => {
+      if (/^guide me$/i.test(normalizeText(button.textContent)) && !button.closest('#guidedLessonOverlay')) button.remove();
+    });
+  }
+
+  function injectSettings() {
+    const page = document.getElementById('settingsPageHelp');
+    if (!page || document.getElementById(SETTINGS_ID)) return;
+    const section = document.createElement('section');
+    section.id = SETTINGS_ID;
+    section.className = 'section settings-section';
+    section.innerHTML = `<h3>Planner Assistant</h3>
+      <div class="hint">The Planner Assistant is a local command interpreter for classroom-specific actions. It does not send classroom data to an external AI service.</div>
+      <div class="field">
+        <label for="plannerAssistantV721DisplayMode">Assistant display</label>
+        <select id="plannerAssistantV721DisplayMode">
+          <option value="expanded">Command bar</option>
+          <option value="compact">Compact launcher</option>
+          <option value="hidden">Hidden</option>
+        </select>
+      </div>
+      <div class="button-row">
+        <button id="plannerAssistantV721SettingsOpen" class="secondary" type="button">Open Planner Assistant</button>
+        <button id="plannerAssistantV721SettingsGuide" class="secondary" type="button">How to use it</button>
+      </div>
+      <div class="hint">If hidden, the Assistant stays out of the workspace entirely. Re-enable it here at any time.</div>`;
+    page.appendChild(section);
+    syncSettingsControls();
+  }
+
+  function injectGlobalHelp() {
+    const view = document.getElementById('helpGuideReferenceView');
+    if (!view || document.getElementById(HELP_ID)) return;
+    const card = document.createElement('section');
+    card.id = HELP_ID;
+    card.className = 'section v721-help-card';
+    card.innerHTML = `<div class="v721-help-card-head"><div><strong>Planner Assistant</strong><span>Use plain classroom requests to preview existing planner actions before anything changes.</span></div><div class="button-row"><button id="plannerAssistantV721HelpOpen" class="secondary" type="button">Open Assistant</button><button id="plannerAssistantV721HelpGuide" class="secondary" type="button">How to use it</button></div></div>
+      <div class="v721-help-grid"><span><b>Students & rules</b> “Keep Maya near the front.” “Seat Ada next to Grace.”</span><span><b>Layouts & testing</b> “Make rows.” “Create a testing layout with 5 feet between students.”</span><span><b>Repair & explain</b> “What is wrong with this chart?” “Fix it but move no more than 4 students.”</span><span><b>Stations & seating</b> “Make a station rotation with 3 groups.” “Generate the best seating plan.”</span></div>`;
+    const searchRow = view.querySelector('.help-guide-search-row');
+    if (searchRow) searchRow.insertAdjacentElement('afterend', card);
+    else view.prepend(card);
+  }
+
+  function syncSettingsControls() {
+    const select = document.getElementById('plannerAssistantV721DisplayMode');
+    if (select && select.value !== displayMode) select.value = displayMode;
+  }
+
+  function prepareLegacyModal() {
+    const hide = document.getElementById('plannerAssistantV710HideDockBtn');
+    if (hide) {
+      if (hide.textContent !== 'Hide Assistant') hide.textContent = 'Hide Assistant';
+      const help = 'Hide the Planner Assistant from the workspace. Re-enable it from Settings > Help & Guides.';
+      if (hide.title !== help) hide.title = help;
+    }
+    const title = document.querySelector('#plannerAssistantV710Modal .v710-kicker');
+    if (title && title.textContent !== 'Local Planner Assistant') title.textContent = 'Local Planner Assistant';
+    enhanceGuide();
+  }
+
+  function normalizeLegacyModalInput() {
+    const input = document.getElementById('plannerAssistantV710Input');
+    if (!input) return;
+    const raw = normalizeText(input.value);
+    if (!raw) return;
+    const canonical = normalizeAssistantCommand(raw);
+    if (canonical !== raw) {
+      input.dataset.v721OriginalRequest = raw;
+      lastOriginalRequest = raw;
+      input.value = canonical;
+    } else {
+      lastOriginalRequest = raw;
+    }
+  }
+
+  function onClick(event) {
+    const target = event.target instanceof Element ? event.target : null;
+    if (!target) return;
+
+    if (target.closest('#plannerAssistantV721DockOpen')) { assistant()?.open?.(); return; }
+    if (target.closest('#plannerAssistantV721DockPreview')) {
+      openWithRequest(document.getElementById('plannerAssistantV721DockInput')?.value || '');
+      return;
+    }
+    if (target.closest('#plannerAssistantV721DockGuide')) { showGuide(); return; }
+    if (target.closest('#plannerAssistantV721DockCompact')) { setMode('compact'); return; }
+    if (target.closest('#plannerAssistantV721DockHide')) { setMode('hidden'); return; }
+    if (target.closest(`#${COMPACT_ID}`)) { assistant()?.open?.(); return; }
+
+    if (target.closest('#plannerAssistantV721SettingsOpen, #plannerAssistantV721HelpOpen')) { assistant()?.open?.(); return; }
+    if (target.closest('#plannerAssistantV721SettingsGuide, #plannerAssistantV721HelpGuide, #plannerAssistantV721PreviewGuide')) { showGuide(); return; }
+
+    const suggestion = target.closest('[data-v721-suggestion]');
+    if (suggestion) {
+      const value = suggestion.getAttribute('data-v721-suggestion') || '';
+      const input = document.getElementById('plannerAssistantV710Input');
+      if (input) input.value = value;
+      openWithRequest(value);
+      return;
+    }
+
+    if (target.closest('#plannerAssistantV710HideDockBtn')) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      setMode('hidden');
+      assistant()?.close?.();
+      return;
+    }
+
+    if (target.closest('#plannerAssistantV710PreviewBtn')) {
+      normalizeLegacyModalInput();
+      setTimeout(() => {
+        const input = document.getElementById('plannerAssistantV710Input');
+        const canonical = normalizeText(input?.value || '');
+        const original = input?.dataset.v721OriginalRequest || lastOriginalRequest || canonical;
+        enhancePreview(assistant()?.currentPreview?.(), original, canonical);
+      }, 0);
+    }
+  }
+
+  function onKeydown(event) {
+    const target = event.target instanceof Element ? event.target : null;
+    if (!target) return;
+    if (target.id === 'plannerAssistantV721DockInput' && event.key === 'Enter') {
+      event.preventDefault();
+      openWithRequest(target.value);
+      return;
+    }
+    if (target.id === 'plannerAssistantV710Input' && event.key === 'Enter' && !event.shiftKey) {
+      normalizeLegacyModalInput();
+      setTimeout(() => {
+        const canonical = normalizeText(target.value || '');
+        const original = target.dataset.v721OriginalRequest || lastOriginalRequest || canonical;
+        enhancePreview(assistant()?.currentPreview?.(), original, canonical);
+      }, 0);
+    }
+  }
+
+  function onChange(event) {
+    const target = event.target instanceof Element ? event.target : null;
+    if (!target) return;
+    if (target.id === 'plannerAssistantV721DisplayMode') setMode(target.value);
+  }
+
+  function installStyles() {
+    if (document.getElementById(STYLE_ID)) return;
+    const style = document.createElement('style');
+    style.id = STYLE_ID;
+    style.textContent = `
+      #plannerAssistantV710Dock,#plannerAssistantV710Restore{display:none!important}
+      .v721-assistant-dock{position:fixed;left:50%;bottom:12px;transform:translateX(-50%);z-index:721;display:grid;grid-template-columns:auto minmax(220px,1fr) auto auto auto auto;gap:7px;align-items:center;width:min(840px,calc(100vw - 24px));padding:7px;border:1px solid color-mix(in srgb,var(--border,#cbd5e1) 78%,#2563eb 22%);border-radius:14px;background:color-mix(in srgb,var(--panel,#fff) 96%,#eff6ff 4%);box-shadow:0 10px 28px rgba(15,23,42,.18);backdrop-filter:blur(8px)}
+      .v721-assistant-dock[hidden],.v721-assistant-compact[hidden]{display:none!important}
+      .v721-assistant-dock input{min-width:0}.v721-dock-label{white-space:nowrap;background:transparent!important;color:inherit!important;border-color:transparent!important;font-weight:900}
+      .v721-assistant-compact{position:fixed;right:10px;bottom:10px;z-index:720}
+      .v721-guide-note{display:grid;gap:5px;padding:10px;border:1px solid var(--border,#d8deea);border-radius:10px;background:color-mix(in srgb,var(--panel,#fff) 94%,#eef6ff 6%)}.v721-guide-note span{font-size:10.5px;color:var(--muted,#64748b);line-height:1.4}
+      .v721-request-note{padding:7px 9px;border-radius:8px;background:color-mix(in srgb,var(--panel,#fff) 96%,#dbeafe 4%)}
+      .v721-assistant-suggestions{display:grid;gap:8px;padding:10px;border:1px dashed var(--border,#cbd5e1);border-radius:10px}.v721-assistant-suggestions>div:first-child{display:grid;gap:2px}.v721-assistant-suggestions span{font-size:10px;color:var(--muted,#64748b)}.v721-suggestion-row{display:flex;gap:6px;flex-wrap:wrap}
+      .v721-help-card{display:grid;gap:10px;margin:10px 0}.v721-help-card-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.v721-help-card-head>div:first-child{display:grid;gap:3px}.v721-help-card-head span{font-size:11px;color:var(--muted,#64748b)}.v721-help-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.v721-help-grid>span{display:grid;gap:3px;padding:9px;border:1px solid var(--border,#d8deea);border-radius:9px;font-size:10.5px;color:var(--muted,#64748b)}.v721-help-grid b{color:var(--text,#0f172a)}
+      body.visibility-mode .v721-assistant-dock,body.visibility-mode .v721-assistant-compact{display:none!important}@media print{.v721-assistant-dock,.v721-assistant-compact{display:none!important}}
+      @media(max-width:760px){.v721-assistant-dock{grid-template-columns:minmax(0,1fr) auto auto auto;bottom:7px;width:calc(100vw - 12px)}.v721-dock-label,.v721-assistant-dock #plannerAssistantV721DockGuide{display:none}.v721-help-card-head{flex-direction:column}.v721-help-grid{grid-template-columns:1fr}}
+      @media(max-width:460px){.v721-assistant-dock{grid-template-columns:minmax(0,1fr) auto auto}.v721-assistant-dock #plannerAssistantV721DockCompact{display:none}.v721-suggestion-row{display:grid;grid-template-columns:1fr}.v721-suggestion-row button{text-align:left}}
+    `;
+    document.head.appendChild(style);
+  }
+
+  function refreshUi() {
+    pendingRefresh = false;
+    removeRepeatedContextHelp();
+    hideLegacyAssistantChrome();
+    ensureLaunchers();
+    injectSettings();
+    injectGlobalHelp();
+    prepareLegacyModal();
+    applyDisplayMode();
+    syncSettingsControls();
+  }
+
+  function scheduleRefresh() {
+    if (pendingRefresh) return;
+    pendingRefresh = true;
+    requestAnimationFrame(refreshUi);
+  }
+
+  function audit() {
+    const ids = [...document.querySelectorAll('[id]')].map(node => node.id).filter(Boolean);
+    const duplicateIds = [...new Set(ids.filter((id, index) => ids.indexOf(id) !== index))];
+    const guideMe = [...document.querySelectorAll('button')].filter(button => /^guide me$/i.test(normalizeText(button.textContent)));
+    const pageOverflow = Math.max(0, document.documentElement.scrollWidth - document.documentElement.clientWidth);
+    return {
+      version:VERSION,
+      displayMode,
+      duplicateIds,
+      guideMeCount:guideMe.length,
+      contextualGuideCount:document.querySelectorAll('.guided-context-button').length,
+      pageOverflow,
+      legacyDockVisible:Boolean(document.getElementById('plannerAssistantV710Dock')?.offsetParent),
+      legacyRestoreVisible:Boolean(document.getElementById('plannerAssistantV710Restore')?.offsetParent),
+      dockVisible:Boolean(document.getElementById(DOCK_ID)?.offsetParent),
+      compactVisible:Boolean(document.getElementById(COMPACT_ID)?.offsetParent)
+    };
+  }
+
+  function install() {
+    if (installed) return;
+    installed = true;
+    installStyles();
+    document.addEventListener('click', onClick, true);
+    document.addEventListener('keydown', onKeydown, true);
+    document.addEventListener('change', onChange, true);
+    if (document.body) {
+      bodyObserver = new MutationObserver(scheduleRefresh);
+      bodyObserver.observe(document.body, { childList:true, subtree:true, attributes:true, attributeFilter:['class'] });
+    }
+    refreshUi();
+  }
+
+  function afterReady() {
+    refreshUi();
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install, { once:true });
+  else install();
+
+  return Object.freeze({
+    version:VERSION,
+    install,
+    afterReady,
+    audit,
+    mode:() => displayMode,
+    setMode,
+    normalizeAssistantCommand,
+    open:openWithRequest,
+    showGuide,
+    cleanupGuideButtons:removeRepeatedContextHelp
+  });
+})();
+window.PlannerAssistantWorkspaceV730 = (() => {
+  'use strict';
+
+  const VERSION = '7.3.0';
+  const STORAGE_PREFIX = 'classroom-seating-planner-assistant-workspace-v730:';
+  const STYLE_ID = 'plannerAssistantWorkspaceV730Styles';
+  const PANEL_ID = 'plannerAssistantV730Workspace';
+  const INPUT_ID = 'plannerAssistantV730Input';
+  const RESPONSE_ID = 'plannerAssistantV730Response';
+  const TRANSCRIPT_ID = 'plannerAssistantV730Transcript';
+  const PLAN_ID = 'plannerAssistantV730Plan';
+  const MAX_TURNS = 20;
+  const MAX_CANDIDATES = 8;
+  const base = window.PlannerAssistantV710;
+  if (!base) return Object.freeze({ version:VERSION, installed:false });
+
+  let installed = false;
+  let observer = null;
+  let refreshPending = false;
+  let runtimePreview = null;
+
+  const list = value => Array.isArray(value) ? value : [];
+  const normalize = value => String(value || '').trim().replace(/\s+/g, ' ');
+  const lower = value => normalize(value).toLowerCase();
+  const clone = value => {
+    try { return JSON.parse(JSON.stringify(value)); } catch (_) { return value; }
+  };
+  const esc = value => {
+    try { if (typeof escapeHtml === 'function') return escapeHtml(String(value ?? '')); } catch (_) { /* fallback */ }
+    return String(value ?? '').replace(/[&<>"']/g, char => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[char]);
+  };
+
+  function classId() {
+    try {
+      const record = typeof activeClassRecord === 'function' ? activeClassRecord() : null;
+      if (record?.id) return String(record.id);
+    } catch (_) { /* fallback */ }
+    return String(state?.activeClassId || state?.classId || 'default');
+  }
+
+  function storageKey() { return `${STORAGE_PREFIX}${classId()}`; }
+
+  function blankWorkspace() {
+    return {
+      version:1,
+      turns:[],
+      workingPlan:{
+        title:'',
+        goal:'',
+        studentIds:[],
+        groupIds:[],
+        constraints:{ preserveLocked:false, preserveAccessibility:false, minimalMoves:false, maxMoves:0 },
+        candidateSeats:[],
+        candidateStudentId:'',
+        selectedCandidateIndex:-1,
+        proposedActions:[],
+        comparison:null,
+        updatedAt:''
+      }
+    };
+  }
+
+  function normalizeWorkspace(value) {
+    const source = value && typeof value === 'object' ? value : {};
+    const plan = source.workingPlan && typeof source.workingPlan === 'object' ? source.workingPlan : {};
+    return {
+      version:1,
+      turns:list(source.turns).slice(0, MAX_TURNS).map(turn => ({
+        role:turn?.role === 'assistant' ? 'assistant' : 'user',
+        text:normalize(turn?.text),
+        at:String(turn?.at || new Date().toISOString()),
+        kind:String(turn?.kind || '')
+      })),
+      workingPlan:{
+        title:normalize(plan.title).slice(0, 100),
+        goal:normalize(plan.goal).slice(0, 500),
+        studentIds:list(plan.studentIds).map(String).slice(0, 20),
+        groupIds:list(plan.groupIds).map(String).slice(0, 20),
+        constraints:{
+          preserveLocked:Boolean(plan.constraints?.preserveLocked),
+          preserveAccessibility:Boolean(plan.constraints?.preserveAccessibility),
+          minimalMoves:Boolean(plan.constraints?.minimalMoves),
+          maxMoves:Math.max(0, Math.min(60, Number(plan.constraints?.maxMoves) || 0))
+        },
+        candidateSeats:list(plan.candidateSeats).slice(0, MAX_CANDIDATES).map(item => ({
+          key:String(item?.key || ''), status:String(item?.status || ''), score:Number(item?.score) || 0,
+          messages:list(item?.messages).map(String).slice(0, 8), occupiedBy:String(item?.occupiedBy || '')
+        })),
+        candidateStudentId:String(plan.candidateStudentId || ''),
+        selectedCandidateIndex:Number.isInteger(Number(plan.selectedCandidateIndex)) ? Number(plan.selectedCandidateIndex) : -1,
+        proposedActions:list(plan.proposedActions).slice(0, 20).map(String),
+        comparison:plan.comparison && typeof plan.comparison === 'object' ? clone(plan.comparison) : null,
+        updatedAt:String(plan.updatedAt || '')
+      }
+    };
+  }
+
+  function loadWorkspace() {
+    try { return normalizeWorkspace(JSON.parse(localStorage.getItem(storageKey()) || '{}')); }
+    catch (_) { return blankWorkspace(); }
+  }
+
+  function saveWorkspace(workspace) {
+    try { localStorage.setItem(storageKey(), JSON.stringify(normalizeWorkspace(workspace))); } catch (_) { /* optional */ }
+  }
+
+  function updateWorkspace(mutator) {
+    const workspace = loadWorkspace();
+    mutator(workspace);
+    workspace.workingPlan.updatedAt = new Date().toISOString();
+    saveWorkspace(workspace);
+    renderWorkspaceState();
+    return workspace;
+  }
+
+  function clearWorkspace() {
+    try { localStorage.removeItem(storageKey()); } catch (_) { /* optional */ }
+    runtimePreview = null;
+    try { base.clearConversationContext?.(); } catch (_) { /* optional */ }
+    renderWorkspaceState();
+    renderResponse({ title:'Assistant workspace cleared', summary:'Conversation context, candidate seats, and the current working plan were cleared for this class.', kind:'info' });
+  }
+
+  function addTurn(role, message, kind = '') {
+    const value = normalize(message);
+    if (!value) return;
+    updateWorkspace(workspace => {
+      workspace.turns.unshift({ role:role === 'assistant' ? 'assistant' : 'user', text:value, at:new Date().toISOString(), kind });
+      workspace.turns = workspace.turns.slice(0, MAX_TURNS);
+    });
+  }
+
+  function students() { return list(state?.students).filter(student => student && !student.archived); }
+  function studentById(id) { return students().find(student => String(student?.id) === String(id)); }
+  function studentName(student) {
+    try { if (typeof studentDisplay === 'function') return normalize(studentDisplay(student)); } catch (_) { /* fallback */ }
+    return normalize([student?.nickName || student?.firstName, student?.lastName].filter(Boolean).join(' ')) || String(student?.id || 'Student');
+  }
+  function groupById(id) { return list(state?.groups).find(group => String(group?.id) === String(id)); }
+
+  function seatLabel(key) {
+    if (!key) return 'Unknown seat';
+    if (state?.layoutMode === 'freeform') {
+      const seat = list(state?.freeformLayout?.objects).find(object => object?.type === 'seat' && String(object.id) === String(key));
+      return normalize(seat?.label) || String(key);
+    }
+    return String(key);
+  }
+
+  function currentSeatForStudent(studentId) {
+    if (state?.layoutMode === 'freeform') {
+      const seat = list(state?.freeformLayout?.objects).find(object => object?.type === 'seat' && String(object.assignedStudentId || '') === String(studentId));
+      return seat ? String(seat.id) : '';
+    }
+    const found = Object.entries(state?.cells || {}).find(([, cell]) => cell?.type === 'seat' && String(cell.assignedStudentId || '') === String(studentId));
+    return found ? String(found[0]) : '';
+  }
+
+  function occupiedBySeat(key) {
+    if (state?.layoutMode === 'freeform') {
+      return String(list(state?.freeformLayout?.objects).find(object => object?.type === 'seat' && String(object.id) === String(key))?.assignedStudentId || '');
+    }
+    return String(state?.cells?.[key]?.assignedStudentId || '');
+  }
+
+  function selectedOrContextStudentIds() {
+    const workspace = loadWorkspace();
+    const planIds = workspace.workingPlan.studentIds.filter(id => studentById(id));
+    if (planIds.length) return planIds;
+    try {
+      const ctx = base.conversationContext?.();
+      const ids = list(ctx?.students).map(String).filter(id => studentById(id));
+      if (ids.length) return ids;
+    } catch (_) { /* optional */ }
+    try {
+      const selected = uiState?.selectedStudentIds;
+      if (selected?.size) return [...selected].map(String).filter(id => studentById(id));
+    } catch (_) { /* optional */ }
+    return [];
+  }
+
+  function namedStudentIds(command) {
+    const value = lower(command);
+    const matches = [];
+    students().forEach(student => {
+      const names = [studentName(student), student?.nickName, student?.firstName, student?.lastName, [student?.firstName, student?.lastName].filter(Boolean).join(' ')].map(normalize).filter(name => name.length >= 2);
+      if (names.some(name => new RegExp(`(^|[^a-z0-9])${String(name).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?=$|[^a-z0-9])`, 'i').test(value))) matches.push(String(student.id));
+    });
+    return [...new Set(matches)];
+  }
+
+  function namedGroup(command) {
+    const value = lower(command);
+    return list(state?.groups).filter(group => normalize(group?.name)).sort((a,b) => normalize(b.name).length - normalize(a.name).length).find(group => value.includes(lower(group.name))) || null;
+  }
+
+  function parseOrdinal(command) {
+    const value = lower(command);
+    const numeric = value.match(/\b(?:option|seat|choice)?\s*#?([1-8])\b/)?.[1];
+    if (numeric) return Number(numeric) - 1;
+    const words = [['first',0],['1st',0],['second',1],['2nd',1],['third',2],['3rd',2],['fourth',3],['4th',3],['fifth',4],['5th',4],['sixth',5],['6th',5],['seventh',6],['7th',6],['eighth',7],['8th',7]];
+    return words.find(([word]) => new RegExp(`\\b${word}\\b`).test(value))?.[1] ?? -1;
+  }
+
+  function parseMaxMoves(command) {
+    const match = lower(command).match(/(?:no more than|at most|max(?:imum)?(?: of)?|up to|only)\s*(\d+)\s*(?:student )?(?:moves?|students?|seats?)/);
+    return match ? Math.max(1, Math.min(60, Number(match[1]) || 1)) : 0;
+  }
+
+  function isPresentationMode() { return Boolean(document.body?.classList.contains('visibility-mode')); }
+
+  function normalAssistantPreview(command) {
+    const normalizer = window.InterfaceAssistantAuditV721?.normalizeAssistantCommand;
+    const normalized = typeof normalizer === 'function' ? normalizer(command) : command;
+    const preview = base.preview(normalized);
+    runtimePreview = preview;
+    const ids = list(preview?.entities?.students).map(item => String(item.id));
+    updateWorkspace(workspace => {
+      if (ids.length) workspace.workingPlan.studentIds = ids;
+      workspace.workingPlan.goal = normalize(command).slice(0, 500);
+      workspace.workingPlan.proposedActions = list(preview?.operations).map(String).slice(0, 20);
+    });
+    return preview;
+  }
+
+  function candidateSeatPreview(studentId, command = '') {
+    const student = studentById(studentId);
+    if (!student) return null;
+    const all = window.SeatGuidanceV66?.calculate?.(studentId) || [];
+    const candidates = all.filter(item => item.status === 'valid' || item.status === 'caution').slice(0, MAX_CANDIDATES).map(item => ({
+      key:String(item.key), status:String(item.status), score:Number(item.score) || 0, messages:list(item.messages).map(String), occupiedBy:String(item.target?.assignedStudentId || '')
+    }));
+    updateWorkspace(workspace => {
+      workspace.workingPlan.goal = command || `Find seats for ${studentName(student)}`;
+      workspace.workingPlan.studentIds = [String(studentId)];
+      workspace.workingPlan.candidateStudentId = String(studentId);
+      workspace.workingPlan.candidateSeats = candidates;
+      workspace.workingPlan.selectedCandidateIndex = -1;
+      workspace.workingPlan.proposedActions = ['Review ranked valid/caution seats', 'Choose a candidate before moving the student'];
+      workspace.workingPlan.comparison = null;
+    });
+    return {
+      kind:'seat-options',
+      title:`Best seat options for ${studentName(student)}`,
+      summary:candidates.length ? 'These are ranked using the existing Seat Guidance engine. Choosing an option still requires an explicit Apply action.' : 'No valid or caution-level seat options are currently available.',
+      studentId:String(studentId), candidates
+    };
+  }
+
+  function compareCandidate(index) {
+    const workspace = loadWorkspace();
+    const plan = workspace.workingPlan;
+    const candidate = plan.candidateSeats[index];
+    const student = studentById(plan.candidateStudentId);
+    if (!candidate || !student) return null;
+    const current = currentSeatForStudent(student.id);
+    const occupied = candidate.occupiedBy ? studentById(candidate.occupiedBy) : null;
+    const comparison = {
+      studentId:String(student.id),
+      studentName:studentName(student),
+      currentKey:current,
+      currentLabel:current ? seatLabel(current) : 'Unseated',
+      targetKey:candidate.key,
+      targetLabel:seatLabel(candidate.key),
+      targetStatus:candidate.status,
+      targetMessages:list(candidate.messages),
+      swapWith:occupied ? studentName(occupied) : '',
+      same:String(current) === String(candidate.key)
+    };
+    updateWorkspace(next => { next.workingPlan.selectedCandidateIndex = index; next.workingPlan.comparison = comparison; });
+    return comparison;
+  }
+
+  function assignCandidate(index) {
+    if (isPresentationMode()) return { ok:false, message:'Presentation mode is read-only.' };
+    const workspace = loadWorkspace();
+    const plan = workspace.workingPlan;
+    const candidate = plan.candidateSeats[index];
+    const student = studentById(plan.candidateStudentId);
+    if (!candidate || !student) return { ok:false, message:'That seat option is no longer available in the Assistant working plan.' };
+    const recalculated = window.SeatGuidanceV66?.calculate?.(student.id) || [];
+    const current = recalculated.find(item => String(item.key) === String(candidate.key));
+    if (!current || !['valid','caution'].includes(current.status)) return { ok:false, message:'That seat is no longer a valid/caution option. Refresh the seat options before applying it.' };
+    try { if (typeof pushUndoSnapshot === 'function') pushUndoSnapshot(`Before Planner Assistant seat choice for ${studentName(student)}`); } catch (_) { /* optional */ }
+    let ok = false;
+    if (state?.layoutMode === 'freeform') {
+      try { ok = Boolean(assignStudentToFreeformObject(student.id, candidate.key, true, true)); }
+      catch (_) {
+        try {
+          const seat = list(state?.freeformLayout?.objects).find(object => object?.type === 'seat' && String(object.id) === String(candidate.key));
+          if (seat && typeof applyFreeformStudentAssignmentDirect === 'function') { applyFreeformStudentAssignmentDirect(student, seat); ok = true; }
+        } catch (_) { ok = false; }
+      }
+    } else {
+      try { ok = Boolean(assignStudentToCell(student.id, candidate.key, true, true)); }
+      catch (_) {
+        try { if (typeof applyMoveOrSwap === 'function') { applyMoveOrSwap(student.id, candidate.key, true); ok = true; } } catch (_) { ok = false; }
+      }
+    }
+    if (!ok) return { ok:false, message:'The planner could not apply that seat choice.' };
+    try { persistActiveClass?.(); } catch (_) { /* optional */ }
+    try { scheduleLinkedAutoSave?.('planner-assistant-seat-choice'); } catch (_) { /* optional */ }
+    try { renderAll?.(); } catch (_) { /* optional */ }
+    updateWorkspace(next => {
+      next.workingPlan.selectedCandidateIndex = index;
+      next.workingPlan.comparison = null;
+      next.workingPlan.proposedActions = [`Placed ${studentName(student)} in ${seatLabel(candidate.key)}`];
+    });
+    return { ok:true, message:`Placed ${studentName(student)} in ${seatLabel(candidate.key)}. Undo remains available.` };
+  }
+
+  function currentFindings() {
+    try { return typeof evaluateCurrentRuleViolations === 'function' ? list(evaluateCurrentRuleViolations({ includeUnseated:true })) : []; }
+    catch (_) { return []; }
+  }
+
+  function unseatedStudents() {
+    const assigned = new Set();
+    if (state?.layoutMode === 'freeform') list(state?.freeformLayout?.objects).filter(object => object?.type === 'seat' && object.assignedStudentId).forEach(object => assigned.add(String(object.assignedStudentId)));
+    else Object.values(state?.cells || {}).filter(cell => cell?.type === 'seat' && cell.assignedStudentId).forEach(cell => assigned.add(String(cell.assignedStudentId)));
+    return students().filter(student => !assigned.has(String(student.id)));
+  }
+
+  function assignmentSnapshot() {
+    const result = {};
+    if (state?.layoutMode === 'freeform') {
+      list(state?.freeformLayout?.objects).filter(object => object?.type === 'seat').forEach(object => { if (object.assignedStudentId) result[String(object.assignedStudentId)] = String(object.id); });
+    } else {
+      Object.entries(state?.cells || {}).forEach(([key,cell]) => { if (cell?.type === 'seat' && cell.assignedStudentId) result[String(cell.assignedStudentId)] = String(key); });
+    }
+    return result;
+  }
+
+  function planAssignments(plan) {
+    const result = {};
+    if (!plan) return result;
+    if (plan.layoutMode === 'freeform') {
+      list(plan.freeformLayout?.objects).filter(object => object?.type === 'seat' && object.assignedStudentId).forEach(object => { result[String(object.assignedStudentId)] = String(object.id); });
+    } else {
+      Object.entries(plan.cells || {}).forEach(([key,cell]) => { if (cell?.type === 'seat' && cell.assignedStudentId) result[String(cell.assignedStudentId)] = String(key); });
+    }
+    return result;
+  }
+
+  function fairnessComparison() {
+    const current = assignmentSnapshot();
+    const saved = list(state?.seatingPlans).filter(plan => plan && plan.status !== 'archived').sort((a,b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')))[0];
+    if (!saved) return { kind:'analysis', title:'Fairness comparison', summary:'There is no saved seating plan to compare against yet.', metrics:[], details:['Save a named plan first, then the Assistant can compare how many students moved and which placements repeated.'] };
+    const before = planAssignments(saved);
+    const ids = [...new Set([...Object.keys(current), ...Object.keys(before)])];
+    const moved = ids.filter(id => before[id] && current[id] && before[id] !== current[id]);
+    const same = ids.filter(id => before[id] && current[id] && before[id] === current[id]);
+    const newlySeated = ids.filter(id => !before[id] && current[id]);
+    const unseated = ids.filter(id => before[id] && !current[id]);
+    return {
+      kind:'analysis', title:`Compare with ${saved.name}`, summary:'This comparison measures repeated versus changed seat assignments. It does not claim that movement alone equals fairness; use it as a rotation signal alongside student needs and rules.',
+      metrics:[['Moved',moved.length],['Same seat',same.length],['Newly seated',newlySeated.length],['Now unseated',unseated.length]],
+      details:[
+        same.length ? `${same.length} student${same.length === 1 ? '' : 's'} kept the same seat as ${saved.name}.` : `No students kept the same seat as ${saved.name}.`,
+        moved.length ? `${moved.length} student${moved.length === 1 ? '' : 's'} changed seats.` : 'No seated students changed seats.',
+        'Repeated placements may be intentional because of accessibility, front, aisle, teacher-proximity, or other configured needs.'
+      ]
+    };
+  }
+
+  function chartAnalysis(mode = 'summary') {
+    const findings = currentFindings();
+    const hard = findings.filter(item => item?.severity === 'bad');
+    const warnings = findings.filter(item => item?.severity !== 'bad');
+    const missing = unseatedStudents();
+    const optionRows = students().map(student => {
+      const results = window.SeatGuidanceV66?.calculate?.(student.id) || [];
+      return { id:String(student.id), name:studentName(student), valid:results.filter(item => item.status === 'valid').length, caution:results.filter(item => item.status === 'caution').length };
+    }).sort((a,b) => a.valid - b.valid || a.caution - b.caution || a.name.localeCompare(b.name));
+    if (mode === 'hardest') return { kind:'analysis', title:'Students with the fewest seat options', summary:'Ranked from the existing Seat Guidance engine.', metrics:[['Students checked',optionRows.length],['Fewest valid seats',optionRows[0]?.valid ?? 0]], details:optionRows.slice(0,10).map(row => `${row.name}: ${row.valid} valid, ${row.caution} caution.`) };
+    if (mode === 'priorities') {
+      const details = [];
+      if (hard.length) details.push(`1. Resolve required conflicts first. ${hard[0]?.message || ''}`.trim());
+      if (missing.length) details.push(`2. Seat active students still unseated: ${missing.slice(0,8).map(studentName).join(', ')}${missing.length > 8 ? '…' : ''}`);
+      if (optionRows[0]) details.push(`3. Protect students with the fewest alternatives: ${optionRows.slice(0,5).map(row => `${row.name} (${row.valid})`).join(', ')}.`);
+      if (!details.length) details.push('No urgent required conflicts or unseated students were found. Review preference warnings next.');
+      return { kind:'analysis', title:'What to fix first', summary:'Prioritized by required rules, unseated students, then students with the fewest alternatives.', metrics:[['Required conflicts',hard.length],['Unseated',missing.length],['Warnings',warnings.length]], details };
+    }
+    if (mode === 'pressure') {
+      const grouped = new Map();
+      findings.forEach(item => {
+        const key = String(item?.message || item?.category || 'Rule finding');
+        grouped.set(key, (grouped.get(key) || 0) + 1);
+      });
+      const rows = [...grouped.entries()].sort((a,b) => b[1]-a[1]).slice(0,10);
+      return { kind:'analysis', title:'Most restrictive current rule findings', summary:'Repeated findings are ranked to show where the chart is under the most pressure.', metrics:[['Findings',findings.length],['Distinct causes',grouped.size]], details:rows.length ? rows.map(([message,count]) => `${count}× ${message}`) : ['No current rule findings were detected.'] };
+    }
+    return { kind:'analysis', title:'Seating chart health check', summary:'Current assignments, rule findings, and seat flexibility from the planner’s existing engines.', metrics:[['Active students',students().length],['Unseated',missing.length],['Required conflicts',hard.length],['Warnings',warnings.length],['Low-options students',optionRows.filter(row => row.valid <= 2).length]], details:[
+      missing.length ? `${missing.length} active student${missing.length === 1 ? '' : 's'} still need a seat.` : 'Every active student currently has a seat.',
+      hard.length ? `${hard.length} required conflict${hard.length === 1 ? '' : 's'} need attention.` : 'No required rule conflicts were detected.',
+      optionRows.filter(row => row.valid <= 2).length ? `${optionRows.filter(row => row.valid <= 2).length} student${optionRows.filter(row => row.valid <= 2).length === 1 ? '' : 's'} have two or fewer fully valid seats.` : 'Every student has more than two fully valid seat options.'
+    ] };
+  }
+
+  function testingPlan(command) {
+    if (state?.layoutMode !== 'freeform') return { kind:'clarify', title:'Testing setup needs a Freeform room', summary:'Switch to a Freeform room before asking the Assistant to create a physical testing arrangement.', choices:[{label:'Open Room Design', action:'open-room'}] };
+    const value = lower(command);
+    const spacingMatch = value.match(/(\d+(?:\.\d+)?)\s*(feet|foot|ft|meters|meter|metres|metre|m)\b/);
+    const preserveLocked = /\b(lock|locked|don'?t move|do not move|keep .* in place|preserve)\b/.test(value) || loadWorkspace().workingPlan.constraints.preserveLocked;
+    const preserveAccessibility = /\b(accessib|ada|wheelchair|mobility|front|aisle)\b/.test(value) || loadWorkspace().workingPlan.constraints.preserveAccessibility;
+    const room = window.ClassroomDigitalTwinV700?.physicalRoom?.() || { enabled:false, unit:'ft' };
+    let spacing;
+    if (spacingMatch && room.enabled) {
+      spacing = Number(spacingMatch[1]);
+      const sourceFeet = ['feet','foot','ft'].includes(spacingMatch[2]);
+      const sourceMeters = ['meters','meter','metres','metre','m'].includes(spacingMatch[2]);
+      if (room.unit === 'm' && sourceFeet) spacing *= 0.3048;
+      if (room.unit === 'ft' && sourceMeters) spacing /= 0.3048;
+    }
+    const config = { name:/assessment/.test(value) ? 'Assessment' : 'Testing', preserveLocked, respectNeeds:preserveAccessibility || true };
+    if (spacing) config.spacing = spacing;
+    let analysis = null;
+    try { analysis = window.TestingModeV703?.analyze?.(config) || null; } catch (_) { analysis = null; }
+    updateWorkspace(workspace => {
+      workspace.workingPlan.title = 'Testing plan';
+      workspace.workingPlan.goal = normalize(command);
+      workspace.workingPlan.constraints.preserveLocked = preserveLocked;
+      workspace.workingPlan.constraints.preserveAccessibility = preserveAccessibility;
+      workspace.workingPlan.proposedActions = ['Generate a non-destructive Testing Mode preview', preserveLocked ? 'Preserve locked seat positions and assignments' : 'Locked-seat preservation uses Testing Mode defaults', 'Respect configured accessibility/front/aisle needs', 'Explain any physical spacing limits before apply'];
+    });
+    if (!analysis) return { kind:'clarify', title:'Testing Mode could not analyze this room', summary:'The current room does not have enough physical information for a testing preview.', choices:[{label:'Open Testing Mode', action:'open-testing'}] };
+    return {
+      kind:'testing-plan', title:'Testing plan ready to preview', summary:'The Assistant built this from the existing Testing Mode engine. Nothing has moved yet.', config,
+      metrics:[['Active students',analysis.report?.activeSeatCount ?? 0],['Moves proposed',analysis.report?.movedCount ?? 0],['Spacing conflicts',analysis.report?.spacingConflicts ?? 0],['Achieved spacing',`${Number(analysis.report?.achievedSpacing || 0).toFixed(1)} ${analysis.report?.unit || room.unit}`]],
+      details:[...list(analysis.report?.impossibleReasons).slice(0,8), preserveLocked ? 'Locked seats are preserved.' : 'Testing Mode will use its normal locked-seat behavior.', 'Configured student needs remain part of the feasibility check.'],
+      actions:[{label:'Open Testing preview', action:'apply-testing-preview'}]
+    };
+  }
+
+  function saveNamedPlanRequest(command) {
+    const match = normalize(command).match(/(?:save|name|store)(?: this| current)?(?: seating)? plan(?: as)?\s+["“]?(.+?)["”]?$/i);
+    const name = normalize(match?.[1] || '').slice(0,80);
+    return { kind:'save-plan', title:name ? `Save named plan: ${name}` : 'Save the current chart as a named plan', summary:'This uses the existing Named Seating Plans workflow and preserves the normal saved-plan format.', name, actions:[{label:name ? `Save “${name}”` : 'Open Named Plans', action:name ? 'save-named-plan' : 'open-plans'}] };
+  }
+
+  function compareSavedPlansRequest() {
+    return { kind:'feature', title:'Compare saved seating plans', summary:'Open the existing side-by-side assignment and room comparison in Named Seating Plans.', actions:[{label:'Open plan comparison', action:'open-plans'}] };
+  }
+
+  function featureRequest(command) {
+    const value = lower(command);
+    if (/\b(today mode|today'?s classroom|attendance|present students|absent students|guest student)\b/.test(value)) return { title:'Today Mode', summary:'Open temporary attendance, guest, and today-only seating tools without changing the master chart until you choose to keep changes.', action:'open-today' };
+    if (/\b(planner packs?|template library|shared templates?|reusable packs?)\b/.test(value)) return { title:'Planner Packs', summary:'Open the local reusable room/layout/rule/template pack library.', action:'open-packs' };
+    if (/\b(station rotations?|rotation rounds?|stations workspace)\b/.test(value) && !/\b(create|make|build|set up|setup)\b/.test(value)) return { title:'Station Rotations', summary:'Open the existing Station Rotations workspace.', action:'open-rotations' };
+    if (/\b(activity layouts?|arrangements workspace|layout library)\b/.test(value) && !/\b(create|make|build|switch|use|activate)\b/.test(value)) return { title:'Activity Layouts', summary:'Open named classroom arrangements for this Freeform room.', action:'open-layouts' };
+    if (/\b(testing mode|testing workspace)\b/.test(value) && !/\b(create|make|build|spread|space|arrange|set up|setup)\b/.test(value)) return { title:'Testing Mode', summary:'Open the existing testing-layout workspace.', action:'open-testing' };
+    if (/\b(print|print options|print this chart)\b/.test(value)) return { title:'Print options', summary:'Open the existing print workflow.', action:'open-print' };
+    if (/\b(snapshot|restore point|backup before)\b/.test(value)) return { title:'Create a restore point', summary:'Use the existing full-app snapshot workflow before making larger changes.', action:'snapshot' };
+    if (/\b(named plans?|saved plans?|plan comparison)\b/.test(value)) return { title:'Named Seating Plans', summary:'Open saved seating plans and comparison tools.', action:'open-plans' };
+    return null;
+  }
+
+  function inferCompoundConstraints(command) {
+    const value = lower(command);
+    const maxMoves = parseMaxMoves(command);
+    const namedIds = namedStudentIds(command);
+    const group = namedGroup(command);
+    updateWorkspace(workspace => {
+      const plan = workspace.workingPlan;
+      if (namedIds.length) plan.studentIds = namedIds;
+      if (group) plan.groupIds = [String(group.id)];
+      if (/\b(don'?t move|do not move|preserve|keep)\b.*\block(?:ed)?\b|\bkeep locked\b/.test(value)) plan.constraints.preserveLocked = true;
+      if (/\b(accessib|ada|wheelchair|mobility|front|aisle)\b/.test(value) && /\b(keep|preserve|respect|maintain)\b/.test(value)) plan.constraints.preserveAccessibility = true;
+      if (/\b(smallest|fewest|minimal|minimize|change as little|as little as possible)\b/.test(value)) plan.constraints.minimalMoves = true;
+      if (maxMoves) plan.constraints.maxMoves = maxMoves;
+      plan.goal = normalize(command).slice(0,500);
+    });
+  }
+
+  function clarifyForGenericGroup(command) {
+    const value = lower(command);
+    if (!/\b(talkative|chatty|distract|behavior|behaviour|friends?|best friends?|high energy)\b/.test(value)) return null;
+    const matchingGroups = list(state?.groups).filter(group => {
+      const name = lower(group?.name);
+      return name && ['talkative','chatty','distract','behavior','behaviour','friends','high energy'].some(term => value.includes(term) && name.includes(term));
+    });
+    if (matchingGroups.length === 1) {
+      const group = matchingGroups[0];
+      const spread = /\b(apart|spread|separate|farther|further)\b/.test(value);
+      return normalAssistantPreview(`${group.name} ${spread ? 'spread apart' : 'together'}`);
+    }
+    return { kind:'clarify', title:'Which students do you mean?', summary:'The Assistant will not infer behavioral labels from student records. Use an existing group, select the students, or name them explicitly.', choices:list(state?.groups).slice(0,8).map(group => ({ label:group.name, action:'choose-group', value:String(group.id) })) };
+  }
+
+  function run(commandInput) {
+    const command = normalize(commandInput);
+    if (!command) return null;
+    addTurn('user', command);
+    inferCompoundConstraints(command);
+    const value = lower(command);
+    let response = null;
+
+    const genericGroup = clarifyForGenericGroup(command);
+    if (genericGroup) response = genericGroup;
+
+    if (!response && /\b(undo|undo that|put it back|revert that|go back one)\b/.test(value)) response = { kind:'feature', title:'Undo the last planner change', summary:'This uses the planner’s existing undo stack.', actions:[{label:'Undo', action:'undo'}] };
+    if (!response && /\b(redo|redo that|put it back again)\b/.test(value)) response = { kind:'feature', title:'Redo the last undone change', summary:'This uses the planner’s existing redo stack.', actions:[{label:'Redo', action:'redo'}] };
+
+    if (!response && /\b(use|take|choose|pick|apply)\b.*\b(first|second|third|fourth|fifth|sixth|seventh|eighth|[1-8](?:st|nd|rd|th)?|option\s*[1-8]|seat\s*[1-8])\b/.test(value)) {
+      const index = parseOrdinal(command);
+      const comparison = compareCandidate(index);
+      response = comparison ? { kind:'candidate-choice', title:`Use option ${index + 1}?`, summary:`Move ${comparison.studentName} from ${comparison.currentLabel} to ${comparison.targetLabel}${comparison.swapWith ? `, swapping with ${comparison.swapWith}` : ''}.`, comparison, actions:[{label:'Apply seat choice', action:'apply-candidate', value:index},{label:'Show seat options', action:'show-options'}] } : { kind:'clarify', title:'I do not have that seat option anymore', summary:'Ask the Assistant to show seat options for a student first.' };
+    }
+
+    if (!response && /\b(compare|what changes|difference|what would change)\b.*\b(option|seat|that|this)\b/.test(value)) {
+      const workspace = loadWorkspace();
+      const index = workspace.workingPlan.selectedCandidateIndex >= 0 ? workspace.workingPlan.selectedCandidateIndex : 0;
+      const comparison = compareCandidate(index);
+      response = comparison ? { kind:'candidate-choice', title:'Seat option comparison', summary:`${comparison.studentName}: ${comparison.currentLabel} → ${comparison.targetLabel}.`, comparison, actions:[{label:'Apply seat choice', action:'apply-candidate', value:index}] } : { kind:'clarify', title:'No seat candidate to compare yet', summary:'Ask “What seats would work?” after naming a student.' };
+    }
+
+    if (!response && (/\b(show|give|find|what|which)\b.*\b(options?|valid seats?|seat choices?|places? to sit|seats? would work)\b/.test(value) || /^where can (?:they|he|she|the student) sit\??$/.test(value))) {
+      const ids = namedStudentIds(command);
+      const studentId = ids[0] || selectedOrContextStudentIds()[0];
+      response = studentId ? candidateSeatPreview(studentId, command) : { kind:'clarify', title:'Which student should I find seats for?', summary:'Name a student or first discuss that student with the Assistant.' };
+    }
+
+    if (!response && /\b(test|testing|exam|assessment)\b/.test(value) && /\b(tomorrow|layout|spread|space|arrange|prepare|set up|setup|maximum separation|as much as possible)\b/.test(value)) response = testingPlan(command);
+
+    if (!response && /\b(save|name|store)(?: this| current)?(?: seating)? plan\b/.test(value)) response = saveNamedPlanRequest(command);
+    if (!response && /\b(compare)\b.*\b(saved|named|plans?)\b/.test(value)) response = compareSavedPlansRequest();
+
+    if (!response && /\b(fair|fairer|fairness|rotation fairness|same seat|repeated placements?)\b/.test(value) && /\b(last|previous|plan|chart|compare|fair)\b/.test(value)) response = fairnessComparison();
+    if (!response && /\b(who is hardest to seat|fewest valid seats|least seat options|hardest students? to seat)\b/.test(value)) response = chartAnalysis('hardest');
+    if (!response && /\b(what should i fix first|where should i start|top priorit(?:y|ies)|most urgent)\b/.test(value)) response = chartAnalysis('priorities');
+    if (!response && /\b(which|what)\b.*\b(rule|requirement|constraint)\b.*\b(most|biggest|restrict|pressure|conflict)\b/.test(value)) response = chartAnalysis('pressure');
+    if (!response && /\b(review|check|analyze|analyse|health check|how does|how good|what problems)\b.*\b(chart|seating|plan)\b/.test(value)) response = chartAnalysis('summary');
+
+    const feature = !response ? featureRequest(command) : null;
+    if (!response && feature) response = { kind:'feature', title:feature.title, summary:feature.summary, actions:[{label:`Open ${feature.title}`, action:feature.action}] };
+
+    if (!response && /\b(make|create|generate|build|fix|repair|keep|seat|move|switch|change|show|why|explain|randomize|shuffle|spread|group|layout|station|front|aisle|teacher|door|window)\b/.test(value)) {
+      const preview = normalAssistantPreview(command);
+      response = previewToResponse(preview, command);
+    }
+
+    if (!response) {
+      const preview = normalAssistantPreview(command);
+      response = previewToResponse(preview, command);
+      if (preview?.intent === 'unknown') {
+        response = { kind:'clarify', title:'I can help with the classroom plan, but I need a planner goal', summary:'Name a student, group, rule, seat, layout, testing setup, station rotation, saved plan, analysis question, or repair goal. I will not guess at unrelated classroom decisions.', choices:smartPrompts().slice(0,6).map(label => ({label, action:'prompt', value:label})) };
+      }
+    }
+
+    renderResponse(response);
+    const assistantSummary = response?.title ? `${response.title}. ${response.summary || ''}` : response?.summary || '';
+    addTurn('assistant', assistantSummary, response?.kind || '');
+    return response;
+  }
+
+  function previewToResponse(preview, originalCommand = '') {
+    if (!preview) return { kind:'error', title:'Planner Assistant is unavailable', summary:'The underlying planner action did not return a preview.' };
+    if (String(preview.intent || '').startsWith('analysis_')) {
+      return { kind:'analysis', title:preview.title, summary:preview.summary, metrics:list(preview.impact?.metrics).map(item => [item.label,item.value]), details:list(preview.details) };
+    }
+    const actions = [];
+    if (preview.intent === 'show_valid_seats') actions.push({label:'Show valid seats', action:'apply-base'});
+    else if (preview.canApply) actions.push({label:preview.applyLabel || (preview.mutates ? 'Apply changes' : 'Run action'), action:'apply-base'});
+    if (preview.intent === 'preview_repair') actions.push({label:'Open repair tools', action:'open-planning'});
+    return {
+      kind:preview.intent === 'unknown' || preview.intent === 'ambiguous' ? 'clarify' : 'planner-preview',
+      title:preview.title,
+      summary:preview.summary,
+      preview,
+      metrics:list(preview.impact?.metrics).map(item => [item.label,item.value]),
+      details:[...list(preview.details), ...list(preview.blockers).map(item => `Blocked: ${item}`)],
+      operations:list(preview.operations),
+      actions,
+      originalCommand
+    };
+  }
+
+  function smartPrompts() {
+    const ids = selectedOrContextStudentIds();
+    const first = studentById(ids[0]) || students()[0];
+    const second = studentById(ids[1]) || students()[1];
+    const prompts = [];
+    if (first) prompts.push(`What seats would work for ${studentName(first)}?`, `Why is ${studentName(first)} seated here?`);
+    if (first && second) prompts.push(`Keep ${studentName(first)} and ${studentName(second)} apart`);
+    prompts.push('Review this seating chart', 'What should I fix first?', 'Who is hardest to seat?', 'Compare fairness with the previous saved plan', 'Prepare a testing layout and preserve locked seats', 'Make the smallest changes needed to fix conflicts', 'Open Today Mode', 'Open Planner Packs');
+    return [...new Set(prompts)];
+  }
+
+  function executeAction(action, value) {
+    let message = '';
+    if (action === 'apply-base') {
+      const result = base.apply?.();
+      message = result?.message || (result?.ok ? 'Planner action applied.' : 'The planner action could not be applied.');
+    } else if (action === 'apply-candidate') {
+      const result = assignCandidate(Number(value));
+      message = result.message;
+    } else if (action === 'show-options') {
+      const workspace = loadWorkspace();
+      const response = candidateSeatPreview(workspace.workingPlan.candidateStudentId, workspace.workingPlan.goal);
+      renderResponse(response); return response;
+    } else if (action === 'apply-testing-preview') {
+      const response = testingPlan(loadWorkspace().workingPlan.goal || 'Create a testing layout');
+      const config = response?.config || { name:'Testing', preserveLocked:true, respectNeeds:true };
+      window.TestingModeV703?.generatePreview?.(config);
+      window.TestingModeV703?.open?.();
+      message = 'Testing Mode preview opened. Review feasibility and use Testing Mode’s Apply button when ready.';
+    } else if (action === 'save-named-plan') {
+      const name = normalize(value || runtimePreview?.name || '').slice(0,80);
+      document.getElementById('openSeatingPlansBtn')?.click();
+      const nameInput = document.getElementById('seatingPlanNameInput');
+      if (nameInput) nameInput.value = name;
+      const reasonInput = document.getElementById('seatingPlanReasonInput');
+      if (reasonInput) reasonInput.value = 'Saved from Planner Assistant';
+      const notesInput = document.getElementById('seatingPlanNotesInput');
+      if (notesInput) notesInput.value = loadWorkspace().workingPlan.goal.slice(0,1200);
+      document.getElementById('saveSeatingPlanBtn')?.click();
+      message = name ? `Saved named plan “${name}” using the normal plan workflow.` : 'Opened Named Seating Plans.';
+    } else if (action === 'open-plans') { document.getElementById('openSeatingPlansBtn')?.click(); message = 'Named Seating Plans opened.';
+    } else if (action === 'open-today') { document.getElementById('todayModeBtn')?.click(); message = 'Today Mode opened.';
+    } else if (action === 'open-print') { document.getElementById('printBtn')?.click(); message = 'Print options opened.';
+    } else if (action === 'snapshot') { document.getElementById('snapshotQuickBtn')?.click(); message = 'Snapshot workflow opened.';
+    } else if (action === 'open-packs') { window.PlannerPacksV720?.open?.(); message = 'Planner Packs opened.';
+    } else if (action === 'open-rotations') { window.StationRotationsV702?.open?.(); message = 'Station Rotations opened.';
+    } else if (action === 'open-layouts') { window.ActivityLayoutsV701?.open?.(); message = 'Activity Layouts opened.';
+    } else if (action === 'open-testing') { window.TestingModeV703?.open?.(); message = 'Testing Mode opened.';
+    } else if (action === 'open-planning') { window.PlanningToolsV66?.open?.(); message = 'Planning tools opened.';
+    } else if (action === 'open-room') { document.querySelector('[data-workflow="room"],#workflowRoomBtn')?.click(); message = 'Room workspace opened.';
+    } else if (action === 'undo') { document.getElementById('undoBtn')?.click(); message = 'Undo requested.';
+    } else if (action === 'redo') { document.getElementById('redoBtn')?.click(); message = 'Redo requested.';
+    } else if (action === 'prompt') {
+      const input = document.getElementById(INPUT_ID); if (input) input.value = String(value || ''); return run(value);
+    } else if (action === 'choose-group') {
+      const group = groupById(value);
+      if (group) {
+        updateWorkspace(workspace => { workspace.workingPlan.groupIds = [String(group.id)]; workspace.workingPlan.goal = `Work with ${group.name}`; });
+        message = `${group.name} selected as the Assistant’s working group.`;
+      }
+    }
+    if (message) {
+      addTurn('assistant', message, 'action');
+      renderResponse({ kind:'success', title:'Planner action completed', summary:message });
+      try { setLiveStatusMessage?.(message); } catch (_) { /* optional */ }
+    }
+    return { message };
+  }
+
+  function responseMarkup(response) {
+    if (!response) return '<div class="hint">Ask the Assistant for a classroom outcome, analysis, or planner action.</div>';
+    const metrics = list(response.metrics);
+    const details = list(response.details);
+    const operations = list(response.operations);
+    const actions = list(response.actions);
+    const choices = list(response.choices);
+    let extra = '';
+    if (response.kind === 'seat-options') {
+      extra = `<div class="v730-candidates">${list(response.candidates).map((candidate,index) => `<button type="button" class="v730-candidate" data-v730-candidate="${index}"><span><b>Option ${index+1}</b><small>${esc(seatLabel(candidate.key))}</small></span><span class="pill">${esc(candidate.status)}</span>${candidate.occupiedBy ? `<small>Would swap with ${esc(studentName(studentById(candidate.occupiedBy) || {id:candidate.occupiedBy}))}</small>` : '<small>Open seat</small>'}${candidate.messages?.[0] ? `<em>${esc(candidate.messages[0])}</em>` : ''}</button>`).join('') || '<div class="hint">No valid or caution-level seats are available.</div>'}</div>`;
+    }
+    if (response.comparison) {
+      const c = response.comparison;
+      extra += `<div class="v730-compare"><div><span>Current</span><strong>${esc(c.currentLabel)}</strong></div><div aria-hidden="true">→</div><div><span>Proposed</span><strong>${esc(c.targetLabel)}</strong><small>${esc(c.targetStatus)}</small></div>${c.swapWith ? `<div class="v730-swap">Swap with ${esc(c.swapWith)}</div>` : ''}</div>`;
+    }
+    return `<article class="v730-response-card ${esc(response.kind || '')}"><header><div><span class="v730-response-kind">${esc(String(response.kind || 'assistant').replaceAll('-',' '))}</span><h3>${esc(response.title || 'Planner Assistant')}</h3></div></header><p>${esc(response.summary || '')}</p>${metrics.length ? `<div class="v730-metrics">${metrics.map(([label,value]) => `<div><span>${esc(label)}</span><strong>${esc(value)}</strong></div>`).join('')}</div>` : ''}${operations.length ? `<div class="v730-block"><b>Proposed actions</b><ol>${operations.map(item => `<li>${esc(item)}</li>`).join('')}</ol></div>` : ''}${details.length ? `<div class="v730-block"><b>Details</b><ul>${details.map(item => `<li>${esc(item)}</li>`).join('')}</ul></div>` : ''}${extra}${choices.length ? `<div class="v730-choice-row">${choices.map(choice => `<button type="button" class="secondary tiny" data-v730-action="${esc(choice.action)}" data-v730-value="${esc(choice.value || '')}">${esc(choice.label)}</button>`).join('')}</div>` : ''}${actions.length ? `<footer>${actions.map((item,index) => `<button type="button" class="${index ? 'secondary' : ''}" data-v730-action="${esc(item.action)}" data-v730-value="${esc(item.value ?? response.name ?? '')}">${esc(item.label)}</button>`).join('')}</footer>` : ''}</article>`;
+  }
+
+  function renderResponse(response) {
+    runtimePreview = response;
+    const node = document.getElementById(RESPONSE_ID);
+    if (node) node.innerHTML = responseMarkup(response);
+  }
+
+  function transcriptMarkup() {
+    const turns = loadWorkspace().turns;
+    if (!turns.length) return '<div class="hint">No Assistant conversation for this class yet.</div>';
+    return turns.slice(0,12).reverse().map(turn => `<div class="v730-turn ${turn.role}"><span>${turn.role === 'assistant' ? 'Assistant' : 'You'}</span><p>${esc(turn.text)}</p></div>`).join('');
+  }
+
+  function planMarkup() {
+    const plan = loadWorkspace().workingPlan;
+    const studentNames = plan.studentIds.map(studentById).filter(Boolean).map(studentName);
+    const groupNames = plan.groupIds.map(groupById).filter(Boolean).map(group => group.name);
+    const constraints = [];
+    if (plan.constraints.preserveLocked) constraints.push('Preserve locked seats');
+    if (plan.constraints.preserveAccessibility) constraints.push('Respect accessibility / required placement needs');
+    if (plan.constraints.minimalMoves) constraints.push('Minimize movement');
+    if (plan.constraints.maxMoves) constraints.push(`At most ${plan.constraints.maxMoves} moves`);
+    return `<div class="v730-plan-head"><div><strong>${esc(plan.title || 'Working plan')}</strong><span>${esc(plan.goal || 'No active planning goal yet.')}</span></div><button id="plannerAssistantV730ClearPlan" class="ghost tiny" type="button">Clear</button></div><div class="v730-plan-chips">${studentNames.map(name => `<span class="pill">${esc(name)}</span>`).join('')}${groupNames.map(name => `<span class="pill">${esc(name)}</span>`).join('')}${constraints.map(value => `<span class="pill">${esc(value)}</span>`).join('') || '<span class="muted">No explicit constraints recorded.</span>'}</div>${plan.candidateSeats.length ? `<div class="hint">${plan.candidateSeats.length} ranked seat option${plan.candidateSeats.length === 1 ? '' : 's'} currently in context.</div>` : ''}`;
+  }
+
+  function renderWorkspaceState() {
+    const transcript = document.getElementById(TRANSCRIPT_ID); if (transcript) transcript.innerHTML = transcriptMarkup();
+    const plan = document.getElementById(PLAN_ID); if (plan) plan.innerHTML = planMarkup();
+    const prompts = document.getElementById('plannerAssistantV730Prompts');
+    if (prompts) prompts.innerHTML = smartPrompts().slice(0,8).map(prompt => `<button type="button" class="tiny ghost" data-v730-prompt="${esc(prompt)}">${esc(prompt)}</button>`).join('');
+  }
+
+  function workspaceMarkup() {
+    return `<section id="${PANEL_ID}" class="section v730-workspace"><div class="v730-workspace-head"><div><span class="v730-kicker">V7.3 Planner Assistant workspace</span><h3>Plan with the classroom, not just commands</h3><p>Ask follow-ups, inspect alternatives, compare impact, analyze the chart, then deliberately apply changes.</p></div><div class="button-row"><button id="plannerAssistantV730Guide" class="secondary tiny" type="button">Guide</button><button id="plannerAssistantV730Clear" class="ghost tiny" type="button">Clear conversation</button></div></div><div id="${PLAN_ID}" class="v730-working-plan"></div><div class="v730-input-wrap"><label for="${INPUT_ID}">Ask the Planner Assistant</label><div class="v730-input-row"><textarea id="${INPUT_ID}" rows="2" placeholder="Example: I have a test tomorrow. Keep accessibility placements, preserve locked seats, spread everyone out as much as possible, and tell me what will not fit."></textarea><button id="plannerAssistantV730Send" type="button">Preview</button></div><div id="plannerAssistantV730Prompts" class="v730-prompts"></div></div><div class="v730-workspace-grid"><section><div class="v730-section-title"><strong>Assistant response</strong><span>Preview before apply</span></div><div id="${RESPONSE_ID}"><div class="hint">Ask for a classroom outcome, seat option, analysis, comparison, saved plan, testing setup, or planner tool.</div></div></section><section><div class="v730-section-title"><strong>Conversation</strong><span>Class-local context</span></div><div id="${TRANSCRIPT_ID}" class="v730-transcript"></div></section></div><details class="v730-tools"><summary>What the Assistant can control</summary><div class="v730-tools-grid"><span>Seat Guidance & candidate seats</span><span>Student requirements & pair/group rules</span><span>Conflict explanation & smallest-change repair</span><span>Activity Layouts</span><span>Testing Mode</span><span>Station Rotations</span><span>Today Mode</span><span>Named Seating Plans & comparisons</span><span>Snapshots / restore points</span><span>Print options</span><span>Planner Packs</span><span>Undo / redo</span></div></details></section>`;
+  }
+
+  function ensureWorkspace() {
+    const modal = document.getElementById('plannerAssistantV710Modal');
+    if (!modal || document.getElementById(PANEL_ID)) return;
+    const body = modal.querySelector('.v710-modal-body');
+    if (!body) return;
+    const intro = body.querySelector('.v710-intro');
+    const host = document.createElement('div'); host.innerHTML = workspaceMarkup();
+    const panel = host.firstElementChild;
+    if (intro) intro.insertAdjacentElement('afterend', panel); else body.prepend(panel);
+    const legacyRequest = body.querySelector('.v710-request');
+    if (legacyRequest) legacyRequest.classList.add('v730-legacy-request');
+    const legacyImpact = [...body.querySelectorAll('.section')].find(section => section.querySelector('#plannerAssistantV710Preview'));
+    if (legacyImpact) legacyImpact.classList.add('v730-legacy-preview');
+    renderWorkspaceState();
+  }
+
+  function installStyles() {
+    if (document.getElementById(STYLE_ID)) return;
+    const style = document.createElement('style'); style.id = STYLE_ID;
+    style.textContent = `.v730-workspace{display:grid;gap:12px;border-width:2px}.v730-workspace-head{display:flex;justify-content:space-between;gap:14px;align-items:flex-start}.v730-workspace-head h3{margin:2px 0 3px}.v730-workspace-head p{margin:0;color:var(--muted,#64748b);font-size:11px}.v730-kicker{font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:var(--muted,#64748b)}.v730-working-plan{display:grid;gap:7px;padding:10px;border:1px solid var(--border,#d8deea);border-radius:10px;background:color-mix(in srgb,var(--panel,#fff) 96%,#f8fafc 4%)}.v730-plan-head{display:flex;justify-content:space-between;gap:10px}.v730-plan-head>div{display:grid;gap:2px}.v730-plan-head span{font-size:10px;color:var(--muted,#64748b)}.v730-plan-chips{display:flex;gap:5px;flex-wrap:wrap}.v730-input-wrap{display:grid;gap:6px}.v730-input-wrap>label{font-weight:900}.v730-input-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:stretch}.v730-input-row textarea{resize:vertical;min-height:58px}.v730-prompts{display:flex;gap:5px;flex-wrap:wrap}.v730-prompts button{font-size:9.5px;text-align:left}.v730-workspace-grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(250px,.65fr);gap:10px}.v730-workspace-grid>section{min-width:0;display:grid;align-content:start;gap:7px}.v730-section-title{display:flex;justify-content:space-between;gap:8px;align-items:baseline}.v730-section-title span{font-size:9px;color:var(--muted,#64748b)}.v730-response-card{display:grid;gap:9px;padding:11px;border:1px solid var(--border,#d8deea);border-radius:11px;background:var(--panel,#fff)}.v730-response-card h3{margin:2px 0 0}.v730-response-card p{margin:0;color:var(--muted,#64748b);line-height:1.45}.v730-response-kind{font-size:8.5px;text-transform:uppercase;letter-spacing:.07em;font-weight:900;color:var(--muted,#64748b)}.v730-response-card footer,.v730-choice-row{display:flex;gap:7px;flex-wrap:wrap}.v730-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:6px}.v730-metrics>div{display:grid;gap:2px;padding:8px;border:1px solid var(--border,#d8deea);border-radius:9px}.v730-metrics span{font-size:9px;color:var(--muted,#64748b)}.v730-metrics strong{font-size:14px}.v730-block{padding:8px 9px;border:1px solid var(--border,#d8deea);border-radius:9px;font-size:11px}.v730-block ol,.v730-block ul{margin:5px 0 0 18px;padding:0}.v730-candidates{display:grid;grid-template-columns:1fr 1fr;gap:6px}.v730-candidate{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:3px;text-align:left;padding:8px;border:1px solid var(--border,#d8deea);border-radius:9px;background:var(--panel,#fff);color:inherit}.v730-candidate span:first-child{display:grid}.v730-candidate small,.v730-candidate em{font-size:9px;color:var(--muted,#64748b);font-style:normal}.v730-candidate em{grid-column:1/-1}.v730-compare{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;padding:10px;border:1px solid var(--border,#d8deea);border-radius:9px}.v730-compare>div:not(.v730-swap){display:grid;gap:2px}.v730-compare span,.v730-compare small{font-size:9px;color:var(--muted,#64748b)}.v730-swap{grid-column:1/-1;font-size:10px;color:var(--muted,#64748b)}.v730-transcript{display:grid;gap:6px;max-height:420px;overflow:auto;padding-right:3px}.v730-turn{display:grid;gap:2px;padding:7px 9px;border-radius:9px;border:1px solid var(--border,#d8deea)}.v730-turn.user{background:color-mix(in srgb,var(--panel,#fff) 94%,var(--accent-soft,#dbeafe) 6%)}.v730-turn.assistant{background:var(--panel,#fff)}.v730-turn span{font-size:8.5px;font-weight:900;text-transform:uppercase;color:var(--muted,#64748b)}.v730-turn p{margin:0;font-size:10.5px;line-height:1.4}.v730-tools summary{font-weight:900;cursor:pointer}.v730-tools-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}.v730-tools-grid span{padding:7px;border:1px solid var(--border,#d8deea);border-radius:8px;font-size:10px}.v730-legacy-request,.v730-legacy-preview{display:none!important}@media(max-width:820px){.v730-workspace-head,.v730-plan-head{flex-direction:column;align-items:stretch}.v730-input-row{grid-template-columns:1fr}.v730-input-row button{width:100%}.v730-workspace-grid{grid-template-columns:1fr}.v730-transcript{max-height:260px}.v730-tools-grid{grid-template-columns:1fr 1fr}}@media(max-width:520px){.v730-candidates,.v730-tools-grid{grid-template-columns:1fr}.v730-prompts{display:grid;grid-template-columns:1fr}.v730-response-card footer,.v730-choice-row{display:grid}.v730-response-card footer button,.v730-choice-row button{width:100%}}`;
+    document.head.appendChild(style);
+  }
+
+  function onClick(event) {
+    const target = event.target instanceof Element ? event.target : null;
+    if (!target) return;
+    if (target.closest('#plannerAssistantV730Send')) { const input=document.getElementById(INPUT_ID); if (input) run(input.value); return; }
+    if (target.closest('#plannerAssistantV730Clear')) { clearWorkspace(); return; }
+    if (target.closest('#plannerAssistantV730ClearPlan')) { updateWorkspace(workspace => { workspace.workingPlan = blankWorkspace().workingPlan; }); renderResponse({kind:'info',title:'Working plan cleared',summary:'The conversation remains, but candidate seats and planning constraints were cleared.'}); return; }
+    if (target.closest('#plannerAssistantV730Guide')) { base.showGuide?.(); return; }
+    const prompt = target.closest('[data-v730-prompt]'); if (prompt) { const value=prompt.getAttribute('data-v730-prompt') || ''; const input=document.getElementById(INPUT_ID); if(input)input.value=value; run(value); return; }
+    const candidate = target.closest('[data-v730-candidate]'); if (candidate) { const index=Number(candidate.getAttribute('data-v730-candidate')); const c=compareCandidate(index); if(c)renderResponse({kind:'candidate-choice',title:`Option ${index+1}: ${c.targetLabel}`,summary:`${c.studentName}: ${c.currentLabel} → ${c.targetLabel}${c.swapWith ? `, swapping with ${c.swapWith}` : ''}.`,comparison:c,actions:[{label:'Apply seat choice',action:'apply-candidate',value:index},{label:'Refresh options',action:'show-options'}]}); return; }
+    const action = target.closest('[data-v730-action]'); if (action) { executeAction(action.getAttribute('data-v730-action') || '', action.getAttribute('data-v730-value') || ''); return; }
+  }
+
+  function onKeydown(event) {
+    const target = event.target instanceof Element ? event.target : null;
+    if (target?.id === INPUT_ID && event.key === 'Enter' && (event.ctrlKey || event.metaKey)) { event.preventDefault(); run(target.value); }
+  }
+
+  function scheduleRefresh() { if (refreshPending) return; refreshPending=true; requestAnimationFrame(() => { refreshPending=false; ensureWorkspace(); renderWorkspaceState(); }); }
+
+  function install() {
+    if (installed) return;
+    installed = true;
+    installStyles();
+    document.addEventListener('click', onClick, true);
+    document.addEventListener('keydown', onKeydown, true);
+    document.addEventListener('change', event => { const target=event.target instanceof Element ? event.target : null; if(target?.matches?.('#classSelect,[data-class-id]')) setTimeout(() => { runtimePreview=null; renderWorkspaceState(); renderResponse(null); },0); }, true);
+    if (document.body) { observer=new MutationObserver(scheduleRefresh); observer.observe(document.body,{childList:true,subtree:true}); }
+    ensureWorkspace();
+  }
+
+  function afterReady() { ensureWorkspace(); renderWorkspaceState(); }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install, { once:true }); else install();
+
+  return Object.freeze({
+    version:VERSION, installed:true, install, afterReady, run, executeAction, loadWorkspace, clearWorkspace, smartPrompts,
+    candidateSeatPreview, compareCandidate, assignCandidate, chartAnalysis, fairnessComparison, testingPlan,
+    currentResponse:() => clone(runtimePreview)
+  });
+})();
+</script>
 </body>
 </html>
