@@ -74,7 +74,7 @@ async function seedTestingRoom(page, { todayMode = false } = {}) {
 
 test('V7.0.3 Testing Mode metadata survives Freeform normalization', async ({ page }) => {
   await ready(page);
-  await expect(page.locator('meta[name="app-version"]')).toHaveAttribute('content', '7.1.0');
+  await expect(page.locator('meta[name="app-version"]')).toHaveAttribute('content', '7.2.0');
   const result = await page.evaluate(() => normalizeFreeformLayout({
     initialized:true,
     canvas:{ width:2000, height:1200 },

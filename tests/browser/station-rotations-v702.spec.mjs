@@ -76,7 +76,7 @@ async function seedRotationRoom(page, { todayMode = false } = {}) {
 
 test('V7.0.2 station-rotation data survives Freeform normalization', async ({ page }) => {
   await ready(page);
-  await expect(page.locator('meta[name="app-version"]')).toHaveAttribute('content', '7.1.0');
+  await expect(page.locator('meta[name="app-version"]')).toHaveAttribute('content', '7.2.0');
   const result = await page.evaluate(() => {
     const source = {
       initialized:true,

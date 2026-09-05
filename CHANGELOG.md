@@ -1,3 +1,20 @@
+## 7.2.0 - 2026-09-05
+
+### Planner Packs ecosystem
+- Added a browser-local Planner Pack library backed by the existing IndexedDB data store.
+- Added portable `.plannerpack.json` files with the public `classroom-seating-planner-pack-v1` contract.
+- Packs can contain room templates, reusable student-need presets, custom room-object definitions, Activity Layouts, Station Rotation blueprints, and Testing Mode profiles.
+- Added pack builder metadata for revision, publisher/credit, license, description, and tags.
+- Added explicit import validation, install/update behavior, component counts, compatibility/impact preview, selective apply, export, and local-library removal.
+- Generated packs structurally remove student assignments, roster/student IDs, note fields, student-to-zone/group links, and student-specific distance rules.
+- Floor-plan images are excluded by default and require explicit opt-in; imports surface an embedded-image privacy warning.
+- Activity Layout pack application requires matching seat counts and remaps seat identity deterministically so importing a layout does not silently reseat the current class.
+- Station Rotation packs store station blueprints rather than student teams; stations must match uniquely in the current room and teams are rebuilt from the current active roster.
+- Testing profiles load configuration only and do not move furniture until the teacher uses the normal Testing Mode preview/apply workflow.
+- Added a bundled Classroom Essentials starter pack with reusable front/aisle/accessibility presets and a quiet-testing profile.
+- Planner Packs stay out of Presentation mode and print output.
+- Planner data schema remains 13 and encryption envelope remains 3; the pack schema is a separate public interchange contract.
+
 ## 7.1.0 - 2026-09-05
 
 ### Planner Assistant
