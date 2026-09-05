@@ -5,6 +5,7 @@ on:
     branches: [audit/full-code-cleanup-v720]
     paths:
       - '.integration/fix-assistant-ui-v721.mjs'
+      - '.integration/fix-ui-followup-v721.mjs'
       - '.github/workflows/v721-ui-fix.yml'
 
 permissions:
@@ -23,7 +24,9 @@ jobs:
         with:
           node-version: '24'
       - name: Apply Planner Assistant and UI fixes
-        run: node .integration/fix-assistant-ui-v721.mjs
+        run: |
+          node .integration/fix-assistant-ui-v721.mjs
+          node .integration/fix-ui-followup-v721.mjs
       - name: Rebuild portable single-file product
         run: |
           npm install --no-package-lock
