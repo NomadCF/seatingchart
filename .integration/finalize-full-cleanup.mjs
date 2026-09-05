@@ -17,10 +17,12 @@ replaceChecked('tools/validate-release.mjs', '7\\.2\\.0', '7\\.2\\.1');
 
 for (const file of fs.readdirSync('tests/browser').filter(name => name.endsWith('.mjs'))) {
   const path = `tests/browser/${file}`;
-  const text = fs.readFileSync(path, 'utf8');
-  if (text.includes("app-version\" content=\"7.2.0") || text.includes("app-version' content='7.2.0") || text.includes("'7.2.0'")) {
-    fs.writeFileSync(path, text.replaceAll('7.2.0', '7.2.1'), 'utf8');
-  }
+  let text = fs.readFileSync(path, 'utf8');
+  const before = text;
+  text = text
+    .replaceAll("toHaveAttribute('content', '7.2.0')", "toHaveAttribute('content', '7.2.1')")
+    .replaceAll('toHaveAttribute("content", "7.2.0")', 'toHaveAttribute("content", "7.2.1")');
+  if (text !== before) fs.writeFileSync(path, text, 'utf8');
 }
 
 const changelogPath = 'CHANGELOG.md';
