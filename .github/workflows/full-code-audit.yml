@@ -1,0 +1,30 @@
+name: Full code audit
+
+on:
+  push:
+    branches: [audit/full-code-cleanup-v720]
+    paths:
+      - '.integration/full-code-audit.mjs'
+      - '.github/workflows/full-code-audit.yml'
+      - 'src/**'
+      - 'docs/**'
+      - '*.md'
+      - 'package.json'
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: audit/full-code-cleanup-v720
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install audit dependencies
+        run: npm install --no-save --no-package-lock eslint @eslint/js globals acorn acorn-walk postcss postcss-selector-parser
+      - name: Run full static audit
+        run: node .integration/full-code-audit.mjs
