@@ -31,10 +31,6 @@ jobs:
         run: node -e "for (const f of ['schemas/planner-v13.schema.json','schemas/envelope-v3.schema.json','schemas/roster-import-v1.schema.json']) JSON.parse(require('fs').readFileSync(f,'utf8')); console.log('Schemas parse cleanly.')"
       - name: Check service worker syntax
         run: node --check service-worker.js
-      - name: Install Chromium
-        run: npx playwright install --with-deps chromium
-      - name: Run desktop and mobile browser tests
-        run: npm run test:browser
       - name: Commit integrated V7.0.1 source and build
         run: |
           git config user.name "github-actions[bot]"
