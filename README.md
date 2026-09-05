@@ -9,7 +9,7 @@ A free, open-source, privacy-conscious seating planner for educators. Design the
 
 [**Launch the hosted app**](https://nomadcf.github.io/seatingchart/) · [Privacy](PRIVACY.md) · [Security](SECURITY.md) · [Data handling](DATA-HANDLING.md) · [Changelog](CHANGELOG.md)
 
-![Version](https://img.shields.io/badge/version-6.8.1-2563eb?style=flat-square)
+![Version](https://img.shields.io/badge/version-7.0.0-2563eb?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-0f766e?style=flat-square)
 ![PWA](https://img.shields.io/badge/PWA-installable-7c3aed?style=flat-square)
 ![Local-first](https://img.shields.io/badge/data-local--first-0f766e?style=flat-square)
@@ -25,6 +25,10 @@ A classroom rarely fits into a perfect grid, and students rarely come with no co
 Classroom Seating Planner is built for the messy version of the problem: students who need the front, students who should be separated, groups that should stay together or spread out, accessible seating, room zones, fixed objects, temporary absences, substitute-friendly charts, and plans that should not repeat the same placements forever.
 
 The app combines **room design**, **student rules**, **manual placement**, **automatic plan generation**, **Classroom Intelligence**, **conflict review**, **history and fairness analysis**, and **privacy-controlled sharing** in one workflow.
+
+### V7.0 Classroom Digital Twin foundation
+
+Freeform rooms can now carry real physical dimensions without invalidating older layouts. Turn on a scaled grid and rulers, show physical measurements on room objects, measure distances between two objects, add fixed furniture such as shelves, cabinets, lab stations, sinks, and activity stations, and place a classroom photo or floor plan underneath the existing layout as a locked reference layer. The floor-plan image is optimized in the browser before it is stored with the class, and inclusion in printed charts is explicit.
 
 ### V6.8.1 grouped seating refinement
 

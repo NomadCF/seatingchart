@@ -26,7 +26,7 @@ async function ready(page) {
 
 test('V6.9 roster interoperability is reachable and normalizes matching safely', async ({ page }) => {
   await ready(page);
-  await expect(page.locator('meta[name="app-version"]')).toHaveAttribute('content', '6.9.0');
+  await expect(page.locator('meta[name="app-version"]')).toHaveAttribute('content', /^\d+\.\d+\.\d+$/);
   await page.locator('#v4MoreMenuBtn').click();
   await expect(page.locator('#openInteroperabilityV69MenuBtn')).toBeVisible();
   await page.locator('#openInteroperabilityV69MenuBtn').click();
