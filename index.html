@@ -10012,7 +10012,7 @@ function normalizeFreeformObject(object, index = 0) {
   };
 }
 
-function normalizePhysicalRoomRecord(value, canvas = {}) {
+function normalizePhysicalRoomRecord(value) {
   const source = value && typeof value === 'object' ? value : {};
   const background = source.background && typeof source.background === 'object' ? source.background : {};
   const unit = source.unit === 'm' ? 'm' : 'ft';
@@ -10051,7 +10051,7 @@ function normalizeFreeformLayout(layout) {
   const objects = hasObjectCollection ? source.objects.map(normalizeFreeformObject) : [];
   return {
     initialized: source.initialized === true || objects.length > 0,
-    physicalRoom: normalizePhysicalRoomRecord(source.physicalRoom, canvas),
+    physicalRoom: normalizePhysicalRoomRecord(source.physicalRoom),
     activityLayouts: source.activityLayouts && typeof source.activityLayouts === 'object' ? deepClone(source.activityLayouts) : null,
     stationRotations: source.stationRotations && typeof source.stationRotations === 'object' ? deepClone(source.stationRotations) : null,
     testingMode: source.testingMode && typeof source.testingMode === 'object' ? deepClone(source.testingMode) : null,
@@ -31666,18 +31666,18 @@ const DistrictIntegrationsV57 = (() => {
         onerror: () => reject(new Error('Google Picker library did not initialize.'))
       }));
       return await new Promise(resolve => {
-        const view = new google.picker.DocsView(google.picker.ViewId.DOCS)
+        const view = new window.google.picker.DocsView(window.google.picker.ViewId.DOCS)
           .setMimeTypes('application/json')
           .setIncludeFolders(false)
           .setSelectFolderEnabled(false);
-        const builder = new google.picker.PickerBuilder()
+        const builder = new window.google.picker.PickerBuilder()
           .setOAuthToken(token)
           .setDeveloperKey(cfg.pickerApiKey)
           .setAppId(cfg.pickerAppId)
           .setTitle('Choose a Classroom Seating Planner save')
           .addView(view)
           .setCallback(async data => {
-            if (data.action === google.picker.Action.PICKED) {
+            if (data.action === window.google.picker.Action.PICKED) {
               const doc = data.docs?.[0];
               if (!doc?.id) { resolve(false); return; }
               try {
@@ -31695,12 +31695,12 @@ const DistrictIntegrationsV57 = (() => {
                 });
                 resolve(false);
               }
-            } else if (data.action === google.picker.Action.CANCEL) {
+            } else if (data.action === window.google.picker.Action.CANCEL) {
               resolve(false);
             }
           });
         if (location.protocol === 'https:' && typeof builder.setOrigin === 'function') builder.setOrigin(location.origin);
-        if (google.picker.Feature?.SUPPORT_DRIVES && typeof builder.enableFeature === 'function') builder.enableFeature(google.picker.Feature.SUPPORT_DRIVES);
+        if (window.google.picker.Feature?.SUPPORT_DRIVES && typeof builder.enableFeature === 'function') builder.enableFeature(window.google.picker.Feature.SUPPORT_DRIVES);
         builder.build().setVisible(true);
       });
     } catch (err) {
@@ -38234,9 +38234,6 @@ window.InteroperabilityV69 = (() => {
     }, { add: 0, update: 0, unchanged: 0, review: 0, duplicate: 0 });
   }
 
-  function groupCounts(groups) {
-    return list(groups).reduce((sum, group) => sum + group.memberExternalIds.length, 0);
-  }
 
   function ensureStyles() {
     if (document.getElementById(STYLE_ID)) return;
@@ -38890,7 +38887,7 @@ window.InteroperabilityV69 = (() => {
     });
 
     if (typeof persistActiveClass === 'function') persistActiveClass();
-    if (typeof linkedSaveAutosave === 'function') void linkedSaveAutosave('roster-interoperability');
+    if (typeof scheduleLinkedAutoSave === 'function') scheduleLinkedAutoSave('roster-interoperability');
     if (typeof renderAll === 'function') renderAll();
     else if (typeof renderTargeted === 'function') renderTargeted(['class-manager','roster','rules','room','status'], { reason: 'roster-interoperability' });
     const message = `${reviewSession.label}: added ${added}, updated ${updated}, archived ${archived}, synced ${groupResult.synced} source group${groupResult.synced === 1 ? '' : 's'}.`;
@@ -39239,7 +39236,7 @@ window.ClassroomDigitalTwinV700 = (() => {
 
   function schedulePersist(reason = 'digital-twin') {
     try { persistActiveClass?.(); } catch (_) { /* autosave integration is optional */ }
-    try { scheduleLinkedFileAutosave?.(reason); } catch (_) { /* linked save may not exist */ }
+    try { scheduleLinkedAutoSave?.(reason); } catch (_) { /* autosave integration is optional */ }
     try { persistFreeformGeometrySession?.(reason); } catch (_) { /* geometry cache is best-effort */ }
   }
 
@@ -39600,20 +39597,18 @@ window.ClassroomDigitalTwinV700 = (() => {
     if (state?.layoutMode !== 'freeform') {
       try {
         if (el('layoutModeSelect')) el('layoutModeSelect').value = 'freeform';
-        setLayoutMode?.('freeform');
+        switchLayoutMode?.('freeform');
       } catch (_) { /* user can still inspect settings */ }
     }
     const modal = ensureModal();
     renderModal();
-    if (typeof openModalById === 'function') openModalById(MODAL_ID);
-    else modal.classList.add('show');
+    modal.classList.add('show');
   }
 
   function closeModal() {
     const modal = document.getElementById(MODAL_ID);
     if (!modal) return;
-    if (typeof closeModalById === 'function') closeModalById(MODAL_ID);
-    else modal.classList.remove('show');
+    modal.classList.remove('show');
   }
 
   function renderModal() {
@@ -39981,7 +39976,6 @@ window.ActivityLayoutsV701 = (() => {
   function schedulePersist(reason = 'activity-layouts') {
     try { persistActiveClass?.(); } catch (_) { /* autosave is best-effort */ }
     try { scheduleLinkedAutoSave?.(reason); } catch (_) { /* linked save may not exist */ }
-    try { scheduleLinkedFileAutosave?.(reason); } catch (_) { /* compatibility with newer save helper */ }
     try { persistFreeformGeometrySession?.(reason); } catch (_) { /* geometry cache is best-effort */ }
   }
 
@@ -40497,15 +40491,13 @@ window.ActivityLayoutsV701 = (() => {
   function openById(id) {
     const node = document.getElementById(id);
     if (!node) return;
-    if (typeof openModalById === 'function') openModalById(id);
-    else node.classList.add('show');
+    node.classList.add('show');
   }
 
   function closeById(id) {
     const node = document.getElementById(id);
     if (!node) return;
-    if (typeof closeModalById === 'function') closeModalById(id);
-    else node.classList.remove('show');
+    node.classList.remove('show');
   }
 
   function openModal() {
@@ -40852,7 +40844,6 @@ window.StationRotationsV702 = (() => {
 
   function schedulePersist(reason = 'station-rotations') {
     try { persistActiveClass?.(); } catch (_) { /* best effort */ }
-    try { scheduleLinkedFileAutosave?.(reason); } catch (_) { /* optional */ }
     try { scheduleLinkedAutoSave?.(reason); } catch (_) { /* compatibility */ }
   }
 
@@ -41344,15 +41335,13 @@ window.StationRotationsV702 = (() => {
   function openById(id) {
     const node = document.getElementById(id);
     if (!node) return;
-    if (typeof openModalById === 'function') openModalById(id);
-    else node.classList.add('show');
+    node.classList.add('show');
   }
 
   function closeById(id) {
     const node = document.getElementById(id);
     if (!node) return;
-    if (typeof closeModalById === 'function') closeModalById(id);
-    else node.classList.remove('show');
+    node.classList.remove('show');
   }
 
   function openModal() {
@@ -41620,7 +41609,6 @@ window.TestingModeV703 = (() => {
 
   function schedulePersist(reason = 'testing-mode') {
     try { persistActiveClass?.(); } catch (_) { /* best effort */ }
-    try { scheduleLinkedFileAutosave?.(reason); } catch (_) { /* optional */ }
     try { scheduleLinkedAutoSave?.(reason); } catch (_) { /* compatibility */ }
     try { persistFreeformGeometrySession?.(reason); } catch (_) { /* optional */ }
   }
@@ -41856,7 +41844,7 @@ window.TestingModeV703 = (() => {
     return conflicts.sort((a,b) => a.distance - b.distance);
   }
 
-  function needIssuesFor(seats, config, layout, roomMetrics) {
+  function needIssuesFor(seats, config, layout) {
     if (!config.respectNeeds) return [];
     const issues = [];
     seats.forEach(seat => {
@@ -41962,7 +41950,7 @@ window.TestingModeV703 = (() => {
     const proposedPrimary = proposedSeats.filter(seat => primaryIds.has(String(seat.id)));
     const achieved = minimumSpacing(proposedPrimary, roomMetrics);
     const conflicts = seatPairConflicts(proposedPrimary, config.spacing, roomMetrics);
-    const needIssues = needIssuesFor(proposedPrimary, config, layout, roomMetrics);
+    const needIssues = needIssuesFor(proposedPrimary, config, layout);
     const beforeMinimum = minimumSpacing(primary, roomMetrics);
     if (conflicts.length) {
       const short = Number.isFinite(achieved) ? achieved.toFixed(achieved < 10 ? 1 : 0) : 'unknown';
@@ -42192,15 +42180,13 @@ window.TestingModeV703 = (() => {
   function openById(id) {
     const node = document.getElementById(id);
     if (!node) return;
-    if (typeof openModalById === 'function') openModalById(id);
-    else node.classList.add('show');
+    node.classList.add('show');
   }
 
   function closeById(id) {
     const node = document.getElementById(id);
     if (!node) return;
-    if (typeof closeModalById === 'function') closeModalById(id);
-    else node.classList.remove('show');
+    node.classList.remove('show');
   }
 
   function openModal() {
@@ -42898,7 +42884,7 @@ window.PlannerAssistantV710 = (() => {
     return clone(nextRequirements || {});
   }
 
-  function applyRuleChangesInMemory(preview, normalize = true) {
+  function applyRuleChangesInMemory(preview) {
     const ids = list(preview.entities?.students).map(item => String(item.id));
     const changes = preview.parameters?.requirementChanges || {};
     if (Object.keys(changes).length) {
@@ -42952,7 +42938,7 @@ window.PlannerAssistantV710 = (() => {
         message = 'Explanation generated from the current planner state. No changes were made.';
       } else if (preview.intent === 'rule_changes') {
         if (typeof pushUndoSnapshot === 'function') pushUndoSnapshot(`Before Planner Assistant: ${preview.command}`);
-        applyRuleChangesInMemory(preview, true);
+        applyRuleChangesInMemory(preview);
         if (typeof persistActiveClass === 'function') persistActiveClass();
         if (typeof scheduleLinkedAutoSave === 'function') scheduleLinkedAutoSave('planner-assistant-rules');
         if (typeof renderAll === 'function') renderAll();
@@ -43103,16 +43089,14 @@ window.PlannerAssistantV710 = (() => {
     if (initialCommand && input) input.value = initialCommand;
     renderPreview(currentPreview);
     renderHistory();
-    if (typeof openModalById === 'function') openModalById(MODAL_ID);
-    else modal.classList.add('show');
+    modal.classList.add('show');
     setTimeout(() => input?.focus(), 0);
   }
 
   function close() {
     const modal = document.getElementById(MODAL_ID);
     if (!modal) return;
-    if (typeof closeModalById === 'function') closeModalById(MODAL_ID);
-    else modal.classList.remove('show');
+    modal.classList.remove('show');
   }
 
   function installStyles() {
@@ -44066,7 +44050,7 @@ window.PlannerPacksV720 = (() => {
     }
 
     try { if (typeof persistActiveClass === 'function') persistActiveClass(); } catch (_) { /* best effort */ }
-    try { if (typeof scheduleLinkedFileAutosave === 'function') scheduleLinkedFileAutosave('planner-pack-apply'); } catch (_) { /* optional */ }
+    try { if (typeof scheduleLinkedAutoSave === 'function') scheduleLinkedAutoSave('planner-pack-apply'); } catch (_) { /* autosave integration is optional */ }
     try { if (typeof scheduleLinkedAutoSave === 'function') scheduleLinkedAutoSave('planner-pack-apply'); } catch (_) { /* optional */ }
     try { if (typeof renderAll === 'function') renderAll(); } catch (_) { /* UI refresh below */ }
     try { window.ActivityLayoutsV701?.refresh?.(); } catch (_) { /* optional */ }
@@ -44155,7 +44139,6 @@ window.PlannerPacksV720 = (() => {
 
   function importMarkup() {
     if (!importDraft) return `<div class="v720-import-empty"><strong>Import a Planner Pack file</strong><p>Choose a <code>.plannerpack.json</code> file. V7.2 validates the format and refuses structured student/roster data before it can enter the pack library.</p><button id="plannerPacksV720ChooseFileBtn" type="button">Choose pack file</button></div>`;
-    const counts = packCounts(importDraft);
     const existing = installedPacks.find(pack => String(pack.id) === String(importDraft.id));
     return `<div class="v720-import-preview"><header><div><span class="v720-kicker">Validated import</span><h3>${esc(importDraft.name)}</h3><p>${esc(importDraft.description || 'No description provided.')}</p></div><span class="pill">${packItemCount(importDraft)} items</span></header><div class="v720-component-chips">${componentSummaryMarkup(importDraft)}</div><div class="v720-meta-grid"><span>Publisher <b>${esc(importDraft.publisher || 'Not specified')}</b></span><span>Revision <b>${esc(importDraft.revision)}</b></span><span>License <b>${esc(importDraft.license)}</b></span><span>Floor-plan images <b>${importDraft.privacy.floorPlanImagesIncluded ? 'Included' : 'None'}</b></span></div>${importDraft.privacy.floorPlanImagesIncluded ? '<div class="v720-warning"><strong>Embedded image review required</strong><p>This pack contains one or more floor-plan images. Images can contain classroom or student-identifying information even though structured roster fields are blocked.</p></div>' : '<div class="successbox">No structured student/roster data was detected, and this pack contains no embedded floor-plan image.</div>'}<div class="button-row"><button id="plannerPacksV720InstallImportBtn" type="button">${existing ? 'Update installed pack' : 'Install in this browser'}</button><button id="plannerPacksV720DiscardImportBtn" class="secondary" type="button">Discard import</button></div><div class="hint">Installing a pack does not change the current classroom. Apply content separately from the Library tab.</div></div>`;
   }
@@ -44320,15 +44303,13 @@ window.PlannerPacksV720 = (() => {
     renderLibrary();
     renderBuilder();
     renderImport();
-    if (typeof openModalById === 'function') openModalById(MODAL_ID);
-    else modal.classList.add('show');
+    modal.classList.add('show');
   }
 
   function close() {
     const modal = document.getElementById(MODAL_ID);
     if (!modal) return;
-    if (typeof closeModalById === 'function') closeModalById(MODAL_ID);
-    else modal.classList.remove('show');
+    modal.classList.remove('show');
   }
 
   function ensureLaunchPoints() {

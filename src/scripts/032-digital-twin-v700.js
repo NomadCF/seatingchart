@@ -138,7 +138,7 @@ window.ClassroomDigitalTwinV700 = (() => {
 
   function schedulePersist(reason = 'digital-twin') {
     try { persistActiveClass?.(); } catch (_) { /* autosave integration is optional */ }
-    try { scheduleLinkedFileAutosave?.(reason); } catch (_) { /* linked save may not exist */ }
+    try { scheduleLinkedAutoSave?.(reason); } catch (_) { /* autosave integration is optional */ }
     try { persistFreeformGeometrySession?.(reason); } catch (_) { /* geometry cache is best-effort */ }
   }
 
@@ -499,20 +499,18 @@ window.ClassroomDigitalTwinV700 = (() => {
     if (state?.layoutMode !== 'freeform') {
       try {
         if (el('layoutModeSelect')) el('layoutModeSelect').value = 'freeform';
-        setLayoutMode?.('freeform');
+        switchLayoutMode?.('freeform');
       } catch (_) { /* user can still inspect settings */ }
     }
     const modal = ensureModal();
     renderModal();
-    if (typeof openModalById === 'function') openModalById(MODAL_ID);
-    else modal.classList.add('show');
+    modal.classList.add('show');
   }
 
   function closeModal() {
     const modal = document.getElementById(MODAL_ID);
     if (!modal) return;
-    if (typeof closeModalById === 'function') closeModalById(MODAL_ID);
-    else modal.classList.remove('show');
+    modal.classList.remove('show');
   }
 
   function renderModal() {

@@ -237,18 +237,18 @@ const DistrictIntegrationsV57 = (() => {
         onerror: () => reject(new Error('Google Picker library did not initialize.'))
       }));
       return await new Promise(resolve => {
-        const view = new google.picker.DocsView(google.picker.ViewId.DOCS)
+        const view = new window.google.picker.DocsView(window.google.picker.ViewId.DOCS)
           .setMimeTypes('application/json')
           .setIncludeFolders(false)
           .setSelectFolderEnabled(false);
-        const builder = new google.picker.PickerBuilder()
+        const builder = new window.google.picker.PickerBuilder()
           .setOAuthToken(token)
           .setDeveloperKey(cfg.pickerApiKey)
           .setAppId(cfg.pickerAppId)
           .setTitle('Choose a Classroom Seating Planner save')
           .addView(view)
           .setCallback(async data => {
-            if (data.action === google.picker.Action.PICKED) {
+            if (data.action === window.google.picker.Action.PICKED) {
               const doc = data.docs?.[0];
               if (!doc?.id) { resolve(false); return; }
               try {
@@ -266,12 +266,12 @@ const DistrictIntegrationsV57 = (() => {
                 });
                 resolve(false);
               }
-            } else if (data.action === google.picker.Action.CANCEL) {
+            } else if (data.action === window.google.picker.Action.CANCEL) {
               resolve(false);
             }
           });
         if (location.protocol === 'https:' && typeof builder.setOrigin === 'function') builder.setOrigin(location.origin);
-        if (google.picker.Feature?.SUPPORT_DRIVES && typeof builder.enableFeature === 'function') builder.enableFeature(google.picker.Feature.SUPPORT_DRIVES);
+        if (window.google.picker.Feature?.SUPPORT_DRIVES && typeof builder.enableFeature === 'function') builder.enableFeature(window.google.picker.Feature.SUPPORT_DRIVES);
         builder.build().setVisible(true);
       });
     } catch (err) {

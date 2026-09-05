@@ -279,7 +279,7 @@ The portable deliverable remains a single self-contained HTML application, but t
 
 - HTML shell: `src/index.template.html`
 - Styles: `src/styles/`
-- Ordered JavaScript modules: `src/scripts/` (28 modules in V6.8)
+- Ordered JavaScript modules: `src/scripts/` (38 modules in V7.2)
 - Built portable file: `dist/Classroom-Seating-Planner.html`
 - Deployed hosted entry point: `index.html`
 

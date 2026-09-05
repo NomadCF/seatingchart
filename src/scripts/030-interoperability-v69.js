@@ -291,9 +291,6 @@ window.InteroperabilityV69 = (() => {
     }, { add: 0, update: 0, unchanged: 0, review: 0, duplicate: 0 });
   }
 
-  function groupCounts(groups) {
-    return list(groups).reduce((sum, group) => sum + group.memberExternalIds.length, 0);
-  }
 
   function ensureStyles() {
     if (document.getElementById(STYLE_ID)) return;
@@ -947,7 +944,7 @@ window.InteroperabilityV69 = (() => {
     });
 
     if (typeof persistActiveClass === 'function') persistActiveClass();
-    if (typeof linkedSaveAutosave === 'function') void linkedSaveAutosave('roster-interoperability');
+    if (typeof scheduleLinkedAutoSave === 'function') scheduleLinkedAutoSave('roster-interoperability');
     if (typeof renderAll === 'function') renderAll();
     else if (typeof renderTargeted === 'function') renderTargeted(['class-manager','roster','rules','room','status'], { reason: 'roster-interoperability' });
     const message = `${reviewSession.label}: added ${added}, updated ${updated}, archived ${archived}, synced ${groupResult.synced} source group${groupResult.synced === 1 ? '' : 's'}.`;

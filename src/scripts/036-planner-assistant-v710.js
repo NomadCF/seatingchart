@@ -539,7 +539,7 @@ window.PlannerAssistantV710 = (() => {
     return clone(nextRequirements || {});
   }
 
-  function applyRuleChangesInMemory(preview, normalize = true) {
+  function applyRuleChangesInMemory(preview) {
     const ids = list(preview.entities?.students).map(item => String(item.id));
     const changes = preview.parameters?.requirementChanges || {};
     if (Object.keys(changes).length) {
@@ -593,7 +593,7 @@ window.PlannerAssistantV710 = (() => {
         message = 'Explanation generated from the current planner state. No changes were made.';
       } else if (preview.intent === 'rule_changes') {
         if (typeof pushUndoSnapshot === 'function') pushUndoSnapshot(`Before Planner Assistant: ${preview.command}`);
-        applyRuleChangesInMemory(preview, true);
+        applyRuleChangesInMemory(preview);
         if (typeof persistActiveClass === 'function') persistActiveClass();
         if (typeof scheduleLinkedAutoSave === 'function') scheduleLinkedAutoSave('planner-assistant-rules');
         if (typeof renderAll === 'function') renderAll();
@@ -744,16 +744,14 @@ window.PlannerAssistantV710 = (() => {
     if (initialCommand && input) input.value = initialCommand;
     renderPreview(currentPreview);
     renderHistory();
-    if (typeof openModalById === 'function') openModalById(MODAL_ID);
-    else modal.classList.add('show');
+    modal.classList.add('show');
     setTimeout(() => input?.focus(), 0);
   }
 
   function close() {
     const modal = document.getElementById(MODAL_ID);
     if (!modal) return;
-    if (typeof closeModalById === 'function') closeModalById(MODAL_ID);
-    else modal.classList.remove('show');
+    modal.classList.remove('show');
   }
 
   function installStyles() {

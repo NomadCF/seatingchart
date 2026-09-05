@@ -109,7 +109,6 @@ window.TestingModeV703 = (() => {
 
   function schedulePersist(reason = 'testing-mode') {
     try { persistActiveClass?.(); } catch (_) { /* best effort */ }
-    try { scheduleLinkedFileAutosave?.(reason); } catch (_) { /* optional */ }
     try { scheduleLinkedAutoSave?.(reason); } catch (_) { /* compatibility */ }
     try { persistFreeformGeometrySession?.(reason); } catch (_) { /* optional */ }
   }
@@ -345,7 +344,7 @@ window.TestingModeV703 = (() => {
     return conflicts.sort((a,b) => a.distance - b.distance);
   }
 
-  function needIssuesFor(seats, config, layout, roomMetrics) {
+  function needIssuesFor(seats, config, layout) {
     if (!config.respectNeeds) return [];
     const issues = [];
     seats.forEach(seat => {
@@ -451,7 +450,7 @@ window.TestingModeV703 = (() => {
     const proposedPrimary = proposedSeats.filter(seat => primaryIds.has(String(seat.id)));
     const achieved = minimumSpacing(proposedPrimary, roomMetrics);
     const conflicts = seatPairConflicts(proposedPrimary, config.spacing, roomMetrics);
-    const needIssues = needIssuesFor(proposedPrimary, config, layout, roomMetrics);
+    const needIssues = needIssuesFor(proposedPrimary, config, layout);
     const beforeMinimum = minimumSpacing(primary, roomMetrics);
     if (conflicts.length) {
       const short = Number.isFinite(achieved) ? achieved.toFixed(achieved < 10 ? 1 : 0) : 'unknown';
@@ -681,15 +680,13 @@ window.TestingModeV703 = (() => {
   function openById(id) {
     const node = document.getElementById(id);
     if (!node) return;
-    if (typeof openModalById === 'function') openModalById(id);
-    else node.classList.add('show');
+    node.classList.add('show');
   }
 
   function closeById(id) {
     const node = document.getElementById(id);
     if (!node) return;
-    if (typeof closeModalById === 'function') closeModalById(id);
-    else node.classList.remove('show');
+    node.classList.remove('show');
   }
 
   function openModal() {
