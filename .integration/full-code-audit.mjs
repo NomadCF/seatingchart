@@ -12,7 +12,7 @@ const root = process.cwd();
 const srcDir = path.join(root, 'src');
 const manifest = JSON.parse(fs.readFileSync(path.join(srcDir, 'manifest.json'), 'utf8'));
 const template = fs.readFileSync(path.join(srcDir, 'index.template.html'), 'utf8');
-const css = fs.readFileSync(path.join(srcDir, 'styles', 'style-000.css'), 'utf8');
+const css = fs.readFileSync(path.join(srcDir, 'styles', 'style-001.css'), 'utf8');
 const scriptFiles = manifest.scriptFiles || [];
 const sources = scriptFiles.map(file => ({ file, text: fs.readFileSync(path.join(srcDir, 'scripts', file), 'utf8') }));
 
@@ -212,7 +212,6 @@ const orphanSelectorTokens = [...selectorTokens.values()].filter(item => {
   const escaped = item.token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const boundary = new RegExp(`(^|[^A-Za-z0-9_-])${escaped}([^A-Za-z0-9_-]|$)`);
   if (boundary.test(sourceTextWithoutCss)) return false;
-  // Hyphenated prefixes are frequently generated dynamically. Keep them for manual review.
   const parts = item.token.split('-');
   if (parts.length > 2 && sourceTextWithoutCss.includes(`${parts.slice(0, -1).join('-')}-`)) return false;
   return true;
