@@ -154,7 +154,6 @@ window.StationRotationsV702 = (() => {
 
   function schedulePersist(reason = 'station-rotations') {
     try { persistActiveClass?.(); } catch (_) { /* best effort */ }
-    try { scheduleLinkedFileAutosave?.(reason); } catch (_) { /* optional */ }
     try { scheduleLinkedAutoSave?.(reason); } catch (_) { /* compatibility */ }
   }
 
@@ -646,15 +645,13 @@ window.StationRotationsV702 = (() => {
   function openById(id) {
     const node = document.getElementById(id);
     if (!node) return;
-    if (typeof openModalById === 'function') openModalById(id);
-    else node.classList.add('show');
+    node.classList.add('show');
   }
 
   function closeById(id) {
     const node = document.getElementById(id);
     if (!node) return;
-    if (typeof closeModalById === 'function') closeModalById(id);
-    else node.classList.remove('show');
+    node.classList.remove('show');
   }
 
   function openModal() {

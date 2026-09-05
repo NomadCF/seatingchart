@@ -45,7 +45,7 @@ async function seedFreeform(page) {
 
 test('V7.0.0 digital twin preserves physical room settings through normalization', async ({ page }) => {
   await ready(page);
-  await expect(page.locator('meta[name="app-version"]')).toHaveAttribute('content', '7.2.0');
+  await expect(page.locator('meta[name="app-version"]')).toHaveAttribute('content', '7.2.1');
   const result = await page.evaluate(() => {
     const layout = normalizeFreeformLayout({
       initialized:true,

@@ -237,18 +237,18 @@ const DistrictIntegrationsV57 = (() => {
         onerror: () => reject(new Error('Google Picker library did not initialize.'))
       }));
       return await new Promise(resolve => {
-        const view = new google.picker.DocsView(google.picker.ViewId.DOCS)
+        const view = new window.google.picker.DocsView(window.google.picker.ViewId.DOCS)
           .setMimeTypes('application/json')
           .setIncludeFolders(false)
           .setSelectFolderEnabled(false);
-        const builder = new google.picker.PickerBuilder()
+        const builder = new window.google.picker.PickerBuilder()
           .setOAuthToken(token)
           .setDeveloperKey(cfg.pickerApiKey)
           .setAppId(cfg.pickerAppId)
           .setTitle('Choose a Classroom Seating Planner save')
           .addView(view)
           .setCallback(async data => {
-            if (data.action === google.picker.Action.PICKED) {
+            if (data.action === window.google.picker.Action.PICKED) {
               const doc = data.docs?.[0];
               if (!doc?.id) { resolve(false); return; }
               try {
@@ -266,12 +266,12 @@ const DistrictIntegrationsV57 = (() => {
                 });
                 resolve(false);
               }
-            } else if (data.action === google.picker.Action.CANCEL) {
+            } else if (data.action === window.google.picker.Action.CANCEL) {
               resolve(false);
             }
           });
         if (location.protocol === 'https:' && typeof builder.setOrigin === 'function') builder.setOrigin(location.origin);
-        if (google.picker.Feature?.SUPPORT_DRIVES && typeof builder.enableFeature === 'function') builder.enableFeature(google.picker.Feature.SUPPORT_DRIVES);
+        if (window.google.picker.Feature?.SUPPORT_DRIVES && typeof builder.enableFeature === 'function') builder.enableFeature(window.google.picker.Feature.SUPPORT_DRIVES);
         builder.build().setVisible(true);
       });
     } catch (err) {
@@ -449,7 +449,7 @@ const DistrictIntegrationsV57 = (() => {
     if(classroomToken&&Date.now()<classroomTokenExpiresAt-60000)return classroomToken;
     if(!interactive)throw new Error('Google Classroom needs a fresh sign-in.');
     await loadGoogleIdentityServicesScript(); const clientId=googleDriveConfig().clientId; if(!clientId)throw new Error('Configure a Google OAuth Client ID under Saving first.');
-    return new Promise((resolve,reject)=>{const client=google.accounts.oauth2.initTokenClient({client_id:clientId,scope:GOOGLE_CLASSROOM_SCOPES,prompt:'',callback:response=>{if(response?.error){reject(new Error(response.error_description||response.error));return;}classroomToken=response.access_token||'';classroomTokenExpiresAt=Date.now()+Number(response.expires_in||3600)*1000;resolve(classroomToken);}});client.requestAccessToken({prompt:'consent'});});
+    return new Promise((resolve,reject)=>{const client=window.google.accounts.oauth2.initTokenClient({client_id:clientId,scope:GOOGLE_CLASSROOM_SCOPES,prompt:'',callback:response=>{if(response?.error){reject(new Error(response.error_description||response.error));return;}classroomToken=response.access_token||'';classroomTokenExpiresAt=Date.now()+Number(response.expires_in||3600)*1000;resolve(classroomToken);}});client.requestAccessToken({prompt:'consent'});});
   }
   async function classroomFetch(url) {
     const token = await ensureClassroomToken(true);

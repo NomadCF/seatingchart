@@ -74,7 +74,7 @@ async function seedPlannerRoom(page) {
 test('V7.1.0 exposes a deterministic command schema and refuses ambiguous student names', async ({ page }) => {
   await ready(page);
   await seedPlannerRoom(page);
-  await expect(page.locator('meta[name="app-version"]')).toHaveAttribute('content', '7.2.0');
+  await expect(page.locator('meta[name="app-version"]')).toHaveAttribute('content', '7.2.1');
   const result = await page.evaluate(() => {
     const assistant = window.PlannerAssistantV710;
     return {
@@ -202,3 +202,6 @@ test('V7.1.0 command dock and modal stay usable on desktop and mobile', async ({
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   expect(overflow).toBeLessThanOrEqual(2);
 });
+
+
+test('V7.2.1 recognizes common teacher phrasing',async({page})=>{await ready(page);await seedPlannerRoom(page);const unknown=await page.evaluate(()=>['Where can Ada sit?','Create a collaborative layout','Make a discussion layout','Spread everyone out for a test','Fix my seating chart','Fix this plan but move no more than 4 students','Explain the conflicts','Make a seating chart','Randomize the seats','What can the Planner Assistant do?'].map(command=>({command,intent:window.PlannerAssistantV710.interpret(command).intent})).filter(x=>x.intent==='unknown'));expect(unknown).toEqual([])});

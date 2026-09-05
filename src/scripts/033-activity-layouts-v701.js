@@ -169,7 +169,6 @@ window.ActivityLayoutsV701 = (() => {
   function schedulePersist(reason = 'activity-layouts') {
     try { persistActiveClass?.(); } catch (_) { /* autosave is best-effort */ }
     try { scheduleLinkedAutoSave?.(reason); } catch (_) { /* linked save may not exist */ }
-    try { scheduleLinkedFileAutosave?.(reason); } catch (_) { /* compatibility with newer save helper */ }
     try { persistFreeformGeometrySession?.(reason); } catch (_) { /* geometry cache is best-effort */ }
   }
 
@@ -685,15 +684,13 @@ window.ActivityLayoutsV701 = (() => {
   function openById(id) {
     const node = document.getElementById(id);
     if (!node) return;
-    if (typeof openModalById === 'function') openModalById(id);
-    else node.classList.add('show');
+    node.classList.add('show');
   }
 
   function closeById(id) {
     const node = document.getElementById(id);
     if (!node) return;
-    if (typeof closeModalById === 'function') closeModalById(id);
-    else node.classList.remove('show');
+    node.classList.remove('show');
   }
 
   function openModal() {

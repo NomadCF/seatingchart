@@ -3,7 +3,7 @@
 const APP_CONFIG = Object.freeze({
   name: 'Classroom Seating Planner',
   shortName: 'Seating Planner',
-  version: '7.2.0',
+  version: '7.2.1',
   copyrightHolder: 'Chris L. Franklin',
   copyrightYear: '2026',
   releaseDate: '2026-09-05',
@@ -3291,7 +3291,7 @@ function normalizeFreeformObject(object, index = 0) {
   };
 }
 
-function normalizePhysicalRoomRecord(value, canvas = {}) {
+function normalizePhysicalRoomRecord(value) {
   const source = value && typeof value === 'object' ? value : {};
   const background = source.background && typeof source.background === 'object' ? source.background : {};
   const unit = source.unit === 'm' ? 'm' : 'ft';
@@ -3330,7 +3330,7 @@ function normalizeFreeformLayout(layout) {
   const objects = hasObjectCollection ? source.objects.map(normalizeFreeformObject) : [];
   return {
     initialized: source.initialized === true || objects.length > 0,
-    physicalRoom: normalizePhysicalRoomRecord(source.physicalRoom, canvas),
+    physicalRoom: normalizePhysicalRoomRecord(source.physicalRoom),
     activityLayouts: source.activityLayouts && typeof source.activityLayouts === 'object' ? deepClone(source.activityLayouts) : null,
     stationRotations: source.stationRotations && typeof source.stationRotations === 'object' ? deepClone(source.stationRotations) : null,
     testingMode: source.testingMode && typeof source.testingMode === 'object' ? deepClone(source.testingMode) : null,

@@ -3,6 +3,7 @@ window.ClassroomIntelligenceV68 = (() => {
   let observer = null;
   let activeScenario = 'balanced';
   let repairPreview = null;
+  let maxMovesOverride = 0;
 
   const SCENARIOS = Object.freeze({
     balanced: Object.freeze({
@@ -253,7 +254,8 @@ window.ClassroomIntelligenceV68 = (() => {
     const changes = [];
 
     try {
-      for (let step = 0; step < scenario().maxMoves; step += 1) {
+      const moveLimit=maxMovesOverride>0?Math.min(maxMovesOverride,scenario().maxMoves):scenario().maxMoves;
+      for (let step = 0; step < moveLimit; step += 1) {
         restoreAssignments(bestSnapshot);
         const ids = implicatedStudentIds(bestFindings).slice(0, 14);
         if (!ids.length) break;
@@ -373,6 +375,8 @@ window.ClassroomIntelligenceV68 = (() => {
     return `<div class="intelligence-blocker-list">${blockers.map(item => `<article class="planning-finding ${item.type === 'capacity' || item.type === 'student' ? 'bad' : 'warn'}"><div><strong>${escapeHtml(item.title)}</strong><span>${escapeHtml(item.detail)}</span></div></article>`).join('')}</div>`;
   }
 
+  function setScenario(id,options={}){const next=String(id||'balanced');if(!SCENARIOS[next])return false;activeScenario=next;maxMovesOverride=Math.max(0,Math.min(60,Number(options.maxMoves)||0));repairPreview=null;render();return true}
+
   function render() {
     const body = el('planningToolsBody');
     if (!body) return;
@@ -452,6 +456,7 @@ window.ClassroomIntelligenceV68 = (() => {
         const next = scenarioButton.dataset.intelligenceScenario;
         if (SCENARIOS[next]) {
           activeScenario = next;
+          maxMovesOverride = 0;
           repairPreview = null;
           render();
           if (typeof setLiveStatusMessage === 'function') setLiveStatusMessage(`${SCENARIOS[next].name} planning objective selected.`);
@@ -510,6 +515,7 @@ window.ClassroomIntelligenceV68 = (() => {
     explainBlockers,
     buildRepairPreview,
     applyRepairPreview,
+    setScenario,
     scenarios: () => Object.values(SCENARIOS).map(item => ({ ...item })),
     activeScenario: () => activeScenario
   });

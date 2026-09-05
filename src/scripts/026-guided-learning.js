@@ -1541,43 +1541,7 @@ const GuidedLearning = (() => {
     setHelpView(view);
   }
 
-  function insertContextButton({ id, targetSelector, lessonId, mode = 'explain', label = 'Guide me', position = 'after' }) {
-    const existing = el(id);
-    if (existing) {
-      existing.dataset.guidedStart = lessonId;
-      existing.dataset.guidedMode = mode;
-      existing.title = `Open the ${lessonById(lessonId).title} lesson`;
-      return;
-    }
-    const target = document.querySelector(targetSelector);
-    if (!target) return;
-    const button = document.createElement('button');
-    button.id = id;
-    button.type = 'button';
-    button.className = 'ghost tiny guided-context-button no-print';
-    button.textContent = label;
-    button.dataset.guidedStart = lessonId;
-    button.dataset.guidedMode = mode;
-    button.title = `Open the ${lessonById(lessonId).title} lesson`;
-    if (position === 'append') target.appendChild(button);
-    else if (position === 'prepend') target.prepend(button);
-    else target.insertAdjacentElement('afterend', button);
-  }
-
-  function installContextButtons() {
-    insertContextButton({ id: 'guideRosterBtn', targetSelector: '#classSetupImportPanel .class-setup-section-heading', lessonId: 'class-roster', mode: 'practice', position: 'append' });
-    insertContextButton({ id: 'guideRulesBtn', targetSelector: '#classSetupRulesPanel .class-setup-section-heading', lessonId: 'groups-rules-zones', mode: 'practice', position: 'append' });
-    insertContextButton({ id: 'guideRoomBtn', targetSelector: '#layoutToolsPanel .toolbar-header', lessonId: state.layoutMode === 'freeform' ? 'freeform-room' : 'grid-room', mode: 'practice', position: 'append' });
-    insertContextButton({ id: 'guideManualSeatingBtn', targetSelector: '.left-panel .panel-header', lessonId: 'manual-seating', mode: 'practice', position: 'append' });
-    insertContextButton({ id: 'guideRandomSeatingBtn', targetSelector: '#randomizeAllBtn', lessonId: 'random-seating', mode: 'practice' });
-    insertContextButton({ id: 'guideCandidatesBtn', targetSelector: '#seatingCandidateModal .panel-header', lessonId: 'best-fit-seating', mode: 'practice', position: 'append' });
-    insertContextButton({ id: 'guideTodayBtn', targetSelector: '#todayModeModal .panel-header', lessonId: 'today-mode', mode: 'practice', position: 'append' });
-    insertContextButton({ id: 'guideSavingBtn', targetSelector: '#saveSetupModal .panel-header', lessonId: 'save-recover', mode: 'practice', position: 'append' });
-    insertContextButton({ id: 'guidePrintBtn', targetSelector: '#printOptionsModal .panel-header', lessonId: 'print-share', mode: 'practice', position: 'append' });
-    insertContextButton({ id: 'guideGoogleBtn', targetSelector: '#settingsPageGoogle .settings-page-header', lessonId: 'google-connections', mode: 'explain', position: 'append' });
-    insertContextButton({ id: 'guideCollaborationBtn', targetSelector: '#sharedDriveModal .panel-header', lessonId: 'drive-collaboration', mode: 'explain', position: 'append' });
-    insertContextButton({ id: 'guideSecurityBtn', targetSelector: '#securitySetupWizardModal .panel-header', lessonId: 'security-privacy', mode: 'explain', position: 'append' });
-  }
+  function installContextButtons(){ /* Global Guided Help replaces repeated contextual Guide me buttons. */ }
 
   function resetProgress() {
     showInAppConfirm('Reset guided-learning progress on this browser? Practice classes are not deleted.', () => {

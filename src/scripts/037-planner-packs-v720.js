@@ -879,7 +879,7 @@ window.PlannerPacksV720 = (() => {
     }
 
     try { if (typeof persistActiveClass === 'function') persistActiveClass(); } catch (_) { /* best effort */ }
-    try { if (typeof scheduleLinkedFileAutosave === 'function') scheduleLinkedFileAutosave('planner-pack-apply'); } catch (_) { /* optional */ }
+    try { if (typeof scheduleLinkedAutoSave === 'function') scheduleLinkedAutoSave('planner-pack-apply'); } catch (_) { /* autosave integration is optional */ }
     try { if (typeof scheduleLinkedAutoSave === 'function') scheduleLinkedAutoSave('planner-pack-apply'); } catch (_) { /* optional */ }
     try { if (typeof renderAll === 'function') renderAll(); } catch (_) { /* UI refresh below */ }
     try { window.ActivityLayoutsV701?.refresh?.(); } catch (_) { /* optional */ }
@@ -968,7 +968,6 @@ window.PlannerPacksV720 = (() => {
 
   function importMarkup() {
     if (!importDraft) return `<div class="v720-import-empty"><strong>Import a Planner Pack file</strong><p>Choose a <code>.plannerpack.json</code> file. V7.2 validates the format and refuses structured student/roster data before it can enter the pack library.</p><button id="plannerPacksV720ChooseFileBtn" type="button">Choose pack file</button></div>`;
-    const counts = packCounts(importDraft);
     const existing = installedPacks.find(pack => String(pack.id) === String(importDraft.id));
     return `<div class="v720-import-preview"><header><div><span class="v720-kicker">Validated import</span><h3>${esc(importDraft.name)}</h3><p>${esc(importDraft.description || 'No description provided.')}</p></div><span class="pill">${packItemCount(importDraft)} items</span></header><div class="v720-component-chips">${componentSummaryMarkup(importDraft)}</div><div class="v720-meta-grid"><span>Publisher <b>${esc(importDraft.publisher || 'Not specified')}</b></span><span>Revision <b>${esc(importDraft.revision)}</b></span><span>License <b>${esc(importDraft.license)}</b></span><span>Floor-plan images <b>${importDraft.privacy.floorPlanImagesIncluded ? 'Included' : 'None'}</b></span></div>${importDraft.privacy.floorPlanImagesIncluded ? '<div class="v720-warning"><strong>Embedded image review required</strong><p>This pack contains one or more floor-plan images. Images can contain classroom or student-identifying information even though structured roster fields are blocked.</p></div>' : '<div class="successbox">No structured student/roster data was detected, and this pack contains no embedded floor-plan image.</div>'}<div class="button-row"><button id="plannerPacksV720InstallImportBtn" type="button">${existing ? 'Update installed pack' : 'Install in this browser'}</button><button id="plannerPacksV720DiscardImportBtn" class="secondary" type="button">Discard import</button></div><div class="hint">Installing a pack does not change the current classroom. Apply content separately from the Library tab.</div></div>`;
   }
@@ -1133,15 +1132,13 @@ window.PlannerPacksV720 = (() => {
     renderLibrary();
     renderBuilder();
     renderImport();
-    if (typeof openModalById === 'function') openModalById(MODAL_ID);
-    else modal.classList.add('show');
+    modal.classList.add('show');
   }
 
   function close() {
     const modal = document.getElementById(MODAL_ID);
     if (!modal) return;
-    if (typeof closeModalById === 'function') closeModalById(MODAL_ID);
-    else modal.classList.remove('show');
+    modal.classList.remove('show');
   }
 
   function ensureLaunchPoints() {
