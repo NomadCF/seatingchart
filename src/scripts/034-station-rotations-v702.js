@@ -487,6 +487,7 @@ window.StationRotationsV702 = (() => {
       const team = teamByStation.get(String(match.station.objectId));
       const badge = document.createElement('div');
       badge.className = OVERLAY_CLASS;
+      badge.style.pointerEvents = 'none';
       badge.setAttribute('aria-hidden', 'true');
       badge.innerHTML = `<span>${match.index + 1}</span><strong>${esc(match.station.name)}</strong><small>${team ? esc(team.name) : 'Open'}</small>`;
       node.classList.add('v702-station-active');

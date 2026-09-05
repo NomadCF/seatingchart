@@ -176,8 +176,12 @@ test('V7.0.2 station overlays and management UI stay coherent on desktop and mob
   await expect(page.locator('#stationRotationsV702Toolbar')).toHaveCount(1);
   await expect(page.locator('#stationRotationsV702QuickSelect')).toHaveCount(1);
   await expect(page.locator('.v702-station-overlay')).toHaveCount(3);
-  const overlayPointerEvents = await page.locator('.v702-station-overlay').first().evaluate(node => getComputedStyle(node).pointerEvents);
-  expect(overlayPointerEvents).toBe('none');
+  const overlayPointerEvents = await page.locator('.v702-station-overlay').first().evaluate(node => ({
+    inline:node.style.pointerEvents,
+    computed:getComputedStyle(node).pointerEvents
+  }));
+  expect(overlayPointerEvents.inline).toBe('none');
+  if (overlayPointerEvents.computed) expect(overlayPointerEvents.computed).toBe('none');
   const mountedNearActivityLayouts = await page.evaluate(() => {
     const rotation = document.getElementById('stationRotationsV702Toolbar');
     const activity = document.getElementById('activityLayoutsV701Toolbar');
