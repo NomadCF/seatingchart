@@ -31,8 +31,11 @@ replaceOnce(
   }
 `,
 `  function ensureStore({ reconcileActive = true } = {}) {
-    try { if (typeof ensureFreeformLayout === 'function') ensureFreeformLayout(); } catch (_) { /* no-op */ }
-    const layout = activeLayout();
+    let layout = activeLayout();
+    if (!layout) {
+      try { if (typeof ensureFreeformLayout === 'function') ensureFreeformLayout(); } catch (_) { /* no-op */ }
+      layout = activeLayout();
+    }
     if (!layout) return null;
     let store = layout.activityLayouts;
     if (!store?.[RUNTIME_STORE]) {
@@ -89,4 +92,4 @@ replaceOnce(
 );
 
 fs.writeFileSync(file, source);
-console.log('Fixed V7.0.1 Activity Layouts runtime store ownership, toolbar visibility, and shared station semantics.');
+console.log('Fixed V7.0.1 Activity Layouts runtime layout identity, toolbar visibility, and shared station semantics.');
