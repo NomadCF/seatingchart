@@ -1,0 +1,201 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nomadcf.github.io/seatingchart/schemas/planner-pack-v1.schema.json",
+  "title": "Classroom Seating Planner Pack v1",
+  "description": "Portable, non-roster classroom planning content for Classroom Seating Planner V7.2 and later. Runtime validation additionally refuses meaningful student, roster, assignment, and note fields anywhere in the document.",
+  "type": "object",
+  "required": ["format", "schemaVersion", "id", "name", "revision", "privacy", "contents"],
+  "properties": {
+    "format": { "const": "classroom-seating-planner-pack-v1" },
+    "schemaVersion": { "const": 1 },
+    "id": { "type": "string", "minLength": 1, "maxLength": 160 },
+    "name": { "type": "string", "minLength": 1, "maxLength": 100 },
+    "revision": { "type": "string", "minLength": 1, "maxLength": 40 },
+    "description": { "type": "string", "maxLength": 1200 },
+    "publisher": { "type": "string", "maxLength": 100 },
+    "license": { "type": "string", "maxLength": 100 },
+    "homepage": { "type": "string", "maxLength": 500 },
+    "tags": {
+      "type": "array",
+      "maxItems": 20,
+      "items": { "type": "string", "maxLength": 40 },
+      "uniqueItems": true
+    },
+    "createdAt": { "type": "string", "maxLength": 40 },
+    "updatedAt": { "type": "string", "maxLength": 40 },
+    "appVersion": { "type": "string", "maxLength": 40 },
+    "dataSchemaVersion": { "type": "integer", "minimum": 1 },
+    "fingerprint": { "type": "string", "maxLength": 160 },
+    "privacy": {
+      "type": "object",
+      "required": ["studentDataIncluded", "floorPlanImagesIncluded"],
+      "properties": {
+        "studentDataIncluded": { "const": false },
+        "floorPlanImagesIncluded": { "type": "boolean" },
+        "freeTextReviewed": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "contents": {
+      "type": "object",
+      "properties": {
+        "roomTemplates": {
+          "type": "array",
+          "maxItems": 40,
+          "items": { "$ref": "#/$defs/roomTemplate" }
+        },
+        "requirementPresets": {
+          "type": "array",
+          "maxItems": 80,
+          "items": { "$ref": "#/$defs/requirementPreset" }
+        },
+        "customObjects": {
+          "type": "array",
+          "maxItems": 80,
+          "items": { "$ref": "#/$defs/customObject" }
+        },
+        "activityLayouts": {
+          "type": "array",
+          "maxItems": 40,
+          "items": { "$ref": "#/$defs/activityLayout" }
+        },
+        "rotationBlueprints": {
+          "type": "array",
+          "maxItems": 30,
+          "items": { "$ref": "#/$defs/rotationBlueprint" }
+        },
+        "testingProfiles": {
+          "type": "array",
+          "maxItems": 20,
+          "items": { "$ref": "#/$defs/testingProfile" }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "roomTemplate": {
+      "type": "object",
+      "description": "A planner room-template record. Runtime export/import sanitization removes meaningful student assignments, roster links, student-specific distance rules, and note fields. Floor-plan image data is optional and must be explicitly included when a pack is built.",
+      "required": ["name"],
+      "properties": {
+        "id": { "type": "string", "maxLength": 160 },
+        "name": { "type": "string", "minLength": 1, "maxLength": 60 },
+        "rows": { "type": "integer", "minimum": 1, "maximum": 30 },
+        "cols": { "type": "integer", "minimum": 1, "maximum": 30 },
+        "cells": { "type": "object" },
+        "layoutMode": { "enum": ["grid", "freeform"] },
+        "freeformLayout": { "type": ["object", "null"] },
+        "zones": { "type": "array" },
+        "customObjects": { "type": "array" },
+        "description": { "type": "string", "maxLength": 500 },
+        "librarySource": { "type": "string", "maxLength": 160 },
+        "shared": { "type": "boolean" },
+        "createdAt": { "type": "string", "maxLength": 40 }
+      },
+      "additionalProperties": true
+    },
+    "requirementPreset": {
+      "type": "object",
+      "required": ["name", "requirements"],
+      "properties": {
+        "id": { "type": "string", "maxLength": 160 },
+        "name": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "description": { "type": "string", "maxLength": 500 },
+        "requirements": {
+          "type": "object",
+          "properties": {
+            "front": { "enum": ["none", "prefer", "require"] },
+            "side": { "enum": ["none", "left", "right"] },
+            "nearTeacher": { "type": "boolean" },
+            "aisle": { "type": "boolean" },
+            "ada": { "type": "boolean" },
+            "awayDoor": { "type": "boolean" },
+            "awayWindow": { "type": "boolean" },
+            "preferredZoneIds": { "type": "array", "maxItems": 0 },
+            "excludedZoneIds": { "type": "array", "maxItems": 0 },
+            "minDistanceStudentIds": { "type": "array", "maxItems": 0 }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "customObject": {
+      "type": "object",
+      "required": ["type", "label"],
+      "properties": {
+        "type": { "type": "string", "minLength": 1, "maxLength": 60 },
+        "label": { "type": "string", "minLength": 1, "maxLength": 40 }
+      },
+      "additionalProperties": true
+    },
+    "activityLayout": {
+      "type": "object",
+      "required": ["name", "sourceCanvas", "objects", "groups"],
+      "properties": {
+        "id": { "type": "string", "maxLength": 160 },
+        "name": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "preset": { "type": "string", "maxLength": 40 },
+        "description": { "type": "string", "maxLength": 500 },
+        "sourceCanvas": {
+          "type": "object",
+          "required": ["width", "height"],
+          "properties": {
+            "width": { "type": "number", "minimum": 400, "maximum": 12000 },
+            "height": { "type": "number", "minimum": 300, "maximum": 12000 }
+          },
+          "additionalProperties": false
+        },
+        "objects": { "type": "array", "maxItems": 1000, "items": { "type": "object" } },
+        "groups": { "type": "array", "maxItems": 60, "items": { "type": "object" } }
+      },
+      "additionalProperties": false
+    },
+    "rotationBlueprint": {
+      "type": "object",
+      "required": ["name", "durationMinutes", "transitionMinutes", "teamSource", "teamCount", "stations"],
+      "properties": {
+        "id": { "type": "string", "maxLength": 160 },
+        "name": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "activityLayoutName": { "type": "string", "maxLength": 80 },
+        "durationMinutes": { "type": "number", "minimum": 1, "maximum": 180 },
+        "transitionMinutes": { "type": "number", "minimum": 0, "maximum": 30 },
+        "teamSource": { "enum": ["balanced", "classroom-groups"] },
+        "teamCount": { "type": "number", "minimum": 1, "maximum": 24 },
+        "stations": {
+          "type": "array",
+          "maxItems": 24,
+          "items": {
+            "type": "object",
+            "required": ["name", "instructions", "sourceObjectType", "sourceObjectLabel", "order"],
+            "properties": {
+              "name": { "type": "string", "minLength": 1, "maxLength": 80 },
+              "instructions": { "type": "string", "maxLength": 500 },
+              "sourceObjectType": { "type": "string", "maxLength": 40 },
+              "sourceObjectLabel": { "type": "string", "maxLength": 80 },
+              "order": { "type": "integer", "minimum": 0, "maximum": 23 }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "testingProfile": {
+      "type": "object",
+      "required": ["name", "spacing", "unit", "preserveLocked", "respectNeeds", "keepExtraSeatsNearEdges"],
+      "properties": {
+        "id": { "type": "string", "maxLength": 160 },
+        "name": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "spacing": { "type": "number", "exclusiveMinimum": 0 },
+        "unit": { "enum": ["ft", "m", "seat-widths"] },
+        "preserveLocked": { "type": "boolean" },
+        "respectNeeds": { "type": "boolean" },
+        "keepExtraSeatsNearEdges": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    }
+  }
+}

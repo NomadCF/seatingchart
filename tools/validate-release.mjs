@@ -13,10 +13,13 @@ for (const file of [
   'manifest.webmanifest',
   'service-worker.js',
   'schemas/roster-import-v1.schema.json',
-  'schemas/planner-command-v1.schema.json'
+  'schemas/planner-command-v1.schema.json',
+  'schemas/planner-pack-v1.schema.json'
 ]) {
   if (!fs.existsSync(path.join(root, file))) throw new Error(`Missing required source/release asset: ${file}`);
 }
+
+JSON.parse(fs.readFileSync(path.join(root, 'schemas', 'planner-pack-v1.schema.json'), 'utf8'));
 
 const manifest = JSON.parse(fs.readFileSync(path.join(root, 'src', 'manifest.json'), 'utf8'));
 for (let i = 1; i <= Number(manifest.styleFiles || 0); i += 1) {
@@ -39,7 +42,7 @@ const built = normalize(fs.readFileSync(path.join(root, 'dist', 'Classroom-Seati
 
 const required = [
   ['doctype', /^\s*<!doctype html>/i.test(built)],
-  ['V7.1.0 app version metadata', /name=["']app-version["']\s+content=["']7\.1\.0["']/i.test(built)],
+  ['V7.2.0 app version metadata', /name=["']app-version["']\s+content=["']7\.2\.0["']/i.test(built)],
   ['manifest link', /rel=["']manifest["']/i.test(built)],
   ['service worker registration', /serviceWorker\.register\(/.test(built)],
   ['analytics consent default remains granted', /analytics_storage\s*:\s*['"]granted['"]/.test(built)],
@@ -84,7 +87,13 @@ const required = [
   ['V7.1 public planner command contract present', /classroom-seating-planner-command-v1/.test(built)],
   ['V7.1 explicit preview and apply UI present', /plannerAssistantV710PreviewBtn/.test(built) && /plannerAssistantV710ApplyBtn/.test(built)],
   ['V7.1 ambiguity guard present', /Student name needs clarification/.test(built)],
-  ['V7.1 no external AI provider dependency', !/openai\.com\/v1|anthropic\.com\/v1|generativelanguage\.googleapis\.com/.test(built)]
+  ['V7.1 no external AI provider dependency', !/openai\.com\/v1|anthropic\.com\/v1|generativelanguage\.googleapis\.com/.test(built)],
+  ['V7.2 Planner Packs engine present', /PlannerPacksV720/.test(built)],
+  ['V7.2 public Planner Pack contract present', /classroom-seating-planner-pack-v1/.test(built)],
+  ['V7.2 personal-data import guard present', /FORBIDDEN_PERSONAL_KEYS/.test(built) && /studentDataIncluded/.test(built)],
+  ['V7.2 floor-plan image opt-in present', /plannerPacksV720IncludeImages/.test(built)],
+  ['V7.2 Activity Layout seat-count guard present', /Seat counts must match so student assignments are not silently changed/.test(built)],
+  ['V7.2 rotation station identity matching present', /matchRotationStations/.test(built)]
 ];
 
 for (const [name, ok] of required) {

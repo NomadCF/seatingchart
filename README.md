@@ -9,7 +9,7 @@ A free, open-source, privacy-conscious seating planner for educators. Design the
 
 [**Launch the hosted app**](https://nomadcf.github.io/seatingchart/) · [Privacy](PRIVACY.md) · [Security](SECURITY.md) · [Data handling](DATA-HANDLING.md) · [Changelog](CHANGELOG.md)
 
-![Version](https://img.shields.io/badge/version-7.1.0-2563eb?style=flat-square)
+![Version](https://img.shields.io/badge/version-7.2.0-2563eb?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-0f766e?style=flat-square)
 ![PWA](https://img.shields.io/badge/PWA-installable-7c3aed?style=flat-square)
 ![Local-first](https://img.shields.io/badge/data-local--first-0f766e?style=flat-square)
@@ -25,6 +25,12 @@ A classroom rarely fits into a perfect grid, and students rarely come with no co
 Classroom Seating Planner is built for the messy version of the problem: students who need the front, students who should be separated, groups that should stay together or spread out, accessible seating, room zones, fixed objects, temporary absences, substitute-friendly charts, and plans that should not repeat the same placements forever.
 
 The app combines **room design**, **student rules**, **manual placement**, **automatic plan generation**, **Classroom Intelligence**, **conflict review**, **history and fairness analysis**, and **privacy-controlled sharing** in one workflow.
+
+### V7.2.0 Planner Packs
+
+Package reusable classroom-planning knowledge without packaging the class itself. Planner Packs are portable JSON files that can contain room templates, student-need presets, custom room-object definitions, Activity Layouts, Station Rotation blueprints, and Testing Mode defaults. Build a pack from the current planner, install shared packs into a browser-local library, preview exactly what will be added, and apply only selected component types.
+
+V7.2 is deliberately privacy-guarded: generated packs strip seat assignments, roster/student IDs, private/substitute/public notes, student-to-zone links, and student-specific distance relationships. Floor-plan images are excluded by default and require explicit opt-in. Imported files declaring or carrying meaningful structured student data are refused. Pack names, descriptions, labels, and station instructions remain free text, so teachers should review that text before sharing. Packs work offline, require no account or server, and can be shared through Drive, email, GitHub, a district repository, or any normal file channel.
 
 ### V7.1.0 Planner Assistant
 

@@ -74,7 +74,7 @@ async function seedPlannerRoom(page) {
 test('V7.1.0 exposes a deterministic command schema and refuses ambiguous student names', async ({ page }) => {
   await ready(page);
   await seedPlannerRoom(page);
-  await expect(page.locator('meta[name="app-version"]')).toHaveAttribute('content', '7.1.0');
+  await expect(page.locator('meta[name="app-version"]')).toHaveAttribute('content', '7.2.0');
   const result = await page.evaluate(() => {
     const assistant = window.PlannerAssistantV710;
     return {
