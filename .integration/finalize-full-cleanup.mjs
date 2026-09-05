@@ -12,6 +12,8 @@ replaceChecked('src/scripts/000-core.js', "version: '7.2.0'", "version: '7.2.1'"
 replaceChecked('src/index.template.html', 'meta name="app-version" content="7.2.0"', 'meta name="app-version" content="7.2.1"');
 replaceChecked('package.json', '"version": "7.2.0"', '"version": "7.2.1"');
 replaceChecked('service-worker.js', "classroom-seating-planner-v7.2.0-pwa1", "classroom-seating-planner-v7.2.1-pwa1");
+replaceChecked('tools/validate-release.mjs', 'V7.2.0 app version metadata', 'V7.2.1 app version metadata');
+replaceChecked('tools/validate-release.mjs', '7\\.2\\.0', '7\\.2\\.1');
 
 for (const file of fs.readdirSync('tests/browser').filter(name => name.endsWith('.mjs'))) {
   const path = `tests/browser/${file}`;
