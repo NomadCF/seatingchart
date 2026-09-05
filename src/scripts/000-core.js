@@ -3,12 +3,12 @@
 const APP_CONFIG = Object.freeze({
   name: 'Classroom Seating Planner',
   shortName: 'Seating Planner',
-  version: '7.0.0',
+  version: '7.0.1',
   copyrightHolder: 'Chris L. Franklin',
   copyrightYear: '2026',
   releaseDate: '2026-09-04',
   releaseDateDisplay: 'September 4, 2026',
-  buildDate: '2026-09-05T00:35:00Z',
+  buildDate: '2026-09-05T01:15:00Z',
   commit: 'local',
   environment: 'production',
   dataSchemaVersion: 13,
@@ -266,6 +266,7 @@ const APP_LICENSE = {
 };
 
 const PROJECT_FEATURES = [
+  { title: 'Activity Layouts', text: 'Keep multiple named Freeform room arrangements for different lesson formats, switch without changing the shared physical room, duplicate or reflow arrangements from six classroom starters, and compare movement visually before resetting the room.' },
   { title: 'Classroom Digital Twin', text: 'Give Freeform rooms real dimensions, use scaled grids and rulers, align a floor-plan reference image, measure physical distances, and add fixed classroom furniture while preserving existing seating assignments and Freeform interactions.' },
   { title: 'Grouped seating visual language', text: 'Freeform tables, pods, seats, presentation views, printed charts, copied chart images, and plan comparisons share a clearer grouped-seating treatment with subtle pod boundaries, deliberate open-seat states, compact status cues, and zoom-aware readability.' },
   { title: 'Classroom Intelligence', text: 'Choose a planning objective, inspect plan health and concrete blockers, preview the smallest useful seating repair before applying it, and favor fairness or stability without hiding the underlying teacher-defined rules.' },
@@ -3326,6 +3327,7 @@ function normalizeFreeformLayout(layout) {
   return {
     initialized: source.initialized === true || objects.length > 0,
     physicalRoom: normalizePhysicalRoomRecord(source.physicalRoom, canvas),
+    activityLayouts: source.activityLayouts && typeof source.activityLayouts === 'object' ? deepClone(source.activityLayouts) : null,
     canvas: {
       width: clampNumber(canvas.width ?? 2800, 400, 12000),
       height: clampNumber(canvas.height ?? 1800, 300, 12000),

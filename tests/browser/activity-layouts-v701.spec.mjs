@@ -57,6 +57,7 @@ async function seedFreeform(page) {
     };
     resetFreeformGeometryCache?.();
     renderAll();
+    document.body.classList.toggle('freeform-layout-mode', state.layoutMode === 'freeform');
     window.ActivityLayoutsV701?.afterReady?.();
   });
   await page.waitForTimeout(250);
@@ -173,8 +174,15 @@ test('V7.0.1 duplication and visual comparison report meaningful geometry change
 test('V7.0.1 activity layout controls stay usable on desktop and mobile', async ({ page }) => {
   await ready(page);
   await seedFreeform(page);
-  await expect(page.locator('#activityLayoutsV701Toolbar')).toBeVisible();
+  const toolbar = page.locator('#activityLayoutsV701Toolbar');
+  await expect(toolbar).toHaveCount(1);
   await expect(page.locator('#activityLayoutsV701QuickSelect')).toHaveCount(1);
+  const mountedWithDigitalTwin = await page.evaluate(() => {
+    const toolbar = document.getElementById('activityLayoutsV701Toolbar');
+    const launcher = document.getElementById('openDigitalTwinV700Btn');
+    return Boolean(toolbar && launcher && toolbar.parentElement === launcher.parentElement);
+  });
+  expect(mountedWithDigitalTwin).toBeTruthy();
   await page.evaluate(() => window.ActivityLayoutsV701.open());
   const modal = page.locator('#activityLayoutsV701Modal');
   await expect(modal).toHaveClass(/\bshow\b/);

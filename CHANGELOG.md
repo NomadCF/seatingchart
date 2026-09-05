@@ -1,3 +1,14 @@
+## 7.0.1 - 2026-09-04
+
+### Activity Layouts
+- Added multiple named Freeform arrangements inside one classroom while keeping physical room dimensions, floor-plan backgrounds, and fixed room features shared.
+- Added six starter arrangements: Direct Instruction, Group Work, Discussion Circle, Lab / Stations, Independent Work, and Testing.
+- Added quick switching, duplication, rename, delete, and explicit save-current-geometry actions.
+- Matching Freeform seat assignments and lock state carry across arrangement switches so room changes do not silently reseat students.
+- Added visual side-by-side arrangement comparison with moved/added/removed object counts and physical movement totals when room scale is enabled.
+- Added responsive desktop/mobile controls and kept Presentation mode and print output free of arrangement-management UI.
+- Activity-layout metadata is additive inside Freeform layout data; planner data schema remains 13 and encryption envelope remains 3.
+
 ## 7.0.0 - 2026-09-04
 
 ### Classroom Digital Twin foundation

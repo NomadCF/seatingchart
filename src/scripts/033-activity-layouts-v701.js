@@ -7,9 +7,10 @@ window.ActivityLayoutsV701 = (() => {
   const MODAL_ID = 'activityLayoutsV701Modal';
   const COMPARE_MODAL_ID = 'activityLayoutsV701CompareModal';
   const TOOLBAR_ID = 'activityLayoutsV701Toolbar';
+  const RUNTIME_STORE = Symbol('activityLayoutsV701RuntimeStore');
   const SHARED_PHYSICAL_TYPES = new Set([
     'door', 'wall', 'window', 'projector', 'board', 'carpet', 'ada', 'blocked',
-    'shelf', 'cabinet', 'lab', 'sink', 'walkway'
+    'shelf', 'cabinet', 'lab', 'sink', 'station', 'walkway'
   ]);
   const PRESETS = Object.freeze([
     Object.freeze({ id:'direct', name:'Direct Instruction', short:'Rows', description:'Front-facing rows for whole-group instruction and demonstrations.' }),
@@ -134,12 +135,30 @@ window.ActivityLayoutsV701 = (() => {
     return { version:STORE_VERSION, activeId, layouts };
   }
 
-  function ensureStore(options = {}) {
-    try { if (typeof ensureFreeformLayout === 'function') ensureFreeformLayout(); } catch (_) { /* no-op */ }
-    const layout = activeLayout();
+  function ensureStore({ reconcileActive = true } = {}) {
+    let layout = activeLayout();
+    if (!layout) {
+      try { if (typeof ensureFreeformLayout === 'function') ensureFreeformLayout(); } catch (_) { /* no-op */ }
+      layout = activeLayout();
+    }
     if (!layout) return null;
-    layout.activityLayouts = normalizeStore(layout, options);
-    return layout.activityLayouts;
+    let store = layout.activityLayouts;
+    if (!store?.[RUNTIME_STORE]) {
+      store = normalizeStore(layout, { reconcileActive });
+      Object.defineProperty(store, RUNTIME_STORE, { value:true, enumerable:false, configurable:false });
+      layout.activityLayouts = store;
+      return store;
+    }
+    if (reconcileActive && layout.objects?.length) {
+      const current = store.layouts.find(entry => entry.id === store.activeId);
+      if (current) {
+        const live = captureArrangement(layout);
+        current.objects = live.objects;
+        current.groups = live.groups;
+        current.updatedAt = nowIso();
+      }
+    }
+    return store;
   }
 
   function activeEntry(store = ensureStore({ reconcileActive:true })) {
@@ -346,9 +365,7 @@ window.ActivityLayoutsV701 = (() => {
 
   function arrangeLab(objects, bounds) {
     const seats = objects.filter(object => object.type === 'seat');
-    const anchors = list(activeLayout()?.objects).filter(object => ['lab','sink'].includes(String(object.type || '')));
-    const localStations = objects.filter(object => object.type === 'station');
-    const stationAnchors = [...anchors, ...localStations];
+    const stationAnchors = list(activeLayout()?.objects).filter(object => ['lab','sink','station'].includes(String(object.type || '')));
     if (!stationAnchors.length) {
       arrangeRows(objects, bounds, { paddingX:0.14, paddingY:0.16, stagger:true, density:0.88 });
       return;
@@ -614,12 +631,14 @@ window.ActivityLayoutsV701 = (() => {
     if (!toolbar) return;
     const layout = activeLayout();
     if (!layout || state?.layoutMode !== 'freeform') {
+      toolbar.style.display = 'none';
       toolbar.innerHTML = '';
       return;
     }
     const store = ensureStore({ reconcileActive:true });
     if (!store) return;
     toolbar.innerHTML = toolbarMarkup(store);
+    toolbar.style.display = 'inline-flex';
   }
 
   function modalMarkup() {
