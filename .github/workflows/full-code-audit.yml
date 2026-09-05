@@ -5,6 +5,7 @@ on:
     branches: [audit/full-code-cleanup-v720]
     paths:
       - '.integration/full-code-audit.mjs'
+      - '.integration/apply-full-cleanup.mjs'
       - '.github/workflows/full-code-audit.yml'
       - 'src/**'
       - 'docs/**'
@@ -12,25 +13,48 @@ on:
       - 'package.json'
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   audit:
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           ref: audit/full-code-cleanup-v720
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
       - name: Install audit dependencies
         run: npm install --no-save --no-package-lock eslint @eslint/js globals acorn acorn-walk postcss postcss-selector-parser
-      - name: Run full static audit
-        run: node .integration/full-code-audit.mjs
-      - name: Trace suspicious globals and unused declarations
+      - name: Apply targeted cleanup
+        run: node .integration/apply-full-cleanup.mjs
+      - name: Rebuild generated single-file product
         run: |
-          echo '=== suspicious symbol references ==='
-          grep -RInE 'linkedSaveAutosave|scheduleLinkedFileAutosave|openModalById|closeModalById|setLayoutMode' src/scripts || true
-          echo '=== unused declaration references ==='
-          grep -RInE 'normalizePhysicalRoomRecord|groupCounts|needIssuesFor|function .*normalize|counts' src/scripts/000-core.js src/scripts/030-interoperability-v69.js src/scripts/035-testing-mode-v703.js src/scripts/036-planner-assistant-v710.js src/scripts/037-planner-packs-v720.js || true
+          npm run build
+          cp dist/Classroom-Seating-Planner.html index.html
+      - name: Run full static audit after cleanup
+        run: node .integration/full-code-audit.mjs
+      - name: Verify invalid legacy references are gone
+        run: |
+          if grep -RInE 'linkedSaveAutosave|scheduleLinkedFileAutosave|openModalById|closeModalById|setLayoutMode' src/scripts; then
+            echo 'Stale function reference remains.' >&2
+            exit 1
+          fi
+      - name: Run release validation
+        run: |
+          npm test
+          node --check service-worker.js
+      - name: Commit cleanup product changes
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src index.html README.md docs/WCAG-2.2-AA-AUDIT.md docs/IMPLEMENTATION_PLAN.md
+          if git diff --cached --quiet; then
+            echo 'No cleanup changes to commit.'
+          else
+            git commit -m 'Clean dead code and stale references'
+            git push origin HEAD:audit/full-code-cleanup-v720
+          fi
