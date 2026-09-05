@@ -6,6 +6,7 @@ import { execFileSync } from 'node:child_process';
 const root = process.cwd();
 const normalize = s => s.replace(/\r\n/g, '\n');
 const deployed = normalize(fs.readFileSync(path.join(root, 'index.html'), 'utf8'));
+const packageVersion = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8')).version;
 
 for (const file of [
   'src/index.template.html',
@@ -39,10 +40,11 @@ for (const file of scriptFiles) {
 
 execFileSync(process.execPath, ['tools/build-single-file.mjs'], { cwd: root, stdio: 'inherit' });
 const built = normalize(fs.readFileSync(path.join(root, 'dist', 'Classroom-Seating-Planner.html'), 'utf8'));
+const escapedVersion = String(packageVersion).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 const required = [
   ['doctype', /^\s*<!doctype html>/i.test(built)],
-  ['V7.2.1 app version metadata', /name=["']app-version["']\s+content=["']7\.2\.1["']/i.test(built)],
+  [`V${packageVersion} app version metadata`, new RegExp(`name=["']app-version["']\\s+content=["']${escapedVersion}["']`, 'i').test(built)],
   ['manifest link', /rel=["']manifest["']/i.test(built)],
   ['service worker registration', /serviceWorker\.register\(/.test(built)],
   ['analytics consent default remains granted', /analytics_storage\s*:\s*['"]granted['"]/.test(built)],
@@ -93,7 +95,9 @@ const required = [
   ['V7.2 personal-data import guard present', /FORBIDDEN_PERSONAL_KEYS/.test(built) && /studentDataIncluded/.test(built)],
   ['V7.2 floor-plan image opt-in present', /plannerPacksV720IncludeImages/.test(built)],
   ['V7.2 Activity Layout seat-count guard present', /Seat counts must match so student assignments are not silently changed/.test(built)],
-  ['V7.2 rotation station identity matching present', /matchRotationStations/.test(built)]
+  ['V7.2 rotation station identity matching present', /matchRotationStations/.test(built)],
+  ['V8 interface engine present', /InterfaceV800/.test(built)],
+  ['V8 five-workspace navigation present', /data-v8-workspace/.test(built) && /Class workspace/.test(built) && /Plans & activities/.test(built)]
 ];
 
 for (const [name, ok] of required) {
