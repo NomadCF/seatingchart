@@ -17,6 +17,8 @@ jobs:
           node-version: 24
       - name: Integrate V7.0.1 source changes
         run: node tools/integrate-v701.mjs
+      - name: Apply V7.0.1 runtime fixes
+        run: node tools/fix-v701-runtime.mjs
       - name: Install dependencies
         run: npm install --no-package-lock
       - name: Build single-file application
