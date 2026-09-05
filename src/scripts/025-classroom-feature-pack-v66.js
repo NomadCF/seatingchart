@@ -12,7 +12,8 @@ window.ClassroomFeaturePackV66 = (() => {
     window.PhysicalTablePodsV682,
     window.InteroperabilityV69,
     window.ClassroomDigitalTwinV700,
-    window.ActivityLayoutsV701
+    window.ActivityLayoutsV701,
+    window.StationRotationsV702
   ].filter(Boolean);
 
   function install() {
@@ -23,7 +24,7 @@ window.ClassroomFeaturePackV66 = (() => {
 
   function afterReady() {
     modules().forEach(module => module.afterReady?.());
-    document.body.dataset.featurePack = '7.0.1';
+    document.body.dataset.featurePack = '7.0.2';
   }
 
   return Object.freeze({ install, afterReady });

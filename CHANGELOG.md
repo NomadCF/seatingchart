@@ -1,3 +1,15 @@
+## 7.0.2 - 2026-09-04
+
+### Station Rotations
+- Added station-rotation plans that run on top of the existing Freeform Classroom Digital Twin without changing seat assignments.
+- Activity Stations, Lab Stations, and tables can be selected as explicit rotation destinations.
+- Added size-balanced rotation teams from the active roster plus an option to seed teams from existing classroom groups; each student is assigned to at most one rotation team.
+- Today Mode absences are excluded whenever rotation teams are created or rebuilt.
+- Added deterministic round schedules, previous/next round controls, per-station timers, optional transition timers, and visible team-at-station badges on the room.
+- Rotation plans remember the Activity Layout they were created for and can switch back to that arrangement explicitly when the current room arrangement differs.
+- Added create, select, duplicate, rename, delete, rebuild-team, and saved-plan management with responsive desktop/mobile UI.
+- Station rotation metadata is additive inside Freeform layout data; planner data schema remains 13 and encryption envelope remains 3.
+
 ## 7.0.1 - 2026-09-04
 
 ### Activity Layouts
