@@ -6,7 +6,7 @@
   <meta name="license" content="MIT License" />
   <meta name="spdx-license-identifier" content="MIT" />
   <meta name="copyright" content="Copyright (c) 2026 Chris L. Franklin" />
-  <meta name="app-version" content="7.2.0" />
+  <meta name="app-version" content="7.2.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com https://www.paypalobjects.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://www.googleapis.com https://classroom.googleapis.com https://accounts.google.com https://www.paypal.com https://www.paypalobjects.com https://www.google-analytics.com https://*.google-analytics.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://www.paypal.com; img-src 'self' data: blob: https://www.paypalobjects.com https://www.google-analytics.com; font-src 'self' data:; worker-src 'self' blob:; manifest-src 'self'; media-src 'none'; object-src 'none'; base-uri 'none'; form-action 'self' https://www.paypal.com" />
   <meta name="application-name" content="Classroom Seating Planner" />
@@ -6724,7 +6724,7 @@ body.visibility-mode.vis-hide-wizard .guided-context-button{display:none
 const APP_CONFIG = Object.freeze({
   name: 'Classroom Seating Planner',
   shortName: 'Seating Planner',
-  version: '7.2.0',
+  version: '7.2.1',
   copyrightHolder: 'Chris L. Franklin',
   copyrightYear: '2026',
   releaseDate: '2026-09-05',
@@ -31878,7 +31878,7 @@ const DistrictIntegrationsV57 = (() => {
     if(classroomToken&&Date.now()<classroomTokenExpiresAt-60000)return classroomToken;
     if(!interactive)throw new Error('Google Classroom needs a fresh sign-in.');
     await loadGoogleIdentityServicesScript(); const clientId=googleDriveConfig().clientId; if(!clientId)throw new Error('Configure a Google OAuth Client ID under Saving first.');
-    return new Promise((resolve,reject)=>{const client=google.accounts.oauth2.initTokenClient({client_id:clientId,scope:GOOGLE_CLASSROOM_SCOPES,prompt:'',callback:response=>{if(response?.error){reject(new Error(response.error_description||response.error));return;}classroomToken=response.access_token||'';classroomTokenExpiresAt=Date.now()+Number(response.expires_in||3600)*1000;resolve(classroomToken);}});client.requestAccessToken({prompt:'consent'});});
+    return new Promise((resolve,reject)=>{const client=window.google.accounts.oauth2.initTokenClient({client_id:clientId,scope:GOOGLE_CLASSROOM_SCOPES,prompt:'',callback:response=>{if(response?.error){reject(new Error(response.error_description||response.error));return;}classroomToken=response.access_token||'';classroomTokenExpiresAt=Date.now()+Number(response.expires_in||3600)*1000;resolve(classroomToken);}});client.requestAccessToken({prompt:'consent'});});
   }
   async function classroomFetch(url) {
     const token = await ensureClassroomToken(true);
