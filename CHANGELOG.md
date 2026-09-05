@@ -1,3 +1,20 @@
+## 8.0.0 - 2026-09-05
+
+### Complete interface overhaul
+- Reorganized Classroom Seating Planner around five focused workspaces: **Class**, **Room**, **Seat**, **Plans**, and **Review**.
+- Replaced the old five-stage workflow strip with a compact desktop navigation rail and mobile bottom navigation.
+- Added a contextual workspace bar that exposes only the primary actions relevant to the current task instead of showing every tool at once.
+- Consolidated roster, notes, groups/rules, zones, and imports into Class; room geometry and Freeform/Grid tools into Room; student placement and conflict work into Seat; saved/alternate plans and activity tools into Plans; and final analysis, Presentation Mode, print/export, save/share into Review.
+- Reduced desktop clutter by hiding unrelated side panels, toolbars, and secondary controls outside their canonical workspace.
+- Reworked mobile navigation so roster and review detail panels appear as secondary sheet-style surfaces while the classroom canvas remains usable and pannable.
+- Preserved seat zoom and seat text-size controls anywhere seating is visible.
+- Preserved automatic Design Mode shutdown when leaving Room and kept Presentation Mode locked to Review.
+- Kept Planner Assistant and Settings globally recoverable while removing repeated contextual Guide me controls.
+- Continued the rounded table/pod, student-tile, clear-empty-seat, compact-status visual language without changing planner save data.
+- Added dedicated V8 desktop/mobile regression coverage for workspace navigation, isolation, mobile sheets, Design Mode lifecycle, global Assistant/Settings access, viewport overflow, and chart display controls.
+- Existing classroom, encryption, Google Drive/Classroom, Planner Assistant, planning, sharing, save, export, and data-schema engines remain intact.
+- Planner data schema remains 13 and encryption envelope remains 3.
+
 ## 7.3.0 - 2026-09-05
 
 ### Planner Assistant workspace

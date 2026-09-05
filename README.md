@@ -9,7 +9,7 @@ A free, open-source, privacy-conscious seating planner for educators. Design the
 
 [**Launch the hosted app**](https://nomadcf.github.io/seatingchart/) · [Privacy](PRIVACY.md) · [Security](SECURITY.md) · [Data handling](DATA-HANDLING.md) · [Changelog](CHANGELOG.md)
 
-![Version](https://img.shields.io/badge/version-7.2.0-2563eb?style=flat-square)
+![Version](https://img.shields.io/badge/version-8.0.0-2563eb?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-0f766e?style=flat-square)
 ![PWA](https://img.shields.io/badge/PWA-installable-7c3aed?style=flat-square)
 ![Local-first](https://img.shields.io/badge/data-local--first-0f766e?style=flat-square)
@@ -82,7 +82,7 @@ Core local use does not require a subscription or a continuously running applica
 
 ---
 
-## A five-stage classroom workflow
+## Five focused workspaces
 
 <p align="center">
   <img src="docs/media/workflow.svg" alt="Five-stage Classroom Seating Planner workflow: Class Setup, Room Design, Seat Students, Review, and Save and Share" width="100%">
@@ -94,7 +94,7 @@ Core local use does not require a subscription or a continuously running applica
 4. **Review** - Check unassigned students, rule violations, accessibility, group outcomes, layout problems, history, and fairness.
 5. **Save & Share** - Save securely, create backups, print audience-specific charts, export data, or create purpose-limited read-only packages.
 
-The workflow is intentionally guided, but teachers can still move between stages as the classroom changes.
+The V8 interface keeps these areas focused while teachers can move between workspaces whenever the classroom changes.
 
 ---
 

@@ -3,7 +3,7 @@
 const APP_CONFIG = Object.freeze({
   name: 'Classroom Seating Planner',
   shortName: 'Seating Planner',
-  version: '7.3.0',
+  version: '8.0.0',
   copyrightHolder: 'Chris L. Franklin',
   copyrightYear: '2026',
   releaseDate: '2026-09-05',
@@ -297,6 +297,24 @@ const PROJECT_FEATURES = [
 ];
 
 const RELEASE_HISTORY = [
+  {
+    version: '8.0.0',
+    date: 'September 5, 2026',
+    title: 'Focused five-workspace interface overhaul',
+    current: true,
+    changes: [
+      'Reorganized the application around five canonical workspaces: Class, Room, Seat, Plans, and Review.',
+      'Replaced the old workflow strip with a focused desktop navigation rail and mobile bottom navigation.',
+      'Added a contextual action bar so each workspace shows only the actions relevant to the current task.',
+      'Reduced interface clutter by isolating roster/rule tools, room-design tools, seating actions, planning tools, and final review/share controls into their canonical workspaces.',
+      'Moved mobile roster and review details into secondary sheet-style surfaces instead of squeezing desktop side panels into the phone layout.',
+      'Kept seat zoom and seat text-size controls available anywhere the chart is visible and preserved mobile room panning.',
+      'Kept Planner Assistant and Settings globally recoverable while suppressing repeated contextual Guide me controls.',
+      'Preserved Presentation Mode as a locked Review experience and preserved automatic Design Mode shutdown when leaving Room.',
+      'Promoted the rounded table/pod and student-tile visual language across planning and review surfaces without changing saved seating data.',
+      'Added dedicated desktop and mobile V8 regression coverage for navigation, workspace isolation, Design Mode lifecycle, zoom/text controls, Assistant/Settings access, overflow, and mobile secondary panels.'
+    ]
+  },
   {
     version: '7.3.0',
     date: 'September 5, 2026',
