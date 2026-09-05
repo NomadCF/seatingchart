@@ -1,3 +1,20 @@
+## 7.3.0 - 2026-09-05
+
+### Planner Assistant workspace
+- Expanded Planner Assistant from a command bar into a first-class planning workspace with a persistent class-scoped working plan and short conversational context.
+- Added broader natural-language handling and follow-up requests such as “Keep Maya near the front” followed by “But not next to Noah.”
+- Added candidate-seat discovery, ranked options, current-versus-proposed seat comparison, explicit candidate application, and follow-ups such as “Use the second one.”
+- Added chart-health, hardest-to-seat, unseated-student, rule-pressure, repair-priority, and fairness analysis using the planner’s existing seating and rule engines.
+- Added compound Testing Mode planning that can preserve locked seats and accessibility placements, maximize practical spacing, and report what cannot fit before applying changes.
+- Added direct Assistant access to named seating plans, Today Mode, Activity Layouts, Station Rotations, Planner Packs, snapshots, printing, undo, and redo.
+- Added a dedicated responsive Assistant workspace for desktop and mobile with conversation history, working-plan context, candidate results, proposed actions, and contextual suggestions.
+- Centralized Assistant help and visibility controls with Command bar, Compact, and Hidden states; removed repeated contextual “Guide me” buttons from menus and surfaces.
+- Replaced generic parser dead ends with clarification prompts, suggested classroom requests, ambiguity handling, and protection against student-name/keyword collisions such as a student named Ada.
+- Added safeguards so behavior labels are never inferred for students unless they come from an explicit teacher-defined group or rule.
+- Added dedicated Planner Assistant browser regression coverage for multi-turn context, candidate-seat workflows, compound testing requests, chart analysis, responsive layout, and planner integration launchers.
+- Kept the Assistant local and deterministic: classroom data is not sent to an external AI service, planner mutations remain preview/apply operations, and undo remains available.
+- Planner data schema remains 13 and encryption envelope remains 3.
+
 ## 7.2.0 - 2026-09-05
 
 ### Planner Packs ecosystem

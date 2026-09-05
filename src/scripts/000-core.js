@@ -3,7 +3,7 @@
 const APP_CONFIG = Object.freeze({
   name: 'Classroom Seating Planner',
   shortName: 'Seating Planner',
-  version: '7.2.1',
+  version: '7.3.0',
   copyrightHolder: 'Chris L. Franklin',
   copyrightYear: '2026',
   releaseDate: '2026-09-05',
@@ -267,7 +267,7 @@ const APP_LICENSE = {
 
 const PROJECT_FEATURES = [
   { title: 'Planner Packs', text: 'Bundle reusable room templates, student-need presets, custom room objects, Activity Layouts, Station Rotation blueprints, and Testing Mode defaults into privacy-guarded portable JSON packs that can be installed locally and shared without a server or roster data.' },
-  { title: 'Planner Assistant', text: 'Translate teacher requests into explicit existing planner actions with a local deterministic interpreter, show student-name ambiguity instead of guessing, preview rule and seating impact before applying, explain current placements and conflicts from real planner findings, and keep a small browser-local command history.' },
+  { title: 'Planner Assistant', text: 'Use a first-class local planning workspace with broader classroom language, class-scoped conversational context, working plans, candidate-seat ranking and comparison, explicit apply and undo, chart-health and fairness analysis, testing orchestration, named-plan comparison, and direct launchers into Today Mode, Activity Layouts, Station Rotations, Planner Packs, snapshots, printing, and related planner workflows.' },
   { title: 'Testing Mode', text: 'Generate a separate testing Activity Layout that maximizes practical student separation, preserves locked seat positions and assignments, checks accessibility/front/aisle needs, explains physical spacing limits, and produces a normal-room-to-testing transition plan before anything is applied.' },
   { title: 'Station Rotations', text: 'Build timed classroom station rounds over the existing Digital Twin, use Activity Stations, Lab Stations, or tables as destinations, create explicit rotation teams from the active roster, and advance rounds without changing seat assignments.' },
   { title: 'Activity Layouts', text: 'Keep multiple named Freeform room arrangements for different lesson formats, switch without changing the shared physical room, duplicate or reflow arrangements from six classroom starters, and compare movement visually before resetting the room.' },
@@ -297,6 +297,21 @@ const PROJECT_FEATURES = [
 ];
 
 const RELEASE_HISTORY = [
+  {
+    version: '7.3.0',
+    date: 'September 5, 2026',
+    title: 'Planner Assistant workspace and conversational planning',
+    current: true,
+    changes: [
+      'Expanded Planner Assistant into a first-class planning workspace with a persistent class-scoped working plan and short multi-turn conversational context.',
+      'Added candidate-seat workflows, current-versus-proposed seat comparison, explicit candidate application, and follow-ups such as show options then use the second one.',
+      'Added chart-health, hardest-to-seat, unseated-student, rule-pressure, repair-priority, and fairness comparison analysis driven by existing planner engines.',
+      'Added compound Testing Mode orchestration that can preserve locked seats and accessibility placements while reporting practical fit constraints before applying changes.',
+      'Added direct Assistant launchers into named plans, Today Mode, Activity Layouts, Station Rotations, Planner Packs, snapshots, printing, undo, and redo.',
+      'Centralized Assistant help and visibility controls, removed repeated Guide me buttons, improved natural-language normalization, and changed unrecognized requests into clarifications or useful suggestions instead of parser dead ends.',
+      'Kept the Assistant browser-local and deterministic. It does not send classroom data to an external AI service and does not silently invent student behavior labels or mutate the classroom without explicit application.'
+    ]
+  },
   {
     version: '6.7.0',
     date: 'September 4, 2026',
