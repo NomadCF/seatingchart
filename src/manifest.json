@@ -38,7 +38,10 @@
     "036-planner-assistant-v710.js",
     "037-planner-packs-v720.js",
     "025-classroom-feature-pack-v66.js",
-    "026-guided-learning.js"
+    "026-guided-learning.js",
+    "039-planner-assistant-conversation-v722.js",
+    "040-planner-assistant-followup-fix-v722.js",
+    "038-interface-assistant-audit-v721.js"
   ],
   "applicationBundle": "application"
 }
