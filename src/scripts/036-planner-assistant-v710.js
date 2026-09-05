@@ -7,6 +7,7 @@ window.PlannerAssistantV710 = (() => {
   const MODAL_ID = 'plannerAssistantV710Modal';
   const DOCK_ID = 'plannerAssistantV710Dock';
   const HISTORY_PREFIX = 'classroom-seating-planner-assistant-history-v710:';
+  const UI_PREFS_KEY = 'classroom-seating-planner-assistant-ui-v721';
   const MAX_HISTORY = 20;
   const EXAMPLES = Object.freeze([
     'Show valid seats for Ada',
@@ -20,6 +21,7 @@ window.PlannerAssistantV710 = (() => {
   let installed = false;
   let currentPreview = null;
   let bodyObserver = null;
+  let uiPrefs = loadUiPrefs();
 
   const list = value => Array.isArray(value) ? value : [];
   const clone = value => {
@@ -34,6 +36,9 @@ window.PlannerAssistantV710 = (() => {
   const lower = value => normalizeText(value).toLowerCase();
   const countHard = findings => list(findings).filter(item => item?.severity === 'bad').length;
   const countWarnings = findings => list(findings).filter(item => item?.severity !== 'bad').length;
+
+  function loadUiPrefs(){try{const x=JSON.parse(localStorage.getItem(UI_PREFS_KEY)||'{}');return{dockHidden:Boolean(x.dockHidden),guideOpen:Boolean(x.guideOpen)}}catch(_){return{dockHidden:false,guideOpen:false}}}
+  function saveUiPrefs(){try{localStorage.setItem(UI_PREFS_KEY,JSON.stringify(uiPrefs))}catch(_){}}
 
   function isPresentationMode() {
     return Boolean(document.body?.classList.contains('visibility-mode'));
@@ -129,6 +134,10 @@ window.PlannerAssistantV710 = (() => {
     return selected.sort((a, b) => a.start - b.start);
   }
 
+  function parseCount(command,words=[]){const text=lower(command);for(const word of words){const m=text.match(new RegExp('\\b(\\d+)\\s+'+escapedRegex(word)+'s?\\b'));if(m)return Math.max(1,Math.min(60,Number(m[1])||1))}return 0}
+  function requestedMaxMoves(command){const m=lower(command).match(/(?:move|moving|change|changing)\s+(?:no more than|at most|max(?:imum)?(?: of)?|up to)\s*(\d+)\s*students?|(?:no more than|at most|max(?:imum)?(?: of)?|up to)\s*(\d+)\s*(?:student )?moves?/);return m?Math.max(1,Math.min(60,Number(m[1]||m[2])||1)):0}
+  function layoutPresetFromCommand(command){const text=lower(command);const e=[['direct',/\b(direct instruction|rows?|lecture|front[- ]?facing)\b/],['group',/\b(group work|collaborative|collaboration|pods?|small groups?)\b/],['discussion',/\b(discussion|circle|seminar|socratic)\b/],['lab',/\b(lab|stations? layout|station work|centers?)\b/],['independent',/\b(independent|individual work|spaced work|quiet work)\b/]];return e.find(([,q])=>q.test(text))?.[0]||''}
+
   function groupMatch(command) {
     const text = lower(command);
     return list(state?.groups)
@@ -204,8 +213,8 @@ window.PlannerAssistantV710 = (() => {
       version:1,
       command,
       intent:'unknown',
-      title:'I could not map that request to a planner action',
-      summary:'Try a classroom-specific request using a student, rule, layout, testing, station rotation, or conflict-repair action.',
+      title:'I need a little more detail',
+      summary:'I did not recognize a safe planner action yet. Open the built-in guide for supported requests and examples, or name a student, group, layout, testing setup, station rotation, seating-plan action, or conflict to repair.',
       mutates:false,
       entities:{ students:exactStudents.map(student => ({ id:String(student.id), name:displayStudent(student) })) },
       parameters:{},
@@ -225,7 +234,9 @@ window.PlannerAssistantV710 = (() => {
       return result;
     }
 
-    if (/\b(which|what)\b.*\b(requirement|rule|constraint)\b.*\b(conflict|problem|issue)|\bwhat('?s| is) causing (the )?most conflicts?\b/.test(text)) {
+    if (/\b(help|how do i|how can i|what can|what does)\b.*\b(planner assistant|assistant)\b|^\s*(help|commands|examples)\s*$/.test(text)){result.intent='assistant_help';result.title='Planner Assistant guide';result.summary='Open the built-in guide with supported request types and examples.';result.operations=['Open Planner Assistant guide'];return result}
+
+    if (/\b(which|what)\b.*\b(requirement|rule|constraint)\b.*\b(conflict|problem|issue)|\bwhat('?s| is) causing (the )?most conflicts?\b|\b(explain|show|what(?: is|'s))\b.*\b(conflicts?|problems?|issues?|wrong)\b|\bwhat(?: is|'s) wrong\b/.test(text)) {
       result.intent = 'explain_conflicts';
       result.title = 'Explain the biggest rule conflicts';
       result.summary = 'Review current rule findings and identify the most frequent concrete causes.';
@@ -233,7 +244,7 @@ window.PlannerAssistantV710 = (() => {
       return result;
     }
 
-    if (/\bvalid seats?\b|\bshow (me )?(the )?seats?\b/.test(text) && exactStudents.length === 1) {
+    if ((/\bvalid seats?\b|\bshow (me )?(the )?seats?\b|\bwhere can\b.*\b(sit|seat)\b|\bwhere (?:should|could)\b.*\b(sit|seat)\b/.test(text)) && exactStudents.length === 1) {
       result.intent = 'show_valid_seats';
       result.title = `Show valid seats for ${displayStudent(exactStudents[0])}`;
       result.summary = 'Highlight seats using the existing Seat Guidance engine and the student’s explicit requirements.';
@@ -241,7 +252,7 @@ window.PlannerAssistantV710 = (() => {
       return result;
     }
 
-    if (/\bwhy\b.*\b(sit|seat)\b.*\bthere\b/.test(text) && exactStudents.length === 1) {
+    if (/\bwhy\b.*\b(sit|seat|sitting|seated)\b.*\b(here|there|this seat)\b/.test(text) && exactStudents.length === 1) {
       result.intent = 'explain_selected_seat';
       result.title = `Explain the selected seat for ${displayStudent(exactStudents[0])}`;
       result.summary = 'Check the currently selected seat against the same rule engine used by Seat Guidance.';
@@ -249,7 +260,7 @@ window.PlannerAssistantV710 = (() => {
       return result;
     }
 
-    if (/\btesting\b|\btest layout\b|\bassessment layout\b/.test(text)) {
+    if (/\btesting\b|\btest layout\b|\bassessment layout\b|\b(spread|space)\b.*\b(test|exam|assessment)\b/.test(text)) {
       result.intent = 'testing_preview';
       result.title = 'Preview a Testing Mode layout';
       result.summary = 'Generate a non-destructive testing arrangement preview. Applying the assistant action will still leave Testing Mode’s own final Apply step in place.';
@@ -262,15 +273,12 @@ window.PlannerAssistantV710 = (() => {
       return result;
     }
 
-    if (/\bstation\b.*\brotation|\brotation\b.*\bstation/.test(text)) {
-      result.intent = 'open_station_rotations';
-      result.title = 'Open Station Rotations';
-      result.summary = 'Open the existing Station Rotations workspace. No seating assignments will change.';
-      result.operations = ['Open Station Rotations'];
-      return result;
-    }
+    if (/\bstations?\b.*\b(rotat|rotation)|\b(rotat(?:e|es|ed|ing|ion)?)\b.*\bstations?\b/.test(text)){const c=parseCount(command,['group','team']);const make=/\b(create|make|build|set up|setup|generate|plan)\b/.test(text)||c>0||/\bthrough the stations?\b/.test(text);result.intent=make?'create_station_rotation':'open_station_rotations';result.title=make?'Create a station rotation':'Open Station Rotations';result.summary=make?'Build a rotation from the current station anchors and active roster.':'Open Station Rotations.';result.parameters.teamCount=c;result.parameters.teamSource=/\b(existing|current|classroom) groups?\b/.test(text)?'classroom-groups':'balanced';if(make){const x=window.StationRotationsV702?.stationCandidates?.()||[];if(state?.layoutMode!=='freeform')result.blockers.push('Station rotations require a Freeform room.');if(x.length<2)result.blockers.push('Add at least two Activity Stations, Lab Stations, or tables before creating a rotation.');result.operations=['Use current station anchors','Build teams from the active roster','Create the rotation and open Station Rotations']}else result.operations=['Open Station Rotations'];return result}
 
-    if (/\b(switch|change|go)\b.*\b(layout|arrangement)\b/.test(text)) {
+    const layoutPreset=layoutPresetFromCommand(command);
+    if(layoutPreset&&/\b(create|make|build|generate|new|layout|arrangement|classroom)\b/.test(text)){const preset=window.ActivityLayoutsV701?.presets?.find?.(x=>x.id===layoutPreset);result.intent='create_activity_layout';result.title='Create '+(preset?.name||'Activity')+' layout';result.summary='Create a separate Activity Layout while keeping the current arrangement available.';result.mutates=true;result.parameters.presetId=layoutPreset;result.parameters.presetName=preset?.name||layoutPreset;result.operations=['Create a new '+(preset?.name||layoutPreset)+' Activity Layout','Keep fixed physical-room objects shared'];if(state?.layoutMode!=='freeform')result.blockers.push('Activity Layouts require a Freeform room.');return result}
+
+    if (/\b(switch|change|go|use|activate)\b.*\b(layout|arrangement)\b/.test(text)) {
       const target = activityLayoutMatch(command);
       result.intent = 'switch_activity_layout';
       result.title = target ? `Switch to ${target.name}` : 'Choose an Activity Layout';
@@ -284,7 +292,7 @@ window.PlannerAssistantV710 = (() => {
       return result;
     }
 
-    if (/\b(fix|repair|resolve)\b.*\b(conflicts?|problems?|issues?)\b|\bsmallest changes?\b/.test(text)) {
+    if (/\b(fix|repair|resolve|improve)\b.*\b(conflicts?|problems?|issues?|chart|plan|seating)|\bsmallest changes?\b|\bchange as little as possible\b|\bminimal movement\b/.test(text)) {
       result.intent = 'preview_repair';
       result.title = 'Preview a smallest-change repair';
       result.summary = 'Use Classroom Intelligence to search for a better arrangement, then leave the normal repair preview visible for review.';
@@ -293,9 +301,13 @@ window.PlannerAssistantV710 = (() => {
         : /\bcollabor/.test(text) ? 'collaboration'
         : /\bminimal|smallest|fewest\b/.test(text) ? 'stable'
         : 'balanced';
-      result.operations = [`Use the ${result.parameters.scenario} Classroom Intelligence objective`, 'Build a non-destructive repair preview'];
+      result.parameters.maxMoves=requestedMaxMoves(command);
+      result.operations=[`Use the ${result.parameters.scenario} Classroom Intelligence objective`,result.parameters.maxMoves?`Limit the repair to at most ${result.parameters.maxMoves} student moves`:'Use the objective’s normal movement limit','Build a non-destructive repair preview'];
       return result;
     }
+
+    if(/\b(randomize|shuffle|mix up)\b.*\b(seats?|students?|chart)?\b/.test(text)){result.intent='randomize_chart';result.title='Randomize and seat everyone';result.summary='Use the existing Randomize + Seat Everyone action.';result.mutates=true;result.operations=['Run Randomize + Seat Everyone'];return result}
+    if(/\b(make|create|generate|build)\b.*\b(seating chart|seating plan|best plan|best seating)\b/.test(text)){result.intent='generate_chart';result.title='Generate a seating chart';result.summary='Use the existing rule-aware Generate Chart workflow.';result.operations=['Run Generate Chart','Review the generated option'];return result}
 
     const reqChanges = requirementChanges(command);
     const betweenFirstTwo = mentions.length >= 2 ? text.slice(mentions[0].end, mentions[1].start) : '';
@@ -323,10 +335,10 @@ window.PlannerAssistantV710 = (() => {
     }
 
     const matchedGroup = groupMatch(command);
-    if (matchedGroup && /\b(together|spread|apart)\b/.test(text)) {
+    if (matchedGroup && /\b(together|spread|apart|separate|nearby|close)\b/.test(text)) {
       result.intent = 'group_rule_change';
       result.mutates = true;
-      const nextType = /\bspread|apart\b/.test(text) ? 'spread' : 'together';
+      const nextType = /\bspread|apart|separate\b/.test(text) ? 'spread' : 'together';
       result.parameters.groupId = String(matchedGroup.id);
       result.parameters.groupType = nextType;
       result.title = `Change ${matchedGroup.name} to ${nextType === 'spread' ? 'Spread apart' : 'Seat together / nearby'}`;
@@ -472,9 +484,12 @@ window.PlannerAssistantV710 = (() => {
           if (comparison.physicalMovement) preview.impact.metrics.push(metric('Total movement', `${comparison.physicalMovement.value.toFixed(1)} ${comparison.physicalMovement.unit}`));
         }
       } catch (_) { /* comparison is informative only */ }
+    } else if(intent.intent==='create_activity_layout'){preview.impact.metrics.push(metric('Starter',intent.parameters.presetName||intent.parameters.presetId));preview.details.push('A separate Activity Layout will be created.');
+    } else if(intent.intent==='create_station_rotation'){const x=window.StationRotationsV702?.stationCandidates?.()||[];preview.impact.metrics.push(metric('Station anchors',x.length),metric('Teams requested',intent.parameters.teamCount||x.length));
+    } else if(intent.intent==='randomize_chart'||intent.intent==='generate_chart'){preview.impact.metrics.push(metric('Active students',typeof seatingStudents==='function'?list(seatingStudents()).length:students().length));
     } else if (intent.intent === 'preview_repair') {
       try {
-        setIntelligenceScenario(intent.parameters.scenario || 'balanced');
+        setIntelligenceScenario(intent.parameters.scenario || 'balanced',intent.parameters.maxMoves||0);
         const repair = window.ClassroomIntelligenceV68?.buildRepairPreview?.();
         if (repair) {
           preview.data = { repairScenario:intent.parameters.scenario || 'balanced' };
@@ -488,15 +503,7 @@ window.PlannerAssistantV710 = (() => {
     return preview;
   }
 
-  function setIntelligenceScenario(scenario) {
-    const api = window.ClassroomIntelligenceV68;
-    if (!api) return;
-    try {
-      api.render?.();
-      const button = document.querySelector(`[data-intelligence-scenario="${String(scenario)}"]`);
-      if (button && !button.classList.contains('active')) button.click();
-    } catch (_) { /* objective selection is best effort */ }
-  }
+  function setIntelligenceScenario(scenario,maxMoves=0){const api=window.ClassroomIntelligenceV68;if(!api)return;try{if(typeof api.setScenario==='function')api.setScenario(scenario,{maxMoves});else{api.render?.();const b=document.querySelector('[data-intelligence-scenario="'+String(scenario)+'"]');if(b&&!b.classList.contains('active'))b.click()}}catch(_){}}
 
   function buildRuleImpact(preview) {
     const ids = list(preview.entities?.students).map(item => String(item.id));
@@ -607,6 +614,11 @@ window.PlannerAssistantV710 = (() => {
         if (typeof scheduleLinkedAutoSave === 'function') scheduleLinkedAutoSave('planner-assistant-group-rule');
         if (typeof renderAll === 'function') renderAll();
         message = `${group.name} now uses the ${group.type} rule.`;
+      } else if(preview.intent==='assistant_help'){setGuideOpen(true);message='Planner Assistant guide opened.';
+      } else if(preview.intent==='create_activity_layout'){if(typeof pushUndoSnapshot==='function')pushUndoSnapshot('Before Planner Assistant layout: '+preview.command);const e=window.ActivityLayoutsV701?.create?.(preview.parameters.presetId,{name:preview.parameters.presetName});if(!e)return{ok:false,message:'The Activity Layout could not be created.'};window.ActivityLayoutsV701?.open?.();message='Created '+e.name+'.';
+      } else if(preview.intent==='create_station_rotation'){const x=window.StationRotationsV702?.stationCandidates?.()||[];const plan=window.StationRotationsV702?.createPlan?.({name:'Station Rotation',teamCount:preview.parameters.teamCount||Math.min(x.length,6),teamSource:preview.parameters.teamSource||'balanced',stationIds:x.map(y=>y.objectId)});if(!plan)return{ok:false,message:'The station rotation could not be created.'};window.StationRotationsV702?.open?.();message='Created '+plan.name+'.';
+      } else if(preview.intent==='randomize_chart'){const b=document.getElementById('randomizeAllBtn');if(!b)return{ok:false,message:'Randomize is unavailable.'};b.click();message='Ran Randomize + Seat Everyone.';
+      } else if(preview.intent==='generate_chart'){const b=document.getElementById('generateBtn');if(!b)return{ok:false,message:'Generate Chart is unavailable.'};b.click();message='Opened Generate Chart.';
       } else if (preview.intent === 'testing_preview') {
         const config = preview.data?.testingConfig || { name:preview.parameters.name || 'Testing', spacing:preview.parameters.spacing };
         window.TestingModeV703?.generatePreview?.(config);
@@ -622,7 +634,7 @@ window.PlannerAssistantV710 = (() => {
         message = `Switched to ${preview.parameters.layoutName}.`;
       } else if (preview.intent === 'preview_repair') {
         window.PlanningToolsV66?.open?.();
-        setIntelligenceScenario(preview.data?.repairScenario || preview.parameters.scenario || 'balanced');
+        setIntelligenceScenario(preview.data?.repairScenario || preview.parameters.scenario || 'balanced',preview.parameters.maxMoves||0);
         window.ClassroomIntelligenceV68?.render?.();
         document.querySelector('#previewIntelligenceRepairBtn')?.click();
         message = 'Classroom Intelligence repair preview opened. Review the proposed moves there before applying them.';
@@ -653,8 +665,10 @@ window.PlannerAssistantV710 = (() => {
     try { if (typeof setLiveStatusMessage === 'function') setLiveStatusMessage(String(message || '')); } catch (_) { /* optional */ }
   }
 
+  function guideMarkup(){return '<section id="plannerAssistantV710Guide" class="section v710-guide" '+(uiPrefs.guideOpen?'':'hidden')+'><div class="v710-section-head"><div><h3>How to use Planner Assistant</h3><p>Describe the classroom outcome, preview the interpretation, then apply it.</p></div><button id="plannerAssistantV710GuideCloseBtn" class="tiny secondary" type="button">Hide guide</button></div><div class="v710-guide-grid"><article><strong>Students & rules</strong><span>Keep Maya near the front and away from the door.</span><span>Keep Noah and Eli apart.</span><span>Where can Ada sit?</span></article><article><strong>Layouts & testing</strong><span>Create a collaborative layout.</span><span>Make a discussion layout.</span><span>Create a testing layout with 5 feet between students.</span></article><article><strong>Repair & explain</strong><span>Fix this plan but move no more than 4 students.</span><span>Explain the conflicts.</span><span>Why is Ada sitting here?</span></article><article><strong>Stations & seating</strong><span>Make a station rotation with 3 groups.</span><span>Generate the best seating plan.</span><span>Randomize the seats.</span></article></div><div class="hint">Local and deterministic. It never silently applies a rule.</div></section>'}
+
   function modalMarkup() {
-    return `<div id="${MODAL_ID}" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="plannerAssistantV710Title"><div class="modal v710-modal"><div class="panel-header"><div><span class="v710-kicker">V7.1 Local Planner Assistant</span><h2 id="plannerAssistantV710Title">Planner Assistant</h2></div><button id="plannerAssistantV710CloseBtn" class="tiny secondary" type="button">Close</button></div><div class="modal-body v710-modal-body"><div class="v710-intro"><strong>Describe the classroom outcome you want.</strong><span>The assistant translates classroom language into explicit existing planner actions. It does not add hidden rules, call an external AI service, or change anything until you review the impact and apply it.</span></div><section class="section v710-request"><label for="plannerAssistantV710Input">Request</label><div class="v710-request-row"><input id="plannerAssistantV710Input" autocomplete="off" placeholder="Keep Maya near the front but away from Liam" /><button id="plannerAssistantV710PreviewBtn" type="button">Preview</button></div><div class="v710-example-row">${EXAMPLES.map(example => `<button type="button" class="tiny ghost" data-v710-example="${esc(example)}">${esc(example)}</button>`).join('')}</div></section><section class="section"><div class="v710-section-head"><div><h3>Interpretation & impact</h3><p>Request → interpretation → impact → explicit apply.</p></div><span class="pill">Local deterministic parser</span></div><div id="plannerAssistantV710Preview"></div></section><section class="section"><div class="v710-section-head"><div><h3>Recent commands</h3><p>Stored only in this browser for the current class.</p></div><button id="plannerAssistantV710ClearHistoryBtn" class="tiny secondary" type="button">Clear history</button></div><div id="plannerAssistantV710History" class="v710-history"></div></section><div id="plannerAssistantV710Status" class="hint" role="status" aria-live="polite"></div></div></div></div>`;
+    return `<div id="${MODAL_ID}" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="plannerAssistantV710Title"><div class="modal v710-modal"><div class="panel-header"><div><span class="v710-kicker">V7.1 Local Planner Assistant</span><h2 id="plannerAssistantV710Title">Planner Assistant</h2></div><div class="button-row"><button id="plannerAssistantV710GuideBtn" class="tiny secondary" type="button">Guide</button><button id="plannerAssistantV710HideDockBtn" class="tiny secondary" type="button">Hide bar</button><button id="plannerAssistantV710CloseBtn" class="tiny secondary" type="button">Close</button></div></div><div class="modal-body v710-modal-body"><div class="v710-intro"><strong>Describe the classroom outcome you want.</strong><span>The assistant translates classroom language into explicit existing planner actions. It does not add hidden rules, call an external AI service, or change anything until you review the impact and apply it.</span></div>${guideMarkup()}<section class="section v710-request"><label for="plannerAssistantV710Input">Request</label><div class="v710-request-row"><input id="plannerAssistantV710Input" autocomplete="off" placeholder="Keep Maya near the front but away from Liam" /><button id="plannerAssistantV710PreviewBtn" type="button">Preview</button></div><div class="v710-example-row">${EXAMPLES.map(example => `<button type="button" class="tiny ghost" data-v710-example="${esc(example)}">${esc(example)}</button>`).join('')}</div></section><section class="section"><div class="v710-section-head"><div><h3>Interpretation & impact</h3><p>Request → interpretation → impact → explicit apply.</p></div><span class="pill">Local deterministic parser</span></div><div id="plannerAssistantV710Preview"></div></section><section class="section"><div class="v710-section-head"><div><h3>Recent commands</h3><p>Stored only in this browser for the current class.</p></div><button id="plannerAssistantV710ClearHistoryBtn" class="tiny secondary" type="button">Clear history</button></div><div id="plannerAssistantV710History" class="v710-history"></div></section><div id="plannerAssistantV710Status" class="hint" role="status" aria-live="polite"></div></div></div></div>`;
   }
 
   function ensureModal() {
@@ -680,6 +694,9 @@ window.PlannerAssistantV710 = (() => {
         previewCommand(input?.value || '');
         return;
       }
+      if(event.target?.id==='plannerAssistantV710GuideBtn')setGuideOpen(!uiPrefs.guideOpen);
+      if(event.target?.id==='plannerAssistantV710GuideCloseBtn')setGuideOpen(false);
+      if(event.target?.id==='plannerAssistantV710HideDockBtn')setDockHidden(true);
       if (event.target?.id === 'plannerAssistantV710PreviewBtn') previewCommand(modal.querySelector('#plannerAssistantV710Input')?.value || '');
       if (event.target?.id === 'plannerAssistantV710ApplyBtn') applyPreview();
       if (event.target?.id === 'plannerAssistantV710ClearHistoryBtn') { saveHistory([]); renderHistory(); announce('Planner Assistant command history cleared for this class.'); }
@@ -711,8 +728,11 @@ window.PlannerAssistantV710 = (() => {
     node.innerHTML = history.length ? history.map(item => `<button type="button" class="v710-history-item" data-v710-rerun="${esc(item.command)}"><strong>${esc(item.command)}</strong><span>${esc(item.title || item.intent)} · ${esc(item.at ? new Date(item.at).toLocaleString() : '')}</span></button>`).join('') : '<div class="hint">No Planner Assistant commands have been applied for this class in this browser.</div>';
   }
 
+  function setGuideOpen(open){uiPrefs.guideOpen=Boolean(open);saveUiPrefs();const g=document.getElementById('plannerAssistantV710Guide');if(g)g.hidden=!uiPrefs.guideOpen}
+  function setDockHidden(hidden){uiPrefs.dockHidden=Boolean(hidden);saveUiPrefs();const d=document.getElementById(DOCK_ID);if(d){d.hidden=uiPrefs.dockHidden;d.classList.toggle('v710-hidden',uiPrefs.dockHidden)}const x=document.getElementById('plannerAssistantV710Restore');if(x){x.hidden=!uiPrefs.dockHidden||isPresentationMode();x.classList.toggle('v710-hidden',!uiPrefs.dockHidden||isPresentationMode())}}
+
   function dockMarkup() {
-    return `<button id="plannerAssistantV710DockOpen" type="button" class="v710-dock-label" title="Open Planner Assistant (Ctrl+Alt+P)">Planner Assistant</button><input id="plannerAssistantV710DockInput" aria-label="Planner Assistant request" autocomplete="off" placeholder="Ask the planner…" /><button id="plannerAssistantV710DockPreview" type="button">Preview</button>`;
+    return `<button id="plannerAssistantV710DockOpen" type="button" class="v710-dock-label" title="Open Planner Assistant (Ctrl+Alt+P)">Planner Assistant</button><input id="plannerAssistantV710DockInput" aria-label="Planner Assistant request" autocomplete="off" placeholder="Ask the planner…" /><button id="plannerAssistantV710DockPreview" type="button">Preview</button><button id="plannerAssistantV710DockHide" class="ghost tiny" type="button" aria-label="Hide Planner Assistant bar">×</button>`;
   }
 
   function ensureDock() {
@@ -722,8 +742,9 @@ window.PlannerAssistantV710 = (() => {
     dock.id = DOCK_ID;
     dock.className = 'v710-dock no-print';
     dock.innerHTML = dockMarkup();
-    document.body.appendChild(dock);
+    document.body.appendChild(dock);let restore=document.getElementById('plannerAssistantV710Restore');if(!restore){restore=document.createElement('button');restore.id='plannerAssistantV710Restore';restore.type='button';restore.className='v710-restore secondary tiny no-print';restore.textContent='Planner Assistant';document.body.appendChild(restore);restore.addEventListener('click',()=>setDockHidden(false))}
     dock.addEventListener('click', event => {
+      if(event.target?.id==='plannerAssistantV710DockHide'){setDockHidden(true);return}
       if (event.target?.id === 'plannerAssistantV710DockOpen') { open(); return; }
       if (event.target?.id === 'plannerAssistantV710DockPreview') {
         const command = dock.querySelector('#plannerAssistantV710DockInput')?.value || '';
@@ -731,6 +752,7 @@ window.PlannerAssistantV710 = (() => {
         previewCommand(command);
       }
     });
+    setDockHidden(uiPrefs.dockHidden);
     dock.querySelector('#plannerAssistantV710DockInput')?.addEventListener('keydown', event => {
       if (event.key === 'Enter') { event.preventDefault(); open(event.currentTarget.value); previewCommand(event.currentTarget.value); }
     });
@@ -759,8 +781,8 @@ window.PlannerAssistantV710 = (() => {
     const style = document.createElement('style');
     style.id = STYLE_ID;
     style.textContent = `
-      .v710-dock{position:fixed;left:50%;bottom:12px;transform:translateX(-50%);z-index:720;display:grid;grid-template-columns:auto minmax(180px,1fr) auto;gap:7px;align-items:center;width:min(720px,calc(100vw - 24px));padding:7px;border:1px solid color-mix(in srgb,var(--border,#cbd5e1) 78%,#2563eb 22%);border-radius:14px;background:color-mix(in srgb,var(--panel,#fff) 96%,#eff6ff 4%);box-shadow:0 10px 28px rgba(15,23,42,.18);backdrop-filter:blur(8px)}.v710-dock input{min-width:0}.v710-dock-label{white-space:nowrap;background:transparent!important;color:inherit!important;border-color:transparent!important;font-weight:900}.v710-modal{width:min(1040px,calc(100vw - 24px));height:min(900px,calc(100vh - 24px))}.v710-modal-body{display:grid;gap:13px;overflow:auto;padding-bottom:34px}.v710-kicker{display:block;font-size:9px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--muted,#64748b)}.v710-intro{display:grid;grid-template-columns:minmax(210px,.7fr) minmax(0,1.5fr);gap:14px;padding:12px 14px;border:1px solid var(--border,#d8deea);border-radius:12px;background:color-mix(in srgb,var(--panel,#fff) 94%,#2563eb 6%)}.v710-intro span{color:var(--muted,#64748b);line-height:1.4}.v710-request{display:grid;gap:7px}.v710-request>label{font-weight:900}.v710-request-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px}.v710-example-row{display:flex;gap:5px;flex-wrap:wrap}.v710-example-row button{font-size:9.5px}.v710-section-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.v710-section-head h3{margin:0 0 3px}.v710-section-head p{margin:0;color:var(--muted,#64748b);font-size:11px}.v710-preview-card{display:grid;gap:10px}.v710-preview-card>header{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.v710-preview-card>header>div{display:grid;gap:3px}.v710-preview-card>header span{color:var(--muted,#64748b);font-size:11px}.v710-intent{padding:4px 7px;border-radius:999px;border:1px solid var(--border,#d8deea);font-size:9px!important;font-weight:900;white-space:nowrap}.v710-block{padding:9px 10px;border:1px solid var(--border,#d8deea);border-radius:10px;background:var(--panel,#fff);font-size:11.5px}.v710-block ol,.v710-block ul{margin:6px 0 0 19px;padding:0}.v710-block p{margin:5px 0}.v710-block.warning{border-color:#f0c36b;background:color-mix(in srgb,var(--panel,#fff) 92%,#fff7d6 8%)}.v710-candidates{display:flex;gap:5px;flex-wrap:wrap}.v710-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.v710-metrics>div{display:grid;gap:2px;padding:9px;border:1px solid var(--border,#d8deea);border-radius:10px;background:var(--panel,#fff)}.v710-metrics span,.v710-metrics small{font-size:9px;color:var(--muted,#64748b)}.v710-metrics strong{font-size:15px}.v710-preview-card>footer{display:flex;justify-content:space-between;gap:10px;align-items:center}.v710-preview-card>footer span{font-size:10px;color:var(--muted,#64748b)}.v710-history{display:grid;gap:6px}.v710-history-item{display:grid;gap:2px;text-align:left;padding:8px 10px;border:1px solid var(--border,#d8deea);border-radius:10px;background:var(--panel,#fff);color:inherit}.v710-history-item span{font-size:9.5px;color:var(--muted,#64748b)}body.visibility-mode .v710-dock{display:none!important}@media print{.v710-dock,.v710-modal{display:none!important}}
-      @media(max-width:760px){.v710-dock{grid-template-columns:minmax(0,1fr) auto;bottom:7px;width:calc(100vw - 12px)}.v710-dock-label{display:none}.v710-modal{width:calc(100vw - 10px);height:calc(100vh - 10px)}.v710-intro{grid-template-columns:1fr}.v710-metrics{grid-template-columns:1fr 1fr}.v710-section-head,.v710-preview-card>header,.v710-preview-card>footer{flex-direction:column;align-items:stretch}.v710-preview-card>footer button{width:100%}}
+      .v710-dock{position:fixed;left:50%;bottom:12px;transform:translateX(-50%);z-index:720;display:grid;grid-template-columns:auto minmax(180px,1fr) auto auto;gap:7px;align-items:center;width:min(720px,calc(100vw - 24px));padding:7px;border:1px solid color-mix(in srgb,var(--border,#cbd5e1) 78%,#2563eb 22%);border-radius:14px;background:color-mix(in srgb,var(--panel,#fff) 96%,#eff6ff 4%);box-shadow:0 10px 28px rgba(15,23,42,.18);backdrop-filter:blur(8px)}.v710-dock input{min-width:0}.v710-dock.v710-hidden,.v710-restore.v710-hidden{display:none!important}.v710-dock-label{white-space:nowrap;background:transparent!important;color:inherit!important;border-color:transparent!important;font-weight:900}.v710-restore{position:fixed;right:10px;bottom:10px;z-index:719}.v710-modal{width:min(1040px,calc(100vw - 24px));height:min(900px,calc(100vh - 24px))}.v710-modal-body{display:grid;gap:13px;overflow:auto;padding-bottom:34px}.v710-kicker{display:block;font-size:9px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--muted,#64748b)}.v710-intro{display:grid;grid-template-columns:minmax(210px,.7fr) minmax(0,1.5fr);gap:14px;padding:12px 14px;border:1px solid var(--border,#d8deea);border-radius:12px;background:color-mix(in srgb,var(--panel,#fff) 94%,#2563eb 6%)}.v710-intro span{color:var(--muted,#64748b);line-height:1.4}.v710-request{display:grid;gap:7px}.v710-request>label{font-weight:900}.v710-request-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:7px}.v710-example-row{display:flex;gap:5px;flex-wrap:wrap}.v710-example-row button{font-size:9.5px}.v710-section-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.v710-section-head h3{margin:0 0 3px}.v710-section-head p{margin:0;color:var(--muted,#64748b);font-size:11px}.v710-preview-card{display:grid;gap:10px}.v710-preview-card>header{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.v710-preview-card>header>div{display:grid;gap:3px}.v710-preview-card>header span{color:var(--muted,#64748b);font-size:11px}.v710-intent{padding:4px 7px;border-radius:999px;border:1px solid var(--border,#d8deea);font-size:9px!important;font-weight:900;white-space:nowrap}.v710-block{padding:9px 10px;border:1px solid var(--border,#d8deea);border-radius:10px;background:var(--panel,#fff);font-size:11.5px}.v710-block ol,.v710-block ul{margin:6px 0 0 19px;padding:0}.v710-block p{margin:5px 0}.v710-block.warning{border-color:#f0c36b;background:color-mix(in srgb,var(--panel,#fff) 92%,#fff7d6 8%)}.v710-candidates{display:flex;gap:5px;flex-wrap:wrap}.v710-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.v710-metrics>div{display:grid;gap:2px;padding:9px;border:1px solid var(--border,#d8deea);border-radius:10px;background:var(--panel,#fff)}.v710-metrics span,.v710-metrics small{font-size:9px;color:var(--muted,#64748b)}.v710-metrics strong{font-size:15px}.v710-preview-card>footer{display:flex;justify-content:space-between;gap:10px;align-items:center}.v710-preview-card>footer span{font-size:10px;color:var(--muted,#64748b)}.v710-history{display:grid;gap:6px}.v710-history-item{display:grid;gap:2px;text-align:left;padding:8px 10px;border:1px solid var(--border,#d8deea);border-radius:10px;background:var(--panel,#fff);color:inherit}.v710-history-item span{font-size:9.5px;color:var(--muted,#64748b)}.v710-guide{display:grid;gap:10px}.v710-guide[hidden]{display:none!important}.v710-guide-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.v710-guide-grid article{display:grid;gap:4px;padding:10px;border:1px solid var(--border,#d8deea);border-radius:10px}.v710-guide-grid article span{font-size:10px;color:var(--muted,#64748b)}body.visibility-mode .v710-dock,body.visibility-mode .v710-restore{display:none!important}@media print{.v710-dock,.v710-restore,.v710-modal{display:none!important}}
+      @media(max-width:760px){.v710-dock{grid-template-columns:minmax(0,1fr) auto;bottom:7px;width:calc(100vw - 12px)}.v710-dock-label{display:none}.v710-modal{width:calc(100vw - 10px);height:calc(100vh - 10px)}.v710-intro{grid-template-columns:1fr}.v710-guide-grid{grid-template-columns:1fr}.v710-metrics{grid-template-columns:1fr 1fr}.v710-section-head,.v710-preview-card>header,.v710-preview-card>footer{flex-direction:column;align-items:stretch}.v710-preview-card>footer button{width:100%}}
       @media(max-width:460px){.v710-metrics{grid-template-columns:1fr}.v710-request-row{grid-template-columns:1fr}.v710-example-row{display:grid;grid-template-columns:1fr}.v710-example-row button{text-align:left}}
     `;
     document.head.appendChild(style);
@@ -800,6 +822,8 @@ window.PlannerAssistantV710 = (() => {
 
   function afterReady() {
     ensureDock();
+    setDockHidden(uiPrefs.dockHidden);
+    setGuideOpen(uiPrefs.guideOpen);
     renderHistory();
   }
 
@@ -817,6 +841,10 @@ window.PlannerAssistantV710 = (() => {
     apply:applyPreview,
     open,
     close,
+    showGuide:()=>{open();setGuideOpen(true)},
+    hideDock:()=>setDockHidden(true),
+    showDock:()=>setDockHidden(false),
+    dockHidden:()=>uiPrefs.dockHidden,
     history:loadHistory,
     clearHistory:() => { saveHistory([]); renderHistory(); },
     currentPreview:() => currentPreview

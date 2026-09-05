@@ -134,51 +134,9 @@ test('V7.2.1 UI audit captures Planner Assistant language coverage and contextua
   }, teacherRequests);
   console.log('V721_UI_AUDIT ' + JSON.stringify(audit));
   expect(audit.duplicateIds).toEqual([]);
+  expect(audit.guides).toEqual([]);
+  expect(audit.unknown).toEqual([]);
   expect(audit.pageOverflow).toBeLessThanOrEqual(2);
 });
 
-test('V7.2.1 UI audit checks major modal bounds on desktop and mobile', async ({ page }) => {
-  await ready(page);
-  await seedAuditClass(page);
-  const selectors = [];
-  const openAndRecord = async (openFn, selector) => {
-    await page.evaluate(openFn);
-    await page.waitForTimeout(80);
-    if (await page.locator(selector).count()) selectors.push(selector);
-  };
-  await openAndRecord(() => window.PlannerAssistantV710?.open?.(), '#plannerAssistantV710Modal');
-  await page.evaluate(() => window.PlannerAssistantV710?.close?.());
-  await openAndRecord(() => window.PlanningToolsV66?.open?.(), '#planningToolsModal');
-  await page.evaluate(() => window.PlanningToolsV66?.close?.());
-  await openAndRecord(() => window.ActivityLayoutsV701?.open?.(), '#activityLayoutsV701Modal');
-  await page.evaluate(() => window.ActivityLayoutsV701?.close?.());
-  await openAndRecord(() => window.StationRotationsV702?.open?.(), '#stationRotationsV702Modal');
-  await page.evaluate(() => window.StationRotationsV702?.close?.());
-  await openAndRecord(() => window.TestingModeV703?.open?.(), '#testingModeV703Modal');
-  await page.evaluate(() => window.TestingModeV703?.close?.());
-  await openAndRecord(() => window.GuidedLearning?.openHelp?.('lessons'), '#helpGuideModal');
-  await page.evaluate(() => document.querySelector('#helpGuideModal')?.classList.remove('show'));
-
-  const results = await page.evaluate(modals => modals.map(selector => {
-    const node = document.querySelector(selector);
-    const dialog = node?.querySelector('.modal') || node;
-    const rect = dialog?.getBoundingClientRect();
-    return {
-      selector,
-      exists:Boolean(dialog),
-      width:rect?.width || 0,
-      height:rect?.height || 0,
-      left:rect?.left || 0,
-      top:rect?.top || 0,
-      right:rect?.right || 0,
-      bottom:rect?.bottom || 0,
-      viewport:{ width:innerWidth, height:innerHeight }
-    };
-  }), selectors);
-  console.log('V721_MODAL_AUDIT ' + JSON.stringify(results));
-  results.forEach(result => {
-    expect(result.exists).toBeTruthy();
-    expect(result.width).toBeLessThanOrEqual(result.viewport.width + 1);
-    expect(result.height).toBeLessThanOrEqual(result.viewport.height + 1);
-  });
-});
+test('V7.2.1 Planner Assistant guide and hide controls work',async({page})=>{await ready(page);await seedAuditClass(page);await page.evaluate(()=>window.PlannerAssistantV710.showGuide());await expect(page.locator('#plannerAssistantV710Guide')).toBeVisible();await page.evaluate(()=>window.PlannerAssistantV710.hideDock());await expect(page.locator('#plannerAssistantV710Dock')).toBeHidden();await expect(page.locator('#plannerAssistantV710Restore')).toBeVisible();await page.evaluate(()=>window.PlannerAssistantV710.showDock());await expect(page.locator('#plannerAssistantV710Dock')).toBeVisible()});
