@@ -12,7 +12,8 @@ for (const file of [
   'src/manifest.json',
   'manifest.webmanifest',
   'service-worker.js',
-  'schemas/roster-import-v1.schema.json'
+  'schemas/roster-import-v1.schema.json',
+  'schemas/planner-command-v1.schema.json'
 ]) {
   if (!fs.existsSync(path.join(root, file))) throw new Error(`Missing required source/release asset: ${file}`);
 }
@@ -38,7 +39,7 @@ const built = normalize(fs.readFileSync(path.join(root, 'dist', 'Classroom-Seati
 
 const required = [
   ['doctype', /^\s*<!doctype html>/i.test(built)],
-  ['V7.0.3 app version metadata', /name=["']app-version["']\s+content=["']7\.0\.3["']/i.test(built)],
+  ['V7.1.0 app version metadata', /name=["']app-version["']\s+content=["']7\.1\.0["']/i.test(built)],
   ['manifest link', /rel=["']manifest["']/i.test(built)],
   ['service worker registration', /serviceWorker\.register\(/.test(built)],
   ['analytics consent default remains granted', /analytics_storage\s*:\s*['"]granted['"]/.test(built)],
@@ -78,7 +79,12 @@ const required = [
   ['V7.0.3 Testing Mode persistence present', /testingMode: source\.testingMode/.test(built)],
   ['V7.0.3 spacing feasibility engine present', /minimumSpacing/.test(built) && /spacingConflicts/.test(built)],
   ['V7.0.3 transition-plan engine present', /transitionSteps/.test(built) && /Return to source layout/.test(built)],
-  ['V7.0.3 non-interactive preview overlay present', /v703-testing-preview/.test(built)]
+  ['V7.0.3 non-interactive preview overlay present', /v703-testing-preview/.test(built)],
+  ['V7.1 Planner Assistant engine present', /PlannerAssistantV710/.test(built)],
+  ['V7.1 public planner command contract present', /classroom-seating-planner-command-v1/.test(built)],
+  ['V7.1 explicit preview and apply UI present', /plannerAssistantV710PreviewBtn/.test(built) && /plannerAssistantV710ApplyBtn/.test(built)],
+  ['V7.1 ambiguity guard present', /Student name needs clarification/.test(built)],
+  ['V7.1 no external AI provider dependency', !/openai\.com\/v1|anthropic\.com\/v1|generativelanguage\.googleapis\.com/.test(built)]
 ];
 
 for (const [name, ok] of required) {
