@@ -95,12 +95,18 @@ fs.writeFileSync(file, source);
 
 const testFile = 'tests/browser/activity-layouts-v701.spec.mjs';
 let tests = fs.readFileSync(testFile, 'utf8');
-const from = `    renderAll();\n    window.ActivityLayoutsV701?.afterReady?.();`;
-const to = `    renderAll();\n    document.body.classList.toggle('freeform-layout-mode', state.layoutMode === 'freeform');\n    window.ActivityLayoutsV701?.afterReady?.();`;
-if (!tests.includes(to)) {
-  if (!tests.includes(from)) throw new Error('activity-layouts-v701.spec.mjs: Freeform seed marker missing');
-  tests = tests.replace(from, to);
-  fs.writeFileSync(testFile, tests);
+const fromSeed = `    renderAll();\n    window.ActivityLayoutsV701?.afterReady?.();`;
+const toSeed = `    renderAll();\n    document.body.classList.toggle('freeform-layout-mode', state.layoutMode === 'freeform');\n    window.ActivityLayoutsV701?.afterReady?.();`;
+if (!tests.includes(toSeed)) {
+  if (!tests.includes(fromSeed)) throw new Error('activity-layouts-v701.spec.mjs: Freeform seed marker missing');
+  tests = tests.replace(fromSeed, toSeed);
 }
+const fromToolbar = `  await expect(page.locator('#activityLayoutsV701Toolbar')).toBeVisible();\n  await expect(page.locator('#activityLayoutsV701QuickSelect')).toHaveCount(1);`;
+const toToolbar = `  const toolbar = page.locator('#activityLayoutsV701Toolbar');\n  await expect(toolbar).toHaveCount(1);\n  await expect(page.locator('#activityLayoutsV701QuickSelect')).toHaveCount(1);\n  const mountedWithDigitalTwin = await page.evaluate(() => {\n    const toolbar = document.getElementById('activityLayoutsV701Toolbar');\n    const launcher = document.getElementById('openDigitalTwinV700Btn');\n    return Boolean(toolbar && launcher && toolbar.parentElement === launcher.parentElement);\n  });\n  expect(mountedWithDigitalTwin).toBeTruthy();`;
+if (!tests.includes(toToolbar)) {
+  if (!tests.includes(fromToolbar)) throw new Error('activity-layouts-v701.spec.mjs: toolbar assertion marker missing');
+  tests = tests.replace(fromToolbar, toToolbar);
+}
+fs.writeFileSync(testFile, tests);
 
-console.log('Fixed V7.0.1 Activity Layouts runtime layout identity, toolbar visibility, shared station semantics, and canonical Freeform test state.');
+console.log('Fixed V7.0.1 Activity Layouts runtime identity, shared physical semantics, toolbar mounting, and synthetic test state.');
