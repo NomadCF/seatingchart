@@ -5,12 +5,13 @@ on:
     branches: [audit/full-code-cleanup-v720]
     paths:
       - '.integration/full-code-audit.mjs'
-      - '.integration/apply-full-cleanup.mjs'
+      - '.integration/finalize-full-cleanup.mjs'
       - '.github/workflows/full-code-audit.yml'
       - 'src/**'
       - 'docs/**'
       - '*.md'
       - 'package.json'
+      - 'service-worker.js'
 
 permissions:
   contents: write
@@ -29,14 +30,16 @@ jobs:
           node-version: '24'
       - name: Install audit dependencies
         run: npm install --no-save --no-package-lock eslint @eslint/js globals acorn acorn-walk postcss postcss-selector-parser
-      - name: Apply targeted cleanup
-        run: node .integration/apply-full-cleanup.mjs
+      - name: Finalize maintenance release
+        run: node .integration/finalize-full-cleanup.mjs
       - name: Rebuild generated single-file product
         run: |
           npm run build
           cp dist/Classroom-Seating-Planner.html index.html
       - name: Run full static audit after cleanup
-        run: node .integration/full-code-audit.mjs
+        run: |
+          node .integration/full-code-audit.mjs
+          node -e "const s=require('./.integration/full-code-audit-summary.json'); if(s.unused||s.undefined||s.unreachable||s.duplicateHtmlIds){console.error(s);process.exit(1)}"
       - name: Verify invalid legacy references are gone
         run: |
           if grep -RInE 'linkedSaveAutosave|scheduleLinkedFileAutosave|openModalById|closeModalById|setLayoutMode' src/scripts; then
@@ -47,14 +50,18 @@ jobs:
         run: |
           npm test
           node --check service-worker.js
-      - name: Commit cleanup product changes
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Run complete desktop and mobile regression suite
+        run: npm run test:browser
+      - name: Commit verified V7.2.1 cleanup
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add src index.html README.md docs/WCAG-2.2-AA-AUDIT.md docs/IMPLEMENTATION_PLAN.md
+          git add src index.html README.md CHANGELOG.md docs package.json service-worker.js tests/browser
           if git diff --cached --quiet; then
-            echo 'No cleanup changes to commit.'
+            echo 'No final cleanup changes to commit.'
           else
-            git commit -m 'Clean dead code and stale references'
+            git commit -m 'V7.2.1 full code cleanup'
             git push origin HEAD:audit/full-code-cleanup-v720
           fi
