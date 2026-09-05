@@ -16,6 +16,20 @@ function replaceAllChecked(text, search, replacement, expectedMinimum = 1) {
   return text.split(search).join(replacement);
 }
 
+function removeDeadModalCompatibility(text) {
+  let changed = 0;
+  text = text.replace(/if \(typeof openModalById === 'function'\) openModalById\(([^)]+)\);\n\s*else (node|modal)\.classList\.add\('show'\);/g, (_match, _id, target) => {
+    changed += 1;
+    return `${target}.classList.add('show');`;
+  });
+  text = text.replace(/if \(typeof closeModalById === 'function'\) closeModalById\(([^)]+)\);\n\s*else (node|modal)\.classList\.remove\('show'\);/g, (_match, _id, target) => {
+    changed += 1;
+    return `${target}.classList.remove('show');`;
+  });
+  if (!changed) throw new Error('Expected dead modal compatibility branch was not found.');
+  return text;
+}
+
 // Core: remove an unused normalization parameter and its stale call argument.
 edit('src/scripts/000-core.js', [
   ['function normalizePhysicalRoomRecord(value, canvas = {}) {', 'function normalizePhysicalRoomRecord(value) {'],
@@ -32,25 +46,21 @@ edit('src/scripts/030-interoperability-v69.js', [
 edit('src/scripts/032-digital-twin-v700.js', [
   ["try { scheduleLinkedFileAutosave?.(reason); } catch (_) { /* linked save may not exist */ }", "try { scheduleLinkedAutoSave?.(reason); } catch (_) { /* autosave integration is optional */ }"],
   ["setLayoutMode?.('freeform');", "switchLayoutMode?.('freeform');"],
-  ["if (typeof openModalById === 'function') openModalById(MODAL_ID);\n    else modal.classList.add('show');", "modal.classList.add('show');"],
-  ["if (typeof closeModalById === 'function') closeModalById(MODAL_ID);\n    else modal.classList.remove('show');", "modal.classList.remove('show');"]
+  removeDeadModalCompatibility
 ]);
 
-// V7.0+ feature modules: use the canonical autosave scheduler and current modal behavior.
-for (const path of [
-  'src/scripts/033-activity-layouts-v701.js',
-  'src/scripts/034-station-rotations-v702.js',
-  'src/scripts/035-testing-mode-v703.js'
-]) {
-  edit(path, [
-    text => replaceAllChecked(text, 'scheduleLinkedFileAutosave?.(reason)', 'scheduleLinkedAutoSave?.(reason)'),
-    text => text.replace(/if \(typeof openModalById === 'function'\) openModalById\(([^)]+)\);\n\s*else modal\.classList\.add\('show'\);/g, "modal.classList.add('show');"),
-    text => text.replace(/if \(typeof closeModalById === 'function'\) closeModalById\(([^)]+)\);\n\s*else modal\.classList\.remove\('show'\);/g, "modal.classList.remove('show');")
-  ]);
-}
-
-// Testing Mode: remove a proven-unused argument.
+// Activity Layouts, Station Rotations, and Testing Mode already call the canonical scheduler; remove the dead duplicate compatibility call.
+edit('src/scripts/033-activity-layouts-v701.js', [
+  ["    try { scheduleLinkedFileAutosave?.(reason); } catch (_) { /* compatibility with newer save helper */ }\n", ''],
+  removeDeadModalCompatibility
+]);
+edit('src/scripts/034-station-rotations-v702.js', [
+  ["    try { scheduleLinkedFileAutosave?.(reason); } catch (_) { /* optional */ }\n", ''],
+  removeDeadModalCompatibility
+]);
 edit('src/scripts/035-testing-mode-v703.js', [
+  ["    try { scheduleLinkedFileAutosave?.(reason); } catch (_) { /* optional */ }\n", ''],
+  removeDeadModalCompatibility,
   ['function needIssuesFor(seats, config, layout, roomMetrics) {', 'function needIssuesFor(seats, config, layout) {'],
   ['needIssuesFor(proposedPrimary, config, layout, roomMetrics)', 'needIssuesFor(proposedPrimary, config, layout)']
 ]);
@@ -59,15 +69,13 @@ edit('src/scripts/035-testing-mode-v703.js', [
 edit('src/scripts/036-planner-assistant-v710.js', [
   ['function applyRuleChangesInMemory(preview, normalize = true) {', 'function applyRuleChangesInMemory(preview) {'],
   ['applyRuleChangesInMemory(preview, true);', 'applyRuleChangesInMemory(preview);'],
-  ["if (typeof openModalById === 'function') openModalById(MODAL_ID);\n    else modal.classList.add('show');", "modal.classList.add('show');"],
-  ["if (typeof closeModalById === 'function') closeModalById(MODAL_ID);\n    else modal.classList.remove('show');", "modal.classList.remove('show');"]
+  removeDeadModalCompatibility
 ]);
 
 // Planner Packs: canonical autosave, current modal behavior, and remove an unused import count.
 edit('src/scripts/037-planner-packs-v720.js', [
   ["try { if (typeof scheduleLinkedFileAutosave === 'function') scheduleLinkedFileAutosave('planner-pack-apply'); } catch (_) { /* optional */ }", "try { if (typeof scheduleLinkedAutoSave === 'function') scheduleLinkedAutoSave('planner-pack-apply'); } catch (_) { /* autosave integration is optional */ }"],
-  ["if (typeof openModalById === 'function') openModalById(MODAL_ID);\n    else modal.classList.add('show');", "modal.classList.add('show');"],
-  ["if (typeof closeModalById === 'function') closeModalById(MODAL_ID);\n    else modal.classList.remove('show');", "modal.classList.remove('show');"],
+  removeDeadModalCompatibility,
   ['    const counts = packCounts(importDraft);\n', '']
 ]);
 
