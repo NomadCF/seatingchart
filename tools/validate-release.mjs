@@ -38,7 +38,7 @@ const built = normalize(fs.readFileSync(path.join(root, 'dist', 'Classroom-Seati
 
 const required = [
   ['doctype', /^\s*<!doctype html>/i.test(built)],
-  ['V7.0.0 app version metadata', /name=["']app-version["']\s+content=["']7\.0\.0["']/i.test(built)],
+  ['V7.0.1 app version metadata', /name=["']app-version["']\s+content=["']7\.0\.1["']/i.test(built)],
   ['manifest link', /rel=["']manifest["']/i.test(built)],
   ['service worker registration', /serviceWorker\.register\(/.test(built)],
   ['analytics consent default remains granted', /analytics_storage\s*:\s*['"]granted['"]/.test(built)],
@@ -64,7 +64,11 @@ const required = [
   ['V7.0 floor plan renderer present', /v700-floor-plan/.test(built)],
   ['V7.0 scaled rulers present', /v700-rulers/.test(built)],
   ['V7.0 distance measurement tool present', /physicalDistance/.test(built)],
-  ['V7.0 fixed furniture object types present', /Shelf \/ Bookcase/.test(built) && /Lab Station/.test(built) && /Activity Station/.test(built)]
+  ['V7.0 fixed furniture object types present', /Shelf \/ Bookcase/.test(built) && /Lab Station/.test(built) && /Activity Station/.test(built)],
+  ['V7.0.1 Activity Layouts engine present', /ActivityLayoutsV701/.test(built)],
+  ['V7.0.1 Activity Layouts persistence present', /activityLayouts: source\.activityLayouts/.test(built)],
+  ['V7.0.1 classroom arrangement starters present', /Direct Instruction/.test(built) && /Group Work/.test(built) && /Discussion Circle/.test(built) && /Testing/.test(built)],
+  ['V7.0.1 arrangement comparison present', /openComparison/.test(built) && /v701-compare-grid/.test(built)]
 ];
 
 for (const [name, ok] of required) {
