@@ -1,3 +1,17 @@
+## 7.0.3 - 2026-09-04
+
+### Testing Mode
+- Added a dedicated non-destructive Testing Mode preview for Freeform classrooms.
+- Generates practical maximum-separation seat geometry without changing student assignments.
+- Preserves locked seat positions by default and keeps fixed Digital Twin room objects as physical constraints.
+- Uses Today Mode's active roster for spacing calculations while keeping absent/unused seat furniture in the room.
+- Checks required accessibility/front/aisle needs during placement and calls out remaining teacher-review issues.
+- Explains when requested center-to-center spacing cannot fit because of room size, fixed furniture, locked seats, or active roster count.
+- Added ordered normal-room-to-testing transition instructions with feet/meters when physical room scale is enabled.
+- Applying a preview creates a separate Testing Activity Layout and records the source layout for an explicit return path.
+- Preview overlays are non-interactive, hidden from print, and responsive on desktop/mobile.
+- Testing metadata is additive inside Freeform layout data; planner data schema remains 13 and encryption envelope remains 3.
+
 ## 7.0.2 - 2026-09-04
 
 ### Station Rotations
