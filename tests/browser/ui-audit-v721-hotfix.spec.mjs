@@ -22,7 +22,7 @@ async function ready(page) {
   await page.goto('/index.html', { waitUntil:'domcontentloaded' });
   await completeFreshSecuritySetupIfNeeded(page);
   await closeAutomaticGettingStartedIfNeeded(page);
-  await expect.poll(() => page.evaluate(() => Boolean(window.InterfaceAssistantAuditV721 && window.PlannerAssistantConversationV722?.installed))).toBe(true);
+  await expect.poll(() => page.evaluate(() => Boolean(window.InterfaceAssistantAuditV721 && window.PlannerAssistantConversationV722?.installed && window.PlannerAssistantFollowupFixV722?.installed))).toBe(true);
 }
 
 async function seedClass(page) {
@@ -70,11 +70,11 @@ test('Planner Assistant keeps short class-scoped context for follow-up requests'
   await ready(page); await seedClass(page);
   const result = await page.evaluate(() => {
     window.PlannerAssistantV710.preview('Keep Maya near the front');
-    const contextual = window.PlannerAssistantV710.contextualize('but not next to Noah');
+    const rewritten = window.PlannerAssistantV710.rewriteFollowup('but not next to Noah');
     const preview = window.PlannerAssistantV710.preview('but not next to Noah');
-    return { contextual, intent:preview.intent, relation:preview.parameters?.relation, context:window.PlannerAssistantV710.conversationContext() };
+    return { rewritten, intent:preview.intent, relation:preview.parameters?.relation, context:window.PlannerAssistantV710.conversationContext() };
   });
-  expect(result.contextual).toMatch(/Maya.*Noah/i);
+  expect(result.rewritten).toMatch(/Maya.*Noah/i);
   expect(result.intent).toBe('rule_changes');
   expect(result.relation).toBe('apart');
   expect(result.context.students).toContain('student-maya');
