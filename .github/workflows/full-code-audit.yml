@@ -28,3 +28,9 @@ jobs:
         run: npm install --no-save --no-package-lock eslint @eslint/js globals acorn acorn-walk postcss postcss-selector-parser
       - name: Run full static audit
         run: node .integration/full-code-audit.mjs
+      - name: Trace suspicious globals and unused declarations
+        run: |
+          echo '=== suspicious symbol references ==='
+          grep -RInE 'linkedSaveAutosave|scheduleLinkedFileAutosave|openModalById|closeModalById|setLayoutMode' src/scripts || true
+          echo '=== unused declaration references ==='
+          grep -RInE 'normalizePhysicalRoomRecord|groupCounts|needIssuesFor|function .*normalize|counts' src/scripts/000-core.js src/scripts/030-interoperability-v69.js src/scripts/035-testing-mode-v703.js src/scripts/036-planner-assistant-v710.js src/scripts/037-planner-packs-v720.js || true
