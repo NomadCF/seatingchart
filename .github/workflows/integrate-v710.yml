@@ -4,9 +4,9 @@ on:
   push:
     branches: [feat/v7.1.0-planner-assistant]
     paths:
-      - '.integration/v710-module.b64'
-      - '.integration/v710-test.b64'
-      - '.integration/v710-schema.b64'
+      - 'src/scripts/036-planner-assistant-v710.js'
+      - 'tests/browser/planner-assistant-v710.spec.mjs'
+      - 'schemas/planner-command-v1.schema.json'
       - '.integration/integrate-v710.mjs'
       - '.github/workflows/integrate-v710.yml'
 
@@ -25,11 +25,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Materialize Planner Assistant source, regression test, and schema
+      - name: Validate Planner Assistant source, regression test, and schema
         run: |
-          base64 -d .integration/v710-module.b64 | gzip -d > src/scripts/036-planner-assistant-v710.js
-          base64 -d .integration/v710-test.b64 | gzip -d > tests/browser/planner-assistant-v710.spec.mjs
-          base64 -d .integration/v710-schema.b64 | gzip -d > schemas/planner-command-v1.schema.json
           node --check src/scripts/036-planner-assistant-v710.js
           node --check tests/browser/planner-assistant-v710.spec.mjs
           node -e "JSON.parse(require('fs').readFileSync('schemas/planner-command-v1.schema.json','utf8')); console.log('Planner command schema parses cleanly.')"
