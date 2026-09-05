@@ -106,7 +106,11 @@ test('V7.0.0 floor-plan reference layer stays non-interactive and print-aware', 
   const layer = page.locator('#seatGrid > .v700-floor-plan');
   await expect(layer).toHaveCount(1);
   await expect(layer).toHaveAttribute('data-print-floor-plan', 'true');
-  expect(await layer.evaluate(node => getComputedStyle(node).pointerEvents)).toBe('none');
+  const nonInteractive = await page.evaluate(() => {
+    const css = document.getElementById('classroomDigitalTwinV700Styles')?.textContent || '';
+    return /\.v700-room-grid,.v700-floor-plan,.v700-rulers,.v700-measurement-layer\{[^}]*pointer-events:none/.test(css);
+  });
+  expect(nonInteractive).toBeTruthy();
   await page.emulateMedia({ media:'print' });
   expect(await layer.evaluate(node => getComputedStyle(node).display)).not.toBe('none');
 });

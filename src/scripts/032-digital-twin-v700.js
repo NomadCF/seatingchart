@@ -641,7 +641,21 @@ window.ClassroomDigitalTwinV700 = (() => {
     const canvas = document.getElementById('seatGrid');
     if (!canvas) { setTimeout(observeCanvas, 250); return; }
     observer?.disconnect();
-    observer = new MutationObserver(scheduleEnhance);
+    observer = new MutationObserver(mutations => {
+      const isOwnOverlayNode = node => node instanceof Element && (
+        node.matches?.('.v700-room-grid,.v700-floor-plan,.v700-rulers,.v700-measurement-layer,.v700-object-measure') ||
+        node.closest?.('.v700-room-grid,.v700-floor-plan,.v700-rulers,.v700-measurement-layer,.v700-object-measure')
+      );
+      const relevant = mutations.some(mutation => {
+        if (isOwnOverlayNode(mutation.target)) return false;
+        if (mutation.type === 'childList') {
+          const changed = [...mutation.addedNodes, ...mutation.removedNodes].filter(node => node.nodeType === Node.ELEMENT_NODE);
+          if (changed.length && changed.every(isOwnOverlayNode)) return false;
+        }
+        return true;
+      });
+      if (relevant) scheduleEnhance();
+    });
     observer.observe(canvas, { childList:true, subtree:true, attributes:true, attributeFilter:['class','style'] });
     scheduleEnhance();
   }

@@ -3,12 +3,12 @@
 const APP_CONFIG = Object.freeze({
   name: 'Classroom Seating Planner',
   shortName: 'Seating Planner',
-  version: '6.9.0',
+  version: '7.0.0',
   copyrightHolder: 'Chris L. Franklin',
   copyrightYear: '2026',
   releaseDate: '2026-09-04',
   releaseDateDisplay: 'September 4, 2026',
-  buildDate: '2026-09-04T17:30:00Z',
+  buildDate: '2026-09-05T00:35:00Z',
   commit: 'local',
   environment: 'production',
   dataSchemaVersion: 13,
@@ -105,6 +105,11 @@ const OBJECT_TYPE_COLORS = Object.freeze({
   board: '#dcfce7',
   carpet: '#f5e8d3',
   ada: '#ecfeff',
+  shelf: '#f1e8dc',
+  cabinet: '#e8e5df',
+  lab: '#e5edf5',
+  sink: '#dff3f5',
+  station: '#eee7f7',
   blocked: '#313846',
   empty: '#fbfcff'
 });
@@ -121,6 +126,11 @@ const BUILT_IN_OBJECT_LABELS = Object.freeze({
   board: 'Board',
   carpet: 'Carpet',
   ada: 'ADA Space',
+  shelf: 'Shelf / Bookcase',
+  cabinet: 'Cabinet / Storage',
+  lab: 'Lab Station',
+  sink: 'Sink / Utility',
+  station: 'Activity Station',
   seat: 'Seat'
 });
 const GROUP_TYPE_LABELS = Object.freeze({
@@ -256,6 +266,7 @@ const APP_LICENSE = {
 };
 
 const PROJECT_FEATURES = [
+  { title: 'Classroom Digital Twin', text: 'Give Freeform rooms real dimensions, use scaled grids and rulers, align a floor-plan reference image, measure physical distances, and add fixed classroom furniture while preserving existing seating assignments and Freeform interactions.' },
   { title: 'Grouped seating visual language', text: 'Freeform tables, pods, seats, presentation views, printed charts, copied chart images, and plan comparisons share a clearer grouped-seating treatment with subtle pod boundaries, deliberate open-seat states, compact status cues, and zoom-aware readability.' },
   { title: 'Classroom Intelligence', text: 'Choose a planning objective, inspect plan health and concrete blockers, preview the smallest useful seating repair before applying it, and favor fairness or stability without hiding the underlying teacher-defined rules.' },
   { title: 'Live seat guidance', text: 'Preview valid, caution, conflicting, and locked seats while selecting or dragging a student, explain each result in plain language, and place the student in the best currently available seat.' },
@@ -3275,6 +3286,37 @@ function normalizeFreeformObject(object, index = 0) {
   };
 }
 
+function normalizePhysicalRoomRecord(value, canvas = {}) {
+  const source = value && typeof value === 'object' ? value : {};
+  const background = source.background && typeof source.background === 'object' ? source.background : {};
+  const unit = source.unit === 'm' ? 'm' : 'ft';
+  const dataUrl = /^data:image\//i.test(String(background.dataUrl || '')) && String(background.dataUrl || '').length <= 8000000
+    ? String(background.dataUrl)
+    : '';
+  return {
+    enabled: Boolean(source.enabled),
+    unit,
+    width: clampNumber(source.width ?? (unit === 'm' ? 9 : 30), unit === 'm' ? 2 : 6, unit === 'm' ? 100 : 330),
+    height: clampNumber(source.height ?? (unit === 'm' ? 7.3 : 24), unit === 'm' ? 2 : 6, unit === 'm' ? 100 : 330),
+    gridStep: clampNumber(source.gridStep ?? (unit === 'm' ? .5 : 1), unit === 'm' ? .1 : .25, unit === 'm' ? 10 : 20),
+    showGrid: source.showGrid !== false,
+    showRulers: source.showRulers !== false,
+    showObjectMeasurements: source.showObjectMeasurements !== false,
+    background: {
+      dataUrl,
+      name: String(background.name || '').slice(0, 120),
+      visible: background.visible !== false,
+      opacity: clampNumber(background.opacity ?? .42, .05, 1),
+      scalePct: clampNumber(background.scalePct ?? 100, 20, 300),
+      offsetXPct: clampNumber(background.offsetXPct ?? 0, -100, 100),
+      offsetYPct: clampNumber(background.offsetYPct ?? 0, -100, 100),
+      rotation: clampNumber(background.rotation ?? 0, -180, 180),
+      print: Boolean(background.print),
+      locked: background.locked !== false
+    }
+  };
+}
+
 function normalizeFreeformLayout(layout) {
   const sourceIsObject = Boolean(layout && typeof layout === 'object');
   const source = sourceIsObject ? layout : {};
@@ -3283,6 +3325,7 @@ function normalizeFreeformLayout(layout) {
   const objects = hasObjectCollection ? source.objects.map(normalizeFreeformObject) : [];
   return {
     initialized: source.initialized === true || objects.length > 0,
+    physicalRoom: normalizePhysicalRoomRecord(source.physicalRoom, canvas),
     canvas: {
       width: clampNumber(canvas.width ?? 2800, 400, 12000),
       height: clampNumber(canvas.height ?? 1800, 300, 12000),

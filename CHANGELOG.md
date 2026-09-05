@@ -1,3 +1,14 @@
+## 7.0.0 - 2026-09-04
+
+### Classroom Digital Twin foundation
+- Added optional real-world room dimensions to Freeform layouts while leaving legacy/unscaled rooms fully valid.
+- Added scaled room grid and rulers with feet/meters support and configurable physical grid spacing.
+- Added physical width/height labels for Freeform room objects plus a two-object distance measurement tool.
+- Added floor-plan/photo background import with in-browser optimization, opacity, scale, offset, rotation, visibility, and explicit print inclusion.
+- Added fixed classroom object types for shelves/bookcases, cabinets/storage, lab stations, sinks/utilities, and activity stations using the existing Freeform object model.
+- Kept drag/drop, rotation, resizing, groups, seating rules, Presentation mode, print, mobile panning, zoom, and the single-file deterministic build intact.
+- Physical-room metadata is additive inside Freeform layout data; planner data schema remains 13 and encryption envelope remains 3.
+
 ## 6.8.2 - 2026-09-04
 
 ## 6.9.0 - 2026-09-04
