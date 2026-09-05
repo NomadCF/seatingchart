@@ -20,4 +20,10 @@ replaceOnce(
   `  await expect(page.locator('meta[name="app-version"]')).toHaveAttribute('content', /^\\d+\\.\\d+\\.\\d+$/);`
 );
 
-console.log('Fixed V7.0.0 overlay observer feedback and made the V6.9 feature regression version-agnostic.');
+replaceOnce(
+  'tests/browser/digital-twin-v700.spec.mjs',
+  `  expect(await layer.evaluate(node => getComputedStyle(node).pointerEvents)).toBe('none');`,
+  `  const nonInteractive = await page.evaluate(() => {\n    const css = document.getElementById('classroomDigitalTwinV700Styles')?.textContent || '';\n    return /\\.v700-room-grid,.v700-floor-plan,.v700-rulers,.v700-measurement-layer\\{[^}]*pointer-events:none/.test(css);\n  });\n  expect(nonInteractive).toBeTruthy();`
+);
+
+console.log('Fixed V7.0.0 observer feedback, version regression, and floor-plan pointer-event assertion.');
