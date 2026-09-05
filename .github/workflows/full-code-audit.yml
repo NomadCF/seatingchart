@@ -12,6 +12,7 @@ on:
       - '*.md'
       - 'package.json'
       - 'service-worker.js'
+      - 'tools/validate-release.mjs'
 
 permissions:
   contents: write
@@ -58,7 +59,7 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add src index.html README.md CHANGELOG.md docs package.json service-worker.js tests/browser
+          git add src index.html README.md CHANGELOG.md docs package.json service-worker.js tests/browser tools/validate-release.mjs
           if git diff --cached --quiet; then
             echo 'No final cleanup changes to commit.'
           else
