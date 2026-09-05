@@ -4,64 +4,114 @@ on:
   pull_request:
     branches: [main]
   push:
-    branches: [main, feat/v6.7-production-hardening]
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  validate:
+  build-check:
+    name: build-check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Install test dependencies
+      - name: Install dependencies
         run: npm install --no-package-lock
-
       - name: Build portable single-file app
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: npm run build
-
-      - name: Sync generated index.html on main
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: |
-          cp dist/Classroom-Seating-Planner.html index.html
-          if git diff --quiet -- index.html; then
-            echo "index.html already matches the modular source."
-          else
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add index.html
-            git commit -m "chore: sync generated single-file build [skip ci]"
-            git push
-          fi
-
-      - name: Validate deterministic single-file build
+      - name: Verify committed index.html matches modular source
+        run: cmp --silent dist/Classroom-Seating-Planner.html index.html || { echo 'ERROR: index.html is stale. Run npm run build and copy dist/Classroom-Seating-Planner.html to index.html before merging.'; exit 1; }
+      - name: Validate deterministic release
         run: npm test
       - name: Validate JSON schemas
         run: |
           node -e "for (const f of ['schemas/planner-v13.schema.json','schemas/envelope-v3.schema.json','schemas/roster-import-v1.schema.json']) JSON.parse(require('fs').readFileSync(f,'utf8')); console.log('Schemas parse cleanly.')"
       - name: Check service worker syntax
         run: node --check service-worker.js
-      - name: Install Chromium
-        run: npx playwright install --with-deps chromium
-      - name: Run desktop and mobile browser smoke tests
-        run: npm run test:browser
-      - name: Upload browser report on failure
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-report
-          path: playwright-report/
-          if-no-files-found: ignore
-          retention-days: 7
       - name: Upload portable build
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: classroom-seating-planner-portable
           path: dist/Classroom-Seating-Planner.html
+          if-no-files-found: error
+          retention-days: 7
+
+  assistant-tests:
+    name: planner-assistant-tests
+    needs: build-check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install dependencies
+        run: npm install --no-package-lock
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Run Planner Assistant regression tests
+        run: npm run test:assistant
+      - name: Upload Assistant browser report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: planner-assistant-report
+          path: playwright-report/
+          if-no-files-found: ignore
+          retention-days: 7
+
+  desktop-tests:
+    name: desktop-tests
+    needs: build-check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install dependencies
+        run: npm install --no-package-lock
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Run desktop browser tests
+        run: npx playwright test --project=desktop-chromium
+      - name: Upload desktop browser report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-playwright-report
+          path: playwright-report/
+          if-no-files-found: ignore
+          retention-days: 7
+
+  mobile-tests:
+    name: mobile-tests
+    needs: build-check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install dependencies
+        run: npm install --no-package-lock
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Run mobile browser tests
+        run: npx playwright test --project=mobile-chromium
+      - name: Upload mobile browser report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-playwright-report
+          path: playwright-report/
           if-no-files-found: ignore
           retention-days: 7
