@@ -38,7 +38,7 @@ const built = normalize(fs.readFileSync(path.join(root, 'dist', 'Classroom-Seati
 
 const required = [
   ['doctype', /^\s*<!doctype html>/i.test(built)],
-  ['V7.0.2 app version metadata', /name=["']app-version["']\s+content=["']7\.0\.2["']/i.test(built)],
+  ['V7.0.3 app version metadata', /name=["']app-version["']\s+content=["']7\.0\.3["']/i.test(built)],
   ['manifest link', /rel=["']manifest["']/i.test(built)],
   ['service worker registration', /serviceWorker\.register\(/.test(built)],
   ['analytics consent default remains granted', /analytics_storage\s*:\s*['"]granted['"]/.test(built)],
@@ -73,7 +73,12 @@ const required = [
   ['V7.0.2 station rotation persistence present', /stationRotations: source\.stationRotations/.test(built)],
   ['V7.0.2 rotation round engine present', /roundAssignments/.test(built) && /startTransition/.test(built)],
   ['V7.0.2 station overlay present', /v702-station-overlay/.test(built)],
-  ['V7.0.2 Today Mode roster integration present', /typeof seatingStudents === 'function'/.test(built)]
+  ['V7.0.2 Today Mode roster integration present', /typeof seatingStudents === 'function'/.test(built)],
+  ['V7.0.3 Testing Mode engine present', /TestingModeV703/.test(built)],
+  ['V7.0.3 Testing Mode persistence present', /testingMode: source\.testingMode/.test(built)],
+  ['V7.0.3 spacing feasibility engine present', /minimumSpacing/.test(built) && /spacingConflicts/.test(built)],
+  ['V7.0.3 transition-plan engine present', /transitionSteps/.test(built) && /Return to source layout/.test(built)],
+  ['V7.0.3 non-interactive preview overlay present', /v703-testing-preview/.test(built)]
 ];
 
 for (const [name, ok] of required) {

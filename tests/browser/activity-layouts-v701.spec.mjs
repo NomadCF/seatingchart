@@ -65,7 +65,7 @@ async function seedFreeform(page) {
 
 test('V7.0.1 activity layout data survives Freeform normalization without duplicating the physical room', async ({ page }) => {
   await ready(page);
-  await expect(page.locator('meta[name="app-version"]')).toHaveAttribute('content', '7.0.2');
+  await expect(page.locator('meta[name="app-version"]')).toHaveAttribute('content', '7.0.3');
   const result = await page.evaluate(() => {
     const source = {
       initialized:true,

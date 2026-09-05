@@ -3,12 +3,12 @@
 const APP_CONFIG = Object.freeze({
   name: 'Classroom Seating Planner',
   shortName: 'Seating Planner',
-  version: '7.0.2',
+  version: '7.0.3',
   copyrightHolder: 'Chris L. Franklin',
   copyrightYear: '2026',
   releaseDate: '2026-09-04',
   releaseDateDisplay: 'September 4, 2026',
-  buildDate: '2026-09-05T02:35:00Z',
+  buildDate: '2026-09-05T03:20:00Z',
   commit: 'local',
   environment: 'production',
   dataSchemaVersion: 13,
@@ -266,6 +266,7 @@ const APP_LICENSE = {
 };
 
 const PROJECT_FEATURES = [
+  { title: 'Testing Mode', text: 'Generate a separate testing Activity Layout that maximizes practical student separation, preserves locked seat positions and assignments, checks accessibility/front/aisle needs, explains physical spacing limits, and produces a normal-room-to-testing transition plan before anything is applied.' },
   { title: 'Station Rotations', text: 'Build timed classroom station rounds over the existing Digital Twin, use Activity Stations, Lab Stations, or tables as destinations, create explicit rotation teams from the active roster, and advance rounds without changing seat assignments.' },
   { title: 'Activity Layouts', text: 'Keep multiple named Freeform room arrangements for different lesson formats, switch without changing the shared physical room, duplicate or reflow arrangements from six classroom starters, and compare movement visually before resetting the room.' },
   { title: 'Classroom Digital Twin', text: 'Give Freeform rooms real dimensions, use scaled grids and rulers, align a floor-plan reference image, measure physical distances, and add fixed classroom furniture while preserving existing seating assignments and Freeform interactions.' },
@@ -3330,6 +3331,7 @@ function normalizeFreeformLayout(layout) {
     physicalRoom: normalizePhysicalRoomRecord(source.physicalRoom, canvas),
     activityLayouts: source.activityLayouts && typeof source.activityLayouts === 'object' ? deepClone(source.activityLayouts) : null,
     stationRotations: source.stationRotations && typeof source.stationRotations === 'object' ? deepClone(source.stationRotations) : null,
+    testingMode: source.testingMode && typeof source.testingMode === 'object' ? deepClone(source.testingMode) : null,
     canvas: {
       width: clampNumber(canvas.width ?? 2800, 400, 12000),
       height: clampNumber(canvas.height ?? 1800, 300, 12000),
