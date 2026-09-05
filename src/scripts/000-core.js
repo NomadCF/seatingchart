@@ -3,12 +3,12 @@
 const APP_CONFIG = Object.freeze({
   name: 'Classroom Seating Planner',
   shortName: 'Seating Planner',
-  version: '7.0.3',
+  version: '7.1.0',
   copyrightHolder: 'Chris L. Franklin',
   copyrightYear: '2026',
-  releaseDate: '2026-09-04',
-  releaseDateDisplay: 'September 4, 2026',
-  buildDate: '2026-09-05T03:20:00Z',
+  releaseDate: '2026-09-05',
+  releaseDateDisplay: 'September 5, 2026',
+  buildDate: '2026-09-05T10:40:00Z',
   commit: 'local',
   environment: 'production',
   dataSchemaVersion: 13,
@@ -266,6 +266,7 @@ const APP_LICENSE = {
 };
 
 const PROJECT_FEATURES = [
+  { title: 'Planner Assistant', text: 'Translate teacher requests into explicit existing planner actions with a local deterministic interpreter, show student-name ambiguity instead of guessing, preview rule and seating impact before applying, explain current placements and conflicts from real planner findings, and keep a small browser-local command history.' },
   { title: 'Testing Mode', text: 'Generate a separate testing Activity Layout that maximizes practical student separation, preserves locked seat positions and assignments, checks accessibility/front/aisle needs, explains physical spacing limits, and produces a normal-room-to-testing transition plan before anything is applied.' },
   { title: 'Station Rotations', text: 'Build timed classroom station rounds over the existing Digital Twin, use Activity Stations, Lab Stations, or tables as destinations, create explicit rotation teams from the active roster, and advance rounds without changing seat assignments.' },
   { title: 'Activity Layouts', text: 'Keep multiple named Freeform room arrangements for different lesson formats, switch without changing the shared physical room, duplicate or reflow arrangements from six classroom starters, and compare movement visually before resetting the room.' },

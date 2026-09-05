@@ -1,3 +1,17 @@
+## 7.1.0 - 2026-09-05
+
+### Planner Assistant
+- Added a browser-local deterministic Planner Assistant command bar available throughout the normal planning workflow.
+- Natural-language classroom requests translate into explicit existing planner actions instead of hidden AI-owned rules.
+- Added non-destructive interpretation and impact previews before mutating requirements, pair rules, group rules, or Activity Layout selection.
+- Added student-name ambiguity detection; multiple matches are shown and the assistant refuses to guess.
+- Added commands for valid-seat guidance, student-placement explanations, conflict-cause summaries, individual seating requirements, together/apart rules, Testing Mode previews, Station Rotations, Activity Layout switching, and Classroom Intelligence repair previews.
+- Mutating assistant actions enter the existing undo path and use normal class persistence/autosave.
+- Added a small per-class browser-local command history with explicit clear control; history is not part of planner save/export data.
+- Added public planner command preview schema at schemas/planner-command-v1.schema.json for future optional interpreters/providers to target the same explicit action contract.
+- Added responsive desktop/mobile regression coverage and kept the assistant out of Presentation mode and print output.
+- Planner data schema remains 13 and encryption envelope remains 3.
+
 ## 7.0.3 - 2026-09-04
 
 ### Testing Mode

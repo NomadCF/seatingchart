@@ -27,3 +27,8 @@ The application should make retention visible and controllable. Teachers should 
 ## Exports
 
 Exports should identify their intended audience where practical and default to the minimum information required for that audience. Anonymous, room-only, student-facing, substitute, support-team, and teacher-facing outputs should remain distinct rather than relying on one all-data export.
+
+
+## Planner Assistant command history
+
+V7.1.0 stores up to 20 recent Planner Assistant commands per class in browser local storage so a teacher can rerun a request. Command text may contain student names or classroom details. This history stays on the current browser, is not added to planner save files or exports, is not sent to an external AI service by the built-in interpreter, and can be cleared from the Planner Assistant. Clearing browser data also removes it.
