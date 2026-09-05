@@ -38,7 +38,7 @@ const built = normalize(fs.readFileSync(path.join(root, 'dist', 'Classroom-Seati
 
 const required = [
   ['doctype', /^\s*<!doctype html>/i.test(built)],
-  ['V7.0.1 app version metadata', /name=["']app-version["']\s+content=["']7\.0\.1["']/i.test(built)],
+  ['V7.0.2 app version metadata', /name=["']app-version["']\s+content=["']7\.0\.2["']/i.test(built)],
   ['manifest link', /rel=["']manifest["']/i.test(built)],
   ['service worker registration', /serviceWorker\.register\(/.test(built)],
   ['analytics consent default remains granted', /analytics_storage\s*:\s*['"]granted['"]/.test(built)],
@@ -68,7 +68,12 @@ const required = [
   ['V7.0.1 Activity Layouts engine present', /ActivityLayoutsV701/.test(built)],
   ['V7.0.1 Activity Layouts persistence present', /activityLayouts: source\.activityLayouts/.test(built)],
   ['V7.0.1 classroom arrangement starters present', /Direct Instruction/.test(built) && /Group Work/.test(built) && /Discussion Circle/.test(built) && /Testing/.test(built)],
-  ['V7.0.1 arrangement comparison present', /openComparison/.test(built) && /v701-compare-grid/.test(built)]
+  ['V7.0.1 arrangement comparison present', /openComparison/.test(built) && /v701-compare-grid/.test(built)],
+  ['V7.0.2 Station Rotations engine present', /StationRotationsV702/.test(built)],
+  ['V7.0.2 station rotation persistence present', /stationRotations: source\.stationRotations/.test(built)],
+  ['V7.0.2 rotation round engine present', /roundAssignments/.test(built) && /startTransition/.test(built)],
+  ['V7.0.2 station overlay present', /v702-station-overlay/.test(built)],
+  ['V7.0.2 Today Mode roster integration present', /typeof seatingStudents === 'function'/.test(built)]
 ];
 
 for (const [name, ok] of required) {

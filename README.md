@@ -9,7 +9,7 @@ A free, open-source, privacy-conscious seating planner for educators. Design the
 
 [**Launch the hosted app**](https://nomadcf.github.io/seatingchart/) · [Privacy](PRIVACY.md) · [Security](SECURITY.md) · [Data handling](DATA-HANDLING.md) · [Changelog](CHANGELOG.md)
 
-![Version](https://img.shields.io/badge/version-7.0.1-2563eb?style=flat-square)
+![Version](https://img.shields.io/badge/version-7.0.2-2563eb?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-0f766e?style=flat-square)
 ![PWA](https://img.shields.io/badge/PWA-installable-7c3aed?style=flat-square)
 ![Local-first](https://img.shields.io/badge/data-local--first-0f766e?style=flat-square)
@@ -25,6 +25,10 @@ A classroom rarely fits into a perfect grid, and students rarely come with no co
 Classroom Seating Planner is built for the messy version of the problem: students who need the front, students who should be separated, groups that should stay together or spread out, accessible seating, room zones, fixed objects, temporary absences, substitute-friendly charts, and plans that should not repeat the same placements forever.
 
 The app combines **room design**, **student rules**, **manual placement**, **automatic plan generation**, **Classroom Intelligence**, **conflict review**, **history and fairness analysis**, and **privacy-controlled sharing** in one workflow.
+
+### V7.0.2 Station Rotations
+
+Build lesson rotations directly on the Classroom Digital Twin without changing the seating chart. Rotation plans can use existing Activity Stations, Lab Stations, or tables as destinations; create size-balanced teams from the active roster or seed teams from classroom groups; exclude Today Mode absences when rebuilding; link a rotation to the Activity Layout it was designed for; run per-station and transition timers; move forward or backward through explicit rounds; and show each station's current team directly on the Freeform room. Rotation plans never silently reseat students and the balancing option uses roster order and team size only, not hidden behavior scoring.
 
 ### V7.0.1 Activity Layouts
 
