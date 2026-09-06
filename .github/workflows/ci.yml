@@ -1,4 +1,4 @@
-name: Build and critical smoke checks
+name: Build and critical release checks
 
 on:
   pull_request:
@@ -46,6 +46,8 @@ jobs:
           fi
       - name: Validate deterministic release
         run: npm test
+      - name: Run critical V7.3 release contract
+        run: npm run test:smoke
       - name: Validate JSON schemas
         run: |
           node -e "for (const f of ['schemas/planner-v13.schema.json','schemas/envelope-v3.schema.json','schemas/roster-import-v1.schema.json','schemas/planner-command-v1.schema.json','schemas/planner-pack-v1.schema.json']) JSON.parse(require('fs').readFileSync(f,'utf8')); console.log('Schemas parse cleanly.')"
@@ -57,29 +59,4 @@ jobs:
           name: classroom-seating-planner-portable
           path: dist/Classroom-Seating-Planner.html
           if-no-files-found: error
-          retention-days: 7
-
-  critical-smoke:
-    name: critical-smoke
-    needs: build-check
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-      - name: Install dependencies
-        run: npm install --no-package-lock
-      - name: Install Chromium
-        run: npx playwright install --with-deps chromium
-      - name: Run desktop and mobile critical smoke tests
-        run: npm run test:smoke
-      - name: Upload browser report on failure
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: critical-smoke-report
-          path: playwright-report/
-          if-no-files-found: ignore
           retention-days: 7
