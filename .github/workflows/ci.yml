@@ -23,7 +23,7 @@ jobs:
           node-version: '24'
       - name: Install build dependencies
         run: npm install --no-package-lock
-      - name: Validate deterministic V7.2.2 release
+      - name: Validate deterministic V7.2.3 release
         run: npm test
       - name: Verify committed portable build matches source
         run: git diff --exit-code -- dist/Classroom-Seating-Planner.html
