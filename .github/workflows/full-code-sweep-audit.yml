@@ -1,0 +1,60 @@
+name: One-time full code sweep audit
+
+on:
+  push:
+    branches: [maintenance/full-code-sweep-v723]
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install audit dependency
+        run: npm install --no-package-lock --no-save eslint@9
+      - name: Build active JavaScript audit bundle
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const manifest = JSON.parse(fs.readFileSync('src/manifest.json','utf8'));
+          const text = manifest.scriptFiles.map(file => `\n/* ${file} */\n` + fs.readFileSync(`src/scripts/${file}`,'utf8')).join('\n');
+          fs.writeFileSync('/tmp/active-bundle.js', text);
+          console.log(`AUDIT_ACTIVE_MODULES ${manifest.scriptFiles.length}`);
+          console.log(`AUDIT_ACTIVE_BYTES ${Buffer.byteLength(text)}`);
+          NODE
+      - name: Report unused declarations from active bundle
+        run: |
+          npx eslint /tmp/active-bundle.js --no-config-lookup --rule 'no-unused-vars:["warn",{"vars":"all","args":"after-used","caughtErrors":"none","ignoreRestSiblings":true}]' --format json > /tmp/eslint-unused.json || true
+          node <<'NODE'
+          const fs = require('fs');
+          const rows = JSON.parse(fs.readFileSync('/tmp/eslint-unused.json','utf8'));
+          const messages = rows.flatMap(r => r.messages || []).filter(m => m.ruleId === 'no-unused-vars');
+          console.log(`AUDIT_UNUSED_COUNT ${messages.length}`);
+          for (const m of messages) console.log(`AUDIT_UNUSED line=${m.line} col=${m.column} ${m.message}`);
+          NODE
+      - name: Report stale and compatibility references
+        run: |
+          echo '--- REMOVED FEATURE REFERENCES ---'
+          grep -RInE 'Planner Assistant|PlannerAssistantV710|plannerAssistantV710|planner-command-v1|PLANNER-ASSISTANT' . \
+            --exclude=index.html --exclude=Classroom-Seating-Planner.html --exclude-dir=.git --exclude=full-code-sweep-audit.yml || true
+          echo '--- STALE RELEASE REFERENCES ---'
+          grep -RInE 'current production release|active hosted and portable production|V7\.2\.1|7\.2\.1' README.md SECURITY.md DATA-HANDLING.md PRIVACY.md docs .github tools src package.json manifest.webmanifest service-worker.js tests 2>/dev/null || true
+          echo '--- LEGACY / DEPRECATED / OBSOLETE MARKERS ---'
+          grep -RInE '\b(legacy|deprecated|obsolete|compatibility|compat|temporary|no longer|removed|old API|old modal|old workflow)\b' src docs README.md SECURITY.md DATA-HANDLING.md PRIVACY.md tests tools .github 2>/dev/null || true
+      - name: Report orphan source files and manifest gaps
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const manifest = JSON.parse(fs.readFileSync('src/manifest.json','utf8'));
+          const declared = new Set(manifest.scriptFiles);
+          const actual = fs.readdirSync('src/scripts').filter(f => f.endsWith('.js'));
+          for (const f of actual.filter(f => !declared.has(f))) console.log(`AUDIT_ORPHAN_SCRIPT ${f}`);
+          for (const f of manifest.scriptFiles.filter(f => !actual.includes(f))) console.log(`AUDIT_MISSING_SCRIPT ${f}`);
+          NODE
+      - name: Validate current release
+        run: npm test
