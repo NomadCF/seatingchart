@@ -2,5 +2,6 @@ node_modules/
 package-lock.json
 playwright-report/
 test-results/
+critical-smoke.html
 npm-debug.log*
 .DS_Store
