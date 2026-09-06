@@ -27,6 +27,11 @@ const featureLine = "  { title: 'Planner Assistant', text: 'Translate teacher re
 core = core.replace(featureLine, '');
 write('src/scripts/000-core.js', core);
 
+let featurePack = read('src/scripts/025-classroom-feature-pack-v66.js');
+featurePack = featurePack.replace('    window.PlannerAssistantV710,\n', '');
+featurePack = featurePack.replace("document.body.dataset.featurePack = '7.2.1';", "document.body.dataset.featurePack = '7.2.2';");
+write('src/scripts/025-classroom-feature-pack-v66.js', featurePack);
+
 let sw = read('service-worker.js');
 sw = sw.replace('classroom-seating-planner-v7.2.1-pwa1', 'classroom-seating-planner-v7.2.2-pwa1');
 write('service-worker.js', sw);
@@ -69,5 +74,11 @@ for (const file of [
   'tests/browser/planner-assistant-v710.spec.mjs',
   'tests/browser/ui-audit-v721.spec.mjs'
 ]) fs.rmSync(file, { force:true });
+
+// Refuse to complete if any active JavaScript module still references the removed API.
+const leftovers = fs.readdirSync('src/scripts')
+  .filter(file => file.endsWith('.js'))
+  .filter(file => /PlannerAssistantV710|plannerAssistantV710/.test(read(`src/scripts/${file}`)));
+if (leftovers.length) throw new Error(`Planner Assistant references remain in: ${leftovers.join(', ')}`);
 
 console.log('Planner Assistant removed for V7.2.2.');
