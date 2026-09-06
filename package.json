@@ -8,6 +8,7 @@
     "build": "node tools/build-single-file.mjs",
     "check": "node tools/validate-release.mjs",
     "test": "npm run check",
+    "test:smoke": "playwright test tests/browser/critical-smoke.spec.mjs --project=desktop-chromium --project=mobile-chromium --workers=1 --retries=0 --trace=off",
     "test:browser": "playwright test",
     "test:assistant": "playwright test tests/browser/planner-assistant-v710.spec.mjs tests/browser/planner-assistant-v730.spec.mjs tests/browser/ui-audit-v721.spec.mjs tests/browser/ui-audit-v721-hotfix.spec.mjs"
   },
