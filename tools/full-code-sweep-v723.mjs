@@ -57,10 +57,6 @@ let security = read('SECURITY.md');
 security = replaceAll(security, 'Security fixes target V7.2.2, the current hosted and portable production release.', `Security fixes target V${VERSION}, the current hosted and portable production release.`);
 write('SECURITY.md', security);
 
-let ci = read('.github/workflows/ci.yml');
-ci = replaceAll(ci, 'Validate deterministic V7.2.2 release', `Validate deterministic V${VERSION} release`);
-write('.github/workflows/ci.yml', ci);
-
 for (const file of [
   'tests/browser/planner-packs-v720.spec.mjs',
   'tests/browser/digital-twin-v700.spec.mjs',
