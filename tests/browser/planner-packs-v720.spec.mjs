@@ -116,7 +116,7 @@ async function seedPackClass(page) {
 
 test('V7.2 Planner Packs module and public format are present', async ({ page }) => {
   await ready(page);
-  await expect(page.locator('meta[name="app-version"]')).toHaveAttribute('content', '7.2.1');
+  await expect(page.locator('meta[name="app-version"]')).toHaveAttribute('content', '7.2.3');
   const result = await page.evaluate(() => ({
     version:window.PlannerPacksV720?.version,
     format:window.PlannerPacksV720?.format,

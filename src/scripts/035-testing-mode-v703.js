@@ -109,7 +109,7 @@ window.TestingModeV703 = (() => {
 
   function schedulePersist(reason = 'testing-mode') {
     try { persistActiveClass?.(); } catch (_) { /* best effort */ }
-    try { scheduleLinkedAutoSave?.(reason); } catch (_) { /* compatibility */ }
+    try { scheduleLinkedAutoSave?.(reason); } catch (_) {}
     try { persistFreeformGeometrySession?.(reason); } catch (_) { /* optional */ }
   }
 

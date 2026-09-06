@@ -1,12 +1,12 @@
-## 7.2.2 - 2026-09-06
+## 7.2.3 - 2026-09-06
 
-### Planner Assistant removal
+### Repository and maintenance cleanup
 
-- Removed the floating Planner Assistant dock and command interpreter from the active application.
-- Removed the Assistant command schema, documentation, and Assistant-specific browser regression coverage.
-- Preserved Seat Guidance, Classroom Intelligence, Activity Layouts, Station Rotations, Testing Mode, Guided Help, seating rules, and all normal manual/automatic seating workflows.
-- Removed Assistant command-history behavior from the active product; existing stale local Assistant history is ignored.
-- Planner data schema remains 13 and encryption envelope remains 3.
+- Ran a full active-bundle unused-declaration audit across all 37 shipped JavaScript modules; no unused variables or functions were reported.
+- Removed stale release-version assertions from browser regression tests and synchronized current release metadata across package, app, PWA cache, feature-pack marker, documentation, and validation.
+- Removed obsolete documentation and validation references for features that are no longer part of the active product.
+- Removed maintenance-only compatibility comments that no longer describe a live compatibility path.
+- Preserved schema 13, encryption envelope 3, storage compatibility, seating engines, Drive/Classroom integration, Planner Packs, Activity Layouts, Station Rotations, Testing Mode, Classroom Intelligence, and Guided Help.
 
 ## 7.2.1 - 2026-09-05
 
@@ -35,20 +35,6 @@
 - Added a bundled Classroom Essentials starter pack with reusable front/aisle/accessibility presets and a quiet-testing profile.
 - Planner Packs stay out of Presentation mode and print output.
 - Planner data schema remains 13 and encryption envelope remains 3; the pack schema is a separate public interchange contract.
-
-## 7.1.0 - 2026-09-05
-
-### Planner Assistant
-- Added a browser-local deterministic Planner Assistant command bar available throughout the normal planning workflow.
-- Natural-language classroom requests translate into explicit existing planner actions instead of hidden AI-owned rules.
-- Added non-destructive interpretation and impact previews before mutating requirements, pair rules, group rules, or Activity Layout selection.
-- Added student-name ambiguity detection; multiple matches are shown and the assistant refuses to guess.
-- Added commands for valid-seat guidance, student-placement explanations, conflict-cause summaries, individual seating requirements, together/apart rules, Testing Mode previews, Station Rotations, Activity Layout switching, and Classroom Intelligence repair previews.
-- Mutating assistant actions enter the existing undo path and use normal class persistence/autosave.
-- Added a small per-class browser-local command history with explicit clear control; history is not part of planner save/export data.
-- Added public planner command preview schema at schemas/planner-command-v1.schema.json for future optional interpreters/providers to target the same explicit action contract.
-- Added responsive desktop/mobile regression coverage and kept the assistant out of Presentation mode and print output.
-- Planner data schema remains 13 and encryption envelope remains 3.
 
 ## 7.0.3 - 2026-09-04
 

@@ -154,7 +154,7 @@ window.StationRotationsV702 = (() => {
 
   function schedulePersist(reason = 'station-rotations') {
     try { persistActiveClass?.(); } catch (_) { /* best effort */ }
-    try { scheduleLinkedAutoSave?.(reason); } catch (_) { /* compatibility */ }
+    try { scheduleLinkedAutoSave?.(reason); } catch (_) {}
   }
 
   function announce(message) {
