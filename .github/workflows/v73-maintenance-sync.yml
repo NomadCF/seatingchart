@@ -21,7 +21,9 @@ jobs:
         with:
           node-version: '24'
       - name: Synchronize V7.3 release surfaces
-        run: python3 tools/v73-maintenance-sync.py
+        run: |
+          python3 tools/v73-maintenance-sync.py
+          find src -type f \( -name '*.js' -o -name '*.css' -o -name '*.html' -o -name '*.json' \) -print0 | xargs -0 sed -i 's/[[:space:]]\+$//'
       - name: Install dependencies
         run: npm install --no-package-lock
       - name: Build and synchronize generated HTML
@@ -45,6 +47,6 @@ jobs:
           fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add README.md CHANGELOG.md docs/WCAG-2.2-AA-AUDIT.md src/index.template.html src/scripts/000-core.js index.html dist/Classroom-Seating-Planner.html
+          git add README.md CHANGELOG.md docs/WCAG-2.2-AA-AUDIT.md src/ index.html dist/Classroom-Seating-Planner.html
           git commit -m 'Synchronize active V7.3 release files'
           git push
