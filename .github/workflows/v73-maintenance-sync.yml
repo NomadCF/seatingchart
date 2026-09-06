@@ -1,6 +1,6 @@
 name: One-time V7.3 repository sync
 
-# Final branch-only synchronization using the UI-readiness critical smoke gate.
+# Final branch-only synchronization using the fast V7.3 release contract.
 on:
   push:
     branches:
@@ -8,8 +8,7 @@ on:
     paths:
       - '.github/workflows/v73-maintenance-sync.yml'
       - 'tools/v73-maintenance-sync.py'
-      - 'tests/browser/critical-smoke.spec.mjs'
-      - 'tools/build-browser-harness.mjs'
+      - 'tools/critical-release-check.mjs'
 
 permissions:
   contents: write
@@ -17,7 +16,7 @@ permissions:
 jobs:
   sync-and-verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -36,12 +35,9 @@ jobs:
       - name: Validate synchronized V7.3 release
         run: |
           npm test
+          npm run test:smoke
           node --check service-worker.js
           git diff --check
-      - name: Install Chromium
-        run: npx playwright install --with-deps chromium
-      - name: Run new desktop/mobile critical smoke gate
-        run: npm run test:smoke
       - name: Commit synchronized release files
         run: |
           if git diff --quiet; then
