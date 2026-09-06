@@ -1,5 +1,6 @@
 name: One-time V7.3 repository sync
 
+# Final branch-only synchronization using the modular critical-smoke harness.
 on:
   push:
     branches:
