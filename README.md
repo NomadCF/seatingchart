@@ -297,7 +297,7 @@ npm run test:smoke
 npm run test:browser
 ```
 
-`npm run build` assembles the portable HTML from the committed modular source. Normal CI runs deterministic release validation plus one consolidated critical smoke path on desktop and mobile. The complete historical browser suite runs on the scheduled/manual full-regression workflow; see [`docs/CI.md`](docs/CI.md).
+`npm run build` assembles the portable HTML from the committed modular source. Normal CI runs deterministic release validation and a fast critical V7.3 release-contract check without downloading Chromium. The complete historical browser suite runs on the scheduled/manual full-regression workflow; see [`docs/CI.md`](docs/CI.md).
 
 The legacy `npm run migrate:monolith-to-src` command exists for one-way migration/recovery and is not part of normal development.
 

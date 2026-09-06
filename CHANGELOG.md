@@ -19,9 +19,9 @@
 - Synchronized canonical V7.3.0 version metadata across the HTML template, generated app, README, package metadata, changelog, and PWA cache namespace.
 - Added release validation that derives the expected version from `package.json` and rejects drift across canonical release surfaces.
 - Synchronized the tracked `dist/Classroom-Seating-Planner.html` portable build with modular source and added CI protection against stale generated outputs.
-- Replaced the duplicated per-push desktop/mobile/Planner Assistant full-regression matrix with a consolidated desktop/mobile critical smoke gate.
+- Replaced the duplicated per-push desktop/mobile/Planner Assistant full-regression matrix with one fast deterministic build and critical V7.3 release-contract gate.
 - Moved the complete browser regression suite to a scheduled/manual workflow, removed duplicate Assistant execution, disabled automatic retries, and added hard job time limits.
-- Updated Planner Assistant and CI documentation for the active V7.3 release.
+- Updated Planner Assistant, privacy/security/data-handling, accessibility, release, and CI documentation for the active V7.3 release.
 
 
 ## 7.2.1 - 2026-09-05
