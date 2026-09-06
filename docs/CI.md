@@ -7,9 +7,17 @@ Classroom Seating Planner keeps the normal merge gate intentionally small. The a
 `.github/workflows/ci.yml` runs two jobs:
 
 1. **build-check** - installs the small Node dependency set, rebuilds the portable HTML, verifies `index.html` and the tracked `dist/Classroom-Seating-Planner.html` match modular source, validates canonical release metadata, parses public schemas, checks service-worker syntax, and uploads the portable build.
-2. **critical-smoke** - installs Chromium once and runs `tests/browser/critical-smoke.spec.mjs` against both desktop and mobile projects. The smoke path checks startup, the V7.3 version surface, first-run encryption setup, PWA companion files, the five primary workflow stages, Presentation Mode, core controls, page-level overflow, and uncaught runtime errors.
+2. **critical-smoke** - installs Chromium once and runs `tests/browser/critical-smoke.spec.mjs` against desktop and mobile. The smoke path checks startup, the V7.3 version surface, first-run encryption setup, PWA companion files, the five primary workflow stages, Presentation Mode, core controls, page-level overflow, and uncaught runtime errors.
 
 The normal gate does **not** run every historical feature suite.
+
+### Why the smoke test uses a modular browser harness
+
+The shipped application remains the generated single-file `index.html`. Its application bundle is roughly 2.9 MB of inline JavaScript. Small GitHub-hosted headless Chromium runners can spend more than a minute compiling that single inline block before Playwright can interact with the page, even though the same application is usable in normal desktop browsers.
+
+`npm run test:smoke` therefore generates an ignored `critical-smoke.html` with `tools/build-browser-harness.mjs`. The harness uses the **same HTML template, CSS, 42 JavaScript modules, and manifest order** as the production build, but loads the modules as same-origin script files so Chromium can parse and compile them incrementally. The smoke test also fetches the exact production `index.html` and verifies its V7.3 version surface.
+
+This does not replace production-build validation. `build-check` still proves that both tracked portable HTML files are deterministic rebuilds of the modular source. The scheduled/manual full regression continues to exercise the actual portable `index.html` bundle.
 
 ## Full browser regression
 
