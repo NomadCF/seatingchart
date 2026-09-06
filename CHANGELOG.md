@@ -1,3 +1,13 @@
+## 7.2.2 - 2026-09-06
+
+### Planner Assistant removal
+
+- Removed the floating Planner Assistant dock and command interpreter from the active application.
+- Removed the Assistant command schema, documentation, and Assistant-specific browser regression coverage.
+- Preserved Seat Guidance, Classroom Intelligence, Activity Layouts, Station Rotations, Testing Mode, Guided Help, seating rules, and all normal manual/automatic seating workflows.
+- Removed Assistant command-history behavior from the active product; existing stale local Assistant history is ignored.
+- Planner data schema remains 13 and encryption envelope remains 3.
+
 ## 7.2.1 - 2026-09-05
 
 ### Code audit and maintenance

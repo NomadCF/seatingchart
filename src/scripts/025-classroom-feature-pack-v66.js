@@ -15,7 +15,6 @@ window.ClassroomFeaturePackV66 = (() => {
     window.ActivityLayoutsV701,
     window.StationRotationsV702,
     window.TestingModeV703,
-    window.PlannerAssistantV710,
     window.PlannerPacksV720
   ].filter(Boolean);
 
@@ -27,7 +26,7 @@ window.ClassroomFeaturePackV66 = (() => {
 
   function afterReady() {
     modules().forEach(module => module.afterReady?.());
-    document.body.dataset.featurePack = '7.2.1';
+    document.body.dataset.featurePack = '7.2.2';
   }
 
   return Object.freeze({ install, afterReady });

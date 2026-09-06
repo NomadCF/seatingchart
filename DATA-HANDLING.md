@@ -29,10 +29,6 @@ The application should make retention visible and controllable. Teachers should 
 Exports should identify their intended audience where practical and default to the minimum information required for that audience. Anonymous, room-only, student-facing, substitute, support-team, and teacher-facing outputs should remain distinct rather than relying on one all-data export.
 
 
-## Planner Assistant command history
-
-The V7.2.1 production release retains the V7.1 Planner Assistant behavior and stores up to 20 recent Planner Assistant commands per class in browser local storage so a teacher can rerun a request. Command text may contain student names or classroom details. This history stays on the current browser, is not added to planner save files or exports, is not sent to an external AI service by the built-in interpreter, and can be cleared from the Planner Assistant. Clearing browser data also removes it.
-
 ## Planner Packs
 
 V7.2.1 retains the V7.2 Planner Packs model: Planner Packs are reusable configuration files and are not planner save files. The built-in pack builder removes meaningful structured roster/student fields, seat assignments, student-specific distance relationships, student-to-zone/group links, and categorized student notes before a pack is created. Imported pack files that declare or contain meaningful structured student/roster data are refused. Floor-plan images are excluded from generated packs by default and require explicit opt-in because images can contain identifying classroom information. Pack names, descriptions, object labels, and station instructions are free text and are not semantically inspected, so users must review that text before sharing. Installed packs are stored in this browser's existing IndexedDB store and are not automatically inserted into planner saves or exports; applying selected pack content copies only the chosen reusable components into the current planner.

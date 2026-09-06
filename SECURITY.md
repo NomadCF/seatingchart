@@ -2,7 +2,7 @@
 
 ## Supported version
 
-Security fixes target V7.2.1, the current hosted and portable production release. Later experimental branches are not the production support baseline unless explicitly promoted.
+Security fixes target V7.2.2, the current hosted and portable production release. Later experimental branches are not the production support baseline unless explicitly promoted.
 
 ## Reporting a vulnerability
 

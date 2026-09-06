@@ -23,13 +23,13 @@ jobs:
           node-version: '24'
       - name: Install build dependencies
         run: npm install --no-package-lock
-      - name: Validate deterministic V7.2.1 release
+      - name: Validate deterministic V7.2.2 release
         run: npm test
       - name: Verify committed portable build matches source
         run: git diff --exit-code -- dist/Classroom-Seating-Planner.html
       - name: Validate JSON schemas
         run: |
-          node -e "for (const f of ['schemas/planner-v13.schema.json','schemas/envelope-v3.schema.json','schemas/roster-import-v1.schema.json','schemas/planner-command-v1.schema.json','schemas/planner-pack-v1.schema.json']) JSON.parse(require('fs').readFileSync(f,'utf8')); console.log('Schemas parse cleanly.')"
+          node -e "for (const f of ['schemas/planner-v13.schema.json','schemas/envelope-v3.schema.json','schemas/roster-import-v1.schema.json','schemas/planner-pack-v1.schema.json']) JSON.parse(require('fs').readFileSync(f,'utf8')); console.log('Schemas parse cleanly.')"
       - name: Check service worker syntax
         run: node --check service-worker.js
       - name: Check whitespace
