@@ -6,10 +6,9 @@
   "scripts": {
     "migrate:monolith-to-src": "node tools/split-monolith.mjs",
     "build": "node tools/build-single-file.mjs",
-    "build:smoke-harness": "node tools/build-browser-harness.mjs",
     "check": "node tools/validate-release.mjs",
     "test": "npm run check",
-    "test:smoke": "npm run build:smoke-harness && playwright test tests/browser/critical-smoke.spec.mjs --project=desktop-chromium --project=mobile-chromium --workers=1 --retries=0 --trace=off",
+    "test:smoke": "node tools/critical-release-check.mjs",
     "test:browser": "playwright test",
     "test:assistant": "playwright test tests/browser/planner-assistant-v710.spec.mjs tests/browser/planner-assistant-v730.spec.mjs tests/browser/ui-audit-v721.spec.mjs tests/browser/ui-audit-v721-hotfix.spec.mjs"
   },
