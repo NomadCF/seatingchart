@@ -28,6 +28,7 @@ core = replace_once(
     "  supportUrl: 'https://github.com/NomadCF/seatingchart/issues',\n  repositoryUrl: 'https://github.com/NomadCF/seatingchart'",
     'repository/support URLs'
 )
+core = core.replace("  anchor.remove();\n   \n  window.setTimeout", "  anchor.remove();\n\n  window.setTimeout", 1)
 core_path.write_text(core)
 
 readme_path = Path('README.md')
