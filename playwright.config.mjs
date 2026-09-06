@@ -8,11 +8,11 @@ export default defineConfig({
   // The portable app is a multi-megabyte single HTML document. Loading several
   // fresh copies in parallel on a small CI runner can starve Chromium long
   // enough that DOMContentLoaded never arrives before the test timeout.
-  // Desktop and mobile already run in separate GitHub Actions jobs, so one
-  // worker per job keeps the browser isolated without sacrificing matrix-level
-  // parallelism.
+  // Keep one worker per runner; workflow-level jobs provide the parallelism.
   workers: process.env.CI ? 1 : undefined,
-  retries: process.env.CI ? 1 : 0,
+  // A failed regression should report once. Retrying a 90-second browser test
+  // turned ordinary failures into multi-minute CI stalls without adding signal.
+  retries: 0,
   reporter: [['list'], ['html', { outputFolder: 'playwright-report', open: 'never' }]],
   use: {
     baseURL: 'http://127.0.0.1:4173',
