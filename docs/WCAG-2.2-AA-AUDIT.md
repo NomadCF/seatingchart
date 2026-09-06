@@ -4,7 +4,7 @@ Classroom Seating Planner is interaction-heavy, so accessibility review must inc
 
 ## Automated checks
 
-The normal V7.3 critical smoke gate verifies startup, core workflow navigation, first-run security setup, hosted PWA files, Presentation Mode, uncaught runtime errors, and page-level desktop/mobile overflow. The complete historical Playwright suite runs separately on the scheduled/manual full-regression workflow described in `docs/CI.md`.
+The normal V7.3 merge gate verifies deterministic release/build integrity and the critical application contract without running a heavyweight browser matrix. The complete historical Playwright suite, including desktop/mobile layout coverage, runs separately on the scheduled/manual full-regression workflow described in `docs/CI.md`.
 
 Future CI expansion should add an accessibility engine such as axe-core when the dependency is approved. Automated scanners do not replace the manual checks below.
 
