@@ -37,6 +37,24 @@ jobs:
           console.log(`AUDIT_UNUSED_COUNT ${messages.length}`);
           for (const m of messages) console.log(`AUDIT_UNUSED line=${m.line} col=${m.column} ${m.message}`);
           NODE
+      - name: Report static DOM id references with no template target
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const manifest = JSON.parse(fs.readFileSync('src/manifest.json','utf8'));
+          const template = fs.readFileSync('src/index.template.html','utf8');
+          const scripts = manifest.scriptFiles.map(file => fs.readFileSync(`src/scripts/${file}`,'utf8')).join('\n');
+          const ids = new Set([...template.matchAll(/\bid=["']([^"']+)["']/g)].map(m => m[1]));
+          const refs = new Set();
+          for (const re of [/\bel\(["']([^"']+)["']\)/g,/getElementById\(["']([^"']+)["']\)/g,/querySelector\(["']#([A-Za-z][\w:.-]*)["']\)/g,/querySelectorAll\(["']#([A-Za-z][\w:.-]*)/g]) {
+            for (const m of scripts.matchAll(re)) refs.add(m[1]);
+          }
+          const dynamicPrefixes = ['v4','v5','v6','v7','plannerPacks','activityLayouts','stationRotations','testingMode','digitalTwin'];
+          const missing = [...refs].filter(id => !ids.has(id) && !dynamicPrefixes.some(prefix => id.startsWith(prefix))).sort();
+          console.log(`AUDIT_STATIC_DOM_REFS ${refs.size}`);
+          console.log(`AUDIT_MISSING_STATIC_DOM_IDS ${missing.length}`);
+          for (const id of missing) console.log(`AUDIT_MISSING_DOM_ID ${id}`);
+          NODE
       - name: Report stale and compatibility references
         run: |
           echo '--- REMOVED FEATURE REFERENCES ---'
