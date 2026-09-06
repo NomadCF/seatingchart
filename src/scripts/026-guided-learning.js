@@ -854,7 +854,7 @@ const GuidedLearning = (() => {
           return { ready: true, target: null, reason: '', action: null, actionLabel: '', actionComplete: true };
         }
       } catch {
-         
+
       }
     }
     let explicitContextReady = true;

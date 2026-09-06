@@ -6,7 +6,7 @@
   <meta name="license" content="MIT License" />
   <meta name="spdx-license-identifier" content="MIT" />
   <meta name="copyright" content="Copyright (c) 2026 Chris L. Franklin" />
-  <meta name="app-version" content="7.2.1" />
+  <meta name="app-version" content="7.3.0" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com https://www.paypalobjects.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://www.googleapis.com https://classroom.googleapis.com https://accounts.google.com https://www.paypal.com https://www.paypalobjects.com https://www.google-analytics.com https://*.google-analytics.com; frame-src https://accounts.google.com https://docs.google.com https://drive.google.com https://www.paypal.com; img-src 'self' data: blob: https://www.paypalobjects.com https://www.google-analytics.com; font-src 'self' data:; worker-src 'self' blob:; manifest-src 'self'; media-src 'none'; object-src 'none'; base-uri 'none'; form-action 'self' https://www.paypal.com" />
   <meta name="application-name" content="Classroom Seating Planner" />
@@ -15,8 +15,8 @@
   <link rel="icon" href="./app-icon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="./app-icon-192.png" />
   <meta name="mobile-web-app-capable" content="yes" />
-  
-  <meta name="build-date" content="2026-09-05T12:20:00Z" />
+
+  <meta name="build-date" content="2026-09-06T03:40:00Z" />
   <title>Classroom Seating Planner</title>
   <style>@layer app-base, app-priority;@layer app-base{:root{--bg:#f6f7fb;--panel-2:#f0f3f8;--text:#172033;--muted:#607089;--border:#d8deea;--accent:#2f6fed;--accent-dark:#1e55bd;--seat:#e8f0ff;--seat-border:#9db7ef;--teacher:#fff3d6;--table:#e8f7ec;--door:#fce8ee;--empty:#fbfcff;--shadow:0 12px 30px rgba(29, 39, 61, 0.08);--radius:14px;font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif
 }*{box-sizing:border-box
@@ -6729,7 +6729,7 @@ const APP_CONFIG = Object.freeze({
   copyrightYear: '2026',
   releaseDate: '2026-09-05',
   releaseDateDisplay: 'September 5, 2026',
-  buildDate: '2026-09-05T12:20:00Z',
+  buildDate: '2026-09-06T03:40:00Z',
   commit: 'local',
   environment: 'production',
   dataSchemaVersion: 13,
@@ -6740,8 +6740,8 @@ const APP_CONFIG = Object.freeze({
   googleDriveAppProperty: 'classroom-seating-planner',
   googlePickerApiKey: "",
   googlePickerAppId: '288395515246',
-  supportUrl: '',
-  repositoryUrl: ''
+  supportUrl: 'https://github.com/NomadCF/seatingchart/issues',
+  repositoryUrl: 'https://github.com/NomadCF/seatingchart'
 });
 
 const PAYPAL_DONATION_CONFIG = Object.freeze({
@@ -6882,8 +6882,8 @@ const GROUP_TYPE_DESCRIPTIONS = Object.freeze({
 });
 
 
- 
- 
+
+
 const LEGACY_SCHEMA_12_GROUP_FIELDS = Object.freeze({
   collection: 'bubbles',
   anchorIds: 'anchorBubbleIds',
@@ -7736,7 +7736,7 @@ function mergePageSettingsCore(value) {
       hideSettings: true,
       hidePrint: visibility.hidePrint ?? DEFAULT_PAGE_SETTINGS.visibility.hidePrint,
       hideLayoutTools: true,
-      hideStudentsPanel: true,  
+      hideStudentsPanel: true,
       hideStatusPanel: true,
       hideChartActions: true,
       forceNamesOnly: visibility.forceNamesOnly ?? DEFAULT_PAGE_SETTINGS.visibility.forceNamesOnly,
@@ -7757,8 +7757,8 @@ function pageSettings() {
 function mergeImportedPageSettings(value) {
   const current = uiState.pageSettings ? mergePageSettings(uiState.pageSettings) : mergePageSettings(null);
   const imported = mergePageSettings(value || {});
-   
-   
+
+
   return {
     ...imported,
     googleDriveClientId: current.googleDriveClientId || APP_CONFIG.googleDriveClientId,
@@ -8690,8 +8690,8 @@ function applyPageLoadDefaults(cfg) {
 
   const productWorkspace = document.body.classList.contains('product-v4');
   if (productWorkspace) {
-     
-     
+
+
     document.body.classList.remove('header-collapsed', 'left-collapsed', 'right-collapsed');
     WorkspaceLayoutV41.applyPageLoadDefaults(cfg);
   } else {
@@ -10240,8 +10240,8 @@ function prepareGridMirrorFromFreeformSeats({ clearUnlockedAssignments = false }
   state.cols = Math.max(1, Math.min(30, cols));
   state.rows = Math.max(1, Math.min(30, rows));
   ensureGrid();
-   
-   
+
+
   seats = freeformSeatObjectsSorted();
   const entries = Object.entries(state.cells).sort(compareGridCellEntries);
   entries.forEach(([, cell]) => {
@@ -10419,10 +10419,10 @@ function ensureFreeformLayout({ rebuildMissing = false } = {}) {
     state.freeformLayout.objects = createFreeformObjectsFromGrid({ keepAssignments: true });
     state.freeformLayout.initialized = true;
   } else if (objects.length && rebuildMissing) {
-     
-     
-     
-     
+
+
+
+
     const existingKeys = new Set(objects.map(obj => String(obj.cellKey || obj.id)));
     const additions = createFreeformObjectsFromGrid({ keepAssignments: true }).filter(obj => !existingKeys.has(String(obj.cellKey || obj.id)));
     if (additions.length) state.freeformLayout.objects.push(...additions.map((obj, index) => normalizeFreeformObject(obj, objects.length + index)));
@@ -10443,9 +10443,9 @@ function rebuildFreeformFromGrid({ keepAssignments = true } = {}) {
 
 function syncGridAssignmentsToFreeformByPosition() {
   ensureFreeformLayout({ rebuildMissing: true });
-   
-   
-   
+
+
+
   const gridSeats = gridSeatEntriesSorted().map(([, cell]) => cell);
   const seats = freeformSeatObjectsSorted();
   seats.forEach((obj, index) => {
@@ -10529,8 +10529,8 @@ function syncFreeformControlsFromState() {
 }
 
 function freeformSnap(value) {
-   
-   
+
+
   const layout = state.freeformLayout && state.freeformLayout.canvas ? state.freeformLayout : normalizeFreeformLayout(state.freeformLayout);
   const size = Math.max(5, Number(layout.canvas?.gridSize) || 40);
   const numeric = Number(value);
@@ -10757,11 +10757,11 @@ function commitFreeformLayoutChange(reason = 'freeform-edit', { render = true, s
   const editedSnapshot = captureFreeformObjectStateSnapshot();
   ensureFreeformLayout();
   restoreFreeformGeometryFromCache();
-   
-   
-   
-   
-   
+
+
+
+
+
   restoreFreeformObjectStateSnapshot(editedSnapshot, { includeAssignments: true });
   if (syncToGrid) syncFreeformAssignmentsToGridByPosition();
   restoreFreeformObjectStateSnapshot(editedSnapshot, { includeAssignments: true });
@@ -11999,7 +11999,7 @@ function currentRuleSeatDescriptors() {
     const seats = ModernizationSuite?.buildGeneratorSeats?.();
     if (Array.isArray(seats)) return seats;
   } catch {
-     
+
   }
   return Object.entries(state.cells || {}).filter(([, cell]) => cell?.type === 'seat').map(([key, cell]) => ({
     key, label: `Seat ${cell.row},${cell.col}`, row: Number(cell.row) || 1, col: Number(cell.col) || 1,
@@ -12634,7 +12634,7 @@ function migrateLegacyGroupTerminologyDocument(document) {
         snapshot.data = JSON.stringify(parsed);
       }
     } catch {
-       
+
     }
   });
   return document;
@@ -14164,10 +14164,10 @@ function calculateCellHeight(lookups = buildLookupMaps()) {
     const groupRows = Math.ceil(Math.max(studentGroupCount, anchorCount) / 2);
     const nameLength = student ? studentDisplay(student).length : objectLabel(cell.type).length;
     const nameRows = Math.max(1, Math.ceil(nameLength / 15));
-    let actionCount = cell.type === 'seat' ? 1 : 0;  
-    if (student) actionCount += 2;  
-    if (anchorCount) actionCount += 1;  
-    if (cell.type === 'blocked') actionCount += 1;  
+    let actionCount = cell.type === 'seat' ? 1 : 0;
+    if (student) actionCount += 2;
+    if (anchorCount) actionCount += 1;
+    if (cell.type === 'blocked') actionCount += 1;
     const actionRows = Math.ceil(actionCount / 2);
     const labelRows = 1 + (cell.manual ? 1 : 0) + Math.ceil(anchorCount / 3);
     const groupPadding = Math.max(0, groupRows) * 8;
@@ -14714,7 +14714,7 @@ function normalizeCellHeight(minHeight) {
   if (!cells.length) return;
   const floor = uiState.designMode ? Math.max(designCellHeight(), Number(minHeight) || designCellHeight()) : Math.max(normalCellFloor(), Number(minHeight) || normalCellFloor());
 
-   
+
   grid.style.gridAutoRows = 'auto';
   grid.style.setProperty('--cell-height', `${floor}px`);
   cells.forEach(cell => {
@@ -14722,7 +14722,7 @@ function normalizeCellHeight(minHeight) {
     cell.style.height = 'auto';
   });
 
-   
+
   void grid.offsetHeight;
   const tallest = cells.reduce((max, cell) => {
     const rectHeight = cell.getBoundingClientRect().height;
@@ -18086,7 +18086,7 @@ async function listGoogleDriveSaveFiles() {
       }, `Google Drive file ${file.name || file.id}`);
       found.set(file.id, file);
     } catch (error) {
-       
+
     }
   });
   return Array.from(found.values()).sort((a, b) => String(b.modifiedTime || '').localeCompare(String(a.modifiedTime || '')));
@@ -18772,7 +18772,7 @@ function triggerBlobDownload(filename, blob) {
   document.body.appendChild(anchor);
   anchor.click();
   anchor.remove();
-   
+
   window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
@@ -20487,7 +20487,7 @@ function loadSample() {
 }
 
 
- 
+
 
 function createHistorySnapshot() {
   persistActiveClass();
@@ -24115,7 +24115,7 @@ const WorkflowExpansion = (() => {
     return concerns;
   }
 
-   
+
   function exportAndDownload(scope = 'all') { confirmSensitiveOutput('JSON export', exportConcernsForScope(scope), () => exportAndDownloadCore(scope)); }
   function downloadSavePackage() { confirmSensitiveOutput('Backup package download', exportConcernsForScope('all'), () => downloadSavePackageCore()); }
   function downloadStudentDataJson() { confirmSensitiveOutput('Student data export', exportConcernsForScope('current'), () => downloadStudentDataJsonCore()); }
@@ -24603,7 +24603,7 @@ const WorkflowExpansion = (() => {
   });
 })();
 
- 
+
 let {
   mergePageSettings,
   updatePageSettingsForm,
@@ -27046,7 +27046,7 @@ The schema-compatible payload parsed successfully${encrypted ? ' and decrypted w
   function resolveFreeformOverlaps(){
     let pairs=freeformSeatOverlapPairs();if(!pairs.length){setLiveStatusMessage('No overlapping seat pairs need resolution.');return;}
     pushUndoSnapshot('Before resolving freeform overlaps');saveRoomVersion('Before overlap resolution',false);
-     
+
     pairs=freeformSeatOverlapPairs();
     const moved=new Set();
     const canvas=state.freeformLayout.canvas||{};
@@ -29519,7 +29519,7 @@ const StartupRecoveryV45 = (() => {
   }
 
   async function prepareFreshKeySetup() {
-     
+
     [PAGE_LOCK_CREDENTIAL_KEY, VISIBILITY_CREDENTIAL_KEY, SAVE_META_STORAGE_KEY, SAVE_SETUP_STORAGE_KEY, WELCOME_SETUP_STORAGE_KEY].forEach(key => safeStorageRemove('localStorage', key));
     clearPlannerWebStorage('sessionStorage');
     clearWrappedSessionEncryptionKeys();
@@ -45378,7 +45378,7 @@ const GuidedLearning = (() => {
           return { ready: true, target: null, reason: '', action: null, actionLabel: '', actionComplete: true };
         }
       } catch {
-         
+
       }
     }
     let explicitContextReady = true;

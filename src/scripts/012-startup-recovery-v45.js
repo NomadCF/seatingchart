@@ -255,7 +255,7 @@ const StartupRecoveryV45 = (() => {
   }
 
   async function prepareFreshKeySetup() {
-     
+
     [PAGE_LOCK_CREDENTIAL_KEY, VISIBILITY_CREDENTIAL_KEY, SAVE_META_STORAGE_KEY, SAVE_SETUP_STORAGE_KEY, WELCOME_SETUP_STORAGE_KEY].forEach(key => safeStorageRemove('localStorage', key));
     clearPlannerWebStorage('sessionStorage');
     clearWrappedSessionEncryptionKeys();

@@ -546,7 +546,7 @@ const WorkflowExpansion = (() => {
     return concerns;
   }
 
-   
+
   function exportAndDownload(scope = 'all') { confirmSensitiveOutput('JSON export', exportConcernsForScope(scope), () => exportAndDownloadCore(scope)); }
   function downloadSavePackage() { confirmSensitiveOutput('Backup package download', exportConcernsForScope('all'), () => downloadSavePackageCore()); }
   function downloadStudentDataJson() { confirmSensitiveOutput('Student data export', exportConcernsForScope('current'), () => downloadStudentDataJsonCore()); }
@@ -1034,7 +1034,7 @@ const WorkflowExpansion = (() => {
   });
 })();
 
- 
+
 let {
   mergePageSettings,
   updatePageSettingsForm,

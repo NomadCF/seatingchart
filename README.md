@@ -9,7 +9,7 @@ A free, open-source, privacy-conscious seating planner for educators. Design the
 
 [**Launch the hosted app**](https://nomadcf.github.io/seatingchart/) · [Privacy](PRIVACY.md) · [Security](SECURITY.md) · [Data handling](DATA-HANDLING.md) · [Changelog](CHANGELOG.md)
 
-![Version](https://img.shields.io/badge/version-7.2.0-2563eb?style=flat-square)
+![Version](https://img.shields.io/badge/version-7.3.0-2563eb?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-0f766e?style=flat-square)
 ![PWA](https://img.shields.io/badge/PWA-installable-7c3aed?style=flat-square)
 ![Local-first](https://img.shields.io/badge/data-local--first-0f766e?style=flat-square)
@@ -26,13 +26,17 @@ Classroom Seating Planner is built for the messy version of the problem: student
 
 The app combines **room design**, **student rules**, **manual placement**, **automatic plan generation**, **Classroom Intelligence**, **conflict review**, **history and fairness analysis**, and **privacy-controlled sharing** in one workflow.
 
+### V7.3.0 Planner Assistant workspace
+
+Planner Assistant now works as a class-scoped planning workspace instead of only a one-shot command bar. It keeps short conversational context for follow-ups, shows a working plan, ranks candidate seats, compares current and proposed placements, analyzes hardest-to-seat and unseated students, surfaces rule pressure and fairness information, and can open existing tools such as Testing Mode, Activity Layouts, Station Rotations, named plans, Today Mode, Planner Packs, snapshots, print, undo, and redo. Mutating requests still use explicit preview/apply steps and the normal undo/autosave paths, and the built-in interpreter remains browser-local and deterministic.
+
 ### V7.2.0 Planner Packs
 
 Package reusable classroom-planning knowledge without packaging the class itself. Planner Packs are portable JSON files that can contain room templates, student-need presets, custom room-object definitions, Activity Layouts, Station Rotation blueprints, and Testing Mode defaults. Build a pack from the current planner, install shared packs into a browser-local library, preview exactly what will be added, and apply only selected component types.
 
 V7.2 is deliberately privacy-guarded: generated packs strip seat assignments, roster/student IDs, private/substitute/public notes, student-to-zone links, and student-specific distance relationships. Floor-plan images are excluded by default and require explicit opt-in. Imported files declaring or carrying meaningful structured student data are refused. Pack names, descriptions, labels, and station instructions remain free text, so teachers should review that text before sharing. Packs work offline, require no account or server, and can be shared through Drive, email, GitHub, a district repository, or any normal file channel.
 
-### V7.1.0 Planner Assistant
+### V7.1.0 Planner Assistant foundation
 
 Use a browser-local command bar to describe classroom planning intent in ordinary language and translate it into explicit existing planner actions. V7.1.0 can show valid seats, explain a student's current placement, rank concrete conflict causes, add visible student requirements, create together/apart rules, open Station Rotations, switch Activity Layouts, request Testing Mode spacing, and launch Classroom Intelligence repair previews. Every mutating request shows its interpreted operations and impact before Apply, ambiguous student names are presented instead of guessed, and the interpreter makes no external AI/network call. Recent commands are stored only in this browser for the current class and can be cleared from the assistant.
 
@@ -245,7 +249,7 @@ Read the public [Privacy](PRIVACY.md), [Security](SECURITY.md), and [Data Handli
 - Reduced-motion support
 - Responsive/reflow-oriented layouts, collapsible panels, and focus mode
 - Adjustable display preferences, themes, seat text sizing, workspace zoom, shortcuts, and localization infrastructure
-- Quick Start, searchable reference help, guided lessons, practice classes, contextual Guide Me tools, diagnostics, and troubleshooting
+- Quick Start, searchable reference help, guided lessons, practice classes, centralized Help & Guides / Planner Assistant access, diagnostics, and troubleshooting
 
 </details>
 
@@ -279,7 +283,7 @@ The portable deliverable remains a single self-contained HTML application, but t
 
 - HTML shell: `src/index.template.html`
 - Styles: `src/styles/`
-- Ordered JavaScript modules: `src/scripts/` (38 modules in V7.2)
+- Ordered JavaScript modules: `src/scripts/` (declared in `src/manifest.json`)
 - Built portable file: `dist/Classroom-Seating-Planner.html`
 - Deployed hosted entry point: `index.html`
 
@@ -289,10 +293,11 @@ The portable deliverable remains a single self-contained HTML application, but t
 npm install
 npm run build
 npm test
+npm run test:smoke
 npm run test:browser
 ```
 
-`npm run build` assembles the portable HTML from the committed modular source. CI validates release structure, schema/service-worker behavior, build parity, and desktop/mobile browser regression coverage.
+`npm run build` assembles the portable HTML from the committed modular source. Normal CI runs deterministic release validation plus one consolidated critical smoke path on desktop and mobile. The complete historical browser suite runs on the scheduled/manual full-regression workflow; see [`docs/CI.md`](docs/CI.md).
 
 The legacy `npm run migrate:monolith-to-src` command exists for one-way migration/recovery and is not part of normal development.
 
@@ -316,6 +321,8 @@ Additive fields remain allowed so minor releases can evolve without forcing ever
 | [`DATA-HANDLING.md`](DATA-HANDLING.md) | How classroom and diagnostic data are handled |
 | [`CHANGELOG.md`](CHANGELOG.md) | Release history and notable changes |
 | [`docs/OAUTH_DEPLOYMENT.md`](docs/OAUTH_DEPLOYMENT.md) | Google OAuth / Picker deployment guidance |
+| [`docs/PLANNER-ASSISTANT.md`](docs/PLANNER-ASSISTANT.md) | Current V7.3 Planner Assistant behavior and privacy model |
+| [`docs/CI.md`](docs/CI.md) | Fast merge gate, generated-file rules, and full regression workflow |
 | [`docs/WCAG-2.2-AA-AUDIT.md`](docs/WCAG-2.2-AA-AUDIT.md) | WCAG 2.2 AA-oriented release audit checklist |
 
 ---

@@ -1684,7 +1684,7 @@ function loadSample() {
 }
 
 
- 
+
 
 function createHistorySnapshot() {
   persistActiveClass();

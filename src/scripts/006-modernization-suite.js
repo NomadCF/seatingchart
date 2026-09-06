@@ -1518,7 +1518,7 @@ The schema-compatible payload parsed successfully${encrypted ? ' and decrypted w
   function resolveFreeformOverlaps(){
     let pairs=freeformSeatOverlapPairs();if(!pairs.length){setLiveStatusMessage('No overlapping seat pairs need resolution.');return;}
     pushUndoSnapshot('Before resolving freeform overlaps');saveRoomVersion('Before overlap resolution',false);
-     
+
     pairs=freeformSeatOverlapPairs();
     const moved=new Set();
     const canvas=state.freeformLayout.canvas||{};

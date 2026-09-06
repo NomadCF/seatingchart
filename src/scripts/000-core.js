@@ -8,7 +8,7 @@ const APP_CONFIG = Object.freeze({
   copyrightYear: '2026',
   releaseDate: '2026-09-05',
   releaseDateDisplay: 'September 5, 2026',
-  buildDate: '2026-09-05T12:20:00Z',
+  buildDate: '2026-09-06T03:40:00Z',
   commit: 'local',
   environment: 'production',
   dataSchemaVersion: 13,
@@ -19,8 +19,8 @@ const APP_CONFIG = Object.freeze({
   googleDriveAppProperty: 'classroom-seating-planner',
   googlePickerApiKey: "",
   googlePickerAppId: '288395515246',
-  supportUrl: '',
-  repositoryUrl: ''
+  supportUrl: 'https://github.com/NomadCF/seatingchart/issues',
+  repositoryUrl: 'https://github.com/NomadCF/seatingchart'
 });
 
 const PAYPAL_DONATION_CONFIG = Object.freeze({
@@ -161,8 +161,8 @@ const GROUP_TYPE_DESCRIPTIONS = Object.freeze({
 });
 
 
- 
- 
+
+
 const LEGACY_SCHEMA_12_GROUP_FIELDS = Object.freeze({
   collection: 'bubbles',
   anchorIds: 'anchorBubbleIds',
@@ -1015,7 +1015,7 @@ function mergePageSettingsCore(value) {
       hideSettings: true,
       hidePrint: visibility.hidePrint ?? DEFAULT_PAGE_SETTINGS.visibility.hidePrint,
       hideLayoutTools: true,
-      hideStudentsPanel: true,  
+      hideStudentsPanel: true,
       hideStatusPanel: true,
       hideChartActions: true,
       forceNamesOnly: visibility.forceNamesOnly ?? DEFAULT_PAGE_SETTINGS.visibility.forceNamesOnly,
@@ -1036,8 +1036,8 @@ function pageSettings() {
 function mergeImportedPageSettings(value) {
   const current = uiState.pageSettings ? mergePageSettings(uiState.pageSettings) : mergePageSettings(null);
   const imported = mergePageSettings(value || {});
-   
-   
+
+
   return {
     ...imported,
     googleDriveClientId: current.googleDriveClientId || APP_CONFIG.googleDriveClientId,
@@ -1969,8 +1969,8 @@ function applyPageLoadDefaults(cfg) {
 
   const productWorkspace = document.body.classList.contains('product-v4');
   if (productWorkspace) {
-     
-     
+
+
     document.body.classList.remove('header-collapsed', 'left-collapsed', 'right-collapsed');
     WorkspaceLayoutV41.applyPageLoadDefaults(cfg);
   } else {
@@ -3519,8 +3519,8 @@ function prepareGridMirrorFromFreeformSeats({ clearUnlockedAssignments = false }
   state.cols = Math.max(1, Math.min(30, cols));
   state.rows = Math.max(1, Math.min(30, rows));
   ensureGrid();
-   
-   
+
+
   seats = freeformSeatObjectsSorted();
   const entries = Object.entries(state.cells).sort(compareGridCellEntries);
   entries.forEach(([, cell]) => {
@@ -3698,10 +3698,10 @@ function ensureFreeformLayout({ rebuildMissing = false } = {}) {
     state.freeformLayout.objects = createFreeformObjectsFromGrid({ keepAssignments: true });
     state.freeformLayout.initialized = true;
   } else if (objects.length && rebuildMissing) {
-     
-     
-     
-     
+
+
+
+
     const existingKeys = new Set(objects.map(obj => String(obj.cellKey || obj.id)));
     const additions = createFreeformObjectsFromGrid({ keepAssignments: true }).filter(obj => !existingKeys.has(String(obj.cellKey || obj.id)));
     if (additions.length) state.freeformLayout.objects.push(...additions.map((obj, index) => normalizeFreeformObject(obj, objects.length + index)));
@@ -3722,9 +3722,9 @@ function rebuildFreeformFromGrid({ keepAssignments = true } = {}) {
 
 function syncGridAssignmentsToFreeformByPosition() {
   ensureFreeformLayout({ rebuildMissing: true });
-   
-   
-   
+
+
+
   const gridSeats = gridSeatEntriesSorted().map(([, cell]) => cell);
   const seats = freeformSeatObjectsSorted();
   seats.forEach((obj, index) => {
@@ -3808,8 +3808,8 @@ function syncFreeformControlsFromState() {
 }
 
 function freeformSnap(value) {
-   
-   
+
+
   const layout = state.freeformLayout && state.freeformLayout.canvas ? state.freeformLayout : normalizeFreeformLayout(state.freeformLayout);
   const size = Math.max(5, Number(layout.canvas?.gridSize) || 40);
   const numeric = Number(value);
@@ -4036,11 +4036,11 @@ function commitFreeformLayoutChange(reason = 'freeform-edit', { render = true, s
   const editedSnapshot = captureFreeformObjectStateSnapshot();
   ensureFreeformLayout();
   restoreFreeformGeometryFromCache();
-   
-   
-   
-   
-   
+
+
+
+
+
   restoreFreeformObjectStateSnapshot(editedSnapshot, { includeAssignments: true });
   if (syncToGrid) syncFreeformAssignmentsToGridByPosition();
   restoreFreeformObjectStateSnapshot(editedSnapshot, { includeAssignments: true });
@@ -5278,7 +5278,7 @@ function currentRuleSeatDescriptors() {
     const seats = ModernizationSuite?.buildGeneratorSeats?.();
     if (Array.isArray(seats)) return seats;
   } catch {
-     
+
   }
   return Object.entries(state.cells || {}).filter(([, cell]) => cell?.type === 'seat').map(([key, cell]) => ({
     key, label: `Seat ${cell.row},${cell.col}`, row: Number(cell.row) || 1, col: Number(cell.col) || 1,
@@ -5913,7 +5913,7 @@ function migrateLegacyGroupTerminologyDocument(document) {
         snapshot.data = JSON.stringify(parsed);
       }
     } catch {
-       
+
     }
   });
   return document;
@@ -7443,10 +7443,10 @@ function calculateCellHeight(lookups = buildLookupMaps()) {
     const groupRows = Math.ceil(Math.max(studentGroupCount, anchorCount) / 2);
     const nameLength = student ? studentDisplay(student).length : objectLabel(cell.type).length;
     const nameRows = Math.max(1, Math.ceil(nameLength / 15));
-    let actionCount = cell.type === 'seat' ? 1 : 0;  
-    if (student) actionCount += 2;  
-    if (anchorCount) actionCount += 1;  
-    if (cell.type === 'blocked') actionCount += 1;  
+    let actionCount = cell.type === 'seat' ? 1 : 0;
+    if (student) actionCount += 2;
+    if (anchorCount) actionCount += 1;
+    if (cell.type === 'blocked') actionCount += 1;
     const actionRows = Math.ceil(actionCount / 2);
     const labelRows = 1 + (cell.manual ? 1 : 0) + Math.ceil(anchorCount / 3);
     const groupPadding = Math.max(0, groupRows) * 8;
@@ -7993,7 +7993,7 @@ function normalizeCellHeight(minHeight) {
   if (!cells.length) return;
   const floor = uiState.designMode ? Math.max(designCellHeight(), Number(minHeight) || designCellHeight()) : Math.max(normalCellFloor(), Number(minHeight) || normalCellFloor());
 
-   
+
   grid.style.gridAutoRows = 'auto';
   grid.style.setProperty('--cell-height', `${floor}px`);
   cells.forEach(cell => {
@@ -8001,7 +8001,7 @@ function normalizeCellHeight(minHeight) {
     cell.style.height = 'auto';
   });
 
-   
+
   void grid.offsetHeight;
   const tallest = cells.reduce((max, cell) => {
     const rectHeight = cell.getBoundingClientRect().height;
@@ -11365,7 +11365,7 @@ async function listGoogleDriveSaveFiles() {
       }, `Google Drive file ${file.name || file.id}`);
       found.set(file.id, file);
     } catch (error) {
-       
+
     }
   });
   return Array.from(found.values()).sort((a, b) => String(b.modifiedTime || '').localeCompare(String(a.modifiedTime || '')));
@@ -12051,7 +12051,7 @@ function triggerBlobDownload(filename, blob) {
   document.body.appendChild(anchor);
   anchor.click();
   anchor.remove();
-   
+
   window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 

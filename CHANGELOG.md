@@ -15,6 +15,25 @@
 - Kept the Assistant local and deterministic: classroom data is not sent to an external AI service, planner mutations remain preview/apply operations, and undo remains available.
 - Planner data schema remains 13 and encryption envelope remains 3.
 
+### Repository and CI maintenance
+- Synchronized canonical V7.3.0 version metadata across the HTML template, generated app, README, package metadata, changelog, and PWA cache namespace.
+- Added release validation that derives the expected version from `package.json` and rejects drift across canonical release surfaces.
+- Synchronized the tracked `dist/Classroom-Seating-Planner.html` portable build with modular source and added CI protection against stale generated outputs.
+- Replaced the duplicated per-push desktop/mobile/Planner Assistant full-regression matrix with a consolidated desktop/mobile critical smoke gate.
+- Moved the complete browser regression suite to a scheduled/manual workflow, removed duplicate Assistant execution, disabled automatic retries, and added hard job time limits.
+- Updated Planner Assistant and CI documentation for the active V7.3 release.
+
+
+## 7.2.1 - 2026-09-05
+
+### Code audit and maintenance
+- Removed proven-unused functions, parameters, locals, and an obsolete completed implementation-plan document.
+- Repaired stale autosave calls in Interoperability, Digital Twin, Activity Layouts, Station Rotations, Testing Mode, and Planner Packs so they use the canonical autosave scheduler.
+- Repaired the Digital Twin Freeform-mode transition to use the current layout-mode function.
+- Removed dead modal compatibility branches for APIs that no longer exist; current dialogs continue through the installed Dialog Manager.
+- Standardized Google Picker and Google Classroom access through the explicit `window.google` browser global.
+- Refreshed architecture/accessibility documentation and regenerated the portable single-file build.
+
 ## 7.2.0 - 2026-09-05
 
 ### Planner Packs ecosystem
@@ -31,15 +50,6 @@
 - Added a bundled Classroom Essentials starter pack with reusable front/aisle/accessibility presets and a quiet-testing profile.
 - Planner Packs stay out of Presentation mode and print output.
 - Planner data schema remains 13 and encryption envelope remains 3; the pack schema is a separate public interchange contract.
-
-## V7.2.1 - Code audit and maintenance
-
-- Removed proven-unused functions, parameters, locals, and an obsolete completed implementation-plan document.
-- Repaired stale autosave calls in Interoperability, Digital Twin, Activity Layouts, Station Rotations, Testing Mode, and Planner Packs so they use the canonical autosave scheduler.
-- Repaired the Digital Twin Freeform-mode transition to use the current layout-mode function.
-- Removed dead modal compatibility branches for APIs that no longer exist; current dialogs continue through the installed Dialog Manager.
-- Standardized Google Picker and Google Classroom access through the explicit `window.google` browser global.
-- Refreshed architecture/accessibility documentation and regenerated the portable single-file build.
 
 ## 7.1.0 - 2026-09-05
 
