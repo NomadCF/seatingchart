@@ -1,3 +1,14 @@
+## 7.2.1 - 2026-09-05
+
+### Code audit and maintenance
+
+- Removed proven-unused functions, parameters, locals, and an obsolete completed implementation-plan document.
+- Repaired stale autosave calls in Interoperability, Digital Twin, Activity Layouts, Station Rotations, Testing Mode, and Planner Packs so they use the canonical autosave scheduler.
+- Repaired the Digital Twin Freeform-mode transition to use the current layout-mode function.
+- Removed dead modal compatibility branches for APIs that no longer exist; current dialogs continue through the installed Dialog Manager.
+- Standardized Google Picker and Google Classroom access through the explicit `window.google` browser global.
+- Refreshed architecture/accessibility documentation and regenerated the portable single-file build.
+
 ## 7.2.0 - 2026-09-05
 
 ### Planner Packs ecosystem
@@ -14,15 +25,6 @@
 - Added a bundled Classroom Essentials starter pack with reusable front/aisle/accessibility presets and a quiet-testing profile.
 - Planner Packs stay out of Presentation mode and print output.
 - Planner data schema remains 13 and encryption envelope remains 3; the pack schema is a separate public interchange contract.
-
-## V7.2.1 - Code audit and maintenance
-
-- Removed proven-unused functions, parameters, locals, and an obsolete completed implementation-plan document.
-- Repaired stale autosave calls in Interoperability, Digital Twin, Activity Layouts, Station Rotations, Testing Mode, and Planner Packs so they use the canonical autosave scheduler.
-- Repaired the Digital Twin Freeform-mode transition to use the current layout-mode function.
-- Removed dead modal compatibility branches for APIs that no longer exist; current dialogs continue through the installed Dialog Manager.
-- Standardized Google Picker and Google Classroom access through the explicit `window.google` browser global.
-- Refreshed architecture/accessibility documentation and regenerated the portable single-file build.
 
 ## 7.1.0 - 2026-09-05
 
