@@ -19,8 +19,8 @@ const APP_CONFIG = Object.freeze({
   googleDriveAppProperty: 'classroom-seating-planner',
   googlePickerApiKey: "",
   googlePickerAppId: '288395515246',
-  supportUrl: '',
-  repositoryUrl: ''
+  supportUrl: 'https://github.com/NomadCF/seatingchart/issues',
+  repositoryUrl: 'https://github.com/NomadCF/seatingchart'
 });
 
 const PAYPAL_DONATION_CONFIG = Object.freeze({

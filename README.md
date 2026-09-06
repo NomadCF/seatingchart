@@ -9,7 +9,7 @@ A free, open-source, privacy-conscious seating planner for educators. Design the
 
 [**Launch the hosted app**](https://nomadcf.github.io/seatingchart/) · [Privacy](PRIVACY.md) · [Security](SECURITY.md) · [Data handling](DATA-HANDLING.md) · [Changelog](CHANGELOG.md)
 
-![Version](https://img.shields.io/badge/version-7.2.0-2563eb?style=flat-square)
+![Version](https://img.shields.io/badge/version-7.2.1-2563eb?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-0f766e?style=flat-square)
 ![PWA](https://img.shields.io/badge/PWA-installable-7c3aed?style=flat-square)
 ![Local-first](https://img.shields.io/badge/data-local--first-0f766e?style=flat-square)
@@ -25,6 +25,10 @@ A classroom rarely fits into a perfect grid, and students rarely come with no co
 Classroom Seating Planner is built for the messy version of the problem: students who need the front, students who should be separated, groups that should stay together or spread out, accessible seating, room zones, fixed objects, temporary absences, substitute-friendly charts, and plans that should not repeat the same placements forever.
 
 The app combines **room design**, **student rules**, **manual placement**, **automatic plan generation**, **Classroom Intelligence**, **conflict review**, **history and fairness analysis**, and **privacy-controlled sharing** in one workflow.
+
+### V7.2.1 current production release
+
+V7.2.1 is the active hosted and portable production baseline. It keeps the V7.2 Planner Packs feature set and adds the completed code-audit/UI-repair pass, including autosave path repairs, Digital Twin Freeform-mode repair, current Google Picker/Classroom globals, cleaned modal compatibility code, refreshed documentation, and a regenerated portable build. This is the last 7.x baseline with a recorded full desktop/mobile regression pass before later experimental work was archived.
 
 ### V7.2.0 Planner Packs
 
@@ -279,7 +283,7 @@ The portable deliverable remains a single self-contained HTML application, but t
 
 - HTML shell: `src/index.template.html`
 - Styles: `src/styles/`
-- Ordered JavaScript modules: `src/scripts/` (38 modules in V7.2)
+- Ordered JavaScript modules: `src/scripts/` (38 modules in V7.2.1)
 - Built portable file: `dist/Classroom-Seating-Planner.html`
 - Deployed hosted entry point: `index.html`
 
@@ -292,9 +296,7 @@ npm test
 npm run test:browser
 ```
 
-`npm run build` assembles the portable HTML from the committed modular source. CI validates release structure, schema/service-worker behavior, build parity, and desktop/mobile browser regression coverage.
-
-The legacy `npm run migrate:monolith-to-src` command exists for one-way migration/recovery and is not part of normal development.
+`npm run build` assembles the portable HTML from the committed modular source. Normal CI validates the deterministic V7.2.1 build, generated-file parity, schemas, and service-worker syntax in seconds. The complete Playwright desktop/mobile regression suite remains available through the scheduled/manual **Full browser regression** workflow and `npm run test:browser`.
 
 ### Public data contracts
 

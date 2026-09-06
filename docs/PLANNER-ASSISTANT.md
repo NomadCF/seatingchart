@@ -1,5 +1,7 @@
 # Planner Assistant
 
+**Applies to the current V7.2.1 production release.** The Planner Assistant was introduced in V7.1.0 and is retained in V7.2.1.
+
 V7.1.0 adds a browser-local, deterministic command layer over Classroom Seating Planner. It interprets teacher requests into the same explicit rules and tools already used by the application; it does not introduce a hidden seating model or require an external AI provider.
 
 ## Interaction model
