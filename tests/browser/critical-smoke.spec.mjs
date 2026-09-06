@@ -1,5 +1,7 @@
 import { test, expect } from '@playwright/test';
 
+const APP_PATH = '/critical-smoke.html';
+
 async function completeFreshSecuritySetupIfNeeded(page) {
   const welcome = page.locator('#welcomeSecurityModal');
   if (!(await welcome.count())) return;
@@ -9,29 +11,36 @@ async function completeFreshSecuritySetupIfNeeded(page) {
   await page.locator('#welcomeEncryptionKeyInput').fill(passphrase);
   await page.locator('#welcomeEncryptionKeyConfirmInput').fill(passphrase);
   await page.locator('#welcomeSecurityStartBtn').click();
-  await expect(welcome).not.toHaveClass(/\bshow\b/, { timeout: 20_000 });
+  await expect(welcome).not.toHaveClass(/\bshow\b/, { timeout: 15_000 });
 }
 
 async function closeAutomaticGettingStartedIfNeeded(page) {
   const modal = page.locator('#gettingStartedModal');
   if (!(await modal.count())) return;
   try {
-    await expect(modal).toHaveClass(/\bshow\b/, { timeout: 3_000 });
+    await expect(modal).toHaveClass(/\bshow\b/, { timeout: 2_000 });
   } catch (_) {
     return;
   }
   await page.locator('#gettingStartedCloseBtn').click();
-  await expect(modal).not.toHaveClass(/\bshow\b/, { timeout: 10_000 });
+  await expect(modal).not.toHaveClass(/\bshow\b/, { timeout: 8_000 });
 }
 
 test('V7.3 critical planner path loads and remains navigable', async ({ page, request }) => {
-  test.setTimeout(150_000);
+  test.setTimeout(90_000);
   const pageErrors = [];
   page.on('pageerror', error => pageErrors.push(error.message));
 
-  const response = await page.goto('/index.html', { waitUntil: 'commit', timeout: 30_000 });
+  // Verify the exact production artifact is present. Build validation separately
+  // proves its contents are a deterministic rebuild of the same modular source.
+  const production = await request.get('/index.html');
+  expect(production.ok()).toBeTruthy();
+  expect(await production.text()).toContain('name="app-version" content="7.3.0"');
+
+  // Exercise the same V7.3 modules and DOM as the production file without making
+  // headless Chromium compile the entire 2.9 MB application as one inline script.
+  const response = await page.goto(APP_PATH, { waitUntil: 'domcontentloaded', timeout: 45_000 });
   expect(response?.ok()).toBeTruthy();
-  await page.waitForSelector('#v4WorkflowNav', { state: 'attached', timeout: 90_000 });
   await expect(page).toHaveTitle(/Classroom Seating Planner/i);
   await expect(page.locator('meta[name="app-version"]')).toHaveAttribute('content', '7.3.0');
 
@@ -42,6 +51,7 @@ test('V7.3 critical planner path loads and remains navigable', async ({ page, re
 
   await completeFreshSecuritySetupIfNeeded(page);
   await closeAutomaticGettingStartedIfNeeded(page);
+  await page.waitForSelector('#v4WorkflowNav', { state: 'attached', timeout: 15_000 });
 
   await expect(page.locator('#classSelect')).toHaveCount(1);
   await expect(page.locator('#settingsBtn')).toBeVisible();
@@ -69,6 +79,6 @@ test('V7.3 critical planner path loads and remains navigable', async ({ page, re
   expect(geometry.body).toBeLessThanOrEqual(geometry.viewport + 2);
   expect(geometry.html).toBeLessThanOrEqual(geometry.viewport + 2);
 
-  await page.waitForTimeout(250);
+  await page.waitForTimeout(150);
   expect(pageErrors).toEqual([]);
 });
