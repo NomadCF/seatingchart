@@ -5,18 +5,46 @@ import { execFileSync } from 'node:child_process';
 
 const root = process.cwd();
 const normalize = s => s.replace(/\r\n/g, '\n');
-const deployed = normalize(fs.readFileSync(path.join(root, 'index.html'), 'utf8'));
+const readText = file => normalize(fs.readFileSync(path.join(root, file), 'utf8'));
+const deployed = readText('index.html');
+const packageJson = JSON.parse(readText('package.json'));
+const releaseVersion = String(packageJson.version || '').trim();
+if (!/^\d+\.\d+\.\d+$/.test(releaseVersion)) throw new Error(`Invalid package release version: ${releaseVersion || '(empty)'}`);
+const escapedVersion = releaseVersion.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const versionPattern = new RegExp(escapedVersion);
 
 for (const file of [
   'src/index.template.html',
   'src/manifest.json',
   'manifest.webmanifest',
   'service-worker.js',
+  'README.md',
+  'CHANGELOG.md',
   'schemas/roster-import-v1.schema.json',
   'schemas/planner-command-v1.schema.json',
   'schemas/planner-pack-v1.schema.json'
 ]) {
   if (!fs.existsSync(path.join(root, file))) throw new Error(`Missing required source/release asset: ${file}`);
+}
+
+const template = readText('src/index.template.html');
+const core = readText('src/scripts/000-core.js');
+const serviceWorker = readText('service-worker.js');
+const readme = readText('README.md');
+const changelog = readText('CHANGELOG.md');
+const committedPortable = fs.existsSync(path.join(root, 'dist', 'Classroom-Seating-Planner.html'))
+  ? readText('dist/Classroom-Seating-Planner.html')
+  : '';
+
+const canonicalVersionChecks = [
+  ['HTML template app-version', new RegExp(`name=["']app-version["']\\s+content=["']${escapedVersion}["']`, 'i').test(template)],
+  ['core APP_CONFIG.version', new RegExp(`version\\s*:\\s*["']${escapedVersion}["']`).test(core)],
+  ['README version badge', readme.includes(`version-${releaseVersion}-`)],
+  ['CHANGELOG current release heading', changelog.trimStart().startsWith(`## ${releaseVersion} -`)],
+  ['service worker cache version', serviceWorker.includes(`classroom-seating-planner-v${releaseVersion}-`)]
+];
+for (const [surface, ok] of canonicalVersionChecks) {
+  if (!ok) throw new Error(`Release version drift: ${surface} does not match package.json ${releaseVersion}.`);
 }
 
 JSON.parse(fs.readFileSync(path.join(root, 'schemas', 'planner-pack-v1.schema.json'), 'utf8'));
@@ -38,16 +66,18 @@ for (const file of scriptFiles) {
 }
 
 execFileSync(process.execPath, ['tools/build-single-file.mjs'], { cwd: root, stdio: 'inherit' });
-const built = normalize(fs.readFileSync(path.join(root, 'dist', 'Classroom-Seating-Planner.html'), 'utf8'));
+const built = readText('dist/Classroom-Seating-Planner.html');
 
 const required = [
   ['doctype', /^\s*<!doctype html>/i.test(built)],
-  ['V7.2.1 app version metadata', /name=["']app-version["']\s+content=["']7\.2\.1["']/i.test(built)],
+  [`V${releaseVersion} app version metadata`, new RegExp(`name=["']app-version["']\\s+content=["']${escapedVersion}["']`, 'i').test(built)],
   ['manifest link', /rel=["']manifest["']/i.test(built)],
   ['service worker registration', /serviceWorker\.register\(/.test(built)],
   ['analytics consent default remains granted', /analytics_storage\s*:\s*['"]granted['"]/.test(built)],
   ['Google Drive OAuth client configured', /googleDriveClientId\s*:\s*['"][^'"]+['"]/.test(built)],
   ['Google Picker project number configured', /googlePickerAppId\s*:\s*['"][^'"]+['"]/.test(built)],
+  ['repository URL configured', /repositoryUrl\s*:\s*['"]https:\/\/github\.com\/NomadCF\/seatingchart['"]/.test(built)],
+  ['support URL configured', /supportUrl\s*:\s*['"]https:\/\/github\.com\/NomadCF\/seatingchart\/issues['"]/.test(built)],
   ['collaboration presence retained', /presence, changeLedger/.test(built)],
   ['collaboration activity UI present', /driveCollaborationLedger/.test(built)],
   ['V6.8 Classroom Intelligence module present', /ClassroomIntelligenceV68/.test(built)],
@@ -93,7 +123,10 @@ const required = [
   ['V7.2 personal-data import guard present', /FORBIDDEN_PERSONAL_KEYS/.test(built) && /studentDataIncluded/.test(built)],
   ['V7.2 floor-plan image opt-in present', /plannerPacksV720IncludeImages/.test(built)],
   ['V7.2 Activity Layout seat-count guard present', /Seat counts must match so student assignments are not silently changed/.test(built)],
-  ['V7.2 rotation station identity matching present', /matchRotationStations/.test(built)]
+  ['V7.2 rotation station identity matching present', /matchRotationStations/.test(built)],
+  ['V7.3 Planner Assistant workspace present', /PlannerAssistantWorkspaceV730/.test(built)],
+  ['V7.3 Planner Assistant workspace UI present', /plannerAssistantV730Workspace/.test(built)],
+  ['V7.3 multi-turn Assistant context present', /conversation/i.test(built) && /working plan/i.test(built)]
 ];
 
 for (const [name, ok] of required) {
@@ -106,4 +139,12 @@ if (deployed !== built) {
   throw new Error(`Committed modular source does not rebuild index.html: index=${a} built=${b}`);
 }
 
-console.log(`Release validation passed. ${scriptFiles.length} JavaScript source module(s) rebuild index.html exactly after newline normalization.`);
+if (committedPortable && committedPortable !== built) {
+  const a = crypto.createHash('sha256').update(committedPortable).digest('hex');
+  const b = crypto.createHash('sha256').update(built).digest('hex');
+  throw new Error(`Committed dist/Classroom-Seating-Planner.html is stale: committed=${a} built=${b}`);
+}
+
+if (!versionPattern.test(deployed)) throw new Error(`Deployed index.html does not contain release version ${releaseVersion}.`);
+
+console.log(`Release validation passed for V${releaseVersion}. ${scriptFiles.length} JavaScript source module(s) rebuild index.html exactly after newline normalization.`);
