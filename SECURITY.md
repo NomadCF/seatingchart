@@ -2,20 +2,24 @@
 
 ## Supported version
 
-Security fixes target the current hosted release and the newest portable release.
+The actively supported release line is **V7.3.x**, including the current hosted build and matching portable single-file release. Older historical releases may remain available in repository history but should not be treated as the supported production baseline.
 
-## Reporting a vulnerability
+## Reporting a security issue
 
-Do not open a public issue containing student data, encryption material, OAuth tokens, passwords, recovery keys, or an exploit that exposes private classroom information.
+Please avoid filing student data, encryption keys, OAuth tokens, passwords, recovery secrets, or real classroom records in a public issue.
 
-Report security concerns privately to the repository owner through an appropriate private contact channel. Include the application version, browser, reproduction steps, expected behavior, observed behavior, and a sanitized proof of concept when possible.
+For a reproducible public-code problem, open a GitHub issue using sanitized sample data and include the application version, browser, operating system, and the smallest safe reproduction you can provide.
 
-## Security model
+For a vulnerability that would expose real classroom data, credentials, or encryption material, use GitHub's private vulnerability reporting feature when it is available for the repository rather than posting the details publicly.
 
-Classroom Seating Planner is a browser application. Classroom data is intended to remain local unless a user explicitly saves, exports, prints, shares, or connects an external service. Encryption protects supported data at rest; unlocked data necessarily exists in browser memory while the application is in use.
+## Security boundaries
 
-The application does not treat client-side OAuth identifiers or restricted browser API keys as secrets. OAuth access tokens, encryption passwords, derived keys, and decrypted student data must never be committed to this repository or included in support bundles.
+Classroom Seating Planner is a browser application. Encryption protects supported data at rest in planner saves, browser persistence, backups, and related encrypted packages. Data is necessarily available in browser memory while an unlocked workspace is actively using it.
 
-## Supported disclosure expectations
+Presentation Mode and page-lock controls reduce accidental access; they are not a substitute for device/account security. Google OAuth access remains governed by the user's Google account and the scopes authorized for the application.
 
-Please allow a reasonable remediation window before public disclosure of a vulnerability that could expose private classroom information. Security fixes should include a regression test whenever practical.
+The built-in V7.3 Planner Assistant runs locally in the browser and does not require an external AI provider for classroom requests.
+
+## Safe reports and diagnostics
+
+Support bundles and issue reports should use sanitized diagnostics only. Do not attach raw save files, screenshots containing student records, full browser storage dumps, OAuth tokens, or encryption/recovery secrets unless you have deliberately removed sensitive classroom data.
