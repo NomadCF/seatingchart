@@ -12,7 +12,7 @@ permissions:
 jobs:
   package:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -29,14 +29,11 @@ jobs:
             echo "Release tag ${GITHUB_REF_NAME} does not match package version ${PACKAGE_VERSION}. Expected ${EXPECTED_TAG}."
             exit 1
           fi
-      - name: Validate and build portable HTML
+      - name: Validate V7.3 release and critical contract
         run: |
           npm test
+          npm run test:smoke
           node --check service-worker.js
-      - name: Install Chromium
-        run: npx playwright install --with-deps chromium
-      - name: Run critical desktop/mobile smoke gate
-        run: npm run test:smoke
       - name: Assemble release directory
         run: |
           mkdir -p release/hosted-pwa release/source
