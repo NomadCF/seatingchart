@@ -50,7 +50,11 @@ readme = readme.replace('Quick Start, searchable reference help, guided lessons,
 readme = readme.replace('npm test\nnpm run test:browser', 'npm test\nnpm run test:smoke\nnpm run test:browser')
 readme = readme.replace(
     '`npm run build` assembles the portable HTML from the committed modular source. CI validates release structure, schema/service-worker behavior, build parity, and desktop/mobile browser regression coverage.',
-    '`npm run build` assembles the portable HTML from the committed modular source. Normal CI runs deterministic release validation plus one consolidated critical smoke path on desktop and mobile. The complete historical browser suite runs on the scheduled/manual full-regression workflow; see [`docs/CI.md`](docs/CI.md).'
+    '`npm run build` assembles the portable HTML from the committed modular source. Normal CI runs deterministic release validation and a fast critical V7.3 release-contract check without downloading Chromium. The complete historical browser suite runs on the scheduled/manual full-regression workflow; see [`docs/CI.md`](docs/CI.md).'
+)
+readme = readme.replace(
+    '`npm run build` assembles the portable HTML from the committed modular source. Normal CI runs deterministic release validation plus one consolidated critical smoke path on desktop and mobile. The complete historical browser suite runs on the scheduled/manual full-regression workflow; see [`docs/CI.md`](docs/CI.md).',
+    '`npm run build` assembles the portable HTML from the committed modular source. Normal CI runs deterministic release validation and a fast critical V7.3 release-contract check without downloading Chromium. The complete historical browser suite runs on the scheduled/manual full-regression workflow; see [`docs/CI.md`](docs/CI.md).'
 )
 oauth_row = '| [`docs/OAUTH_DEPLOYMENT.md`](docs/OAUTH_DEPLOYMENT.md) | Google OAuth / Picker deployment guidance |\n'
 extra_rows = '| [`docs/PLANNER-ASSISTANT.md`](docs/PLANNER-ASSISTANT.md) | Current V7.3 Planner Assistant behavior and privacy model |\n| [`docs/CI.md`](docs/CI.md) | Fast merge gate, generated-file rules, and full regression workflow |\n'
@@ -75,9 +79,9 @@ maintenance = """### Repository and CI maintenance
 - Synchronized canonical V7.3.0 version metadata across the HTML template, generated app, README, package metadata, changelog, and PWA cache namespace.
 - Added release validation that derives the expected version from `package.json` and rejects drift across canonical release surfaces.
 - Synchronized the tracked `dist/Classroom-Seating-Planner.html` portable build with modular source and added CI protection against stale generated outputs.
-- Replaced the duplicated per-push desktop/mobile/Planner Assistant full-regression matrix with a consolidated desktop/mobile critical smoke gate.
+- Replaced the duplicated per-push desktop/mobile/Planner Assistant full-regression matrix with one fast deterministic build and critical V7.3 release-contract gate.
 - Moved the complete browser regression suite to a scheduled/manual workflow, removed duplicate Assistant execution, disabled automatic retries, and added hard job time limits.
-- Updated Planner Assistant and CI documentation for the active V7.3 release.
+- Updated Planner Assistant, privacy/security/data-handling, accessibility, release, and CI documentation for the active V7.3 release.
 
 """
 if '### Repository and CI maintenance' not in changelog:
@@ -85,12 +89,21 @@ if '### Repository and CI maintenance' not in changelog:
     if next_release < 0:
         raise SystemExit('Could not find V7.2.1 heading after changelog normalization')
     changelog = changelog[:next_release] + '\n' + maintenance + changelog[next_release:]
+else:
+    changelog = changelog.replace(
+        '- Replaced the duplicated per-push desktop/mobile/Planner Assistant full-regression matrix with a consolidated desktop/mobile critical smoke gate.',
+        '- Replaced the duplicated per-push desktop/mobile/Planner Assistant full-regression matrix with one fast deterministic build and critical V7.3 release-contract gate.'
+    )
+    changelog = changelog.replace(
+        '- Updated Planner Assistant and CI documentation for the active V7.3 release.',
+        '- Updated Planner Assistant, privacy/security/data-handling, accessibility, release, and CI documentation for the active V7.3 release.'
+    )
 changelog_path.write_text(changelog)
 
 wcag_path = Path('docs/WCAG-2.2-AA-AUDIT.md')
 wcag = wcag_path.read_text()
 wcag = wcag.replace(
     'The current browser regression suite verifies that the application boots without uncaught runtime errors, core controls remain addressable, hosted PWA files are reachable, and desktop/mobile layouts do not create page-level horizontal overflow.',
-    'The normal V7.3 critical smoke gate verifies startup, core workflow navigation, first-run security setup, hosted PWA files, Presentation Mode, uncaught runtime errors, and page-level desktop/mobile overflow. The complete historical Playwright suite runs separately on the scheduled/manual full-regression workflow described in `docs/CI.md`.'
+    'The normal V7.3 merge gate verifies deterministic release/build integrity and the critical application contract without running a heavyweight browser matrix. The complete historical Playwright suite, including desktop/mobile layout coverage, runs separately on the scheduled/manual full-regression workflow described in `docs/CI.md`.'
 )
 wcag_path.write_text(wcag)
