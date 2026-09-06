@@ -41,7 +41,7 @@ const built = normalize(fs.readFileSync(path.join(root, 'dist', 'Classroom-Seati
 
 const required = [
   ['doctype', /^\s*<!doctype html>/i.test(built)],
-  ['V7.2.2 app version metadata', /name=["']app-version["']\s+content=["']7\.2\.2["']/i.test(built)],
+  ['V7.2.3 app version metadata', /name=["']app-version["']\s+content=["']7\.2\.3["']/i.test(built)],
   ['manifest link', /rel=["']manifest["']/i.test(built)],
   ['service worker registration', /serviceWorker\.register\(/.test(built)],
   ['analytics consent default remains granted', /analytics_storage\s*:\s*['"]granted['"]/.test(built)],
@@ -82,7 +82,6 @@ const required = [
   ['V7.0.3 spacing feasibility engine present', /minimumSpacing/.test(built) && /spacingConflicts/.test(built)],
   ['V7.0.3 transition-plan engine present', /transitionSteps/.test(built) && /Return to source layout/.test(built)],
   ['V7.0.3 non-interactive preview overlay present', /v703-testing-preview/.test(built)],
-  ['Planner Assistant removed', !/PlannerAssistantV710|plannerAssistantV710Dock|classroom-seating-planner-command-v1/.test(built)],
   ['V7.2 Planner Packs engine present', /PlannerPacksV720/.test(built)],
   ['V7.2 public Planner Pack contract present', /classroom-seating-planner-pack-v1/.test(built)],
   ['V7.2 personal-data import guard present', /FORBIDDEN_PERSONAL_KEYS/.test(built) && /studentDataIncluded/.test(built)],

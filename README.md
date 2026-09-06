@@ -9,7 +9,7 @@ A free, open-source, privacy-conscious seating planner for educators. Design the
 
 [**Launch the hosted app**](https://nomadcf.github.io/seatingchart/) · [Privacy](PRIVACY.md) · [Security](SECURITY.md) · [Data handling](DATA-HANDLING.md) · [Changelog](CHANGELOG.md)
 
-![Version](https://img.shields.io/badge/version-7.2.2-2563eb?style=flat-square)
+![Version](https://img.shields.io/badge/version-7.2.3-2563eb?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-0f766e?style=flat-square)
 ![PWA](https://img.shields.io/badge/PWA-installable-7c3aed?style=flat-square)
 ![Local-first](https://img.shields.io/badge/data-local--first-0f766e?style=flat-square)
@@ -26,9 +26,9 @@ Classroom Seating Planner is built for the messy version of the problem: student
 
 The app combines **room design**, **student rules**, **manual placement**, **automatic plan generation**, **Classroom Intelligence**, **conflict review**, **history and fairness analysis**, and **privacy-controlled sharing** in one workflow.
 
-### V7.2.2 current production release
+### V7.2.3 current production release
 
-V7.2.2 is the active hosted and portable production baseline. It keeps the stable V7.2.1 seating, room, planning, security, Drive/Classroom, Planner Packs, Testing Mode, Activity Layouts, Station Rotations, and Classroom Intelligence features while removing the floating Planner Assistant interface and its unused command layer.
+V7.2.3 is the active hosted and portable production baseline. It keeps the stable V7.2 seating, room, planning, security, Drive/Classroom, Planner Packs, Testing Mode, Activity Layouts, Station Rotations, Classroom Intelligence, and Guided Help features while cleaning stale release references, obsolete maintenance notes, and outdated regression assertions.
 
 ### V7.2.0 Planner Packs
 
@@ -280,7 +280,7 @@ The portable deliverable remains a single self-contained HTML application, but t
 
 - HTML shell: `src/index.template.html`
 - Styles: `src/styles/`
-- Ordered JavaScript modules: `src/scripts/` (37 modules in V7.2.2)
+- Ordered JavaScript modules: `src/scripts/` (37 modules in V7.2.3)
 - Built portable file: `dist/Classroom-Seating-Planner.html`
 - Deployed hosted entry point: `index.html`
 
@@ -293,7 +293,7 @@ npm test
 npm run test:browser
 ```
 
-`npm run build` assembles the portable HTML from the committed modular source. Normal CI validates the deterministic V7.2.2 build, generated-file parity, schemas, and service-worker syntax in seconds. The complete Playwright desktop/mobile regression suite remains available through the scheduled/manual **Full browser regression** workflow and `npm run test:browser`.
+`npm run build` assembles the portable HTML from the committed modular source. Normal CI validates the deterministic V7.2.3 build, generated-file parity, schemas, and service-worker syntax in seconds. The complete Playwright desktop/mobile regression suite remains available through the scheduled/manual **Full browser regression** workflow and `npm run test:browser`.
 
 ### Public data contracts
 

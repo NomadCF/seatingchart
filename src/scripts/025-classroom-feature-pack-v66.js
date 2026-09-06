@@ -26,7 +26,7 @@ window.ClassroomFeaturePackV66 = (() => {
 
   function afterReady() {
     modules().forEach(module => module.afterReady?.());
-    document.body.dataset.featurePack = '7.2.2';
+    document.body.dataset.featurePack = '7.2.3';
   }
 
   return Object.freeze({ install, afterReady });
