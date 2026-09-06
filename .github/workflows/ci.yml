@@ -25,6 +25,12 @@ jobs:
           node-version: '24'
       - name: Install dependencies
         run: npm install --no-package-lock
+      - name: Verify modular source has no trailing whitespace
+        run: |
+          if git grep -nI -E '[[:blank:]]+$' -- src; then
+            echo 'Trailing whitespace found in modular source.'
+            exit 1
+          fi
       - name: Build portable single-file app
         run: npm run build
       - name: Verify committed generated files match modular source
@@ -38,7 +44,7 @@ jobs:
             git --no-pager diff --stat -- dist/Classroom-Seating-Planner.html
             exit 1
           fi
-      - name: Validate deterministic V7.3 release
+      - name: Validate deterministic release
         run: npm test
       - name: Validate JSON schemas
         run: |
